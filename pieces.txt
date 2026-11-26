@@ -56,4 +56,9 @@ Drivers/Backlight/Register
 Drivers/Backlight/Libraries
 Drivers/EDiskDriver
 Main/Part14
+Toolbox/InSANE/FPHWCtrl
+Toolbox/InSANE/FPHWArith
+Toolbox/InSANE/FPHWNonArith
+Toolbox/InSANE/FPHWB2DC
+Main/Part15
 DeclData/DeclData
