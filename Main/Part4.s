@@ -38,7 +38,7 @@
 
             IMPORT  A24ACTUALSPATCH,A24MAXLIMITPATCH,A24SETSIZEPATCH,A32ACTUALSPATCH,A32MAXLIMITPATCH,A32SETSIZEPATCH
             IMPORT  ALIGN24TRAILER,ALIGN32TRAILER,AllocFakeRgns,CLKNOMEMPATCH,DequeueTrap,DerefHandlePatch
-            IMPORT  DSHOOKPATCH,FILEMGRPATCH,FlushApplNM,INIT24ZONEALIGN,INIT32ZONEALIGN,LoadSegPatch
+            IMPORT  CMDDONEPATCH,DSHOOKPATCH,FlushApplNM,INIT24ZONEALIGN,INIT32ZONEALIGN,LoadSegPatch
             IMPORT  OPENPATCH,OSEVENTAVAILPATCH,OSEVENTMGRPATCH,PMSPSwOS,QStuff,ReadPRamPatch
             IMPORT  ReadTimePatch,READUPDATE,SETAPPLBASEPATCH,SHUTRESTARTANNEX,SMGRPOSTMUNGING,UnloadSegPatch
             IMPORT  V24CMGUTSPATCH,v24HlockPatch,V24MAXAPPLPATCH,V24MAXMEMPATCH,V24PURGESPACEPATCH,V32CMGUTSPATCH
@@ -6435,29 +6435,29 @@ FSAsync:
             jsr     (A1)
             movem.l (SP)+,D3-D7/A2-A6
             rts
-.L3:
+toDSFSErr:
             moveq   #$1B,D0
             _SysError
 CmdDone:
-            bsr.l   FILEMGRPATCH
+            bsr.l   CMDDONEPATCH
             ble.b   .L1
             move.w  D0,($392).w
             moveq   #-$7F,D0
 .L1:
             movea.l ($362).w,A0
             cmpi.w  #5,(4,A0)
-            bne.b   FSAsync.L3
+            bne.b   toDSFSErr
             cmpi.w  #$FFD5,D0
-            bne.b   .L6
+            bne.b   cd_CkExtFS
             btst    #9,(6,A0)
             beq.b   .L2
             tst.l   ($30,A0)
-            bne.b   .L6
+            bne.b   cd_CkExtFS
 .L2:
             btst    #6,($376).w
-            bne.b   .L6
+            bne.b   cd_CkExtFS
             btst    #5,($376).w
-            bne.b   .L6
+            bne.b   cd_CkExtFS
             movea.l ($386).w,A1
             movem.l D1/A2,-(SP)
             move.w  (-2,A1),D1
@@ -6485,7 +6485,7 @@ CmdDone:
             jmp     (A1)
 .L5:
             moveq   #-$2B,D0
-.L6:
+cd_CkExtFS:
             bclr    #5,($376).w
             move.l  ($3E6).w,D2
             ble.b   .L7
@@ -6493,17 +6493,17 @@ CmdDone:
             jsr     (A1)
 .L7:
             move.l  ($3F2).w,D2
-            ble.b   .L10
+            ble.b   cd_DeQueue
             movea.l D2,A1
             cmpi.w  #$FFC6,D0
             beq.b   .L8
             cmpi.w  #$FFC7,D0
-            bne.b   .L10
+            bne.b   cd_DeQueue
             clr.l   ($3EE).w
 .L8:
             movea.l ($362).w,A0
             cmpi.w  #5,(4,A0)
-            bne.w   FSAsync.L3
+            bne.w   toDSFSErr
             moveq   #-$3A,D0
             tst.w   (6,A0)
             blt.b   .L9
@@ -6513,25 +6513,25 @@ CmdDone:
             ori.w   #$A060,(6,A0)
 .L9:
             jsr     (A1)
-.L10:
+cd_DeQueue:
             move    SR,-(SP)
             ori     #$700,SR
             clr.w   FSQHdr
             movea.l ($362).w,A0
             cmpi.w  #5,(4,A0)
-            bne.w   FSAsync.L3
+            bne.w   toDSFSErr
             move.l  (A0),($362).w
-            bne.b   .L11
+            bne.b   cd_CallComp
             clr.l   ($366).w
-.L11:
+cd_CallComp:
             move    (SP)+,SR
             move.w  D0,($10,A0)
             move.l  ($C,A0),D1
-            beq.b   .L12
+            beq.b   cd_DispNext
             movea.l D1,A1
             tst.w   D0
             jsr     (A1)
-.L12:
+cd_DispNext:
             move    SR,-(SP)
             ori     #$700,SR
             tst.l   ($362).w
@@ -6559,16 +6559,16 @@ DSHook:
             move.l  A0,D7
             movea.l ($3EE).w,A2
             move.w  ($4A,A2),D3
-            bpl.b   .L1
+            bpl.b   TellUser
             neg.w   D3
             move.w  D3,($16,A0)
             _MountVol
-            bne.b   .L1
+            bne.b   TellUser
             moveq   #0,D3
-            bra.w   .L15
-.L1:
+            bra.w   TellUser.L15
+TellUser:
             move.l  #$500078,DSAlertRect
-            move.l  #$980195,($3FC).w
+            move.l  #$980195,DSAlertRect+4
             moveq   #0,D4
             moveq   #0,D5
             tst.b   QDExist
@@ -6738,7 +6738,7 @@ vDoEject:
             rts
 InitFS:
             tst.w   FSFCBLen
-            bpl.w   .L5
+            bpl.w   FSInitOK
             move.w  #$5E,FSFCBLen
             lea     FileVars,A0
             moveq   #$50,D1
@@ -6755,7 +6755,7 @@ InitFS:
             addq.w  #2,D0
             move.w  D0,D1
             _NewPtrSysClear
-            bne.w   .L6
+            bne.w   FSInitErr
             move.w  D1,(A0)
             move.l  A0,($34E).w
             mulu.w  #$10,D2
@@ -6763,7 +6763,7 @@ InitFS:
             addq.w  #2,D0
             move.w  D0,D1
             _NewPtrSysClear
-            bne.w   .L6
+            bne.w   FSInitErr
             move.w  D1,(A0)
             move.l  A0,($372).w
             BigLea  WDCBSwOS,A2
@@ -6774,12 +6774,12 @@ InitFS:
             move.w  D1,(A2)
             move.l  #$510,D0
             _NewPtrSysClear
-            bne.b   .L6
+            bne.b   FSInitErr
             lea     ($500,A0),A0
             move.l  A0,($36A).w
             moveq   #$38,D0
             _NewPtrSysClear
-            bne.b   .L6
+            bne.b   FSInitErr
             BigLea  PMSPSwOS,A2
             movea.w (A2),A2
             adda.l  SwitcherTPtr,A2
@@ -6792,7 +6792,7 @@ InitFS:
             move.w  #$200,D1
             moveq   #1,D0
             jsr     InitCache
-            bne.b   .L6
+            bne.b   FSInitErr
             move.l  A1,($378).w
             moveq   #1,D0
             cmpi.w  #2,MemTop
@@ -6800,7 +6800,7 @@ InitFS:
             moveq   #2,D0
 .L3:
             jsr     InitCache
-            bne.b   .L6
+            bne.b   FSInitErr
             move.l  A1,($37C).w
             moveq   #4,D0
             cmpi.w  #2,MemTop
@@ -6808,14 +6808,14 @@ InitFS:
             moveq   #$10,D0
 .L4:
             jsr     InitCache
-            bne.b   .L6
+            bne.b   FSInitErr
             move.l  A1,($380).w
             lea     DSHook,A0
             move.l  A0,($3EA).w
-.L5:
+FSInitOK:
             moveq   #0,D0
             rts
-.L6:
+FSInitErr:
             moveq   #-1,D0
             rts
 DivUp:
