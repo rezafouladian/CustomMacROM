@@ -7,8 +7,11 @@ OS/StartMgr/TestManager
 Main/Part3
 Drivers/Sony/Sony
 Main/Part4
-OS/DispTable
+OS/PowerMgr
+OS/PwrControlsPatches
 Main/Part5
-Drivers/EDiskDriver
+OS/DispTable
 Main/Part6
+Drivers/EDiskDriver
+Main/Part7
 DeclData/DeclData
