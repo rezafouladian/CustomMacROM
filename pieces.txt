@@ -1,0 +1,14 @@
+Start/Header
+Main/Part1
+OS/Beep
+Main/Part2
+OS/BootBeep
+OS/StartMgr/TestManager
+Main/Part3
+Drivers/Sony/Sony
+Main/Part4
+OS/DispTable
+Main/Part5
+Drivers/EDiskDriver
+Main/Part6
+DeclData/DeclData
