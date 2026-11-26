@@ -9,20 +9,20 @@
 PowerMngr:
 InitPmgrVars:
             btst    #0,HWCfgFlags                   ; TestFor hwCbPwrMgr
-            bne.b   .L4
-            lea     .L3,A1
+            bne.b   .DoPMgrInit
+            lea     .Traps,A1
             move.w  (A1)+,D0
             _GetToolBoxTrapAddress
-.L1:
+.TrapLoop:
             move.w  (A1)+,D0
-            beq.b   .L2
+            beq.b   .exit
             _SetOSTrapAddress
-            bra.b   .L1
-.L2:
+            bra.b   .TrapLoop
+.exit:
             rts
-.L3:
+.Traps:
             dc.w    $A89F,$A085,$A09F,$A08A,0
-.L4:
+.DoPMgrInit:
             move.l  #$106,D0
             _NewPtrSysClear
             move.l  A0,PmgrBase
@@ -53,7 +53,7 @@ InitPmgrVars:
             lea     ($82,A3),A0
             move.w  #1,(4,A0)
             move.w  #$3C,($A,A0)
-            lea     sub_408886C8,A1
+            lea     BatWatch,A1
             move.l  A1,(6,A0)
             _VInstall
             lea     PmgrInt,A0
@@ -127,7 +127,7 @@ InitPmgrVars:
             lea     Restore020,A2
             move.l  A2,($EA,A3)
 .L8:
-            lea     sub_40888E72,A1
+            lea     ModemSndOnInt,A1
             move.l  A1,($102,A3)
             movea.l VIA,A1
             move.b  #$90,($1A00,A1)
@@ -190,8 +190,9 @@ BatInt:
             move.b  (1,A0),D2
             move.b  D2,($F,A2)
             btst    #2,D2
-            beq.b   .L2
+            beq.b   .Done
             bsr.w   RemoveMsg
+.BatIntCont:                                ; re-entry point used by PowerMgrPatches.a NewBatInt
             bset    #3,($54,A2)
             lea     ($EE,A2),A1
             bset    #4,($54,A2)
@@ -200,10 +201,10 @@ BatInt:
             bclr    #4,($54,A2)
 .L1:
             tst.l   (A1)
-            beq.b   .L2
+            beq.b   .Done
             lea     ($24,A2),A0
             move.l  (A1),($18,A0)
-            lea     sub_408886B6,A1
+            lea     .BatResp,A1
             move.l  A1,($1C,A0)
             move.l  ($6E,A2),($10,A0)
             _NMInstall
@@ -216,54 +217,54 @@ BatInt:
             move.b  D2,(2,A0)
             bsr.w   PMGRsend
             addq.l  #4,SP
-.L2:
+.Done:
             rts
-sub_408886B6:
+.BatResp:
             movea.l (SP)+,A1
             movea.l (SP)+,A0
             _NMRemove
             movea.l PmgrBase,A0
             bclr    #3,($54,A0)
             jmp     (A1)
-sub_408886C8:
+BatWatch:
             movea.l PmgrBase,A2
             tst.b   ($C,A2)
-            bne.b   .L1
+            bne.b   .didsystask
             lea     ($82,A2),A0
             move.w  #$3C,($A,A0)
             rts
-.L1:
+.didsystask:
             bsr.w   GetLevel
-            bne.b   .L2
+            bne.b   .valid
             move.b  #$FF,($D,A2)
-            bra.b   .L6
-.L2:
+            bra.b   .BatWatchOut
+.valid:
             tst.b   D0
-            bpl.b   .L3
+            bpl.b   .positive
             bsr.b   RemoveMsg
             move.b  D0,($D,A2)
-            bra.b   .L6
-.L3:
-            beq.b   .L5
+            bra.b   .BatWatchOut
+.positive:
+            beq.b   .lesser
             tst.b   ($D,A2)
-            bmi.b   .L4
+            bmi.b   .newmsg
             cmp.b   ($D,A2),D0
-            bls.b   .L5
-.L4:
+            bls.b   .lesser
+.newmsg:
             bsr.b   RemoveMsg
             bsr.b   InstallMsg
             clr.b   ($6D,A2)
             move.b  D0,($D,A2)
-            bra.b   .L6
-.L5:
+            bra.b   .BatWatchOut
+.lesser:
             cmpi.b  #4,($D,A2)
-            bne.b   .L6
+            bne.b   .BatWatchOut
             addq.b  #1,($6D,A2)
-.L6:
+.BatWatchOut:
             lea     ($82,A2),A0
             move.w  #$3C,($A,A0)
             tst.b   ($11,A2)
-            beq.b   .L7
+            beq.b   .exit
             clr.b   ($11,A2)
             lea     Scratch20,A0
             move.l  #$60070,D0
@@ -272,11 +273,11 @@ sub_408886C8:
             move.w  (A0),(A2)
             _IdleUpdate
             move.l  ($1E,A2),D0
-            beq.b   .L7
+            beq.b   .exit
             addq.l  #1,D0
-            beq.b   .L7
+            beq.b   .exit
             move.l  Ticks,($1E,A2)
-.L7:
+.exit:
             rts
 RemoveMsg:
             tst.b   ($50,A2)
@@ -320,13 +321,13 @@ GetLevel:
             move.b  (A0),D3
             addq.w  #4,SP
             btst    #5,($F,A2)
-            beq.b   .L1
+            beq.b   .ChargeSame
             st      ($11,A2)
-.L1:
+.ChargeSame:
             subq.b  #1,($5F,A2)
-            bpl.b   .L2
+            bpl.b   .IndexOK
             move.b  #7,($5F,A2)
-.L2:
+.IndexOK:
             moveq   #0,D0
             move.b  ($5F,A2),D0
             move.b  D3,($48,A2,D0.w)
@@ -359,27 +360,27 @@ GetLevel:
             moveq   #4,D0
             add.w   D2,D1
             cmp.w   D1,D3
-            bls.b   .L3
+            bls.b   .foundlevel
             moveq   #3,D0
             add.w   D2,D1
             cmp.w   D1,D3
-            bls.b   .L3
+            bls.b   .foundlevel
             moveq   #2,D0
             add.w   D2,D1
             cmp.w   D1,D3
-            bls.b   .L3
+            bls.b   .foundlevel
             moveq   #1,D0
             add.w   D2,D1
             cmp.w   D1,D3
-            bls.b   .L3
+            bls.b   .foundlevel
             moveq   #0,D0
             move.w  ($F6,A2),D2
             asl.w   #2,D2
             add.w   D2,D1
             cmp.w   D1,D3
-            bls.b   .L3
+            bls.b   .foundlevel
             moveq   #-1,D0
-.L3:
+.foundlevel:
             lsr.w   #2,D3
             move.b  D3,($52,A2)
             tst.b   ($48,A2)
@@ -393,44 +394,44 @@ SndWatch:
             move.w  #$98,D0
             bsr.w   PMGRrecv
             move.b  (A0),D2
-            beq.b   .L2
+            beq.b   .noSound
             btst    #1,D2
-            bne.b   .L1
+            bne.b   .Clearlatch
             clr.b   (A0)
             moveq   #1,D1
             move.w  #$90,D0
             bsr.w   PMGRsend
-            bra.b   .L2
-.L1:
+            bra.b   .noSound
+.Clearlatch:
             move.b  #3,(A0)
             moveq   #1,D1
             move.w  #$90,D0
             bsr.w   PMGRsend
             _IdleUpdate
-.L2:
+.noSound:
             addq.w  #4,SP
             rts
-.L3:
-            dc.w    sub_40888EAA.L2-.L3
-            dc.w    IdleUpdate-.L3
-            dc.w    IdleDelay-.L3
-            dc.w    IdleMind-.L3
-            dc.w    IdleRead-.L3
-            dc.w    IdleEnable-.L3
-            dc.w    IdleDisable-.L3
-            dc.w    IdleDisable.L31-.L3
+PwrDispatchVects:
+            dc.w    PmgrTrap-PwrDispatchVects
+            dc.w    IdleUpdate-PwrDispatchVects
+            dc.w    IdleDelay-PwrDispatchVects
+            dc.w    IdleMind-PwrDispatchVects
+            dc.w    IdleRead-PwrDispatchVects
+            dc.w    IdleEnable-PwrDispatchVects
+            dc.w    IdleDisable-PwrDispatchVects
+            dc.w    IdleDisable.L31-PwrDispatchVects
             ds.b    20
 POWERDISPATCH:
             cmpi.w  #7,D0
             bhi.b   .L1
-            move.w  SndWatch.L3(PC,D0.w*2),D0
-            jmp     SndWatch.L3(PC,D0.w)
+            move.w  PwrDispatchVects(PC,D0.w*2),D0
+            jmp     PwrDispatchVects(PC,D0.w)
 .L1:
             move.w  #$FFCE,D0
             rts
 PmgrOp:
             andi.w  #$600,D1
-            beq.w   sub_40888EAA.L2
+            beq.w   PmgrTrap
             cmpi.w  #$400,D1
             beq.w   Restore020.L26
             bcs.b   IdleUpdate
@@ -872,7 +873,7 @@ sub_40888E5A:
             move.b  D1,D0
             movem.l (SP)+,D1/A0
             rts
-sub_40888E72:
+ModemSndOnInt:
             move.b  #8,([VIA.w],$1A00.w)
             moveq   #1,D0
             move.l  A0,-(SP)
@@ -884,10 +885,10 @@ sub_40888E72:
 .L1:
             movea.l (SP)+,A0
             bclr    #6,([VIA.w],$1800.w)
-            lea     sub_40888EAA,A0
+            lea     ModemSndOffInt,A0
             move.l  A0,($19E).w
             rts
-sub_40888EAA:
+ModemSndOffInt:
             move.b  #8,([VIA.w],$1A00.w)
             moveq   #0,D0
             move.l  A0,-(SP)
@@ -899,10 +900,10 @@ sub_40888EAA:
 .L1:
             movea.l (SP)+,A0
             bset    #6,([VIA.w],$1800.w)
-            lea     sub_40888E72,A0
+            lea     ModemSndOnInt,A0
             move.l  A0,($19E).w
             rts
-.L2:
+PmgrTrap:
             movem.l D1-D6/A0-A6,-(SP)
             move    SR,D5
             movea.l VIA,A1
@@ -1123,44 +1124,44 @@ DreamAway:
             movem.l D1-D7/A0-A6,-(SP)
             move.l  D0,D2
             bset    #0,($54,A0)
-            bne.b   .L6
+            bne.b   .exitsleep
             cmpi.b  #1,D0
-            beq.b   .L1
+            beq.b   .validselector
             cmpi.b  #2,D0
-            beq.b   .L1
+            beq.b   .validselector
             cmpi.b  #6,D0
-            bne.b   .L5
-.L1:
+            bne.b   .abortsleep
+.validselector:
             move    ($C8,A0),SR
             bclr    #1,($54,A0)
-            bne.b   .L3
+            bne.b   .traverse
             move.l  ($60,A0),D1
-            beq.b   .L2
+            beq.b   .closeAT
             movea.l D1,A1
             jsr     (A1)
-            bne.b   .L5
-            bra.b   .L3
-.L2:
+            bne.b   .abortsleep
+            bra.b   .traverse
+.closeAT:
             bsr.w   CheckAppleTalk
-            bne.b   .L5
-.L3:
+            bne.b   .abortsleep
+.traverse:
             move.w  D2,D0
             cmpi.w  #6,D0
-            bne.b   .L4
+            bne.b   .doQ
             moveq   #2,D0
-.L4:
-            bsr.w   sub_40889634
+.doQ:
+            bsr.w   DoQueueStack
             move.l  D0,D1
             bsr.w   SetSupervisorMode
             tst.l   D1
-            bne.w   .L5
+            bne.w   .abortsleep
             bsr.w   CloseAppleTalk
             bclr    #0,($54,A0)
             bra.b   didqueue
-.L5:
+.abortsleep:
             bsr.w   SetSupervisorMode
             bclr    #0,($54,A0)
-.L6:
+.exitsleep:
             move.w  D2,D0
             movem.l (SP)+,D1-D7/A0-A6
             rts
@@ -1424,7 +1425,7 @@ CheckAppleTalk:
             move.b  #1,($6C,A2)
             bra.w   .L7
 .L1:
-            bsr.w   sub_4088968A
+            bsr.w   XPPCheck
             bne.w   .L8
             move.b  #2,($6C,A2)
             bra.w   .L7
@@ -1446,7 +1447,7 @@ CheckAppleTalk:
             move.b  #1,($6C,A2)
             bra.b   .L7
 .L4:
-            bsr.w   sub_4088968A
+            bsr.w   XPPCheck
             bne.b   .L5
             bsr.w   sub_408895B0
             bne.b   .L8
@@ -1465,7 +1466,7 @@ CheckAppleTalk:
             btst    #5,PortBUse
             bne.b   .L7
             move.b  #2,($6C,A2)
-            bsr.w   sub_4088968A
+            bsr.w   XPPCheck
             beq.b   .L7
             move.b  #3,($6C,A2)
 .L7:
@@ -1543,32 +1544,32 @@ sub_40889612:
             lea     ($32,SP),SP
             movem.l (SP)+,D1-D2/A0-A3
             rts
-sub_40889634:
+DoQueueStack:
             movem.l D1/A0,-(SP)
             movea.l (4,A0),A0
             cmpi.w  #1,D0
-            bne.b   .L1
-            bsr.b   sub_4088965A
-            bne.b   .L3
+            bne.b   .runTheQueue
+            bsr.b   Handle_Element
+            bne.b   .undosleepreq
             moveq   #2,D0
-.L1:
-            bsr.b   sub_4088965A
+.runTheQueue:
+            bsr.b   Handle_Element
             moveq   #0,D0
-.L2:
+.exit:
             movem.l (SP)+,D1/A0
             rts
-.L3:
+.undosleepreq:
             moveq   #4,D0
-            bsr.b   sub_4088965A
+            bsr.b   Handle_Element
             moveq   #4,D0
-            bra.b   .L2
-sub_4088965A:
+            bra.b   .exit
+Handle_Element:
             move.l  A0,D1
             beq.b   .L1
             move.l  D0,D1
             movem.l D1/A0,-(SP)
             movea.l (A0),A0
-            bsr.b   sub_4088965A
+            bsr.b   Handle_Element
             movem.l (SP)+,D1/A0
             bne.b   .L2
             move.l  D1,D0
@@ -1584,7 +1585,7 @@ sub_4088965A:
             moveq   #0,D0
 .L2:
             rts
-sub_4088968A:
+XPPCheck:
             movea.l A3,A0
             move.w  #$FFD7,($18,A0)
             _Close
