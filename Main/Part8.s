@@ -4,7 +4,7 @@
             EXPORT  RomRsrcHead,WRITEUPDATE
 
             IMPORT  BaseOfROM,BMMOVELONGS,BMOVERLAP,BMVERYSHORT,Critical,EMT1010
-            IMPORT  FileWrite,FLUSHCRANGEFORBM,RsrcEntryDRVR_4,WriteUpdateReturn
+            IMPORT  FileWrite,FlushCRangeForBM,RsrcEntryDRVR_4,WriteUpdateReturn
 
             SECTION "Part8",CODE
 
@@ -9358,7 +9358,7 @@ BlockMove68040:
 .L1:
             move.l  D0,-(SP)
             move.l  A1,-(SP)
-            BigLea  FLUSHCRANGEFORBM,A1
+            BigLea  FlushCRangeForBM,A1
             move.l  A1,-(SP)
             movea.l (4,SP),A1
             bra.b   .L2

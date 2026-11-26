@@ -1,12 +1,12 @@
             include "Include/ROMHeader.s"
 
             EXPORT  A24ACTUALSPATCH,A24MAXLIMITPATCH,A24SETSIZEPATCH,A32ACTUALSPATCH,A32MAXLIMITPATCH,A32SETSIZEPATCH
-            EXPORT  ALIGN24TRAILER,ALIGN32TRAILER,DEREFHANDLEPATCH,DSHOOKPATCH,FILEMGRPATCH,FLUSHCRANGE
-            EXPORT  FLUSHCRANGEFORBM,FLUSHDCACHEPATCH,FLUSHICACHEPATCH,getAddrModePatch,getFPUTypePatch,getPageSizePatch
+            EXPORT  ALIGN24TRAILER,ALIGN32TRAILER,DEREFHANDLEPATCH,DSHOOKPATCH,FILEMGRPATCH,FlushCRange
+            EXPORT  FlushCRangeForBM,FLUSHDCACHEPATCH,FLUSHICACHEPATCH,getAddrModePatch,getFPUTypePatch,getPageSizePatch
             EXPORT  GETREALPROC,HWPrivPatch,INIT24ZONEALIGN,INIT32ZONEALIGN,InitMemoryDispatch,NEWLOCKMEMORY
             EXPORT  NEWLOCKMEMORYCONTIGUOUS,NEWUNLOCKMEMORY,OSEVENTAVAILPATCH,OSEVENTMGRPATCH,SETAPPLBASEPATCH,SWAPDCACHEPATCH
-            EXPORT  UNWRITEPROTECTPROC,V24CMGUTSPATCH,V24HLOCKPATCH,V24MAXAPPLPATCH,V24MAXMEMPATCH,V24PURGESPACEPATCH
-            EXPORT  V32CMGUTSPATCH,V32HLOCKPATCH,V32MAXAPPLPATCH,V32MAXMEMPATCH,V32PURGESPACEPATCH,WRITEPROTECTPROC
+            EXPORT  UNWRITEPROTECTPROC,V24CMGUTSPATCH,v24HlockPatch,V24MAXAPPLPATCH,V24MAXMEMPATCH,V24PURGESPACEPATCH
+            EXPORT  V32CMGUTSPATCH,v32HlockPatch,V32MAXAPPLPATCH,V32MAXMEMPATCH,V32PURGESPACEPATCH,WRITEPROTECTPROC
             EXPORT  ZONECHECKPATCH
 
             IMPORT  A24BKCOMPACTS,a24CompactHp,A32BKCOMPACTS,A32COMPACTHP,DHBUSERRHANDLER,HeapGuts
@@ -558,29 +558,29 @@ FLUSHDCACHEPATCH:
 .L2:
             moveq   #0,D0
             rts
-FLUSHCRANGEFORBM:
+FlushCRangeForBM:
             movea.l (SP)+,A0
             movea.l (SP)+,A1
-FLUSHCRANGE:
+FlushCRange:
             cmpi.b  #4,CPUFlag
-            blt.w   .L4
+            blt.w   .Non040
             lea     ($F,A1),A1
             move.l  A1,D1
             andi.w  #$FFF0,D1
             move    SR,D0
             btst    #$D,D0
-            bne.b   .L1
+            bne.b   .CheckCnt
             moveq   #8,D0
             _DebugUtil
-.L1:
+.CheckCnt:
             cmpi.l  #$C00,D1
-            blt.b   .L2
+            blt.b   .KillInterrupts
             nop
             mc68040
             cpusha  BC
             mc68030
             bra.b   .L3
-.L2:
+.KillInterrupts:
             movem.l D3-D5/A0-A1,-(SP)
             ori     #$700,SR
             moveq   #5,D2
@@ -593,7 +593,7 @@ FLUSHCRANGE:
             eor.w   D2,D4
             move.w  D4,D5
             not.w   D5
-.L8:
+.LetsGetPhysical:
             movea.l A0,A1
             mc68040
             ptestr  (A1)
@@ -607,33 +607,33 @@ FLUSHCRANGE:
             eor.w   D5,D2
             addq.w  #1,D2
             sub.w   D2,D1
-            bpl.b   .L5
+            bpl.b   .FlushIt
             add.w   D1,D2
-.L5:
+.FlushIt:
             adda.w  D2,A0
             asr.w   #4,D2
             cmpi.w  #$10,D2
-            blt.b   .L6
+            blt.b   .LineByLine
             nop
             mc68040
             cpushp  BC,(A1)
             mc68030
-            bra.b   .L7
-.L6:
+            bra.b   .NextPage
+.LineByLine:
             mc68040
             cpushl  BC,(A1)
             mc68030
             lea     ($10,A1),A1
-            dbra    D2,.L6
-.L7:
+            dbra    D2,.LineByLine
+.NextPage:
             tst.w   D1
-            bgt.b   .L8
+            bgt.b   .LetsGetPhysical
             movem.l (SP)+,D3-D5/A0-A1
 .L3:
             move    D0,SR
             moveq   #0,D0
             rts
-.L4:
+.Non040:
             movec   CACR,D0
             bset    #3,D0
             movec   D0,CACR
@@ -1014,21 +1014,21 @@ WAITFORSCSIDEVS:
             rts
             ds.b    804
 MEMORYMGRPATCH:
-V24HLOCKPATCH:
-            beq.w   V32HLOCKPATCH.L3
+v24HlockPatch:
+            beq.w   HFail
             bset    #7,(A1)
-            bra.w   V32HLOCKPATCH.L1
-V32HLOCKPATCH:
-            beq.w   .L3
+            bra.w   v32HlockPatch.L1
+v32HlockPatch:
+            beq.w   HFail
             bset    #7,(-$B,A0)
 .L1:
-            cmpi.b  #4,CPUFlag
-            bne.b   .L2
+            cmpi.b  #cpu68040,CPUFlag
+            bne.b   HGood
             jsr     ([$6F4.w])
-.L2:
+HGood:
             moveq   #0,D0
-            bra.b   .L4
-.L3:
+            bra.b   HFail.L4
+HFail:
             moveq   #-$6D,D0
 .L4:
             move.l  vMMEpilogue,-(SP)

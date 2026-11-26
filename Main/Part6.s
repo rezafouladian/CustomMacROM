@@ -3,7 +3,7 @@
             EXPORT  ElsieTranslate24To32,ENABLEPARITYPATCH,LoadSegPatch,OPENPATCH,Overpatch,RSRCMGRPATCH
             EXPORT  SEPARITYPATCH,SHUTRESTARTANNEX,SLOTBUSEXCPTNPTCH,SoundInitPatch,UnloadSegPatch
 
-            IMPORT  BLOCKMOVEPATCH,CallRoutines,Enable60HzInts,EnableParityInts,FLUSHCRANGE,HMMMMMM
+            IMPORT  BLOCKMOVEPATCH,CallRoutines,Enable60HzInts,EnableParityInts,FlushCRange,HMMMMMM
             IMPORT  INITGLOBALS,INITMACEDISPATCH,InitSndDispatch,InstallSoundIntHandler,OPENPATCHRTN,OPENPATCHRTN1
             IMPORT  SoundInitPatchRtn
 
@@ -259,7 +259,7 @@ LoadSegPatch:
             bne.b   .L1
             suba.l  A2,A1
             movea.l A2,A0
-            bsr.l   FLUSHCRANGE
+            bsr.l   FlushCRange
             movea.l (SP)+,A2
             rts
 UnloadSegPatch:
@@ -294,7 +294,7 @@ UnloadSegPatch:
             bne.b   .L1
             suba.l  A2,A1
             movea.l A2,A0
-            bsr.l   FLUSHCRANGE
+            bsr.l   FlushCRange
             movem.l (SP)+,D1/A2
 .L2:
             move.l  (SP)+,(SP)
