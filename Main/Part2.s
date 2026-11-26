@@ -1350,7 +1350,7 @@ SwapHMMU:
             bset    #3,D1
             movec   D1,CACR
             movea.l ASCBase,A0
-            lea     ($804,A0),A0
+            lea     (ascFifoInt,A0),A0
             move.b  (A0),D1
             beq.b   .L2
             or.b    D1,(A0)

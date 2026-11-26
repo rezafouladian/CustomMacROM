@@ -78,22 +78,22 @@ OrigErrorBeep3:
 OrigErrorBeep4:
             lea     .L18,A4
 .L1:
-            clr.b   ($801,A3)
-            clr.b   ($807,A3)
+            clr.b   (ascMode,A3)
+            clr.b   (ascClockRate,A3)
             move.w  (A4)+,D0
             lsl.w   #2,D0
-            tst.b   ($800,A3)
+            tst.b   (ascVersion,A3)
             bne.b   .L2
             lsr.w   #5,D0
 .L2:
-            move.b  D0,($806,A3)
+            move.b  D0,(ascVolControl,A3)
             moveq   #1,D0
-            tst.b   ($800,A3)
+            tst.b   (ascVersion,A3)
             bne.b   .L3
             moveq   #0,D0
 .L3:
-            move.b  D0,($802,A3)
-            lea     ($810,A3),A0
+            move.b  D0,(ascChipControl,A3)
+            lea     (ascWavePhase,A3),A0
             moveq   #$1F,D0
 .L4:
             clr.b   (A0)+
@@ -107,10 +107,10 @@ OrigErrorBeep4:
             move.b  D0,(A0)+
             move.b  D0,(A0)+
             move.b  D0,(A0)+
-            move.b  #2,($801,A3)
-            clr.b   ($803,A3)
+            move.b  #2,(ascMode,A3)
+            clr.b   (ascFifoControl,A3)
             move.l  #$C001FF40,D0
-            tst.b   ($800,A3)
+            tst.b   (ascVersion,A3)
             bne.b   .L5
             move.l  #$30013F10,D0
 .L5:
@@ -127,7 +127,7 @@ OrigErrorBeep4:
             move.w  (A4)+,D3
             moveq   #0,D5
             lea     ($1C00,A5),A5
-            lea     ($814,A3),A1
+            lea     (ascWaveIncr,A3),A1
             movea.l A3,A0
             lea     ($200,A3),A3
             bra.b   .L11
@@ -162,7 +162,7 @@ OrigErrorBeep4:
             dbra    D2,.L8
             lea     (-$200,A3),A3
             lea     (-$1C00,A5),A5
-            lea     ($814,A3),A0
+            lea     (ascWaveIncr,A3),A0
             moveq   #3,D2
 .L13:
             clr.b   (A0)+
@@ -171,7 +171,7 @@ OrigErrorBeep4:
             clr.b   (A0)+
             addq.w  #4,A0
             dbra    D2,.L13
-            clr.b   ($801,A3)
+            clr.b   (ascMode,A3)
             RTS6
 .L14:
             dc.w    $0204,0,$000D,0,$012C,0,$7530,$0004

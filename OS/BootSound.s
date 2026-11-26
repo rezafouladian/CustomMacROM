@@ -8,11 +8,11 @@
 
 BOOTBEEPPATCH:
             moveq   #0,D0
-            tst.b   ($800,A3)
+            tst.b   (ascVersion,A3)
             beq.l   OrigBootBeep6
-            move.b  ($800,A3),D1
+            move.b  (ascVersion,A3),D1
             andi.b  #$F0,D1
-            cmpi.b  #$E0,D1
+            cmpi.b  #elsieSound,D1
             beq.l   DoBeep
             move.l  A6,D5
             moveq   #0,D2
@@ -69,8 +69,8 @@ BootSound:
 .L3:
             mulu.l  #$FFFF,D0:D2
             divu.l  #$AC440000,D0:D2
-            move.w  D2,($F04,A6)
-            move.w  D2,($F24,A6)
+            move.w  D2,(bmSrcTimeIncrA,A6)
+            move.w  D2,(bmSrcTimeIncrB,A6)
             cmpi.w  #5,D3
             bne.b   .L4
             move.w  #1,D3
@@ -84,8 +84,8 @@ BootSound:
             moveq   #0,D3
 .L6:
             ori.b   #$80,D3
-            move.b  D3,($F08,A6)
-            move.b  D3,($F28,A6)
+            move.b  D3,(bmFifoControlA,A6)
+            move.b  D3,(bmFifoControlB,A6)
             move.l  D1,D2
             swap    D2
             bra.b   .L8
@@ -94,13 +94,13 @@ BootSound:
             btst    #2,D0
             beq.b   .L7
             move.b  (A0)+,D0
-            move.b  D0,(A6)
-            move.b  D0,($400,A6)
+            move.b  D0,(ascFifoLeft,A6)
+            move.b  D0,(ascFiFoRight,A6)
 .L8:
             dbra    D1,.L7
             dbra    D2,.L7
 .L9:
-            move.b  ($804,A6),D0
+            move.b  (ascFifoInt,A6),D0
             btst    #3,D0
             beq.b   .L9
             BigBSR5 INITSNDNORAM,A0

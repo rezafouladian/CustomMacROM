@@ -3840,27 +3840,27 @@ TestSndInts:
             moveq   #0,D6
             movea.l A3,A5
             btst    #2,D0
-            beq.b   .L3
+            beq.b   .noVIA1
             movea.l (8,A0),A5
-.L3:
+.noVIA1:
             movec   VBR,A4
             move.l  ($68,A4),-(SP)
             lea     IntHdlr,A1
             move.l  A1,($68,A4)
             movea.l ($30,A0),A4
-            move.b  ($800,A4),D3
+            move.b  (ascVersion,A4),D3
             andi.b  #$F0,D3
             move.b  D3,D6
             swap    D6
-            cmpi.b  #$B0,D3
-            bne.w   .L5
+            cmpi.b  #batmanSound,D3
+            bne.w   .notBatman
             move.w  #$FFFF,D6
             bset    #$1E,D6
-.L4:
+.Wait4FIFO:
             tst.b   (A5)
-            move.b  ($804,A4),D5
+            move.b  (ascFifoInt,A4),D5
             cmpi.b  #$F,D5
-            dbeq    D6,.L4
+            dbeq    D6,.Wait4FIFO
             bne.w   .L21
             bclr    #$1E,D6
             clr.w   D6
@@ -3878,45 +3878,45 @@ TestSndInts:
             clr.b   ($80B,A4)
             bset    #7,($803,A4)
             bclr    #7,($803,A4)
-            clr.b   ($802,A4)
-            move.b  #1,($801,A4)
+            clr.b   (ascChipControl,A4)
+            move.b  #1,(ascMode,A4)
             bra.b   .L6
-.L5:
-            move.b  #1,($801,A4)
-            clr.b   ($80A,A4)
-            move.b  #$80,($803,A4)
-            clr.b   ($803,A4)
-            tst.b   ($804,A4)
-            move.b  #2,($802,A4)
-            clr.b   ($805,A4)
-            clr.b   ($806,A4)
-            clr.b   ($807,A4)
+.notBatman:
+            move.b  #1,(ascMode,A4)
+            clr.b   (ascPlayRecA,A4)
+            move.b  #$80,(ascFifoControl,A4)
+            clr.b   (ascFifoControl,A4)
+            tst.b   (ascFifoInt,A4)
+            move.b  #2,(ascChipControl,A4)
+            clr.b   (ascWaveOneShot,A4)
+            clr.b   (ascVolControl,A4)
+            clr.b   (ascClockRate,A4)
 .L6:
             move.b  #$90,(0,A3,D7.w)
             move.b  #$6F,(0,A3,D7.w)
             swap    D7
             move.b  #$FF,(0,A3,D7.w)
             cmpi.b  #$E0,D3
-            bne.b   .L7
+            bne.b   .ChanB
             bset    #$1F,D6
             bra.b   .L12
-.L7:
-            lea     ($400,A4),A2
+.ChanB:
+            lea     (ascFiFoRight,A4),A2
             move.b  #8,D6
             cmpi.b  #$B0,D3
-            bne.b   .L9
+            bne.b   .ChBnotbat
             clr.b   ($F29,A4)
             move.b  #$FF,(0,A3,D7.w)
             move.w  #$3E8,D5
-.L8:
+.FillB:
             move.b  D0,(A2)
-            dbra    D5,.L8
-.L9:
+            dbra    D5,.FillB
+.ChBnotbat:
             bsr.w   FIFOFill
-            bpl.b   .L10
+            bpl.b   .ChBFIFOFull
             cmpi.b  #$B0,D3
             bne.w   .L21
-.L10:
+.ChBFIFOFull:
             lsr.b   #1,D6
             bsr.w   WaitforInt
             bmi.w   .L21

@@ -1209,10 +1209,10 @@ didqueue:
             move.b  ($1800,A0),D6
             movem.w D0-D6,-(SP)
             movea.l ASCBase,A1
-            move.b  ($801,A1),-(SP)
-            move.b  ($806,A1),-(SP)
-            move.b  ($80A,A1),-(SP)
-            move.b  ($80F,A1),-(SP)
+            move.b  (ascMode,A1),-(SP)
+            move.b  (ascVolControl,A1),-(SP)
+            move.b  (ascPlayRecA,A1),-(SP)
+            move.b  (ascTestReg,A1),-(SP)
             moveq   #0,D1
 .L12:
             lea     ($F0A,A1),A0

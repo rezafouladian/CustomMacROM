@@ -121,10 +121,10 @@ TimPlayBackVol:
             move    SR,-(SP)
             ori     #$700,SR
             movea.l ASCBase,A0
-            move.b  D0,($F06,A0)
-            clr.b   ($F07,A0)
-            clr.b   ($F26,A0)
-            move.b  D0,($F27,A0)
+            move.b  D0,(bmLeftScaleA,A0)
+            clr.b   (bmRightScaleA,A0)
+            clr.b   (bmLeftScaleB,A0)
+            move.b  D0,(bmRightScaleB,A0)
             move    (SP)+,SR
             movea.l (SP)+,A0
             rts

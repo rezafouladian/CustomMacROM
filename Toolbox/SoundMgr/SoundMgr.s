@@ -229,7 +229,7 @@ INITGLOBALS:
             bra.b   .L9
 .L7:
             movea.l ASCBase,A0
-            move.b  ($800,A0),D0
+            move.b  (ascVersion,A0),D0
             ext.w   D0
             ext.l   D0
             move.l  #$F0,D1
@@ -242,7 +242,7 @@ INITGLOBALS:
             move.b  D1,($2E,A0)
             movea.l ASCBase,A0
             moveq   #$F,D0
-            and.b   ($800,A0),D0
+            and.b   (ascVersion,A0),D0
             move.l  D0,-(SP)
             jsr     (SMGlobalLoc.w,PC)
             move.l  D0,D1
@@ -258,11 +258,11 @@ INITGLOBALS:
             cmpi.l  #$B0,D0
             bne.b   .L8
             movea.l ASCBase,A0
-            move.b  #1,($F09,A0)
+            move.b  #1,(bmIntControlA,A0)
             movea.l ASCBase,A0
-            move.b  #1,($F29,A0)
+            move.b  #1,(bmIntControlB,A0)
             movea.l ASCBase,A0
-            move.b  #1,($801,A0)
+            move.b  #1,(ascMode,A0)
 .L8:
             moveq   #0,D0
 .L9:

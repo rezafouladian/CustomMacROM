@@ -34,6 +34,7 @@ OS/BootSound
 Main/Part11
 OS/DispTable
 Main/Part12
+Drivers/SoundDriver
 Drivers/Backlight/DRVRRuntime
 Drivers/Backlight/Backlight
 Drivers/Backlight/PWM
