@@ -1,4597 +1,3459 @@
             include "Include/ROMHeader.s"
 
-            EXPORT  AttachVBL,BadTrap,CacheFlush,CacheTrap,ClearASCInt,ClearSCSIInt
-            EXPORT  DebugUtil,DequeueTrap,DisableASCInts,DisableIntSources,DoVBLTask,DTCore
-            EXPORT  EMT1010,Enable60HzInts,EnableASCInts,EnableParityInts,EnableSlotInts,EnableSWIMIOPInts
-            EXPORT  GetTrapAddress,GOTSLOTHANDLER,InitDispatcher,InitIntHandler,InitQueue,INITSCSIDONE
-            EXPORT  InitSCSIMgr,InitVBLQs,INTHANDLERNOVIA2,PollDone,PowerOff,PowerOffCont
-            EXPORT  QStuff,RunDone,RunKBD,SCCIOPBYPASSINT,SCSIBoots,SCSIExitCleanup
-            EXPORT  SCSIINTHNDRESUME,SCSIMgr,SCSISetFlags,SetTrapAddress,SlotVInstall,SlotVRemove
-            EXPORT  VBLCore,vCacheFlush,vDisptch,VRemove
+            EXPORT  BOOTBLOCKFLUSHPATCH,DisableMMUPatch,DrawBeepScreenPatch,EnableCachesPatch,EnableExtCache,ENDGETSLOTDRVR
+            EXPORT  GetVIAInputs,HWPRIV,InitHWRoutines,INITIOPMGR,INITMEMDISPANDSHUTDOWNMGRS,InitMemMgrPatch
+            EXPORT  InitSDTbl,INITSNDNORAM,INSTALLSONYDRIVERPATCH,IOPINTERRUPT,IOPMGR,IOPMOVEDATA
+            EXPORT  IOPMsgRequest,MEMORYCTRLINITPATCH,MEMORYDISPATCH,ORIGGETSLOTDRVR,OSSSLOTINT,POWERDWNPTCH
+            EXPORT  RBVSLOTINT,RELOADBERRVBR,SCCIOPByPass,SCCIOPHwInit,SetupMiscSCSI,SIntInstall
+            EXPORT  SIntRemove,SlotInt,SlotIntCommon,SlotManager,StartSDeclMgr,SysErrInitPatch
+            EXPORT  TestForFPU,TESTFORIOP,TESTFORRPU,TESTFORRVIER,TESTFORSCSI96,TestForSCSIDMA
+            EXPORT  TESTFORVIER,TESTVIERWRAP,WhichCPUPatch
 
-            IMPORT  CACHEVECTORPATCH,clock,CmdDone,DEBUGENTERCONT,DEBUGEXITCONT,DEBUGPWRMGRADBPATCH1
-            IMPORT  DEBUGUTILRUNKBDPATCH,DISPATCHPATCH,FSQueueSync,INITSCSIMGRPATCH1,INITSCSIMGRPATCH2,INITSLOTINTSPATCH
-            IMPORT  INSTALLSCSIINTHND96,IOPINTERRUPT,OSSSLOTINT,PMGRPOWEROFFPATCH,POWEROFFPATCH,RBVSLOTINT
-            IMPORT  SCSIDOCOMPLETEPATCH,SCSIGETPATCH,SCSIMISCPATCH,SCSISETFLAGSPATCH,SlotInt,SysErr1
+            IMPORT  ALLOCSLOTOVERPATCH1,ALLOCSLOTOVERPATCH2,BOOTBLOCKFLUSHRETURN,CacheFlush,DequeueTrap,DrawBeepScreen
+            IMPORT  DrawBeepScreenReturn,FLUSHDCACHEPATCH,FLUSHICACHEPATCH,GetHardwareInfo,GETREALPROC,GotBusError
+            IMPORT  HWPrivPatch,InitIWM,INITJMPTBLPATCH,InitMemMgr,InitMemoryDispatch,InitSCC
+            IMPORT  InitSCSI,InitShutdownMgr,InitVIAs,InstallFPSP,INSTALLPRIVTRAP,NEWLOCKMEMORY
+            IMPORT  NEWLOCKMEMORYCONTIGUOUS,NEWUNLOCKMEMORY,Overpatch,QStuff,RdXByte,ROMBERRANDVBRRTN
+            IMPORT  SCCIOPBYPASSINT,SLOTBUSEXCPTNPTCH,SLOTGETDRIVERPATCH,SLOTMGRPATCH,SLOTPRIMARYINITPATCH,STATLOADPATCH
+            IMPORT  SWAPDCACHEPATCH,SysErrInit,UNWRITEPROTECTPROC,WRITEPROTECTPROC
 
             SECTION "Part3",CODE
 
-SCSIBoots:
-SCSILoad:
-            btst    #7,HWCfgFlags
-            bne.b   .L1
-            moveq   #0,D0
-            rts
-.L1:
-            movem.l D1-D7/A0-A6,-(SP)
-            move.b  D0,-(SP)
-            moveq   #7,D5
-.L2:
-            btst    D5,(SP)
-            beq.b   .L3
-            btst    D5,SCSIDrvrs
-            bne.b   .L3
-            bsr.b   sub_40807224
-            beq.b   .L3
-            bclr    D5,(SP)
-.L3:
-            dbra    D5,.L2
-            moveq   #0,D0
-            move.b  (SP)+,D0
-            movem.l (SP)+,D1-D7/A0-A6
-            tst.w   D0
-            rts
-sub_40807224:
-            move.l  D3,-(SP)
-            link.w  A6,#-$212
-            movea.l SP,A2
-            swap    D3
-            moveq   #0,D0
-            move.b  D3,D0
-            move.w  D0,(-$A,A6)
-            moveq   #0,D3
-            moveq   #1,D2
-            move.w  #$200,D4
-            bsr.w   sub_4080738A
-            bne.w   .L4
-            cmpi.w  #$4552,(SP)
-            bne.w   .L6
-            move.w  (2,SP),D4
-            move.w  ($10,SP),D0
-            beq.b   .L6
-            lea     ($12,SP),A0
-            move.l  ($C,SP),D7
-.L1:
-            move.w  (-$A,A6),D1
-            cmp.w   (6,A0),D1
-            beq.b   .L2
-            addq.l  #8,A0
-            subq.w  #1,D0
-            bne.b   .L1
-            bra.b   .L6
-.L2:
-            bset    D5,SCSIDrvrs
-            move.l  (A0),D3
-            move.l  D3,(-4,A6)
-            moveq   #0,D2
-            move.w  (4,A0),D2
-            move.l  D2,(-8,A6)
-            move.l  D4,D0
-            mulu.w  D2,D0
-            _NewPtrSys
-            bne.b   .L6
-            movea.l A0,A3
-            movea.l A0,A2
-            bsr.w   sub_4080738A
-            bne.b   .L5
-            moveq   #1,D3
-            move.l  D3,(-$12,A6)
-            moveq   #1,D2
-            move.w  #$200,D4
-            movea.l SP,A2
-            bsr.w   sub_4080738A
-            bne.b   .L5
-            cmpi.w  #1,(-$A,A6)
-            bne.b   .L3
-            cmpi.w  #$5453,(A2)
-            beq.b   .L3
-            cmpi.w  #$504D,(A2)
-            bne.b   .L3
-            move.l  (4,A2),D0
-            move.l  D0,(-$E,A6)
-            bra.b   .L8
-.L3:
-            movea.l A2,A0
-            jsr     (A3)
-.L4:
-            moveq   #0,D0
-            bra.b   .L7
-.L5:
-            movea.l A3,A0
-            _DisposPtr
-.L6:
-            moveq   #-1,D0
-.L7:
-            unlk    A6
-            move.l  (SP)+,D3
-            tst.w   D0
-            rts
-.L8:
-            cmpi.l  #'Appl',($30,A2)
-            bne.b   .L9
-            cmpi.l  #'e_Dr',($34,A2)
-            bne.b   .L9
-            cmpi.l  #'iver',($38,A2)
-            bne.b   .L9
-            cmpi.l  #'Maci',($10,A2)
-            bne.b   .L9
-            move.l  (-4,A6),D0
-            cmp.l   (8,A2),D0
-            bne.b   .L9
-            movea.l A3,A0
-            move.l  ($60,A2),D1
-            bsr.w   sub_40807444
-            cmp.l   ($74,A2),D0
-            beq.b   .L10
-            bra.b   .L5
-.L9:
-            addq.l  #1,(-$12,A6)
-            move.l  (-$12,A6),D3
-            cmp.l   (-$E,A6),D3
-            bhi.b   .L10
-            moveq   #1,D2
-            move.w  #$200,D4
-            bsr.b   sub_4080738A
-            bne.b   .L9
-            cmpi.w  #$504D,(A2)
-            bne.b   .L9
-            bra.b   .L8
-.L10:
-            moveq   #0,D0
-            move.l  D0,(-$12,A6)
-.L11:
-            addq.l  #1,(-$12,A6)
-            move.l  (-$12,A6),D3
-            cmp.l   (-$E,A6),D3
-            bhi.w   .L5
-            moveq   #1,D2
-            move.w  #$200,D4
-            bsr.b   sub_4080738A
-            bne.b   .L11
-            cmpi.w  #$504D,(A2)
-            bne.b   .L11
-            cmpi.l  #'Appl',($30,A2)
-            bne.b   .L11
-            cmpi.l  #'e_HF',($34,A2)
-            bne.b   .L11
-            cmpi.b  #$53,($38,A2)
-            bne.b   .L11
-            bra.w   .L3
-sub_4080738A:
-            move.l  D7,-(SP)
-            moveq   #0,D7
-            swap    D2
-            move.w  D4,D2
-.L1:
-            lea     Scratch8,A0
-            move.b  #8,(A0)+
-            swap    D3
-            andi.b  #$1F,D3
-            move.b  D3,(A0)+
-            swap    D3
-            move.w  D3,(A0)+
-            move.l  D2,D4
-            swap    D4
-            move.b  D4,(A0)+
-            clr.b   (A0)+
-            mulu.w  D2,D4
-            suba.w  #$14,SP
-            move.l  SP,D6
-            subq.l  #2,SP
-            move.w  #1,-(SP)
-            _SCSIDispatch
-            move.w  (SP),D7
-            bne.b   .L5
-            move.w  D5,-(SP)
-            move.w  #2,-(SP)
-            _SCSIDispatch
-            move.w  (SP),D7
-            bne.b   .L5
-            pea     Scratch8
-            move.w  #6,-(SP)
-            move.w  #3,-(SP)
-            _SCSIDispatch
-            move.w  (SP),D7
-            bne.b   .L2
-            movea.l D6,A0
-            move.w  #1,(A0)+
-            move.l  A2,(A0)+
-            move.l  D4,(A0)+
-            move.w  #7,(A0)
-            move.l  D6,-(SP)
-            move.w  #5,-(SP)
-            _SCSIDispatch
-            move.w  (SP),D7
-.L2:
-            pea     Scratch8
-            pea     ($9FC).w
-            move.l  #$3C,-(SP)
-            move.w  #4,-(SP)
-            _SCSIDispatch
-            tst.w   D7
-            beq.b   .L3
-            cmpi.w  #5,D7
-            beq.b   .L4
-.L3:
-            move.w  (SP),D7
-            cmpi.w  #$A,D7
-            bne.b   .L5
-.L4:
-            move.w  Scratch8,D7
-            beq.b   .L5
-            cmpi.w  #2,D7
-            bne.b   .L5
-            bset    #$1F,D7
-            bne.b   .L5
-            lea     ($16,SP),SP
-            bra.w   .L1
-.L5:
-            bra.l   SCSIMISCPATCH
-            ds.b    6
-sub_40807444:
-            moveq   #0,D0
-            moveq   #0,D7
-            bra.b   .L2
-.L1:
-            move.b  (A0)+,D7
-            add.w   D7,D0
-            rol.w   #1,D0
-.L2:
-            dbra    D1,.L1
-            tst.w   D0
-            bne.b   .L3
-            subq.w  #1,D0
-.L3:
-            rts
-            ds.b    4
-SCSIMgr:
-            movea.l (SP)+,A0
-            move.w  (SP)+,D0
-            move.l  A0,-(SP)
-            cmpi.w  #$E,D0
-            bcc.b   Unimplemented_
-            link.w  A6,#-6
-            movem.l D2-D7/A2-A5,-(SP)
-            movea.l SCSIGlobals,A4
-scsiMgrCommon:
-            movea.l ($40,A4),A3
-            moveq   #0,D7
-            moveq   #0,D4
-            move.w  D0,D1
-            movea.l (0,A4,D0.w*4),A0
-            jmp     (A0)
-Unimplemented_:
-            moveq   #$C,D0
-            _SysError
-L1:
-            bra.b   L1
-DoSCSIStat:
-            bsr.w   DMAPENDINGPATCH
-            nop
-            bne.b   pending
-normal:
-            move.b  ($50,A3),(8,A6)
-            move.b  ($40,A3),(9,A6)
-            bra.b   NoByteExit
-pending:
-            move.b  #8,(8,A6)
-            move.b  #$44,(9,A6)
-            bra.b   NoByteExit
-DoSCSIReset:
-            movea.l ($1A4,A4),A0
-            jsr     (A0)
-            move.w  D7,(8,A6)
-            bsr.b   SCSIExitCleanup
-NoByteExit:
-            moveq   #0,D0
-            bra.w   SCSIStdExit
-SCSIExitCleanup:
-            moveq   #-1,D0
-            movea.l ($198,A4),A0
-            jsr     (A0)
-            movea.l ($16C,A4),A0
-            jsr     (A0)
-            moveq   #1,D0
-            movea.l ($170,A4),A0
-            jsr     (A0)
-            rts
-DoSCSIGet:
-            bset    #0,($61,A4)
-            bne.b   wasBusy
-            move    SR,-(SP)
-            ori     #$700,SR
-            move.w  (SP),D0
-            andi.w  #$700,D0
-            beq.b   enqueueDummy
-            tst.l   ($50,A4)
-            beq.b   enqueueDummy
-notFirst:
-            move    (SP)+,SR
-wasBusy:
-            moveq   #7,D0
-            bra.b   wait.L1
-enqueueDummy:
-            lea     ($2A4,A4),A1
-            moveq   #-1,D0
-            movea.l ($188,A4),A0
-            jsr     (A0)
-            move    (SP)+,SR
-wait:
-            cmpa.l  ($50,A4),A1
-            bne.b   wait
-            move.l  D7,D0
-            bsr.l   SCSIGETPATCH
-            bsr.w   Arbitrate
-            beq.b   .L1
-            move.l  D0,-(SP)
-            bsr.b   SCSIExitCleanup
-            move.l  (SP)+,D0
-.L1:
-            move.w  D0,(8,A6)
-            bra.b   NoByteExit
-DOSCSISELATN:
-DOSCSISELECT:
-            moveq   #0,D0
-            move.w  (8,A6),D0
-            cmpi.w  #$B,D1
-            bne.b   .L1
-            bset    #$1F,D0
-.L1:
-            bsr.w   Select
-            beq.b   .L2
-            move.l  D0,-(SP)
-            bsr.w   SCSIExitCleanup
-            move.l  (SP)+,D0
-.L2:
-            move.w  D0,($A,A6)
-            moveq   #2,D0
-            bra.w   SCSIStdExit
-DoSCSICmd:
-            movea.l ($A,A6),A2
-            move.w  (8,A6),D2
-            bsr.w   SendCMD
-            beq.b   exit
-error:
-            move.l  D0,-(SP)
-            bsr.w   SCSIExitCleanup
-            move.l  (SP)+,D0
-exit:
-            move.w  D0,($E,A6)
-            moveq   #6,D0
-            bra.w   SCSIStdExit
-NewSCSIWBlind:
-            moveq   #$2C,D4
-            bra.b   dataCommon
-NewSCSIWrite:
-            moveq   #$24,D4
-            bra.b   dataCommon
-NewSCSIRBlind:
-            moveq   #$28,D4
-            bra.b   startRead
-NewSCSIRead:
-            moveq   #$20,D4
-startRead:
-            move.b  #1,($30,A3)
-            move.b  #2,($20,A3)
-            btst    #4,($67,A4)
-            beq.b   DMAdone
-            move.l  #8,($80,A3)
-DMAdone:
-            move.b  D7,($70,A3)
-dataCommon:
-            movea.l (8,A6),A1
-            bra.b   .L2
-.L12:
-            bset    #4,D4
-.L7:
-            movea.l ($19C,A4),A0
-            jsr     (A0)
-            bne.b   .L5
-            add.l   D1,(2,A1)
-            bclr    #4,D4
-.L1:
-            lea     ($A,A1),A1
-.L2:
-            move.w  (A1),D1
-            movea.l (2,A1),A2
-            move.l  (6,A1),D2
-            cmpi.w  #8,D1
-            bhi.b   .L4
-            jmp     .L3(PC,D1.w*2)
-.L3:
-            bra.b   .L4
-            bra.b   .L7
-            bra.b   .L8
-            bra.b   .L9
-            bra.b   .L10
-            bra.b   .L11
-            bra.b   .L1
-            bra.b   .L13
-            bra.b   .L12
-.L4:
-            moveq   #4,D0
-            bra.b   .L5
-.L8:
-            movea.l ($19C,A4),A0
-            jsr     (A0)
-            bne.b   .L5
-            bra.b   .L1
-.L9:
-            add.l   D2,(A2)
-            bra.b   .L1
-.L10:
-            movea.l D2,A0
-            move.l  (A2),(A0)
-            bra.b   .L1
-.L11:
-            tst.l   D2
-            beq.b   .L1
-            subq.l  #1,D2
-            move.l  D2,(6,A1)
-            beq.b   .L1
-            adda.l  A2,A1
-            bra.b   .L2
-.L13:
-            moveq   #0,D0
-.L5:
-            move.b  D7,($20,A3)
-            btst    #4,($67,A4)
-            beq.b   .L6
-            move.l  #2,($80,A3)
-.L6:
-            move.b  D7,($10,A3)
-            move.w  D0,($C,A6)
-            moveq   #4,D0
-            bra.w   SCSIStdExit
-DOSCSICOMPLETE:
-            move.w  D7,-(SP)
-            move.b  D7,($20,A3)
-            btst    #4,($67,A4)
-            beq.b   .L1
-            move.l  #2,($80,A3)
-.L1:
-            move.l  Ticks,D4
-            add.l   (8,A6),D4
-.L2:
-            moveq   #0,D2
-            bsr.w   GetStat
-            beq.b   .L4
-            cmpi.b  #5,D0
-            bne.b   .L3
-            bsr.w   CyclePhase
-            beq.b   .L3
-            move.w  D0,(SP)
-.L3:
-            cmp.l   Ticks,D4
-            bhi.b   .L2
-            bra.b   .L5
-.L4:
-            movea.l ($10,A6),A1
-            move.w  D2,(A1)
-            bsr.w   GetMsg
-            beq.b   .L6
-.L5:
-            move.w  D0,(SP)
-            bra.b   .L7
-.L6:
-            movea.l ($C,A6),A1
-            move.w  D2,(A1)
-.L7:
-            bsr.l   SCSIDOCOMPLETEPATCH
-            nop
-            moveq   #$C,D0
-            bra.b   SCSIStdExit
-DOSCSIMSGIN:
-            bsr.w   GetMsg
-            bne.b   .L1
-            movea.l (8,A6),A1
-            move.w  D2,(A1)
-.L1:
-            move.w  D0,($C,A6)
-            moveq   #4,D0
-            bra.b   SCSIStdExit
-DOSCSIMSGOUT:
-            move.w  (8,A6),D2
-            bsr.w   SendMsg
-            move.w  D0,($A,A6)
-            moveq   #2,D0
-SCSIStdExit:
-            movem.l (SP)+,D2-D7/A2-A5
-            unlk    A6
-            movea.l (SP)+,A0
-            adda.w  D0,SP
-            jmp     (A0)
-Arbitrate:
-            move.b  ($60,A4),(A3)
-ArbRetry:
-            move.b  D7,($20,A3)
-            moveq   #0,D1
-            move.w  TimeSCSIDB,D1
-            lsl.l   #8,D1
-            move.l  D1,D5
-            swap    D5
-            move.b  #1,($20,A3)
-L0:
-            btst    #6,($10,A3)
-            dbne    D1,L0
-            dbne    D5,L0
-            bne.b   ArbStarted
-ArbErr:
-            move.b  D7,($20,A3)
-            moveq   #3,D0
-            rts
-ArbStarted:
-            bsr.w   busdelay
-            btst    #5,($10,A3)
-            bne.b   ArbRetry
-            move.b  (A3),D0
-            move.b  ($60,A4),D2
-            eor.b   D2,D0
-            cmp.b   D0,D2
-            bcs.b   ArbRetry
-            btst    #5,($10,A3)
-            bne.b   ArbRetry
-            moveq   #0,D0
-            rts
-Select:
-            lea     ($10,A3),A0
-            moveq   #1,D1
-            lsl.b   D0,D1
-            move.l  D0,D3
-            move.b  #4,(A0)
-            bsr.w   busdelay
-            move.b  ($60,A4),D2
-            move.b  D7,($30,A3)
-            or.b    D2,D1
-            move.b  D1,(A3)
-            move.b  #$D,D4
-            tst.l   D3
-            bpl.b   .L1
-            ori.b   #2,D4
-.L1:
-            move.b  D4,(A0)
-            move.b  D7,($20,A3)
-            move.b  D7,($40,A3)
-            bclr    #3,D4
-            move.b  D4,(A0)
-            bsr.w   busdelay
-            move.w  ($62,A4),D1
-            bsr.w   wfbsy
-            bne.b   .L2
-            bsr.w   busdelay
-            andi.b  #$A,D4
-            move.b  D4,(A0)
-            moveq   #0,D0
-            rts
-.L2:
-            move.b  D7,(A0)
-            tst.w   D0
-            rts
-SendCMD:
-            move.b  #2,($30,A3)
-            bsr.w   wfREQ
-            bne.b   SendCmdRts
-            bsr.w   CheckPhase
-            bne.b   SendCmdRts
-            subq.l  #1,D2
-NextCmdByte:
-            move.b  (A2)+,(A3)
-            move.b  #1,($10,A3)
-            bsr.w   wfREQ
-            bne.b   SendCmdRts
-            move.b  #$11,($10,A3)
-            bsr.w   wfnREQ
-            bne.b   SendCmdRts
-            move.b  D7,($10,A3)
-            dbra    D2,NextCmdByte
-            move.l  D7,D0
-            move.w  TimeSCSIDB,D0
-            lsl.l   #8,D0
-            move.l  D0,D2
-            swap    D2
-cmdHack:
-            btst    #6,($40,A3)
-            beq.b   exit_2
-            btst    #3,($50,A3)
-            dbeq    D0,cmdHack
-            dbeq    D2,cmdHack
-exit_2:
-            moveq   #0,D0
-SendCmdRts:
-            rts
-GetStat:
-            move.b  #3,($30,A3)
-            bsr.w   wfREQ
-            bne.b   .L1
-            bsr.w   CheckPhase
-            bne.b   .L1
-            move.b  (A3),D2
-            move.b  #$10,($10,A3)
-            bsr.w   wfnREQ
-            bne.b   .L1
-            move.b  D7,($10,A3)
-            moveq   #0,D0
-.L1:
-            rts
-GetMsg:
-            move.b  #7,($30,A3)
-            bsr.w   wfREQ
-            bne.b   .L1
-            bsr.w   CheckPhase
-            bne.b   .L1
-            moveq   #0,D2
-            move.b  (A3),D2
-            move.b  ($10,A3),D0
-            bset    #4,D0
-            move.b  D0,($10,A3)
-            bsr.b   wfnREQ
-            bne.b   .L1
-            move.b  ($10,A3),D0
-            bclr    #4,D0
-            move.b  D0,($10,A3)
-            moveq   #0,D0
-.L1:
-            rts
-SendMsg:
-            move.b  #6,($30,A3)
-            bsr.b   wfREQ
-            bne.b   .L1
-            bsr.w   CheckPhase
-            bne.b   .L1
-            move.b  #1,($10,A3)
-            move.b  D2,(A3)
-            move.b  #$11,($10,A3)
-            bsr.b   wfnREQ
-            bne.b   .L1
-            move.b  D7,($10,A3)
-            moveq   #0,D0
-.L1:
-            rts
-busdelay:
-            move.w  TimeDBRA,D0
-            lsr.w   #7,D0
-L1_2:
-            dbra    D0,L1_2
-            rts
-wfbsy:
-            mulu.w  TimeSCSIDB,D1
-            move.l  D1,D5
-            swap    D5
-            moveq   #0,D0
-L1_3:
-            btst    #6,($40,A3)
-            dbne    D1,L1_3
-            dbne    D5,L1_3
-            bne.b   L2
-            moveq   #2,D0
-L2:
-            tst.w   D0
-            rts
-wfnREQ:
-            moveq   #0,D1
-            move.w  TimeSCSIDB,D1
-            lsl.l   #8,D1
-            move.l  D1,D5
-            swap    D5
-            moveq   #0,D0
-.L1:
-            btst    #5,($40,A3)
-            dbeq    D1,.L1
-            dbeq    D5,.L1
-            beq.b   .L2
-            moveq   #2,D0
-.L2:
-            tst.w   D0
-            rts
-wfREQ:
-            moveq   #0,D1
-            move.w  TimeSCSIDB,D1
-            lsl.l   #8,D1
-            move.l  D1,D5
-            swap    D5
-            moveq   #0,D0
-.L1:
-            btst    #5,($40,A3)
-            dbne    D1,.L1
-            dbne    D5,.L1
-            bne.b   .L2
-            moveq   #2,D0
-.L2:
-            tst.w   D0
-            rts
-CyclePhase:
-            move.w  D7,-(SP)
-CyclePhase1:
-            bsr.b   wfREQ
-            beq.b   L1_4
-            move.w  D0,(SP)
-            bra.b   CycleRts
-L1_4:
-            btst    #3,($50,A3)
-            bne.b   CycleRts
-MatchPhase:
-            move.b  ($30,A3),D3
-            move.b  ($40,A3),D2
-            asr.l   #2,D2
-            andi.b  #7,D2
-            move.b  D2,($30,A3)
-            btst    #2,($40,A3)
-            beq.b   WriteFiller
-            move.b  (A3),D2
-            move.b  #$10,($10,A3)
-            bra.b   CycleHndshk
-WriteFiller:
-            move.b  #1,($10,A3)
-            move.b  #$EE,(A3)
-            move.b  #$11,($10,A3)
-CycleHndshk:
-            move.w  #$A,(SP)
-            bsr.w   wfnREQ
-            bne.b   CycleRts
-            move.b  D7,($10,A3)
-            move.b  D3,($30,A3)
-            bsr.w   busdelay
-            btst    #3,($50,A3)
-            beq.b   CyclePhase1
-CycleRts:
-            move.w  (SP)+,D0
-            rts
-CheckPhase:
-            moveq   #0,D0
-            btst    #3,($50,A3)
-            bne.b   L0_2
-            moveq   #5,D0
-L0_2:
-            tst.w   D0
-            rts
-SCSINEW:
-NEWSCSITRAP:
-            movem.l D1-D7/A0-A5,-(SP)
-            movea.l SCSIGlobals,A4
-            movea.l A0,A5
-            movea.l ($40,A4),A3
-            moveq   #0,D7
-            tst.w   ($A,A5)
-            beq.b   .L1
-            movea.l ($200,A4),A0
-            jsr     (A0)
-            bra.b   .L3
-.L1:
-            cmpi.w  #2,D0
-            bls.b   .L2
-            move.w  #$FE2A,D0
-            bra.b   .L3
-.L2:
-            lea     ($1E4,A4),A0
-            movea.l (0,A0,D0.w*4),A0
-            jsr     (A0)
-.L3:
-            movem.l (SP)+,D1-D7/A0-A5
-            rts
-AltBusCall:
-            lea     (-$32,SP),SP
-            movea.l SP,A0
-            move.w  ($A,A5),($18,A0)
-            move.w  D0,($1A,A0)
-            move.l  A5,($20,A0)
-            _Control
-            lea     ($34,SP),SP
-            beq.b   .L1
-            move.w  #$FE2A,D0
-.L1:
-            rts
-DoRequestIO:
-            movea.l ($184,A4),A0
-            jsr     (A0)
-            bne.b   .L2
-            moveq   #1,D0
-            move.l  A5,D1
-            movea.l ($168,A4),A0
-            jsr     (A0)
-            moveq   #0,D0
-            move.l  ($20,A5),D1
-            btst    #5,D1
-            bne.b   .L2
-.L1:
-            tst.w   ($E,A5)
-            bgt.b   .L1
-.L2:
-            rts
-DoKillio:
-            movea.l ($1A4,A4),A0
-            jsr     (A0)
-            moveq   #0,D0
-            rts
-DoBusInfo:
-            moveq   #0,D0
-            move.w  (8,A5),D1
-            bne.b   check1
-            move.l  D7,D1
-            move.b  ($7E,A4),D1
-            move.l  D1,(A5)
-            rts
-check1:
-            subq.l  #1,D1
-            bne.b   check2
-            move.l  ($80,A4),(A5)
-            rts
-check2:
-            subq.l  #1,D1
-            bne.b   SCSIOops
-            move.l  ($64,A4),D1
-            andi.l  #$10,D1
-            beq.b   DMArslt
-            moveq   #1,D1
-DMArslt:
-            move.l  D1,(A5)
-            rts
-SCSIOops:
-            move.w  #$FE2A,D0
-            rts
-; ResetBus
-; Reset the SCSI bus and kill all the requests in queues
-ResetBus:
-            move    SR,-(SP)
-            ori     #$700,SR
-            move.b  #$80,($10,A3)
-            lea     ($50,A4),A5
-            lea     ($2A4,A4),A1
-            move.w  #$FE24,D0
-            movea.l ($198,A4),A0
-.loop:
-            movea.l (A5),A5
-            cmp.l   A5,D7
-            beq.b   .delay1
-            cmpa.l  A1,A5
-            beq.b   .killOldPB
-            jsr     (A0)
-            bra.b   .loop
-.killOldPB:
-            moveq   #-1,D1
-            exg     D0,D1
-            jsr     (A0)
-            exg     D0,D1
-            bra.b   .loop
-.delay1:
-            move.w  TimeDBRA,D0
-            lsr.w   #2,D0
-.delay:
-            dbra    D0,.delay
-            move.b  D7,($10,A3)
-            movea.l ($16C,A4),A0
-            jsr     (A0)
-            move    (SP)+,SR
-            move.w  TimeDBRA,D0
-            mulu.w  #$1F4,D0
-            move.l  D0,D1
-            swap    D1
-.L5:
-            dbra    D0,.L5
-            dbra    D1,.L5
-            btst    #4,($67,A4)
-            beq.b   .DMAdone
-            move.l  #2,($80,A3)
-.DMAdone:
-            move.b  D7,($20,A3)
-            rts
-EnDequeue:
-            move    SR,-(SP)
-            ori     #$700,SR
-            btst    #$1F,D0
-            bne.b   .enqueue
-            movem.l A2-A3,-(SP)
-            movea.l ($50,A4),A2
-            movea.l A2,A3
-.deqLoop:
-            cmpa.l  A3,A1
-            beq.b   .delete
-            movea.l A3,A2
-            movea.l (A2),A3
-            cmpa.l  ($54,A4),A2
-            bne.b   .deqLoop
-            bra.b   .deqDone1
-.delete:
-            cmpa.l  A2,A3
-            bne.b   .delGeneral
-            move.l  (A2),($50,A4)
-            bne.b   .deqDone
-            clr.l   ($54,A4)
-            bra.b   .deqDone
-.delGeneral:
-            move.l  (A3),(A2)
-            cmpa.l  ($54,A4),A1
-            bne.b   .deqDone
-            move.l  A2,($54,A4)
-.deqDone:
-            clr.l   (A1)
-.deqDone1:
-            movem.l (SP)+,A2-A3
-            bra.b   .exit
-.enqueue:
-            movem.l D1/A2-A3,-(SP)
-            movea.l A1,A3
-.linkLoop:
-            move.l  ($24,A3),D1
-            beq.b   .noLink
-            move.l  D1,(A3)
-            movea.l D1,A3
-            bra.b   .linkLoop
-.noLink:
-            move.l  ($50,A4),D1
-            bne.b   .nonempty
-            move.l  A1,($50,A4)
-            move.l  A3,($54,A4)
-            bra.b   .enqDone
-.nonempty:
-            cmpi.w  #$FFFF,D0
-            bne.b   .front
-            movea.l ($54,A4),A2
-            move.l  A1,(A2)
-            move.l  A3,($54,A4)
-            bra.b   .enqDone
-.front:
-            move.l  D1,(A3)
-            move.l  A1,($50,A4)
-.enqDone:
-            movem.l (SP)+,D1/A2-A3
-.exit:
-            move    (SP)+,SR
-            moveq   #0,D0
-            rts
-LogError:
-            cmp.l   A5,D7
-            beq.b   .exit
-            movea.l (4,A5),A0
-            cmp.l   A0,D7
-            beq.b   .exit
-            tst.w   ($10,A0)
-            bne.b   .exit
-            move.w  D0,($10,A0)
-.exit:
-            rts
-ClearState:
-            movem.l D0-D7/A0-A5,-(SP)
-            cmpi.w  #$FFFF,D0
-            bne.b   newSCSIMgr
-            move.l  ($50,A4),D1
-            beq.b   clearGState
-            moveq   #1,D0
-            lea     ($2A4,A4),A1
-            movea.l ($188,A4),A0
-            jsr     (A0)
-clearGState:
-            move.b  D7,($61,A4)
-            tst.b   ($7C,A4)
-            beq.w   newSCSIMgr.exit
-            move.b  ($60,A4),($40,A3)
-            bra.w   newSCSIMgr.exit
-newSCSIMgr:
-            move.l  D7,($58,A4)
-            movea.l A5,A1
-            move.l  D0,D2
-            moveq   #1,D0
-            movea.l ($188,A4),A0
-            jsr     (A0)
-            move.l  (4,A5),D0
-            beq.b   .cleanupGlobals
-            movea.l D0,A0
-            move.w  ($10,A0),D0
-            beq.b   .rel1
-            move.w  D0,D2
-.rel1:
-            move.l  D7,(4,A5)
-            move.l  D7,(4,A0)
-            move.l  D7,(8,A0)
-            move.l  D7,($C,A0)
-            move.l  D7,($10,A0)
-            move.l  D7,($14,A0)
-            move.l  D7,($18,A0)
-            move.l  D7,($1C,A0)
-            tst.l   ($3C,A4)
-            bne.b   .cleanupGlobals
-            move.l  A0,($3C,A4)
-.cleanupGlobals:
-            move.w  D2,($E,A5)
-            lea     ($74,A4),A1
-            move.l  D7,D2
-            move.b  ($C,A5),D2
-            move.b  ($D,A5),D1
-            bclr    D1,(0,A1,D2.l)
-            tst.b   (0,A1,D2.l)
-            bne.b   .completion
-            bclr    D2,($7C,A4)
-.completion:
-            move.l  ($20,A5),D0
-            btst    #7,D0
-            beq.b   .chkAsync
-            move.l  D7,($68,A4)
-.chkAsync:
-            btst    #5,D0
-            beq.b   .newTimeOut
-            move.l  ($10,A5),D0
-            beq.b   .newTimeOut
-            movem.l D0-D7/A0-A5,-(SP)
-            btst    #7,($67,A4)
-            bne.b   .DUF
-            movea.l D0,A1
-            movea.l A5,A0
-            jsr     (A1)
-            bra.b   .afterCompletion
-.DUF:
-            movea.l D0,A0
-            move.l  A5,D0
-            nop
-.afterCompletion:
-            movem.l (SP)+,D0-D7/A0-A5
-.newTimeOut:
-            moveq   #-1,D0                          ; Start out with an "infinite" timeout
-            lea     ($50,A4),A1
-.loop:
-            movea.l (A1),A1
-            cmp.l   A1,D7
-            beq.b   .setTimeOut
-            move.l  (4,A1),D1
-            beq.b   .loop
-            movea.l D1,A0
-            cmp.l   (8,A0),D0
-            bcs.b   .loop
-            move.l  (8,A0),D0
-            bra.b   .loop
-.setTimeOut:
-            move.l  D0,($5C,A4)
-.exit:
-            movem.l (SP)+,D0-D7/A0-A5
-            rts
-ClearBus:
-            movem.l D0-D7/A0-A5,-(SP)
-            moveq   #$42,D0
-            and.b   ($40,A3),D0
-            beq.b   .L1
-            movea.l ($1A4,A4),A0
-            jsr     (A0)
-.L1:
-            movem.l (SP)+,D0-D7/A0-A5
-            rts
-Message:
-            movem.l D0-D7/A0-A5,-(SP)
-            bset    D0,($258,A4)
-reselect:
-            cmpi.b  #7,D0
-            bne.b   newRequest
-            move.b  D1,($25B,A4)
-            bra.b   enqueueSCSIDT
-newRequest:
-            cmpi.b  #1,D0
-            bne.b   enqueueSCSIDT
-            movea.l ($188,A4),A0
-            movea.l D1,A1
-            move.l  ($20,A1),D1
-            btst    #7,D1
-            bne.b   enqInsert
-            moveq   #-1,D0
-            jsr     (A0)
-            bra.b   enqueueSCSIDT
-enqInsert:
-            move.l  A1,($68,A4)
-            moveq   #-2,D0
-            jsr     (A0)
-            movea.l ($178,A4),A0
-            jsr     (A0)
-enqueueSCSIDT:
-            bset    #7,($7D,A4)
-            bne.b   exit_3
-            lea     ($24C,A4),A0
-            _DTInstall
-exit_3:
-            movem.l (SP)+,D0-D7/A0-A5
-            rts
-Preflight:
-            moveq   #0,D0
-            tst.l   (A5)
-            bne.w   noDMA.L11
-            tst.l   (4,A5)
-            bne.w   noDMA.L11
-            tst.w   (8,A5)
-            beq.w   noDMA.L11
-            tst.l   ($24,A5)
-            beq.b   checkPB
-            bra.w   noDMA.L11
-            movem.l A0/A5,-(SP)
-            movea.l ($24,A5),A5
-            jsr     (A0)
-            movem.l (SP)+,A0/A5
-checkPB:
-            tst.l   ($18,A5)
-            beq.w   noDMA.L11
-            tst.w   ($1E,A5)
-            beq.w   noDMA.L11
-            cmpi.w  #1,(8,A5)
-            bne.b   noDMA.L2
-            move.l  ($20,A5),D2
-            btst    #4,($67,A4)
-            beq.b   noDMA
-            andi.l  #$FFFFFF00,D2
-            bra.b   noDMA.L1
-noDMA:
-            andi.l  #$FFFFFF10,D2
-.L1:
-            bne.w   .L11
-.L2:
-            moveq   #7,D2
-            cmp.b   ($C,A5),D2
-            bcs.w   .L11
-            cmp.b   ($D,A5),D2
-            bcs.w   .L11
-            tst.l   ($30,A5)
-            beq.b   .L11
-            cmp.l   ($28,A5),D7
-            beq.b   .L3
-            cmpi.b  #4,($2C,A5)
-            bcs.b   .L11
-.L3:
-            cmp.l   ($38,A5),D7
-            bne.b   .L4
-            cmp.l   ($34,A5),D7
-            bne.b   .L11
-            moveq   #0,D0
-            bra.b   .L7
-.L4:
-            movea.l ($34,A5),A0
-            cmp.l   A0,D7
-            beq.b   .L11
-.L5:
-            tst.l   (A0)
-            beq.b   .L6
-            lea     ($10,A0),A0
-            bra.b   .L5
-.L6:
-            tst.l   (4,A0)
-            bne.b   .L11
-            tst.l   (8,A0)
-            bne.b   .L11
-.L7:
-            move.w  #1,($E,A5)
-            move.b  D7,($2D,A5)
-            move.l  D7,($3C,A5)
-            move.b  #$FF,($2E,A5)
-            tst.l   ($38,A5)
-            beq.b   .L12
-            movea.l ($34,A5),A0
-            moveq   #-1,D2
-.L8:
-            move.l  (A0),D1
-            beq.b   .L10
-            cmp.l   D2,D1
-            bne.b   .L9
-            move.l  (4,A0),D1
-.L9:
-            move.l  D1,($C,A0)
-            lea     ($10,A0),A0
-            bra.b   .L8
-.L10:
-            move.l  D7,($C,A0)
-            bra.b   .L12
-.L11:
-            move.w  #$FE2A,D0
-.L12:
-            tst.w   D0
-            rts
-SETUP:
-            move.l  A5,($58,A4)
-            move.l  Ticks,D2
-            move.l  ($18,A5),D1
-            asr.l   #4,D1
-            movea.l (4,A5),A0
-            move.l  (8,A0),D0
-            bne.b   .L1
-            move.l  D2,D0
-            add.l   D1,D0
-            move.l  D0,(8,A0)
-            bra.b   .L2
-.L1:
-            sub.l   D2,D0
-            bcs.b   .L2
-            cmp.l   D1,D0
-            bls.b   .L2
-            move.l  D0,D1
-.L2:
-            move.l  D2,D0
-            add.l   D1,D0
-            move.l  D0,($5C,A4)
-            mulu.w  #$11,D1
-            move.l  D1,D0
-            movea.l ($1A0,A4),A0
-            jsr     (A0)
-            rts
-FIND:
-            movem.l D1-D2/A0-A3,-(SP)
-            move    SR,-(SP)
-            ori     #$700,SR
-            tst.l   ($58,A4)
-            bne.b   .L6
-            lea     ($74,A4),A1
-            lea     ($50,A4),A0
-            move.l  D7,D2
-            btst    #$1F,D0
-            beq.b   .L1
-            move.b  ($7C,A4),D1
-            eor.b   D1,D0
-            bra.b   .L3
-.L1:
-            move.b  D0,D1
-            bne.b   .L2
-            bset    D7,D0
-.L2:
-            rol.w   #8,D0
-.L3:
-            movea.l (A0),A0
-            cmp.l   A0,D7
-            beq.b   .L6
-            btst    #$1F,D0
-            bne.b   .L4
-            move.b  ($C,A0),D2
-            blt.b   .L6
-            btst    D2,D0
-            beq.b   .L3
-            move.b  ($D,A0),D2
-            btst    D2,D1
-            beq.b   .L3
-            bra.b   .L5
-.L4:
-            move.b  ($C,A0),D2
-            blt.b   .L6
-            btst    D2,D0
-            beq.b   .L3
-            move.b  (0,A1,D2.w),D1
-            move.b  ($D,A0),D2
-            btst    D2,D1
-            bne.b   .L3
-.L5:
-            move.l  A0,D0
-            bra.b   .L7
-.L6:
-            move.l  D7,D0
-.L7:
-            move    (SP)+,SR
-            movem.l (SP)+,D1-D2/A0-A3
-            tst.l   D0
-            rts
-SETTIMER:
-            lea     ($260,A4),A0
-            tst.l   D0
-            bne.b   .L1
-            _RmvTime
-            rts
-.L1:
-            move.l  D0,-(SP)
-            _RmvTime
-            _InsTime
-            move.l  (SP)+,D0
-            _PrimeTime
-            rts
-TIMETASK:
-            movem.l D0-D7/A0-A5,-(SP)
-            movea.l SCSIGlobals,A4
-            movea.l ($40,A4),A3
-            moveq   #0,D7
-            move.l  ($50,A4),D0
-            beq.b   .L4
-            move.l  Ticks,D0
-            cmp.l   ($5C,A4),D0
-            bcs.b   .L3
-            movea.l ($58,A4),A5
-            cmp.l   A5,D7
-            beq.b   .L1
-            movea.l (4,A5),A0
-            cmp.l   (8,A0),D0
-            bcs.b   .L3
-            move.w  #$FE25,D0
-            movea.l ($198,A4),A0
-            jsr     (A0)
-            bra.b   .L3
-.L1:
-            move.l  D0,D1
-            move.w  #$FE25,D0
-            lea     ($50,A4),A5
-.L2:
-            movea.l A5,A1
-            movea.l (A5),A5
-            cmp.l   A5,D7
-            beq.b   .L3
-            movea.l (4,A5),A0
-            cmp.l   A0,D7
-            beq.b   .L2
-            cmp.l   (8,A0),D1
-            bcs.b   .L2
-            movea.l ($198,A4),A0
-            jsr     (A0)
-            movea.l A1,A5
-            bra.b   .L2
-.L3:
-            move.l  D7,D0
-            move.w  #$1388,D0
-            movea.l ($1A0,A4),A0
-            jsr     (A0)
-.L4:
-            movem.l (SP)+,D0-D7/A0-A5
-            rts
-SCSIDT:
-            movem.l D0-D7/A0-A5,-(SP)
-            movea.l SCSIGlobals,A4
-            moveq   #0,D7
-            movea.l ($40,A4),A3
-            movea.l ($58,A4),A5
-            move.l  D7,($24C,A4)
-            bclr    #7,($7D,A4)
-.L1:
-            tst.l   ($258,A4)
-            bne.b   .chkBusReset
-            move    SR,D0
-            andi.w  #$700,D0
-            cmpi.w  #$200,D0
-            bcs.b   .chkBusReset
-.waitForIRQ:
-            btst    #4,($50,A3)
-            beq.b   .waitForIRQ
-            movea.l ($164,A4),A0
-            jsr     (A0)
-.chkBusReset:
-            bclr    #3,($258,A4)
-            beq.b   .L6
-            lea     ($50,A4),A5
-            lea     ($2A4,A4),A1
-            move.w  #$FE24,D0
-.L4:
-            movea.l ($198,A4),A0
-            movea.l (A5),A5
-            cmp.l   A5,D7
-            beq.w   .L25
-            cmpa.l  A1,A5
-            beq.b   .L5
-            jsr     (A0)
-            bra.b   .L4
-.L5:
-            moveq   #-1,D1
-            exg     D0,D1
-            jsr     (A0)
-            exg     D0,D1
-            bra.b   .L4
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-.L6:
-            bclr    #7,($258,A4)
-            beq.b   .L8
-.L7:
-            btst    #1,($40,A3)
-            bne.b   .L7
-            move.b  D7,($10,A3)
-            bra.w   .L21
-.L8:
-            bclr    #6,($258,A4)
-            beq.w   .L12
-            btst    #4,($67,A4)
-            beq.b   .L11
-            bclr    #0,($7D,A4)
-            move.l  ($80,A3),D0
-            btst    #8,D0
-            bne.b   .L9
-            move.l  ($C0,A3),D0
-            beq.b   .L10
-.L9:
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            bra.w   .L21
-.L10:
-            movea.l ($1B0,A4),A0
-            jsr     (A0)
-            btst    #0,($7D,A4)
-            bne.w   .L25
-.L11:
-            bra.w   .L21
-.L12:
-            bclr    #5,($258,A4)
-            beq.b   .L13
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            move.b  D7,($20,A3)
-            bra.w   .L21
-.L13:
-            bclr    #1,($258,A4)
-            beq.b   .L14
-            bra.b   .L16
-.L14:
-            bclr    #4,($258,A4)
-            beq.b   .L15
-            move.b  D7,($20,A3)
-            bra.b   .L16
-.L15:
-            bclr    #2,($258,A4)
-            beq.b   .L16
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-.L16:
-            move    SR,-(SP)
-            ori     #$700,SR
-            moveq   #-1,D0
-            movea.l ($17C,A4),A0
-            jsr     (A0)
-            beq.w   .L19
-            movea.l D0,A5
-            tst.l   (4,A5)
-            bne.b   .L18
-            move.l  ($3C,A4),D0
-            beq.b   .L19
-            movea.l D0,A0
-            move.l  A0,(4,A5)
-            move.b  #1,(4,A0)
-            move.l  D7,($3C,A4)
-            lea     ($38,A4),A1
-.L17:
-            movea.l (A1),A1
-            cmp.l   A1,D7
-            beq.b   .L18
-            tst.b   (4,A1)
-            bne.b   .L17
-            move.l  A1,($3C,A4)
-.L18:
-            movea.l ($18C,A4),A0
-            jsr     (A0)
-            beq.b   .L20
-            movea.l (4,A5),A0
-            move.b  D7,(4,A0)
-            move.l  D7,(4,A5)
-            tst.l   ($3C,A4)
-            bne.b   .L19
-            move.l  A0,($3C,A4)
-.L19:
-            move    (SP)+,SR
-            bra.b   .L24
-.L20:
-            move    (SP)+,SR
-            movea.l (4,A5),A0
-            move.l  ($30,A5),($C,A0)
-            movea.l ($180,A4),A0
-            jsr     (A0)
-            movea.l ($190,A4),A0
-            jsr     (A0)
-            beq.b   .L21
-            movea.l ($174,A4),A0
-            jsr     (A0)
-            bra.b   .L24
-.L21:
-            move.l  D7,D0
-.L22:
-            move.b  ($40,A3),D0
-            btst    #6,D0
-            beq.b   .L24
-            btst    #5,D0
-            beq.b   .L22
-            andi.b  #$1C,D0
-            lea     ($84,A4),A0
-            movea.l (0,A0,D0.w),A0
-            lsr.b   #2,D0
-            move.b  D0,($30,A3)
-            addi.w  #$10,D0
-            cmp.l   A5,D7
-            beq.b   .L23
-            move.w  D0,($E,A5)
-.L23:
-            jsr     (A0)
-            btst    #0,($7D,A4)
-            bne.b   .L24
-            tst.l   ($58,A4)
-            bne.b   .L21
-.L24:
-            tst.b   ($7C,A4)
-            beq.b   .L25
-            move.b  ($60,A4),($40,A3)
-.L25:
-            tst.l   ($68,A4)
-            beq.b   .L26
-            move    SR,D0
-            andi.w  #$700,D0
-            cmpi.w  #$200,D0
-            bcc.b   .L27
-.L26:
-            tst.l   ($258,A4)
-            bne.b   .L27
-            btst    #0,($7D,A4)
-            bne.b   .L28
-            tst.l   ($3C,A4)
-            beq.b   .L28
-            tst.l   ($50,A4)
-            beq.b   .L28
-            moveq   #-1,D0
-            movea.l ($17C,A4),A0
-            jsr     (A0)
-            beq.b   .L28
-.L27:
-            bra.w   .L1
-.L28:
-            tst.l   ($58,A4)
-            bne.b   .L30
-            movea.l ($1A0,A4),A0
-            move.l  D7,D0
-            tst.l   ($50,A4)
-            beq.b   .L29
-            move.w  #$1388,D0
-.L29:
-            jsr     (A0)
-.L30:
-            moveq   #1,D0
-            movea.l ($170,A4),A0
-            jsr     (A0)
-            movem.l (SP)+,D0-D7/A0-A5
-            rts
-COMMAND:
-            movea.l (4,A5),A0
-            movea.l ($C,A0),A2
-            move.l  D7,D2
-            move.b  ($2F,A5),D2
-            subq.l  #1,D2
-.L1:
-            move.b  ($40,A3),D0
-            btst    #6,D0
-            beq.b   .L5
-            btst    #5,D0
-            beq.b   .L1
-            btst    #3,($50,A3)
-            beq.b   .L4
-            move.b  (A2)+,(A3)
-            move.b  #1,($10,A3)
-            move.b  #$11,($10,A3)
-.L2:
-            btst    #6,($40,A3)
-            beq.b   .L5
-            btst    #5,($40,A3)
-            bne.b   .L2
-            move.b  D7,($10,A3)
-            dbra    D2,.L1
-            move.l  D7,D0
-            move.w  TimeSCSIDB,D0
-            lsl.l   #8,D0
-            move.l  D0,D2
-            swap    D2
-.L3:
-            btst    #6,($40,A3)
-            beq.b   .L4
-            btst    #3,($50,A3)
-            dbeq    D0,.L3
-            dbeq    D2,.L3
-.L4:
-            move.l  A2,($C,A0)
-.L5:
-            rts
-STATUSPHASE:
-            move.b  ($40,A3),D0
-            btst    #6,D0
-            beq.b   .L2
-            btst    #5,D0
-            beq.b   STATUSPHASE
-            btst    #3,($50,A3)
-            beq.b   .L2
-            move.b  (A3),D0
-            move.b  #$10,($10,A3)
-.L1:
-            btst    #6,($40,A3)
-            beq.b   .L2
-            btst    #5,($40,A3)
-            bne.b   .L1
-            move.b  D7,($10,A3)
-            move.b  D0,($2E,A5)
-            movea.l (4,A5),A0
-            btst    #1,(4,A0)
-            bne.b   .L2
-            bset    #5,(4,A0)
-.L2:
-            rts
-MSGIN:
-            move.l  D7,D0
-.L1:
-            move.b  ($40,A3),D0
-            btst    #6,D0
-            beq.b   .L5
-            btst    #5,D0
-            beq.b   .L1
-            btst    #3,($50,A3)
-            beq.b   .L5
-            move.b  (A3),D0
-            move.b  #$10,($10,A3)
-.L2:
-            btst    #5,($40,A3)
-            bne.b   .L2
-            btst    #7,D0
-            beq.b   .L3
-            move.b  D0,D1
-            movea.l ($E8,A4),A0
-            jsr     (A0)
-            bra.b   .L4
-.L3:
-            cmpi.b  #$23,D0
-            bhi.b   .L6
-            lea     ($204,A4),A0
-            move.b  (0,A0,D0.l),D0
-            lea     ($E4,A4),A0
-            movea.l (0,A0,D0.l),A0
-            jsr     (A0)
-.L4:
-            btst    #3,($50,A3)
-            bne.b   MSGIN
-.L5:
-            rts
-.L6:
-            movea.l ($E4,A4),A0
-            jsr     (A0)
-            bra.b   .L4
-MSGINVALIDIN:
-            movea.l (4,A5),A0
-            move.b  #1,(5,A0)
-            move.b  #$12,($10,A3)
-            move.b  #2,($10,A3)
-            rts
-MSGIDENTIFYIN:
-            move.l  D7,D0
-            move.b  ($25B,A4),D0
-            move.b  D7,($25B,A4)
-            rol.w   #8,D0
-            andi.b  #7,D1
-            bset    D1,D0
-            movea.l ($17C,A4),A0
-            jsr     (A0)
-            movea.l D0,A5
-            bne.b   .L1
-            movea.l ($1A8,A4),A0
-            jsr     (A0)
-            rts
-.L1:
-            move.l  D7,D0
-            move.b  ($C,A5),D0
-            move.b  ($D,A5),D1
-            lea     ($74,A4),A0
-            bclr    D1,(0,A0,D0.w)
-            tst.b   (0,A0,D0.w)
-            bne.b   .L2
-            bclr    D0,($7C,A4)
-.L2:
-            movea.l ($180,A4),A0
-            jsr     (A0)
-            movea.l ($F8,A4),A0
-            jmp     (A0)
-MSGCMDCOMPLETE:
-            movea.l (4,A5),A0
-            btst    #1,(4,A0)
-            bne.w   .L1
-            cmp.l   ($28,A5),D7
-            beq.w   .L3
-            move.b  ($2E,A5),D0
-            andi.b  #$9E,D0
-            btst    #7,D0
-            bne.w   .L3
-            cmpi.b  #2,D0
-            bne.w   .L3
-            lea     ($2A4,A4),A0
-            move.l  ($10,A5),($10,A0)
-            move.l  D7,($10,A5)
-            move.l  ($20,A5),($20,A0)
-            move.l  #2,($20,A5)
-            move.l  ($24,A5),($24,A0)
-            move.l  D7,($24,A5)
-            lea     ($26E,A4),A1
-            move.b  ($2C,A5),(4,A1)
-            move.l  ($30,A5),($30,A0)
-            move.l  A1,($30,A5)
-            move.l  ($38,A5),($38,A0)
-            move.l  D7,D0
-            move.b  ($2C,A5),D0
-            move.l  D0,($38,A5)
-            move.l  ($3C,A5),($3C,A0)
-            move.l  D7,($3C,A5)
-            lea     ($274,A4),A1
-            move.l  ($34,A5),($34,A0)
-            move.l  A1,($34,A5)
-            move.l  ($28,A5),D0
-            move.l  D0,(A1)
-            move.l  D0,($C,A1)
-            lea     ($10,A1),A1
-            move.l  ($38,A5),D0
-            move.l  D0,(4,A1)
-            move.l  D0,($C,A1)
-            move.l  ($28,A5),($28,A0)
-            move.l  D7,($28,A5)
-            move.b  ($2C,A5),($2C,A0)
-            move.b  D7,($2C,A5)
-            move.b  ($2E,A5),($2E,A0)
-            move.b  #$FF,($2E,A5)
-            movea.l (4,A5),A1
-            lea     ($2E4,A4),A0
-            bset    #1,(4,A1)
-            move.b  (5,A1),(5,A0)
-            clr.b   (5,A1)
-            move.l  ($C,A1),($C,A0)
-            move.l  ($30,A5),($C,A1)
-            move.l  ($14,A1),($14,A0)
-            move.l  D7,($14,A1)
-            move.l  ($18,A1),($18,A0)
-            move.l  D7,($18,A1)
-            move.l  D7,($58,A4)
-            move.b  D7,($10,A3)
-            bra.w   .L6
-.L1:
-            lea     ($2A4,A4),A0
-            move.l  ($10,A0),($10,A5)
-            move.l  ($20,A0),($20,A5)
-            move.l  ($24,A0),($24,A5)
-            move.l  ($30,A0),($30,A5)
-            move.l  ($28,A0),($28,A5)
-            move.b  ($2C,A0),($2C,A5)
-            move.l  ($3C,A5),D0
-            move.b  D0,($2D,A5)
-            move.l  ($38,A0),($38,A5)
-            move.l  ($3C,A0),($3C,A5)
-            move.l  ($34,A0),($34,A5)
-            move.b  ($2E,A5),D0
-            move.b  ($2E,A0),($2E,A5)
-            andi.b  #$9E,D0
-            btst    #7,D0
-            bne.b   .L2
-            cmpi.b  #2,D0
-            bne.b   .L2
-            move.b  D7,($2D,A5)
-.L2:
-            movea.l (4,A5),A1
-            lea     ($2E4,A4),A0
-            bclr    #1,(4,A1)
-            move.b  (5,A0),(5,A1)
-            move.l  ($C,A0),($C,A1)
-            move.l  ($14,A0),($14,A1)
-            move.l  ($18,A0),($18,A1)
-.L3:
-            moveq   #0,D0
-            movea.l (4,A5),A0
-            btst    #5,(4,A0)
-            bne.b   .L4
-            move.w  #$FE22,D0
-.L4:
-            move.b  D7,($10,A3)
-            movea.l ($198,A4),A0
-            jsr     (A0)
-.L5:
-            move.l  ($24,A5),D0
-            beq.b   .L6
-            movea.l D0,A5
-            move.w  #$FE21,D0
-            jsr     (A0)
-            bra.b   .L5
-.L6:
-            rts
-MSGSAVEDATAPTR:
-            movea.l ($34,A5),A0
-            cmp.l   A0,D7
-            beq.b   .L3
-            movea.l (4,A5),A1
-            move.l  ($18,A1),($14,A1)
-            moveq   #-1,D0
-.L1:
-            move.l  (A0),D1
-            beq.b   .L3
-            cmp.l   D0,D1
-            bne.b   .L2
-            move.l  (4,A0),D1
-.L2:
-            move.l  D1,($C,A0)
-            lea     ($10,A0),A0
-            bra.b   .L1
-.L3:
-            move.b  D7,($10,A3)
-            rts
-MSGRESTOREPTRS:
-            movea.l (4,A5),A0
-            move.l  ($30,A5),($C,A0)
-            move.l  ($14,A0),($18,A0)
-            movea.l ($34,A5),A0
-            cmp.l   A0,D7
-            beq.b   .L4
-            moveq   #-1,D0
-.L1:
-            move.l  ($C,A0),D3
-            move.l  (A0),D1
-            beq.b   .L4
-            cmp.l   D0,D1
-            bne.b   .L2
-            move.l  D3,(4,A0)
-            bra.b   .L3
-.L2:
-            move.l  D3,(A0)
-.L3:
-            lea     ($10,A0),A0
-            bra.b   .L1
-.L4:
-            move.b  D7,($10,A3)
-            rts
-MSGDISCONNECT:
-            move.l  D7,D1
-            move.b  ($C,A5),D1
-            move.b  ($D,A5),D0
-            bset    D1,($7C,A4)
-            lea     ($74,A4),A0
-            bset    D0,(0,A0,D1.w)
-            move.l  D7,($58,A4)
-            move.w  #4,($E,A5)
-            move.b  D7,($10,A3)
-            rts
-MSGMSGREJIN:
-            move.b  D7,($10,A3)
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-MSGLCCF:
-            moveq   #0,D0
-            movea.l (4,A5),A0
-            btst    #5,(4,A0)
-            bne.b   .L1
-            move.w  #$FE22,D0
-.L1:
-            move.b  D7,($10,A3)
-            movea.l ($198,A4),A0
-            jsr     (A0)
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-MSGOUT:
-            moveq   #4,D0
-            tst.l   ($58,A4)
-            beq.b   .L2
-.L1:
-            btst    #6,($40,A3)
-            beq.b   .L3
-            btst    #5,($40,A3)
-            beq.b   .L1
-            btst    #3,($50,A3)
-            beq.b   .L3
-            movea.l (4,A5),A0
-            move.l  D7,D0
-            move.b  (5,A0),D0
-            cmpi.b  #$23,D0
-            bls.b   .L2
-            moveq   #2,D0
-.L2:
-            lea     ($228,A4),A0
-            move.b  (0,A0,D0.l),D0
-            lea     ($E4,A4),A0
-            movea.l (0,A0,D0.l),A0
-            jsr     (A0)
-            bra.b   MSGOUT
-.L3:
-            rts
-MSGIDENTIFYOUT:
-            move.b  ($D,A5),D1
-            ori.b   #$C0,D1
-            move.l  ($20,A5),D0
-            btst    #7,D0
-            bne.b   .L1
-            btst    #1,D0
-            beq.b   .L2
-.L1:
-            bclr    #6,D1
-.L2:
-            move.b  D1,(A3)
-            move.b  D7,($10,A3)
-            move.b  #1,($10,A3)
-            move.b  #$11,($10,A3)
-.L3:
-            btst    #5,($40,A3)
-            bne.b   .L3
-            move.b  D7,($10,A3)
-            movea.l (4,A5),A0
-            move.b  #4,(5,A0)
-            rts
-MSGMSGREJOUT:
-            move.b  #7,(A3)
-            move.b  D7,($10,A3)
-            move.b  #1,($10,A3)
-            move.b  #$11,($10,A3)
-.L1:
-            btst    #5,($40,A3)
-            bne.b   .L1
-            move.b  D7,($10,A3)
-            movea.l (4,A5),A0
-            move.b  #4,(5,A0)
-            rts
-MSGINVALIDOUT:
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-MSGBUSDEVRST:
-            rts
-MSGKILLIO:
-            movea.l ($1A4,A4),A0
-            jsr     (A0)
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-MSGNOOP:
-            move.b  #8,(A3)
-            move.b  #1,($10,A3)
-            move.b  #$11,($10,A3)
-.L1:
-            btst    #5,($40,A3)
-            bne.b   .L1
-            move.b  D7,($10,A3)
-            rts
-DATAIO:
-            move.w  #$FE29,D0
-            tst.l   ($38,A5)
-            beq.b   .L2
-            moveq   #$1C,D4
-            and.l   ($20,A5),D4
-            movea.l (4,A5),A0
-            move.l  ($18,A0),D5
-            btst    #2,($40,A3)
-            bne.b   .L3
-            btst    #2,D4
-            bne.b   .L5
-.L1:
-            move.w  #$FE28,D0
-.L2:
-            movea.l ($174,A4),A0
-            jsr     (A0)
-            bra.w   .L15
-.L3:
-            btst    #2,D4
-            bne.b   .L1
-            move.b  #2,($20,A3)
-            btst    #4,($67,A4)
-            beq.b   .L4
-            move.l  #8,($80,A3)
-.L4:
-            move.b  D7,($70,A3)
-.L5:
-            movea.l ($34,A5),A1
-.L6:
-            move.l  (4,A1,D5.l),D2
-            move.l  (0,A1,D5.l),D0
-            beq.w   .L14
-            movea.l D0,A2
-            addq.l  #1,D0
-            beq.w   .L13
-.L7:
-            btst    #6,($50,A3)
-            bne.b   .L8
-            btst    #5,($40,A3)
-            beq.b   .L7
-.L8:
-            btst    #3,($50,A3)
-            beq.w   .L14
-            move.l  ($1C,A0),D0
-            beq.b   .L9
-            sub.l   D0,D2
-            adda.l  D0,A2
-.L9:
-            move.l  ($3C,A5),D0
-            add.l   D2,D0
-            cmp.l   ($38,A5),D0
-            bls.b   .L10
-            move.w  #$FE29,D0
-            movea.l ($174,A4),A0
-            jsr     (A0)
-            bra.b   .L14
-.L10:
-            movea.l ($19C,A4),A0
-            jsr     (A0)
-            tst.w   D0
-            bne.b   .L14
-            btst    #0,($7D,A4)
-            bne.b   .L15
-            movea.l (4,A5),A0
-            add.l   D1,($3C,A5)
-            cmp.l   D1,D2
-            beq.b   .L11
-            add.l   D1,($1C,A0)
-            bra.b   .L6
-.L11:
-            move.l  (8,A1,D5.l),D0
-            add.l   D0,(0,A1,D5.l)
-            move.l  D7,($1C,A0)
-.L12:
-            moveq   #$10,D0
-            add.l   D0,D5
-            movea.l (4,A5),A0
-            move.l  D5,($18,A0)
-            bra.w   .L6
-.L13:
-            tst.l   D2
-            beq.b   .L12
-            subq.l  #1,D2
-            move.l  D2,(4,A1,D5.l)
-            beq.b   .L12
-            move.l  (8,A1,D5.l),D0
-            asl.l   #4,D0
-            add.l   D0,D5
-            movea.l (4,A5),A0
-            move.l  D5,($18,A0)
-            bra.w   .L6
-.L14:
-            move.b  D7,($20,A3)
-            btst    #4,($67,A4)
-            beq.b   .L15
-            move.l  #2,($80,A3)
-.L15:
-            moveq   #0,D0
-            rts
-DATADMA:
-            movea.l ($34,A5),A1
-            movea.l (4,A5),A0
-            lea     ($20,A0),A2
-            move.l  ($18,A0),D5
-            move.l  ($C,A2),D1
-            add.l   D1,($3C,A5)
-            tst.l   (4,A2)
-            beq.b   .L1
-            add.l   D1,($1C,A0)
-            bra.b   .L3
-.L1:
-            move.l  (8,A1,D5.l),D0
-            add.l   D0,(0,A1,D5.l)
-            move.l  D7,($1C,A0)
-.L2:
-            moveq   #$10,D0
-            add.l   D0,D5
-            move.l  D5,($18,A0)
-.L3:
-            move.l  (4,A1,D5.l),D2
-            move.l  (0,A1,D5.l),D0
-            beq.w   .L9
-            movea.l D0,A2
-            addq.l  #1,D0
-            beq.w   .L8
-.L4:
-            btst    #6,($50,A3)
-            bne.b   .L5
-            btst    #5,($40,A3)
-            beq.b   .L4
-.L5:
-            btst    #3,($50,A3)
-            beq.w   .L9
-            move.l  ($1C,A0),D0
-            beq.b   .L6
-            sub.l   D0,D2
-            adda.l  D0,A2
-.L6:
-            move.l  ($3C,A5),D0
-            add.l   D2,D0
-            cmp.l   ($38,A5),D0
-            bls.b   .L7
-            move.w  #$FE29,D0
-            movea.l ($174,A4),A0
-            jsr     (A0)
-            bra.b   .L9
-.L7:
-            moveq   #0,D0
-            move.l  D2,D1
-            beq.b   .L1
-            moveq   #$1C,D4
-            and.l   ($20,A5),D4
-            lea     ($A4,A4),A0
-            movea.l (0,A0,D4.l),A0
-            jmp     (A0)
-.L8:
-            tst.l   D2
-            beq.b   .L2
-            subq.l  #1,D2
-            move.l  D2,(4,A1,D5.l)
-            beq.b   .L2
-            move.l  (8,A1,D5.l),D0
-            asl.l   #4,D0
-            add.l   D0,D5
-            movea.l (4,A5),A0
-            move.l  D5,($18,A0)
-            bra.w   .L3
-.L9:
-            move.b  D7,($20,A3)
-            move.l  #2,($80,A3)
-            moveq   #0,D0
-            rts
-            ds.b    10
-SCSIHW:
-CLEARIRQ:
-            move.b  ($70,A3),D1
-            bra.w   ClearSCSIInt
-DISENABLE:
-            tst.l   D0
-            beq.b   .L1
-            bra.w   EnableSCSIInts
-.L1:
-            bra.w   DisableSCSIInts
-BUSERRHANDLER:
-            subq.w  #1,(-6,A6)
-            beq.b   sub_40808A7A
-            move.l  D0,-(SP)
-            move.w  TimeDBRA,D0
-            lsr.w   #4,D0
-.L1:
-            dbra    D0,.L1
-            move.l  (SP)+,D0
-            rte
-sub_40808A7A:
-            move.w  (SP),D0
-            bfextu  (6,SP){0:4},D1
-            bra.w   sub_40808E80.L1
-.L1:
-            bne.b   .L2
-            lea     ($20,SP),SP
-            bra.b   .L3
-.L2:
-            lea     ($5C,SP),SP
-.L3:
-            move.w  D7,-(SP)
-            pea     .L4
-            move.w  D0,-(SP)
-            rte
-.L4:
-            dc.w    $60FF,$0008,$FC04
-            ds.b    6
-ARB:
-            movem.l D1-D2/A0-A3,-(SP)
-            move.w  #2,($E,A5)
-            moveq   #0,D0
-            btst    #1,($67,A4)
-            beq.b   .notGDUOSS
-            btst    #4,($67,A4)
-            beq.b   .notGDUOSS
-            move.l  #$FFFFFFFF,($140,A3)
-            move.l  ($6C,A4),($80,A3)
-            move.b  #1,($20,A3)
-            move.w  TimeDBRA,D2
-            lsr.w   #6,D2
-.delay:
-            dbra    D2,.delay
-            move.l  ($80,A3),D1
-            btst    #$D,D1
-            beq.b   .busyGDU
-            move.b  ($70,A3),D1
-            move.l  #2,($80,A3)
-            bra.b   .exit
-.busyGDU:
-            move.l  #2,($80,A3)
-            bra.b   .L4
-.notGDUOSS:
-            move.b  ($60,A4),(A3)
-            move.b  #1,($20,A3)
-            btst    #6,($10,A3)
-            beq.b   .L4
-            movea.l ($194,A4),A0
-            jsr     (A0)
-            btst    #5,($10,A3)
-            bne.b   .L4
-            move.b  ($60,A4),D2
-            move.b  (A3),D1
-            eor.b   D2,D1
-            cmp.b   D2,D1
-            bhi.b   .L4
-            btst    #5,($10,A3)
-            beq.b   .exit
-.L4:
-            bsr.w   sub_40808E6C
-            move.b  #4,($20,A3)
-            moveq   #3,D0
-.exit:
-            movem.l (SP)+,D1-D2/A0-A3
-            tst.l   D0
-            rts
-; Sel
-Sel:
-            movem.l D1-D7/A0-A5,-(SP)
-            move.w  #3,($E,A5)
-            move.b  #$C,($10,A3)
-            move.b  D7,($20,A3)
-            movea.l ($194,A4),A0
-            jsr     (A0)                            ; Go to the routine
-            move.b  D7,($30,A3)
-            moveq   #1,D1
-            move.b  ($C,A5),D2
-            lsl.b   D2,D1
-            or.b    ($60,A4),D1
-            move.b  D1,(A3)
-            move.b  #$F,($10,A3)
-            move.b  D7,($40,A3)
-            move.l  D7,D0
-            movea.l ($170,A4),A0
-            jsr     (A0)
-            move.b  #7,($10,A3)
-            movea.l ($194,A4),A0
-            jsr     (A0)
-            move.w  ($1E,A5),D2
-            mulu.w  TimeSCSIDB,D2
-            move.l  D2,D0
-            swap    D0
-.L1:
-            btst    #6,($40,A3)
-            dbne    D2,.L1
-            dbne    D0,.L1
-            bne.b   .L3
-            move.b  #4,($10,A3)
-            move.w  TimeSCSIDB,D2
-            lsr.w   #2,D2
-.L2:
-            dbra    D2,.L2
-            btst    #6,($40,A3)
-            bne.b   .L3
-            move.w  #$FE26,D0
-            move.b  D7,($10,A3)
-            bra.b   .L4
-.L3:
-            movea.l ($194,A4),A0
-            jsr     (A0)
-            move.b  #2,($10,A3)
-            moveq   #0,D0
-.L4:
-            movem.l (SP)+,D1-D7/A0-A5
-            tst.l   D0
-            rts
-DELAY22:
-            movea.l VIA,A0
-            tst.b   (vIFR,A0)
-            tst.b   (vIFR,A0)
-            tst.b   (vIFR,A0)
-            rts
-; SCSIIntHnd
-SCSIIntHnd:
-            movem.l D0-D7/A0-A5,-(SP)
-            movea.l SCSIGlobals,A4
-            movea.l ($58,A4),A5
-            moveq   #0,D7
-            move.l  D7,D0
-            movea.l ($170,A4),A0
-            jsr     (A0)
-            movea.l ($40,A4),A3
-            move    SR,-(SP)
-            ori     #$700,SR
-            move.b  ($50,A3),D0
-            btst    #4,D0
-            beq.w   .L1
-            lsl.w   #8,D0
-            move.b  ($40,A3),D0
-            move.w  D0,D1
-            andi.w  #$F5E2,D1
-            cmpi.w  #$1002,D1
-            bne.b   .L2
-            move.b  (A3),D1
-            beq.w   .L1
-            move.b  ($60,A4),D0
-            eor.b   D0,D1
-            beq.w   .L1
-            move.b  D7,($40,A3)
-            move.b  ($10,A3),D0
-            ori.b   #8,D0
-            move.b  D0,($10,A3)
-            moveq   #7,D0
-            bra.b   .L3
-.L2:
-            move.w  D0,D1
-            andi.w  #$F6C2,D1
-            cmpi.w  #$9040,D1
-            bne.b   .L4
-            move.b  D7,($20,A3)
-            move.b  D7,($10,A3)
-            moveq   #6,D0
-            bra.b   .L3
-.L4:
-            move.w  D0,D1
-            andi.w  #$BDE2,D1
-            cmpi.w  #$1060,D1
-            bne.b   .L5
-            moveq   #5,D0
-            bra.b   .L3
-.L5:
-            move.w  D0,D1
-            andi.w  #$F7FF,D1
-            cmpi.w  #$1400,D1
-            bne.b   .L6
-            moveq   #4,D0
-            bra.b   .L3
-.L6:
-            move.w  D0,D1
-            andi.w  #$F77F,D1
-            cmpi.w  #$1000,D1
-            bne.b   .L7
-            bra.b   .L1
-.L7:
-            move.w  D0,D1
-            andi.w  #$BCC2,D1
-            cmpi.w  #$3840,D1
-            bne.b   .L1
-            moveq   #2,D0
-.L3:
-            movea.l ($168,A4),A0
-            jsr     (A0)
-            movea.l ($16C,A4),A0
-            jsr     (A0)
-            move    (SP)+,SR
-            bra.b   .L8
-.L1:
-            move    (SP)+,SR
-            btst    #4,($67,A4)
-            beq.b   .L9
-            move.l  ($80,A3),D0
-            btst    #7,D0
-            beq.b   .L9
-            move.w  #$FE27,D0
-            movea.l ($174,A4),A0
-            jsr     (A0)
-            moveq   #-1,D0
-            move.l  D0,($140,A3)
-.L9:
-            movea.l ($16C,A4),A0
-            jsr     (A0)
-            moveq   #1,D0
-            movea.l ($170,A4),A0
-            jsr     (A0)
-.L8:
-            movem.l (SP)+,D0-D7/A0-A5
-            rts
-; Transfer
-Transfer:
-            link.w  A6,#-6
-            bsr.w   sub_40808F02
-            nop
-            moveq   #0,D0                           ; Assume no error
-            move.l  D2,D1                           ; Make a copy of the count
-            beq.b   .exit                           ; Exit if count is zero
-            movem.l D2-D6/A1-A5,-(SP)
-            lea     ($50,A3),A1
-            moveq   #6,D3
-            move.l  BusErrVct,(-4,A6)
-            move.l  ($1AC,A4),BusErrVct
-            lea     ($A4,A4),A0
-            movea.l (0,A0,D4.l),A0
-            jsr     (A0)
-.done:
-            move.l  (-4,A6),BusErrVct
-            movem.l (SP)+,D2-D6/A1-A5
-            tst.w   D0
-.exit:
-            unlk    A6
-            rts
-; SlowRead
-SlowRead:
-            movea.l ($44,A4),A0
-            adda.w  #$60,A0
-            subq.l  #1,D2
-            move.l  D2,D5
-            swap    D5
-.wait:
-            btst    D3,(A1)
-            bne.b   .SnRd
-            btst    #5,($40,A3)
-            beq.b   .wait
-            btst    #3,(A1)
-            beq.b   .RdPhaseErr
-.SnRd:
-            btst    D3,(A1)
-            beq.b   .SnRdChk
-            move.b  (A0),(A2)+
-            dbra    D2,.SnRd
-            dbra    D5,.SnRd
-            bra.b   .RdDone
-.SnRdChk:
-            bsr.w   NewPhaseCheck
-            bne.b   .SnRd
-.RdPhaseErr:
-            moveq   #5,D0
-            bra.b   .exit
-.RdDone:
-            btst    #0,($50,A3)
-            beq.b   .exit
-            btst    #5,($40,A3)
-            beq.b   .exit
-            btst    #3,(A1)
-            bne.b   .RdDone
-.exit:
-            swap    D5
-            move.w  D2,D5
-            addq.l  #1,D5
-            sub.l   D5,D1
-            rts
-; SlowWrite
-SlowWrite:
-            movea.l ($44,A4),A0
-            adda.w  ($4C,A4),A0
-.L1:
-            btst    #5,($40,A3)
-            beq.b   .L1
-            move.b  D7,($30,A3)
-            move.b  #2,($20,A3)
-            move.b  #1,($10,A3)
-            btst    #4,($67,A4)
-            beq.b   .L2
-            move.l  #$A,($80,A3)
-.L2:
-            move.b  D7,($50,A3)
-            btst    #3,(A1)
-            bne.b   .L3
-            moveq   #5,D0
-            bra.b   .L6
-.L3:
-            move.l  D2,D1
-            subq.l  #1,D2
-            move.l  D2,D5
-            swap    D5
-.L4:
-            btst    D3,(A1)
-            beq.b   .L5
-            move.b  (A2)+,(A0)
-            dbra    D2,.L4
-            dbra    D5,.L4
-            bra.b   .L6
-.L5:
-            btst    #3,(A1)
-            bne.b   .L4
-            moveq   #5,D0
-            bra.b   .L9
-.L6:
-            btst    #4,($67,A4)
-            beq.b   .L8
-.L7:
-            btst    D3,($50,A3)
-            bne.b   .L9
-            btst    #3,($50,A3)
-            bne.b   .L7
-.L8:
-            btst    D3,($50,A3)
-            bne.b   .L9
-            btst    #3,($50,A3)
-            bne.b   .L8
-.L9:
-            move.b  D7,($10,A3)
-            move.b  D7,($20,A3)
-            btst    #4,($67,A4)
-            beq.b   .DMAdone2
-            move.l  #2,($80,A3)
-.DMAdone2:
-            swap    D5
-            move.w  D2,D5
-            addq.l  #1,D5
-            sub.l   D5,D1
-            rts
-VFASTWRITEOSS:
-            movea.l (4,A5),A0
-            lea     ($20,A0),A0
-            move.l  A2,D0
-            jsr     ([$554.w])
-            move.l  D0,(A0)
-            move.l  D2,(4,A0)
-            moveq   #1,D0
-            movea.l D0,A1
-            moveq   #5,D0
-            _MemoryDispatch
-            bne.b   .L1
-            movea.l (8,A0),A2
-            move.l  ($C,A0),D2
-            move.l  D2,D1
-            movea.l ($C0,A4),A0
-            jmp     (A0)
-.L1:
-            rts
-sub_40808E6C:
-            bset    #0,($7D,A4)
-            move.b  D7,($20,A3)
-            rts
-NewPhaseCheck:
-            moveq   #$48,D6
-            and.b   ($50,A3),D6
-            rts
-sub_40808E80:
-            bset    #1,($7D,A4)
-            move.l  ($68,A4),($140,A3)
-            rts
-.L1:
-            cmpi.b  #7,D1
-            beq.b   .L2
-            cmpi.b  #$A,D1
-            bra.w   sub_40808A7A.L1
-.L2:
-            lea     ($3C,SP),SP
-            bra.w   sub_40808A7A.L3
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-PFASTWRITEOSS:
-            moveq   #0,D0
-            move.b  D7,($30,A3)
-            move.b  #2,($20,A3)
-            move.b  #1,($10,A3)
-            move.l  #8,($80,A3)
-            move.b  D7,($50,A3)
-            move.l  #$FFFFFFFF,($140,A3)
-            move.l  #7,($80,A3)
-            move.l  A2,($100,A3)
-            move.l  D2,($C0,A3)
-            move.b  #$A,($20,A3)
-            move.b  #1,($10,A3)
-            move.b  D7,($50,A3)
-            bset    #0,($7D,A4)
-            rts
-sub_40808F02:
-            moveq   #5,D0
+WhichCPUPatch:
+            sub.l   D7,D7
+            bset    #CACR_DE_040,D7
+            movec   D7,CACR
+            movec   CACR,D7
+            bclr    #CACR_DE_040,D7
+            movec   D7,CACR
+            beq.b   .notAn040
+            mc68040
+            cinva   BC
+            mc68030
+            moveq   #cpu68040,D7
+            rts
+.notAn040:
+            ; Set EI (enable inst. cache), CI (flush inst cache),
+            ; CD (flush data cache) and WA in the 020/030 CACR
+            move.w  #(1<<CACR_EI_020_030|1<<CACR_CI_020_030|1<<CACR_CD_030|1<<CACR_WA_030),D7
+            movec   D7,CACR
+            movec   CACR,D7
+            lsl.w   #3,D7
+            moveq   #2>>1,D7
+            addx.l  D7,D7
+            rts
+EnableCachesPatch:
             cmpi.b  #4,CPUFlag
             bne.b   .L1
-            moveq   #1,D0
-.L1:
-            move.w  D0,(-6,A6)
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-PFASTWRITE:
-            rts
-vFastWrite:
-FASTWRITE:
-            movea.l ($48,A4),A0
-            adda.w  ($4C,A4),A0
-.L1:
-            btst    #5,($40,A3)
-            beq.b   .L1
-            move.b  D7,($30,A3)
-            move.b  #2,($20,A3)
-            move.b  #1,($10,A3)
-            btst    #4,($67,A4)
-            beq.b   .L2
-            move.l  #$A,($80,A3)
-.L2:
-            move.b  D7,($50,A3)
-.L3:
-            btst    D3,(A1)
-            bne.b   .L4
-            btst    #5,($40,A3)
-            beq.b   .L3
-            btst    #3,(A1)
-            bne.b   .L3
-            moveq   #5,D0
-            bra.w   .L12
-.L4:
-            move.l  D2,D1
-            moveq   #3,D4
-            cmp.l   D4,D2
-            bhi.b   .L5
-            moveq   #-1,D5
-            moveq   #-1,D6
-            bra.b   .L11
-.L5:
-            move.l  A2,D5
-            neg.l   D5
-            and.l   D4,D5
-            sub.l   D5,D2
-            bra.b   .L7
-.L6:
-            move.b  (A2)+,(A0)
-.L7:
-            dbra    D5,.L6
-            move.l  D2,D5
-            lsr.l   #5,D5
-            bne.b   .L8
-            moveq   #-1,D5
-            moveq   #-1,D6
-            bra.b   .L11
-.L8:
-            subq.l  #1,D5
-            move.l  D5,D6
-            swap    D6
-            moveq   #$1F,D4
-            and.l   D4,D2
-.L9:
-            move.l  (A2)+,(A0)
-            move.l  (A2)+,(A0)
-            move.l  (A2)+,(A0)
-            move.l  (A2)+,(A0)
-            move.l  (A2)+,(A0)
-            move.l  (A2)+,(A0)
-            move.l  (A2)+,(A0)
-            move.l  (A2)+,(A0)
-            dbra    D5,.L9
-            dbra    D6,.L9
-            bra.b   .L11
-.L10:
-            move.b  (A2)+,(A0)
-.L11:
-            dbra    D2,.L10
-            swap    D6
-            move.w  D5,D6
-            addq.l  #1,D6
-            lsl.l   #5,D6
-            ext.l   D2
-            addq.l  #1,D2
-            add.l   D2,D6
-            sub.l   D6,D1
-.L12:
-            btst    #4,($67,A4)
-            beq.b   .L14
-.L13:
-            btst    D3,($50,A3)
-            bne.b   .L15
-            btst    #3,($50,A3)
-            bne.b   .L13
-.L14:
-            btst    D3,($50,A3)
-            bne.b   .L15
-            btst    #3,($50,A3)
-            bne.b   .L14
-.L15:
-            move.b  D7,($20,A3)
-            move.b  D7,($10,A3)
-            btst    #4,($67,A4)
-            beq.b   .L16
-            move.l  #2,($80,A3)
-.L16:
-            rts
-FASTWRITEOSS:
-            move.l  A2,D0
-            jsr     ([$554.w])
-            move.l  D0,-(SP)
-            lea     (-$14,SP),SP
-            move.l  D0,(SP)
-            move.l  D2,(4,SP)
-            bsr.w   sub_40809148
-            bne.w   .L8
-            movea.l SP,A0
-            movea.w #1,A1
-            moveq   #5,D0
-            _MemoryDispatch
-            bne.w   .L8
-.L1:
-            btst    #5,($40,A3)
-            beq.b   .L1
-            move.b  D7,($30,A3)
-            move.b  #2,($20,A3)
-            move.b  #1,($10,A3)
-            moveq   #8,D5
-            move.l  D5,($80,A3)
-            move.b  D7,($50,A3)
-.L2:
-            btst    D3,($50,A3)
-            bne.b   .L3
-            btst    #5,($40,A3)
-            beq.b   .L2
-            btst    #3,($50,A3)
-            bne.b   .L2
-            moveq   #5,D0
-            bra.w   .L6
-.L3:
-            nop
-            bsr.w   sub_40808E80
-            moveq   #7,D5
-            move.l  D5,($80,A3)
-            move.l  (8,A0),($100,A3)
-            move.l  ($C,A0),($C0,A3)
-            move.b  #$A,($20,A3)
-            move.b  #1,($10,A3)
-            move.b  D7,($50,A3)
-            move.l  (4,A0),($C,A0)
-            beq.b   .L4
-            movea.w #1,A1
-            moveq   #5,D0
-            _MemoryDispatch
-            bne.w   .L8
-.L4:
-            movea.l VIA2,A1
-.L5:
-            btst    #1,($202,A1)
-            beq.b   .L5
-            move.l  ($80,A3),D5
-            andi.w  #$180,D5
-            bne.b   .L8
-            tst.l   ($C0,A3)
-            bne.b   .L8
-            move.b  D7,($20,A3)
-            tst.b   ($70,A3)
-            tst.l   ($C,A0)
-            bne.b   .L3
-            move.l  D2,D1
-.L6:
-            btst    #0,($50,A3)
-            beq.b   .L7
-            btst    #5,($40,A3)
-            beq.b   .L7
-            btst    #3,($50,A3)
-            bne.b   .L6
-.L7:
-            move.b  D7,($20,A3)
-            move.b  D7,($10,A3)
-            moveq   #2,D5
-            move.l  D5,($80,A3)
-            lea     ($14,SP),SP
-            bra.b   .L9
-.L8:
-            moveq   #9,D0
-            bra.b   .L7
-            rts
-.L9:
-            bra.w   VFASTREADOSS.L2
-sub_40809148:
-            movea.l D0,A0
-            movea.l D2,A1
-            moveq   #2,D0
-            _MemoryDispatch
-            rts
-            nop
-            nop
-VFASTREADOSS:
-            movea.l (4,A5),A0
-            lea     ($20,A0),A0
-            move.l  A2,D0
-            jsr     ([$554.w])
-            move.l  D0,(A0)
-            move.l  D2,(4,A0)
-            moveq   #1,D0
-            movea.l D0,A1
-            moveq   #5,D0
-            _MemoryDispatch
-            bne.b   .L1
-            movea.l (8,A0),A2
-            move.l  ($C,A0),D2
-            move.l  D2,D1
-            movea.l ($BC,A4),A0
-            jmp     (A0)
-.L1:
-            rts
-.L2:
-            bclr    #1,($7D,A4)
-            movea.l (SP)+,A0
-            movea.l D2,A1
-            move.w  D0,-(SP)
-            moveq   #3,D0
-            _MemoryDispatch
-            move.w  (SP)+,D0
-            rts
-DMAPENDINGPATCH:
-            btst    #7,($61,A4)
-            bne.b   .L1
-            btst    #1,($7D,A4)
-.L1:
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-PFastReadOSS:
-            moveq   #0,D0
-            move.l  #$FFFFFFFF,($140,A3)
-            move.l  #7,($80,A3)
-            move.l  A2,($100,A3)
-            move.l  D2,($C0,A3)
-            move.b  #$A,($20,A3)
-            move.b  D7,($70,A3)
-            bset    #0,($7D,A4)
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-; PFastRead
-PFastRead:
-            rts                                     ; Unimplemented
-vFastRead:
-FastRead:
-            movea.l ($48,A4),A0
-            adda.w  #$60,A0
-.wait:
-            btst    D3,(A1)
-            bne.b   .start
-            btst    #5,($40,A3)
-            beq.b   .wait
-            btst    #3,(A1)
-            bne.b   .start
-            moveq   #5,D0
-            bra.w   .exit
-.start:
-            move.l  D2,D1
-            moveq   #3,D4
-            cmp.l   D4,D2
-            bhi.b   .over3
-            moveq   #-1,D5
-            moveq   #-1,D6
-            bra.b   .BlRdRmdr
-.over3:
-            move.l  A2,D5
-            neg.l   D5
-            and.l   D4,D5
-            sub.l   D5,D2
-            bra.b   .L5
-.L4:
-            move.b  (A0),(A2)+
-.L5:
-            dbra    D5,.L4
-            move.l  D2,D5
-            lsr.l   #5,D5
-            bne.b   .over32
-            moveq   #-1,D5
-            moveq   #-1,D6
-            bra.b   .BlRdRmdr
-.over32:
-            subq.l  #1,D5
-            move.l  D5,D6
-            swap    D6
-            moveq   #$1F,D4
-            and.l   D4,D2
-.BlRd32:
-            move.l  (A0),(A2)+
-            move.l  (A0),(A2)+
-            move.l  (A0),(A2)+
-            move.l  (A0),(A2)+
-            move.l  (A0),(A2)+
-            move.l  (A0),(A2)+
-            move.l  (A0),(A2)+
-            move.l  (A0),(A2)+
-            dbra    D5,.BlRd32
-            dbra    D6,.BlRd32
-            bra.b   .BlRdRmdr
-.BlRdSingle:
-            move.b  (A0),(A2)+
-.BlRdRmdr:
-            dbra    D2,.BlRdSingle
-            swap    D6
-            move.w  D5,D6
-            addq.l  #1,D6
-            lsl.l   #5,D6
-            ext.l   D2
-            addq.l  #1,D2
-            add.l   D2,D6
-            sub.l   D6,D1
-.RdDone:
-            btst    #0,($50,A3)
-            beq.b   .exit
-            btst    #5,($40,A3)
-            beq.b   .exit
-            btst    #3,(A1)
-            bne.b   .RdDone
-.exit:
-            rts
-FASTREADOSS:
-            move.l  A2,D0
-            jsr     ([$554.w])
-            move.l  D0,-(SP)
-            lea     (-$14,SP),SP
-            move.l  D0,(SP)
-            move.l  D2,(4,SP)
-            bsr.w   sub_40809148
-            bne.w   .badAddrError
-            movea.l SP,A0
-            movea.w #1,A1
-            moveq   #5,D0
-            _MemoryDispatch
-            bne.w   .badAddrError
-.wait:
-            btst    D3,($50,A3)
-            bne.b   .start
-            btst    #5,($40,A3)
-            beq.b   .wait
-            btst    #3,($50,A3)
-            bne.b   .start
-            moveq   #5,D0
-            bra.w   .L6
-.start:
-            nop
-            bsr.w   sub_40808E80
-            moveq   #7,D5
-            move.l  D5,($80,A3)
-            move.l  (8,A0),($100,A3)
-            move.l  ($C,A0),($C0,A3)
-            move.b  #$A,($20,A3)
-            move.b  D7,($70,A3)
-            move.l  (4,A0),($C,A0)
-            beq.b   .L3
-            movea.w #1,A1
-            moveq   #5,D0
-            _MemoryDispatch
-            bne.w   .badAddrError
-.L3:
-            movea.l VIA2,A1
-.L4:
-            btst    #1,($202,A1)
-            beq.b   .L4
-            move.l  ($80,A3),D5
-            andi.w  #$180,D5
-            bne.b   .badAddrError
-            tst.l   ($C0,A3)
-            bne.b   .badAddrError
-            move.b  D7,($20,A3)
-            tst.b   ($70,A3)
-            move.b  #2,($20,A3)
-            move.b  D7,($70,A3)
-            tst.l   ($C,A0)
-            bne.b   .start
-            move.l  D2,D1
-.L5:
-            btst    #0,($50,A3)
-            beq.b   .L6
-            btst    #5,($40,A3)
-            beq.b   .L6
-            btst    #3,($50,A3)
-            bne.b   .L5
-.L6:
-            lea     ($14,SP),SP
-            bra.w   VFASTREADOSS.L2
-.badAddrError:
-            moveq   #9,D0
-            bra.b   .L6
-            rts
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-SlowComp:
-            movea.l ($44,A4),A0
-            adda.w  #$60,A0
-            subq.l  #1,D2
-            move.l  D2,D5
-            swap    D5
-.L1:
-            btst    #6,(A1)
-            bne.b   .L2
-            btst    #5,($40,A3)
-            beq.b   .L1
-            btst    #3,(A1)
-            beq.b   .L5
-.L2:
-            btst    #6,(A1)
-            beq.b   .L4
-            move.b  (A0),D3
-            cmp.b   (A2)+,D3
-            beq.b   .L3
-            moveq   #6,D0
-.L3:
-            dbra    D2,.L2
-            dbra    D5,.L2
-            bra.b   .L6
-.L4:
-            bsr.w   NewPhaseCheck
-            bne.b   .L2
-.L5:
-            moveq   #5,D0
-            bra.b   .L7
-.L6:
-            btst    #0,($50,A3)
-            beq.b   .L7
-            btst    #5,($40,A3)
-            beq.b   .L7
-            btst    #3,(A1)
-            bne.b   .L6
-.L7:
-            swap    D5
-            move.w  D2,D5
-            addq.l  #1,D5
-            sub.l   D5,D1
-            moveq   #6,D3
-            rts
-FastComp:
-            movea.l ($48,A4),A0
-            adda.w  #$60,A0
-            subq.l  #1,D2
-            move.l  D2,D5
-            swap    D5
-.wait:
-            btst    #6,(A1)
-            bne.b   .BlCmp
-            btst    #5,($40,A3)
-            beq.b   .wait
-            btst    #3,(A1)
-            bne.b   .BlCmp
-            moveq   #5,D0
-            bra.b   .L5
-.BlCmp:
-            move.b  (A0),D3
-            cmp.b   (A2)+,D3
-            beq.b   .BlCmp1
-            moveq   #6,D0
-.BlCmp1:
-            dbra    D2,.BlCmp
-            dbra    D5,.BlCmp
-.RdDone:
-            btst    #0,($50,A3)
-            beq.b   .L5
-            btst    #5,($40,A3)
-            beq.b   .L5
-            btst    #3,(A1)
-            bne.b   .RdDone
-.L5:
-            swap    D5
-            move.w  D2,D5
-            addq.l  #1,D5
-            sub.l   D5,D1
-            moveq   #6,D3
-            rts
-            ds.b    4
-SCSIInit:
-InitSCSIMgr:
-            movem.l D0-D7/A0-A5,-(SP)
-            moveq   #0,D7
-            move.l  #$404,D0
-            _NewPtrSysClear
-            bne.w   INITSCSIDONE
-            move.l  A0,SCSIGlobals
-            movea.l A0,A4
-            bsr.l   INITSCSIMGRPATCH1
-            nop
-            btst    #4,($67,A4)
-            beq.b   .DMAdone
-            movea.l SCSIBase,A3
-            move.l  #2,($80,A3)
-.DMAdone:
-            moveq   #$D,D1
-            lea     SCSIMgr,A1
-            move.l  A1,D0
-            lea     OffsetTbl,A1
-            movea.l A4,A0
-.MakeJmpTbl:
-            moveq   #0,D2
-            move.w  (A1)+,D2
-            add.l   D0,D2
-            move.l  D2,(A0)+
-            dbra    D1,.MakeJmpTbl
-            lea     ($40,A4),A0
-            move.l  SCSIBase,(A0)+
-            move.l  SCSIDMA,(A0)+
-            move.l  SCSIHsk,(A0)+
-            clr.w   (A0)+
-            moveq   #-1,D0
-            move.l  D0,($5C,A4)
-            subq.l  #2,SP
-            movea.l SP,A0
-            move.l  #$20002,D0
-            _ReadXPRam
-            move.w  (SP),D0
-            andi.w  #$7878,D0
-            cmpi.w  #$4848,D0
-            beq.b   .L3
-            move.w  #$4F48,(SP)
-            movea.l SP,A0
-            move.l  #$20002,D0
-            _WriteXPRam
-.L3:
-            move.w  (SP),D0
-            andi.w  #$707,D0
-            move.b  D0,SCSIPoll
-            lsr.w   #8,D0
-            moveq   #1,D1
-            lsl.b   D0,D1
-            move.b  D1,($60,A4)
-            move.b  D1,SCSIDrvrs
-            btst    #4,($67,A4)
-            beq.b   .noDCTRL
-            andi.l  #7,D0
-            moveq   #9,D1
-            lsl.l   D1,D0
-            ori.l   #$1002,D0
-            move.l  D0,($6C,A4)
-.noDCTRL:
-            move.w  #250,($62,A4)
-            move.b  #1,($7E,A4)
-            move.l  #4,($80,A4)
-            btst    #4,($67,A4)
-            beq.b   .initPhaseTable
-            move.l  #$19999999,($80,A4)
-.initPhaseTable:
-            moveq   #$5F,D1
-            lea     SCSIMgr,A1
-            move.l  A1,D0
-            lea     OffsetTbl2,A1
-            lea     ($84,A4),A0
-.MakeJmpTbl2:
-            moveq   #0,D2
-            move.w  (A1)+,D2
-            beq.b   .zero
-            add.l   D0,D2
-            move.l  D2,(A0)+
-            bra.b   .loop
-.zero:
-            move.l  D7,(A0)+
-.loop:
-            dbra    D1,.MakeJmpTbl2
-            moveq   #$11,D1
-            lea     msgTbl,A1
-            lea     ($204,A4),A0
-.makeMsgTbl:
-            move.l  (A1)+,(A0)+
-            dbra    D1,.makeMsgTbl
-            lea     ($24C,A4),A1
-            move.w  #7,(4,A1)
-            lea     SCSIDT,A0
-            move.l  A0,(8,A1)
-            lea     ($260,A4),A0
-            lea     TIMETASK,A1
-            move.l  A1,(6,A0)
-            _InsTime
-            move.w  #$300,($26E,A4)
-            lea     ($274,A4),A1
-            moveq   #1,D0
-            move.l  D0,(4,A1)
-            move.l  D0,(8,A1)
-            lea     ($10,A1),A1
-            moveq   #-1,D0
-            move.l  D0,(A1)
-            move.l  D0,(8,A1)
-            lea     ($2A4,A4),A1
-            st      ($C,A1)
-            lea     ($2E4,A4),A0
-            move.l  A0,(4,A1)
-            lea     ($344,A4),A1
-            move.l  A1,($38,A4)
-            move.l  A1,($3C,A4)
-            move.l  A1,D0
-            moveq   #$30,D1
-            add.l   D1,D0
-            move.l  D0,(A1)
-            movea.l D0,A1
-            add.l   D1,D0
-            move.l  D0,(A1)
-            bsr.l   INITSCSIMGRPATCH2
-            btst    #4,($67,A4)
-            beq.b   .L10
-            btst    #1,($67,A4)
-            bra.b   .L10
-            lea     VFASTREADOSS,A0
-            move.l  A0,($AC,A4)
-            lea     VFASTWRITEOSS,A0
-            move.l  A0,($B0,A4)
-            lea     PFastReadOSS,A0
-            move.l  A0,($BC,A4)
-            lea     PFASTWRITEOSS,A0
-            move.l  A0,($C0,A4)
-            lea     FASTREADOSS,A0
-            move.l  A0,($CC,A4)
-            lea     FASTWRITEOSS,A0
-            move.l  A0,($D0,A4)
-.L10:
-            btst    #1,($67,A4)
-            bne.b   .L11
-            btst    #2,($67,A4)
-            beq.b   .L12
-.L11:
-            lea     SCSIIntHnd,A1
-            move.l  A1,($D7C).w
-.L12:
-            btst    #3,($67,A4)
-            beq.b   SCSIINTHNDRESUME.L2
-            lea     SCSIIntHnd,A1
-            bra.l   INSTALLSCSIINTHND96
-SCSIINTHNDRESUME:
-            beq.b   .L1
-            move.l  A1,($D7C).w
+            move.l  #$80008000,D0
+            movec   D0,CACR
             bra.b   .L2
 .L1:
-            move.l  A1,($D7C).w
+            move.l  #$3919,D0
+            movec   D0,CACR
 .L2:
-            btst    #$F,(SP)
-            bne.b   .L3
-            clr.w   -(SP)
-            _SCSIDispatch
-.L3:
-            addq.l  #2,SP
-INITSCSIDONE:
-            movem.l (SP)+,D0-D7/A0-A5
             rts
-OffsetTbl:
-            dc.w    $0052,$007C,$00CC,$00F4,$01D2,$0120,$0118,$0028
-            dc.w    $011C,$0114,$002E,$00CC,$0230,$0244
-OffsetTbl2:
-            dc.w    $13F8,$13F8,$0DD6,$0E4C,$05A4,$05A4,$1276,$0E98
-            dc.w    $18DA,$1934,$1DEE,$1AF4
-            ds.b    4
-            dc.w    $1DEC,$1AF2,$18DA,$1934,$1DEE,$1AF4,$1F6E,0
-            dc.w    $1FD4,0,$0EFC,$0F14,$0F60,0,$1122,$1152
-            dc.w    $118C,$11B2,$1208
-            ds.b    14
-            dc.w    $12BE,$1304,$1330,$1382,$13DA,$1380
-            ds.b    20
-            dc.w    $179C,$07D4,$15F0,$15F8,$06A6,$0A6C,$0966,$0924
-            dc.w    $0826,$0618,$1648,$16EC,$178A,$06BE,$189A,$09DC
-            dc.w    $05A4,$07BC,$1604,$1518
-            ds.b    24
-            dc.w    $053C,$0562,$056C
-            ds.b    8
-            dc.w    $051A
-msgTbl:
-            dc.w    $0800,$1014,$1800,$001C
-            ds.b    28
-            dc.b    '@DHLPTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH'
-            ds.b    30
-SCSISetFlags:
-            movem.l D1/A0,-(SP)
-            moveq   #0,D0
-            btst    #VIA2Exists-8,(AddrMapFlags+2).w ; TestFor VIA2Exists
-            beq.b   .L1
-            bset    #sVIA2Exists,D0
-.L1:
-            btst    #RBVExists-8,(AddrMapFlags+2).w ; TestFor RBVExists
-            beq.b   .L2
-            bset    #sRBVExists,D0
-.L2:
-            btst    #SCSIDMAExists-8,(AddrMapFlags+2).w ; TestFor SCSIDMAExists
-            beq.b   .L3
-            bset    #sSCSIDMAExists,D0
-.L3:
-            btst    #OSSExists-16,(AddrMapFlags+1).w ; TestFor OSSExists
-            beq.b   .L4
-            bset    #sOSSExists,D0
-.L4:
-            bsr.l   SCSISETFLAGSPATCH
-            nop
-            nop
-            movem.l (SP)+,D1/A0
-            rts
-            dc.w    $6040,$0808,$0808,$4104,$1812
-CacheProc:
-CTrapTbl:
-            dc.w    GetCSize-CTrapTbl               ; 0
-            dc.w    SetCSize-CTrapTbl               ; 1
-            dc.w    GetApZnSiz-CTrapTbl             ; 2
-            dc.w    SetApZnSiz-CTrapTbl             ; 3
-            dc.w    GetMaxCXfr-CTrapTbl             ; 4
-            dc.w    SetMaxCXfr-CTrapTbl             ; 5
-            dc.w    GetCStatus-CTrapTbl             ; 6
-            dc.w    SetCStatus-CTrapTbl             ; 7
-CacheTrap:
-            cmpi.w  #(CacheTrap-CTrapTbl)/2,D0
-            bcs.b   .L1
-            moveq   #paramErr,D0
-            rts
-.L1:
-            lea     CTrapTbl,A1
-            add.w   D0,D0
-            adda.w  (0,A1,D0.w),A1
-            jmp     (A1)
-CTExit:
-            jmp     (CmdDone.w,PC)
-GetCSize:
-            jsr     (FSQueueSync.w,PC)
-            movea.l ($394).w,A1                     ; CacheVars
-            move.l  ($4,A1),D0                      ; OldBufPtr
-            sub.l   ($8,A1),D0                      ; NewBufPtr
-            move.l  D0,($1C,A0)                     ; ioMisc
-            moveq   #0,D0
-            bra.b   CTExit
-SetCSize:
-            jsr     (FSQueueSync.w,PC)
-            move.l  ($1C,A0),D0                     ; ioMisc
-            moveq   #15,D1
-            lsr.l   D1,D0
-            move.b  D0,($20A).w                     ; CacheConfig
-            moveq   #0,D0
-            bra.b   CTExit
-GetApZnSiz:
-            jsr     (FSQueueSync.w,PC)
-            movea.l ($394).w,A1                     ; CacheVars
-            move.l  ($20,A1),($1C,A0)               ; CacheMinZn -> ioMisc
-            moveq   #0,D0
-            bra.b   CTExit
-SetApZnSiz:
-            jsr     (FSQueueSync.w,PC)
-            movea.l ($394).w,A1                     ; CacheVars
-            move.l  ($1C,A0),($20,A1)               ; ioMisc -> CacheMinZn
-            moveq   #0,D0
-            bra.b   CTExit
-GetMaxCXfr:
-            jsr     (FSQueueSync.w,PC)
-            movea.l ($394).w,A1                     ; CacheVars
-            move.l  ($12,A1),($1C,A0)               ; CacheByteLim -> ioMisc
-            moveq   #0,D0
-            bra.b   CTExit
-SetMaxCXfr:
-            jsr     (FSQueueSync.w,PC)
-            movea.l ($394).w,A1                     ; CacheVars
-            move.l  ($4,A1),D0                      ; OldBufPtr
-            sub.l   ($8,A1),D0                      ; NewBufPtr
-            move.l  ($1C,A0),D1                     ; ioMisc
-            cmp.l   D1,D0
-            bcc.b   .L1
-            moveq   #paramErr,D0
-            bra.w   CTExit
-.L1:
-            move.l  D1,($12,A1)                     ; CacheByteLim
-            moveq   #0,D0
-            bra.w   CTExit
-GetCStatus:
-            jsr     (FSQueueSync.w,PC)
-            movea.l ($394).w,A1                     ; CacheVars
-            moveq   #0,D0
-            tst.b   ($11,A1)                        ; CurEnable
-            beq.b   .L1
-            btst    #5,($20B).w                     ; CacheEnable
-            beq.b   .L1
-            moveq   #1,D0
-.L1:
-            move.l  D0,($1C,A0)                     ; ioMisc
-            moveq   #0,D0
-            bra.w   CTExit
-SetCStatus:
-            jsr     (FSQueueSync.w,PC)
-            tst.l   ($1C,A0)                        ; ioMisc
-            beq.b   .L1
-            bset    #5,($20B).w                     ; CacheEnable
-            bra.b   .L2
-.L1:
-            bclr    #5,($20B).w                     ; CacheEnable
-.L2:
-            moveq   #0,D0
-            bra.w   CTExit
-            ds.b    10
-QStuff:
-Enqueue:
-            move    SR,-(SP)
-            addq.w  #2,A1
-            ori     #$700,SR
-            clr.l   (A0)
-            tst.l   (A1)+
-            bne.b   .L1
-            move.l  A0,(A1)
-            move.l  A0,-(A1)
-            bra.b   .L2
-.L1:
-            move.l  A2,-(SP)
-            movea.l (A1),A2
-            move.l  A0,(A2)
-            move.l  A0,(A1)
-            movea.l (SP)+,A2
-            subq.w  #4,A1
-.L2:
-            subq.w  #2,A1
-            move    (SP)+,SR
-            rts
-DequeueTrap:
-            move    SR,-(SP)
-            movem.l A2-A3,-(SP)
-            ori     #$700,SR
-            movea.l (2,A1),A2
-            movea.l A2,A3
-.L1:
-            cmpa.l  A3,A0
-            beq.b   .L2
-            movea.l A3,A2
-            movea.l (A2),A3
-            cmpa.l  (6,A1),A2
-            bne.b   .L1
-            moveq   #-1,D0
-            bra.b   .L4
-.L2:
-            cmpa.l  A2,A3
-            bne.b   .L5
-            move.l  (A2),(2,A1)
-            bne.b   .L3
-            clr.l   (6,A1)
-.L3:
-            moveq   #0,D0
-.L4:
-            movem.l (SP)+,A2-A3
-            move    (SP)+,SR
-            rts
-.L5:
-            move.l  (A3),(A2)
-            cmpa.l  (6,A1),A3
-            bne.b   .L3
-            move.l  A2,(6,A1)
-            bra.b   .L3
-InitQueue:
-            clr.w   (A1)+
-            clr.l   (A1)+
-            clr.l   (A1)
-            subq.w  #6,A1
-            rts
-            ds.b    8
-EMT1010:
-Dispatcher:
-            move.l  A2,-(SP)
-            move.l  D2,-(SP)
-            movea.l ($A,SP),A2
-            move.w  (A2)+,D2
-            cmpi.w  #$A800,D2
-            bcs.b   .L2
-            subi.w  #$AC00,D2
-            bcc.b   .L1
-            move.l  ($1E00.w,D2.w*4),(8,SP)
-            move.l  A2,($C,SP)
-            move.l  (SP)+,D2
-            movea.l (SP)+,A2
-            rts
-            ds.b    8
-.L1:
-            move.l  ($E00.w,D2.w*4),(8,SP)
-            move.l  (SP)+,D2
-            movea.l (SP)+,A2
-            rtd     #4
-.L2:
-            move.l  D1,-(SP)
-            move.l  A1,-(SP)
-            move.w  D2,D1
-            move.l  A2,($14,SP)
-            andi.w  #$100,D2
-            bne.b   .L3
-            move.b  D1,D2
-            move.l  A0,-(SP)
-            jsr     ([DispatchTab.w,D2.w*4])
-            movea.l (SP)+,A0
-            movea.l (SP)+,A1
-            move.l  (SP)+,D1
-            move.l  (SP)+,D2
-            movea.l (SP)+,A2
-            tst.w   D0
-            addq.w  #4,SP
-            rts
-            ds.b    6
-.L3:
-            move.b  D1,D2
-            jsr     ([D2.w*4])
-            movea.l (SP)+,A1
-            move.l  (SP)+,D1
-            move.l  (SP)+,D2
-            movea.l (SP)+,A2
-            tst.w   D0
-            addq.w  #4,SP
-            rts
-sub_40809A34:
-            lsl.w   #6,D1
-            bpl.b   .L2
-            bcc.b   .L3
-.L1:
-            andi.w  #$3FF,D0
-            lea     ($E00.w,D0.w*4),A1
-            rts
-.L2:
-            andi.w  #$1FF,D0
-            moveq   #-$57,D1
-            add.w   D0,D1
-            bgt.b   .L1
-            beq.b   .L3
-            addq.w  #8,D1
-            ble.b   .L3
-            subq.w  #5,D1
-            bne.b   .L1
-.L3:
-            andi.w  #$FF,D0
-            lea     (DispatchTab.w,D0.w*4),A1
-            rts
-GetTrapAddress:
-            bsr.b   sub_40809A34
-            movea.l (A1),A0
-            moveq   #0,D0
-            rts
-SetTrapAddress:
-            bsr.b   sub_40809A34
-            bra.l   DISPATCHPATCH
-CacheFlush:
-            move.l  ($6F4).w,-(SP)
-            rts
-vCacheFlush:
+DisableMMUPatch:
+            sub.l   D0,D0
+            bset    #CACR_DE_040,D0                 ; Set Data Cache Enable bit on 040s
+            movec   D0,CACR
+            movec   CACR,D0
+            btst    #CACR_DE_040,D0                 ; See if bit exists in CACR
+            beq.b   .not040
+            mc68040
+            cinva   BC                              ; Make sure caches are invalidated
+            sub.l   D0,D0                           ; Clear D0
+            movec   D0,CACR
+            movec   D0,TC
+            move.l  #nuBusTTxlat,D0
+            movec   D0,DTT0
+            move.l  #ioNuBusTTxlat,D0
+            movec   D0,DTT1
+            bra.b   .not030
+            mc68030
+.not040:
+            move.l  #(1<<CACR_WA_030),D0
+            movec   D0,CACR
+            movec   CACR,D0
+            tst.l   D0
+            beq.b   .not030
+            lea     .TCOff,A0
+            pmove.l (A0),TC
+.not030:
+            RTS6
+.TCOff:
+            ds.l    1
+SwitchMMUPatch:
             movec   CACR,D1
-            addq.w  #8,D1
+            sub.l   D0,D0
+            bset    #$1F,D0
+            movec   D0,CACR
+            movec   CACR,D0
+            bclr    #$1F,D0
+            beq.b   .L1
+            movec   D0,CACR
+            mc68040
+            movec   D0,TC
+            pflusha
+            mc68030
+            movea.l (A0),A2
+            move.l  (8,A0),D0
+            mc68040
+            movec   D0,TC
+            cpusha  BC
+            mc68030
+            bra.b   .L2
+.L1:
+            movec   CACR,D0
+            move.w  D0,D1
+            andi.w  #$FEFE,D0
+            movec   D0,CACR
+            lea     DisableMMUPatch.TCOff,A2
+            pmove.l (A2),TC
+            pflusha
+            pmove.d (A0),CRP
+            pmove.l (8,A0),TC
+            ori.w   #$808,D1
+.L2:
             movec   D1,CACR
-            rts
-            lea     EMT1010,A0
+            jmp     (A1)
+SetupMiscSCSI:
+            btst    #$18,D0
             beq.b   .L1
-            lea     EMT1010,A0
+            move.w  #$18,D3
+            lsl.w   #2,D3
+            move.l  (0,A0,D3.w),SCSIBase
 .L1:
-            move.l  A0,LineAVector
-InitDispatcher:
-            lea     BadTrap,A4
-            movea.l ROMBase,A3
-            movea.l A3,A2
-            lea     ($E00).w,A1
-            movea.l A3,A0
-            adda.l  ($22,A0),A0
-            moveq   #$7F,D2
-            move.w  #$3FF,D0
-.L1:
-            move.b  (A0)+,D1
-            bmi.b   .L5
-            lsl.w   #8,D1
-            move.b  (A0)+,D1
-.L2:
-            add.w   D1,D1
-            beq.b   .L7
-            adda.w  D1,A2
-.L3:
-            move.l  A2,(A1)+
-.L4:
-            dbra    D0,.L1
-            lea     DispatchTab,A1
-            bra.b   .L1
-.L5:
-            and.w   D2,D1
-            beq.b   .L6
-            cmp.w   D2,D1
-            bne.b   .L2
-            movea.l (A0)+,A2
-            adda.l  A3,A2
-            bra.b   .L3
-.L6:
-            move.l  A4,(A1)+
+            btst    #$19,D0
+            beq.b   .L2
+            move.w  #$19,D3
+            lsl.w   #2,D3
+            move.l  (0,A0,D3.w),SCSI2Base
             bra.b   .L4
-.L7:
-            bra.l   CACHEVECTORPATCH
-            ds.b    4
-BadTrap:
-            movem.l D0-D7/A0-A7,seVars
-            moveq   #$C,D0
-            jmp     (SysErr1.w,PC)
-            ds.b    14
-IntHnd:
-            rte
-.L1:
-            dc.w    $4E73
-            ds.b    12
-sub_40809B10:
-            movem.l D0-D3/A0-A3,-(SP)
-            lea     ExtABInt.L4,A3
-            bra.b   sub_40809B60.L1
-            ds.b    6
-sub_40809B20:
-            movem.l D0-D3/A0-A3,-(SP)
-            lea     SCCIOPBYPASSINT,A3
-            bra.b   sub_40809B60.L1
-.L1:
-            dc.w    $4E73
-            ds.b    4
-sub_40809B30:
-            movem.l D0-D3/A0-A3,-(SP)
-            lea     ExtABInt.L9,A3
-            bra.b   sub_40809B60.L1
-            ds.b    6
-sub_40809B40:
-            movem.l D0-D3/A0-A3,-(SP)
-            lea     sub_40809B60.L7,A3
-            bra.b   sub_40809B60.L1
-            ds.b    6
-sub_40809B50:
-            movem.l D0-D3/A0-A3,-(SP)
-            lea     ExtABInt.L7,A3
-            bra.b   sub_40809B60.L1
-            ds.b    6
-sub_40809B60:
-            movem.l D0-D3/A0-A3,-(SP)
-            lea     .L6,A3
-.L1:
-            tst.b   MMU32bit
-            bne.b   .L4
 .L2:
-            jsr     (A3)
-            tst.l   ($D94).w
-            beq.b   .L3
-            moveq   #7,D0
-            and.b   ($20,SP),D0
-            bne.b   .L3
-            movea.l ($6E4).w,A0
-            jsr     (A0)
-.L3:
-            movem.l (SP)+,D0-D3/A0-A3
-            rte
-.L4:
-            btst    #0,($B73).w
-            beq.b   .L2
-            moveq   #0,D0
-            movea.l JSwapMMU,A0
-            jsr     (A0)
-            jsr     (A3)
-            tst.l   ($D94).w
-            beq.b   .L5
-            moveq   #7,D0
-            and.b   ($20,SP),D0
-            bne.b   .L5
-            movea.l ($6E4).w,A0
-            jsr     (A0)
-.L5:
-            moveq   #1,D0
-            movea.l JSwapMMU,A0
-            jsr     (A0)
-            movem.l (SP)+,D0-D3/A0-A3
-            rte
-            dc.w    0
-.L6:
-            movea.l VIA,A1
-            moveq   #$7F,D0
-            and.b   (vIFR,A1),D0
-            and.b   (vIER,A1),D0
-            movea.w .L8(PC,D0.w*2),A0
-            movea.l (A0),A0
-            jmp     (A0)
-            ds.b    10
-.L7:
-            dc.w    $2278,$0CEC,$707F,$C029,$1A03,$41F8,$0BDE,$C029
-            dc.w    $1C13,$D0FB,$0206,$2050,$4ED0
-.L8:
-            dc.w    $01AE,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $01A2,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $01A6,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $01A2,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $01AA,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $01A2,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $01A6,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $01A2,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            dc.w    $019E,$0192,$0196,$0192,$019A,$0192,$0196,$0192
-            ds.b    6
-SCCIOPBYPASSINT:
-            movea.l SCCRd,A0
-            move.b  (A0),D0
-            movea.l SCCWr,A1
-            move.b  #2,(A1)
-            lea     Lvl2DT,A2
-            moveq   #$E,D0
-            and.b   (A0),D0
-            cmpi.b  #8,D0
-            blt.b   .L1
-            addq.w  #2,A0
-            addq.w  #2,A1
-.L1:
-            movea.l (0,A2,D0.w*2),A2
-            jmp     (A2)
-            ds.b    10
-ExtBInt:
-            move.b  (A0),D0
-            lea     SCCBSts,A3
-            lea     ExtStsDT,A2
-            bra.b   ExtABInt
-            ds.b    4
-ExtAInt:
-            move.b  (A0),D0
-            lea     SCCASts,A3
-            lea     ($2C6).w,A2
-ExtABInt:
-            move.b  #15,(A1)
-            move.b  (A3),D1
-            move.b  D0,(A3)
-            eor.b   D0,D1
-            and.b   (A0),D1
-            move.b  #$10,(A1)
-            movea.l (A2),A2
-            jmp     (A2)
-            dc.w    0
-.L4:
-            moveq   #0,D0
-            jmp     (IOPINTERRUPT.w,PC)
-            ds.b    10
-.L5:
-            move.b  #1,($1A00,A1)
-.L6:
-            moveq   #1,D0
-            jmp     (IOPINTERRUPT.w,PC)
-            ds.b    4
-.L7:
-            movea.l VIA2,A1
-            move.w  ($202,A1),D0
-            btst    #6,D0
-            bne.b   .L15
-.L8:
-            btst    #$B,D0
-            bne.w   sub_40809B60.L6
-            btst    #$A,D0
-            bne.b   .L13
-            rts
-.L15:
-            moveq   #7,D1
-            and.b   (6,A1),D1
-            bne.b   .L6
-            bra.b   .L8
-            ds.b    8
-.L9:
-            movea.l VIA2,A1
-            move.w  ($202,A1),D0
             btst    #9,D0
-            bne.b   .L16
-.L10:
-            btst    #8,D0
-            bne.b   .L12
-.L11:
-            movea.l ($D74).w,A0
-            jmp     (A0)
-.L16:
-            moveq   #7,D1
-            and.b   (9,A1),D1
-            beq.b   .L10
-            movea.l ($D7C).w,A0
-            jmp     (A0)
-.L12:
-            moveq   #7,D1
-            and.b   (8,A1),D1
-            beq.b   .L11
-            movea.l ($D80).w,A0
-            jmp     (A0)
-            ds.b    10
-.L13:
-            lea     (-$17F9,A1),A1
-            movea.l ($196).w,A0
-            jmp     (A0)
-            movea.l ($19A).w,A0
-            jmp     (A0)
-sub_40809E00:
-            bset    #6,NMIFlag
-            bne.b   .L1
-            move    (SP),SR
-            movem.l D0/A0,-(SP)
-            _PowerOff
-            movem.l (SP)+,D0/A0
-.L1:
-            rte
-PowerOff:
-            bsr.w   WaitAWhile
-            bsr.l   PMGRPOWEROFFPATCH
-            BigJmp  POWEROFFPATCH,A0
-PowerOffCont:
-            movea.l VIA2,A0
-            bra.b   .L1
-            ds.b    4
-.L1:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   WaitAWhile
-            bset    #7,($204,A0)
-WaitAWhile:
-            move.l  #$FE0C0000,D0
-.L1:
-            move.w  TimeDBRA,D0
-.L2:
-            dbra    D0,.L2
-            addq.l  #1,D0
-            bne.b   .L1
-            rts
-InitIntHandler:
-            lea     Lvl1DT,A0
-            lea     GOTSLOTHANDLER.L6,A1
-            moveq   #$F,D0
-.L1:
-            move.l  A1,(A0)+
-            dbra    D0,.L1
-            lea     (clock.w,PC),A0
-            move.l  A0,Lvl1DT
-            lea     VBLInt,A0
-            move.l  A0,($196).w
-            btst    #2,HWCfgFlags
-            beq.b   .L2
-            lea     ($1B6).w,A2
-            lea     ExtBInt,A0
-            move.l  A0,(A2)
-            lea     ExtAInt,A0
-            move.l  A0,($10,A2)
-            lea     ExtStsDT,A2
-            lea     GOTSLOTHANDLER.L6,A0
-            move.l  A0,(A2)+
-            move.l  A0,(A2)+
-            move.l  A0,(A2)+
-            move.l  A0,(A2)+
-.L2:
-            lea     ($D70).w,A2
-            moveq   #7,D0
+            bne.b   .L3
+            move.l  SCSIHsk,SCSIDMA
 .L3:
-            move.l  A0,(A2)+
-            dbra    D0,.L3
-            lea     (SlotInt.w,PC),A0
-            bra.l   INITSLOTINTSPATCH
-            dc.w    0
-INTHANDLERNOVIA2:
-            lea     (RBVSLOTINT.w,PC),A0
-            btst    #5,($DD2).w                     ; TestFor RBVExists
-            bne.b   GOTSLOTHANDLER
-            lea     (OSSSLOTINT.w,PC),A0
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            nop
-GOTSLOTHANDLER:
-            move.l  A0,($D74).w
-            lea     Lev1AutoVector,A2
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            lea     sub_40809B50,A0
-            move.l  A0,(A2)+
-            lea     sub_40809B30,A0
-            move.l  A0,(A2)+
-.L1:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            bne.b   .L2
-            lea     sub_40809B60,A0
-            move.l  A0,(A2)+
-            lea     sub_40809B40,A0
-            move.l  A0,(A2)+
-            btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
-            beq.b   .L2
-            lea     ExtABInt.L5,A0
-            move.l  A0,($D70).w
-.L2:
-            lea     sub_40809B20.L1,A0
-            move.l  A0,(A2)+
-            btst    #1,($DD1).w                     ; TestFor SCCIOPExists
-            beq.b   .L3
-            lea     sub_40809B10,A0
-            move.l  A0,(A2)+
-.L3:
-            btst    #1,($DD1).w                     ; TestFor SCCIOPExists
+            btst    #$A,D0
             bne.b   .L4
-            lea     sub_40809B20,A0
-            move.l  A0,(A2)+
-.L4:
-            lea     IntHnd.L1,A0
-            move.l  A0,(A2)+
-            lea     IntHnd,A0
-            cmpi.b  #0,BoxFlag
-            bne.b   .L5
-            lea     sub_40809E00,A0
-.L5:
-            move.l  A0,(A2)+
-.L6:
-            rts
-DisableIntSources:
-            movea.l VIA,A0
-            move.b  #$7F,(vIER,A0)
-            movea.l VIA2,A0
-            btst    #3,($DD2).w                     ; TestFor VIA2Exists
-            bne.b   .L1
-            btst    #5,($DD2).w                     ; TestFor RBVExists
-            beq.b   .L2
-.L1:
-            move.b  #$7F,($1C13,A0)
-.L2:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L4
-            movea.l VIA2,A0
-            lea     0.w(A0),A0
-            moveq   #$E,D0
-.L3:
-            clr.b   (A0)+
-            dbra    D0,.L3
-            movea.l VIA2,A0
-            move.b  #1,($B,A0)
-            move.b  #4,(7,A0)
+            move.l  SCSIDMA,SCSIHsk
 .L4:
             rts
-Enable60HzInts:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            movea.l VIA2,A0
-            move.b  #1,($A,A0)
-            rts
-.L1:
-            movea.l VIA,A0
-            move.b  #$82,(vIER,A0)
-            rts
-            ds.b    12
-EnableSlotInts:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
+SETUPSCSITIME:
+            movea.l SCSIBase,A0
+            btst    #0,AddrMapFlags                 ; TestFor SCSI96_1Exists
             beq.b   .L2
-            movea.l VIA2,A0
-            lea     0.w(A0),A0
-            moveq   #5,D0
+            move.b  D1,($1000,A1)
+            move.b  D2,($1200,A1)
 .L1:
-            move.b  #2,(A0)+
+            btst    #0,($40,A0)
             dbra    D0,.L1
-            rts
+            jmp     (A2)
 .L2:
-            movea.l VIA2,A0
-            move.b  #$82,($1C13,A0)
-            rts
-EnableSWIMIOPInts:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            movea.l VIA2,A0
-            move.b  #1,(6,A0)
-            rts
-.L1:
-            movea.l VIA2,A0
-            move.b  #$81,($1C13,A0)
-            rts
-EnableASCInts:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            movea.l VIA2,A0
-            move.b  #2,(8,A0)
-            rts
-.L1:
-            movea.l VIA2,A0
-            move.b  #$90,($1C13,A0)
-            rts
-DisableASCInts:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            movea.l VIA2,A0
-            clr.b   (8,A0)
-            rts
-.L1:
-            movea.l VIA2,A0
-            move.b  #$10,($1C13,A0)
-            rts
-ClearASCInt:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            rts
-.L1:
-            movea.l VIA2,A0
-            move.b  #$90,($1A03,A0)
-            rts
-EnableSCSIInts:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            movea.l VIA2,A0
-            move.b  #2,(9,A0)
-            rts
-.L1:
-            movea.l VIA2,A0
-            btst    #7,($DD2).w                     ; TestFor SCSIDMAExists
-            beq.b   .L2
-            move.b  #$88,($1C13,A0)
-            rts
-.L2:
-            move.b  #$88,($1C13,A0)
-            rts
-            rts
-DisableSCSIInts:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            movea.l VIA2,A0
-            clr.b   (9,A0)
-            rts
-.L1:
-            movea.l VIA2,A0
-            btst    #7,($DD2).w                     ; TestFor SCSIDMAExists
-            beq.b   .L2
-            move.b  #8,($1C13,A0)
-            rts
-.L2:
-            move.b  #8,($1C13,A0)
-            rts
-            rts
-ClearSCSIInt:
-            btst    #2,($DD1).w                     ; TestFor OSSExists
-            beq.b   .L1
-            rts
-.L1:
-            movea.l VIA2,A0
-            btst    #7,($DD2).w                     ; TestFor SCSIDMAExists
-            beq.b   .L2
-            move.b  #$88,($1A03,A0)
-            rts
-.L2:
-            move.b  #$88,($1A03,A0)
-            rts
-            dc.w    $4E75
-            ds.b    4
-DebugUtil:
-            lea     .table,A0
-            cmp.l   (A0)+,D0
-            bhi.b   .tooBig
-            add.w   D0,D0
-            adda.w  (A0,D0.w),A0
-            jmp     (A0)
-.tooBig:
-            moveq   #paramErr,D0
-            rts
-.table:
-            dc.l    (.last-.first)/2-1              ; Highest selector supported
-.first:
-            dc.w    .getMax-.first                  ; 0
-            dc.w    DebugEnter-.first               ; 1
-            dc.w    DebugExit-.first                ; 2
-            dc.w    DebugPoll-.first                ; 3
-.last:
-.getMax:
-            move.l  .table,D0
-            rts
-DebugEnter:
-            bra.w   DoDebugEnter
-            ds.b    8
-DebugExit:
-            bra.w   DoDebugExit
-DebugPoll:
-            btst    #2,HWCfgFlags
-            beq.b   PollDone
-            bsr.l   DEBUGPWRMGRADBPATCH1
-            nop
-            movea.l VIA,A1
-            btst    #2,(vIFR,A1)
-            beq.b   PollDone
-            bsr.b   RunKBD
-            nop
-PollDone:
-            moveq   #0,D0
-            rts
-RunKBD:
-            movem.l D3/A3,-(SP)
-            btst    #2,HWCfgFlags
-            beq.b   RunDone
-            bsr.l   DEBUGUTILRUNKBDPATCH
-            btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
-            beq.b   .L1
-            move.l  #$8080001,D0
-            jsr     (IOPINTERRUPT.w,PC)
-            bra.b   RunDone
-.L1:
-            movea.l VIA,A1
-            movea.l ($19A).w,A0
-            jsr     (A0)
-            nop
-RunDone:
-            movem.l (SP)+,D3/A3
-            rts
-EnableParityInts:
-            btst    #4,($DD1).w                     ; TestFor RPUExists
-            beq.b   .L1
-            movea.l VIA2,A0
-            move.b  #7,($E,A0)
+            move.b  D1,($1000,A1)
+            move.b  D2,($1200,A1)
+.L3:
+            btst    #0,($40,A0)
+            dbra    D0,.L3
+            jmp     (A2)
+SysErrInitPatch:
+            BSR6    SysErrInit
+            cmpi.b  #4,CPUFlag
+            blt.b   .L1
+            bsr.l   InstallFPSP
 .L1:
             rts
-DoDebugEnter:
-            btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
-            beq.b   .L1
-            bsr.b   RunKBD
-.L1:
-            move.l  A0,-(SP)
-            BigJsr  DEBUGENTERCONT,A0
-            movea.l (SP)+,A0
+InitMemMgrPatch:
+            bsr.w   InitMemMgr
+            bsr.l   INSTALLPRIVTRAP
             rts
-DoDebugExit:
-            move.l  A0,-(SP)
-            BigJsr  DEBUGEXITCONT,A0
-            movea.l (SP)+,A0
+INITMEMDISPANDSHUTDOWNMGRS:
+            bsr.l   InitMemoryDispatch
+            bsr.l   InitShutdownMgr
             rts
-            dc.b    'GaryGaryGaryGary'
-DTCore:
-DTInstall:
-            cmpi.w  #7,(4,A0)
+DrawBeepScreenPatch:
+            move.b  BoxFlag,D0
+            cmpi.b  #$F,D0
             bne.b   .L1
-            lea     DTQueue,A1
-            jsr     QStuff
-            moveq   #0,D0
+            lea     (-$74,A2),A0
+            move.l  A0,-(SP)
+            pea     (-$18,A2)
+            _FillRect
+            _PenNormal
             rts
 .L1:
-            moveq   #-2,D0
-            rts
-DisptchTsk:
-            move.l  ($6E4).w,-(SP)
-            rts
-vDisptch:
-            btst    #6,VBLQueue
+            lea     (-$74,A2),A0
+            move.l  A0,-(SP)
+            bra.l   DrawBeepScreenReturn
+BOOTBLOCKFLUSHPATCH:
+            _Read
             bne.b   .L1
-            bset    #6,DTQueue
-            beq.b   .L3
+            bsr.l   CacheFlush
+            cmpi.w  #$4C4B,(A6)
 .L1:
-            rts
+            bra.l   BOOTBLOCKFLUSHRETURN
+INSTALLSONYDRIVERPATCH:
+            btst    #IWMExists,(AddrMapFlags+3).w   ; TestFor IWMExists
+            bne.b   .L1
+            btst    #SWIMIOPExists-16,(AddrMapFlags+1).w ; TestFor SWIMIOPExists
+            beq.b   .L2
+.L1:
+            move.l  A1,($12,A0)
+            _Open
 .L2:
-            movea.l D0,A0
-            lea     DTQueue,A1
-            jsr     DequeueTrap
+            rts
+POWERDWNPTCH:
+            btst    #0,HWCfgFlags                   ; TestFor hwCbPwrMgr
+            beq.b   .L1
+            subq.w  #4,SP
+            move.b  #$5B,(SP)
+            move.l  SP,-(SP)
+            move.l  (SP),-(SP)
+            move.w  #1,-(SP)
+            move.w  #$10,-(SP)
+            movea.l SP,A0
+            _PMgrOp
+            lea     ($10,SP),SP
+            movea.l PmgrBase,A0
+            bclr    #2,($54,A0)
+.L1:
+            bsr.w   DrawBeepScreen
+            rts
+InitHWRoutines:
+            bsr.l   InitSCC
+            move.w  D2,-(SP)
+            bsr.l   InitIWM
+            move.w  (SP)+,D2
+            bsr.l   InitSCSI
+            bsr.b   INITSNDHW
+            rts
+INITSNDHW:
+            movem.l D3-D4/A0-A6,-(SP)
+            movea.l UnivInfoPtr,A0
+            adda.l  (A0),A0
+            move.b  SdVolume,D0
+            BSR6    INITSNDNORAM.L4
+            movem.l (SP)+,D3-D4/A0-A6
+            rts
+INITSNDNORAM:
+            move.l  A5,D3
+            moveq   #0,D2
+            BigBSR6 GetHardwareInfo,A0
             movea.l (8,A0),A2
-            movea.l ($C,A0),A1
-            andi    #$F8FF,SR
-            jsr     (A2)
-.L3:
-            ori     #$700,SR
-            move.l  ($D94).w,D0
-            bne.b   .L2
-            bclr    #6,DTQueue
-            rts
-            ds.b    6
-VBLCore:
-VInstall:
-            lea     VBLQueue,A1
+            move.w  #$10,D1
+            BigBSR6 RdXByte,A0
+            cmpi.b  #$A8,D1
+            beq.b   .L1
+            moveq   #5,D1
+            bra.b   .L2
 .L1:
-            cmpi.w  #1,(4,A0)
-            bne.b   .L4
-            move.w  ($A,A0),D1
+            move.w  #8,D1
+            BigBSR6 RdXByte,A0
+.L2:
+            andi.b  #7,D1
+            bne.b   .L3
+            move.b  #5,D1
+.L3:
+            move.b  D1,D4
+            moveq   #0,D2
+            BigBSR6 GetHardwareInfo,A0
+            move.b  D4,D0
+            BSR6    .L4
+            movea.l D3,A5
+            RTS5
+.L4:
+            movea.l ($30,A0),A3
+            move.b  D0,D1
+            asl.b   #5,D1
+            move.b  D1,($806,A3)
+            move.b  ($800,A3),D1
+            andi.b  #$F0,D1
+            cmpi.b  #$B0,D1
+            bne.w   .L6
+            move.w  #$7F00,($F06,A3)
+            move.w  #$7F,($F26,A3)
+            cmpi.b  #9,(-4,A0)
+            bne.b   .L5
+            mulu.w  #$12,D0
+            move.b  D0,($F06,A3)
+            clr.b   ($F07,A3)
+            clr.b   ($F26,A3)
+            move.b  D0,($F27,A3)
+.L5:
+            move.b  #1,($F09,A3)
+            move.b  #1,($F29,A3)
+            ori.b   #$80,($803,A3)
+            andi.b  #$7F,($803,A3)
+            move.b  #2,($80A,A3)
+            move.b  #1,($801,A3)
+            clr.b   ($F08,A3)
+            clr.b   ($F28,A3)
+            move.w  #$812F,($F04,A3)
+            move.w  #$812F,($F24,A3)
+            clr.w   ($F10,A3)
+            move.w  #$3C,($F12,A3)
+            move.w  #$CC73,($F14,A3)
+            move.w  #$C962,($F16,A3)
+            clr.w   ($F30,A3)
+            move.w  #$3C,($F32,A3)
+            move.w  #$CC73,($F34,A3)
+            move.w  #$C962,($F36,A3)
+            move.b  #$80,($F08,A3)
+            move.b  #$80,($F28,A3)
+.L6:
+            RTS6
+            ds.b    694
+UNIVERSALPATCH:
+TestForFPU:
+            movec   CACR,D1
+            bset    #$1F,D1
+            movec   D1,CACR
+            movec   CACR,D1
+            bclr    #$1F,D1
+            beq.b   .L1
+            movec   D1,CACR
+            bra.b   .L2
+.L1:
+            move.b  #7,D1
+            movec   D1,SFC
+            moves.w ($22000).l,D1
+.L2:
+            cmp.b   D1,D1
+            RTS6
+TESTFORRPU:
+            tst.b   (A2)
+            tst.b   (A2)
+            tst.b   (A2)
+            tst.b   (A2)
+            st      ($10,A2)
+            move.b  (A2),D2
+            st      ($10,A2)
+            st      (A2)
+            clr.b   ($10,A2)
+            moveq   #1,D1
+            and.b   (A2),D1
+            seq     D1
+            beq.b   .L1
+            st      ($10,A2)
+            clr.b   (A2)
+            st      ($10,A2)
+            moveq   #1,D1
+            and.b   (A2),D1
+.L1:
+            st      ($10,A2)
+            move.b  D2,(A2)
+            tst.b   D1
+            RTS6
+TESTFORVIER:
+            moveq   #0,D2
+TESTVIERWRAP:
+            tst.b   (0,A2,D2.l)
+            move.b  (A2),D1
+            rol.w   #8,D1
+            st      D1
+            move.b  D1,(A2)
+.L1:
+            neg.b   D1
+            move.b  D1,(A2)
+            add.b   D1,D1
+            beq.b   .L2
+            neg.b   D1
+            cmp.b   (0,A2,D2.l),D1
+            bne.b   .L2
+            cmp.b   (A2),D1
+            beq.b   .L1
+.L2:
+            ror.w   #8,D1
+            move.b  #$7F,(A2)
+            move.b  D1,(A2)
+            lsr.w   #8,D1
+            RTS6
+TESTFORRVIER:
+            move.b  (A2),D1
+            rol.w   #8,D1
+            st      D1
+            move.b  D1,(A2)
+.L1:
+            neg.b   D1
+            move.b  D1,(A2)
+            add.b   D1,D1
+            beq.b   .L2
+            neg.b   D1
+            move.b  (A2),D2
+            eor.b   D1,D2
+            andi.b  #$9F,D2
+            beq.b   .L1
+.L2:
+            ror.w   #8,D1
+            move.b  #$7F,(A2)
+            move.b  D1,(A2)
+            lsr.w   #8,D1
+            RTS6
+TestForSCSIDMA:
+            tst.l   ($80,A2)
+            cmp.b   D1,D1
+            RTS6
+TESTFORSCSI96:
+            tst.b   ($C0,A2)
+            cmpi.b  #4,($C0,A2)
+            RTS6
+TestForSCC:
+            tst.b   (0,A2,D2.l)
+            ror.b   #8,D1
+            move.b  #$D,(A2)
+            ror.b   #8,D1
+            move.b  (0,A2,D2.l),D1
+            ror.b   #8,D1
+            move.b  #$C,(A2)
+            lsl.l   #8,D1
+            move.b  (0,A2,D2.l),D1
+            ror.b   #8,D1
+            move.b  #$D,(A2)
+            ror.b   #8,D1
+            move.b  #$47,(A2)
+            ror.b   #8,D1
+            move.b  #$C,(A2)
+            ror.b   #8,D1
+            move.b  #$44,(A2)
+            ror.b   #8,D1
+            move.b  #$D,(A2)
+            lsl.l   #8,D1
+            move.b  (0,A2,D2.l),D1
+            ror.b   #8,D1
+            move.b  #$C,(A2)
+            lsl.l   #8,D1
+            move.b  (0,A2,D2.l),D1
+            subi.w  #$4744,D1
+            ror.l   #8,D1
+            move.b  #$C,(A2)
+            ror.l   #8,D1
+            move.b  D1,(A2)
+            ror.b   #8,D1
+            move.b  #$D,(A2)
+            lsr.l   #8,D1
+            move.b  D1,(A2)
+            lsr.l   #8,D1
+            RTS6
+TESTFORIOP:
+            move.b  (-$1C,A2),D1
+            moveq   #6,D2
+            and.b   D1,D2
+            swap    D1
+            move.w  (-$1F,A2),D1
+            ori.b   #2,D2
+            move.b  D2,(-$1C,A2)
+            tst.l   (-$18,A2)
+            move.w  (-$1F,A2),D2
+            move.w  D1,(-$1F,A2)
+            subq.w  #4,D2
+            sub.w   D1,D2
+            swap    D1
+            andi.b  #$CF,D1
+            move.b  D1,(-$1C,A2)
+            tst.w   D2
+            RTS6
+GetVIAInputs:
+            moveq   #0,D1                           ; Initialize via info result
+            btst    #2,D0                           ; See if VIA1 exists
+            beq.b   .noVIA1                         ; If not, skip it
+            movea.l (8,A0),A1
+            move.b  ($1E00,A1),D2
+            lsl.w   #8,D2                           ; Make room for direction bits
+            move.b  ($600,A1),D2
+            move.b  D2,D1
+            and.b   (-$C,A0),D1
+            move.b  D1,($600,A1)
+            move.b  ($1E00,A1),D1
+            move.b  D2,($600,A1)
+            lsr.w   #8,D2
+            move.b  D2,($1E00,A1)
+            lsl.w   #8,D1
+            move.b  (A1),D2
+            lsl.w   #8,D2
+            move.b  ($400,A1),D2
+            move.b  D2,D1
+            and.b   (-$B,A0),D1
+            move.b  D1,($400,A1)
+            move.b  (A1),D1
+            move.b  D2,($400,A1)
+            lsr.w   #8,D2
+            move.b  D2,(A1)
+.noVIA1:
+            swap    D1
+            btst    #$B,D0
+            beq.b   .noVIA2
+            movea.l ($2C,A0),A1
+            move.b  ($1E00,A1),D2
+            lsl.w   #8,D2
+            move.b  ($600,A1),D2
+            move.b  D2,D1
+            and.b   (-$A,A0),D1
+            move.b  D1,($600,A1)
+            move.b  ($1E00,A1),D1
+            move.b  D2,($600,A1)
+            lsr.w   #8,D2
+            move.b  D2,($1E00,A1)
+            lsl.w   #8,D1
+            move.b  (A1),D2
+            lsl.w   #8,D2
+            move.b  ($400,A1),D2
+            move.b  D2,D1
+            and.b   (-9,A0),D1
+            move.b  D1,($400,A1)
+            move.b  (A1),D1
+            move.b  D2,($400,A1)
+            lsr.w   #8,D2
+            move.b  D2,(A1)
+.noVIA2:
+            RTS6
+MEMORYCTRLINITPATCH:
+            btst    #$15,D0
+            beq.b   .L5
+            movea.l ($54,A0),A3
+            move.l  #$124F0810,D4
+            moveq   #$1F,D3
+            movea.l ($2C,A0),A2
+            bclr    #5,($400,A2)
+            btst    #5,(A2)
+            beq.b   .L1
+            move.l  #$138B0810,D4
+.L1:
+            lea     (A3),A2
+.L2:
+            move.l  D4,(A2)+
+            lsr.l   #1,D4
+            dbra    D3,.L2
+            moveq   #0,D4
+            move.l  D4,(A2)+
+            move.l  D3,($A0,A3)
+            move.l  D3,($A4,A3)
+            move.l  D3,($A8,A3)
+            move.l  D3,($AC,A3)
+            move.l  D3,($B0,A3)
+            move.l  D3,($B4,A3)
+            move.l  ($48,A3),D4
+            btst    #0,D4
             beq.b   .L3
-            tst.w   ($C,A0)
+            moveq   #0,D4
+            bra.b   .L4
+.L3:
+            moveq   #1,D4
+.L4:
+            move.l  D4,(A2)
+            move.l  D3,($B8,A3)
+.L5:
+            btst    #$16,D0
+            beq.b   .L6
+            movea.l ($58,A0),A2
+            movea.l A2,A3
+            adda.l  #$34000,A3
+            move.b  (A3),D3
+            andi.b  #1,D3
+            move.b  D3,(A2)
+.L6:
+            jmp     (A4)
+RELOADBERRVBR:
+            adda.l  D3,SP
+            lea     (GotBusError.w,PC),A0
+            move.l  A0,D0
+.L1:
+            cmp.l   -(A0),D0
+            beq.b   .L2
+            tst.l   (A0)
+            bne.b   .L1
+            lea     BusErrVct,A0
+            move.l  D0,(A0)
+.L2:
+            subq.w  #8,A0
+            movec   A0,VBR
+.L3:
+            moveq   #0,D2
+            BSR6    GetHardwareInfo
+            btst    #0,D0
             beq.b   .L3
+            BSR6    InitVIAs
+            bra.w   ROMBERRANDVBRRTN
+            ds.b    960
+IOPMGR:
+IOPInfoAccess:
+            movem.l D3-D4/A2-A4,-(SP)
+            moveq   #noErr,D0
+            moveq   #0,D1                           ; Zero extend
+            move.b  (A0),D1
+            cmpi.b  #2,D1
+            bhi.b   .paramError
+            move.w  .JumpTable(PC,D1.w*2),D2
+            move.b  (1,A0),D1
+            cmpi.b  #7,D1
+            bhi.b   .paramError
+            lea     ([IOPMgrVars.w],D1.w*4),A1
+            jmp     .JumpTable(PC,D2.w)
+.JumpTable:
+            dc.w    .InstallIOP-.JumpTable
+            dc.w    .GetIOPInfo-.JumpTable
+            dc.w    .RemoveIOP-.JumpTable
+.paramError:
+            moveq   #-$32,D0
+            bra.b   .Done
+.GetIOPInfo:
+            move.l  (A1),(4,A0)
+.Done:
+            movem.l (SP)+,D3-D4/A2-A4
+            rts
+.RemoveIOP:
+            move.l  (A1),(4,A0)
+            clr.l   (A1)
+            bra.b   .Done
+.InstallIOP:
+            tst.l   (A1)
+            bne.b   .paramError
+            movea.l (4,A0),A4
+            move.l  D1,D3
+            subq.l  #4,SP
+            move.l  #'iopc',-(SP)
+            move.w  D3,-(SP)
+            _RGetResource
+            move.l  (SP)+,D0
+            beq.b   .paramError
+            movea.l D0,A0
+            movea.l (A0),A0
             move    SR,-(SP)
             ori     #$700,SR
-            move.l  ($A,A1),D0
-            swap    D0
-            moveq   #0,D2
-            move.w  D0,D2
-            divu.w  D1,D2
-            swap    D2
-            move.w  D2,D0
-            swap    D0
-            divu.w  D1,D0
-            swap    D0
-            sub.w   ($C,A0),D0
-            neg.w   D0
-            bpl.b   .L2
-            add.w   D1,D0
-.L2:
-            add.w   D0,($A,A0)
+            movea.l (A4)+,A2
+            movea.l (A4)+,A3
+            movea.l (A4),A1
+            move.b  #$32,(A1)
+            move.w  #$7FFF,D0
+            moveq   #-1,D1
+.Fill_FF_Loop:
+            move.w  D0,(A2)
+            move.b  D1,(A3)
+            dbra    D0,.Fill_FF_Loop
+            move.w  #$7FFF,D0
+.ComplementLoop:
+            move.w  D0,(A2)
+            move.b  (A3),D1
+            not.b   D1
+            move.w  D0,(A2)
+            move.b  D1,(A3)
+            dbne    D0,.ComplementLoop
+            bne.b   .InitError
+            move.w  #$7FFF,D0
+.Check_00_Loop:
+            move.w  D0,(A2)
+            move.b  (A3),D1
+            dbne    D0,.Check_00_Loop
+            bne.b   .InitError
+            movea.l A0,A1
+.SegLoop:
+            move.b  (A0)+,D0
+            beq.b   .LoadDone
+            move.w  (A0)+,(A2)
+.LoadLoop:
+            move.b  (A0)+,(A3)
+            subq.b  #1,D0
+            bne.b   .LoadLoop
+            move.b  (A1)+,D0
+            move.w  (A1)+,(A2)
+.CheckCodeLoop:
+            move.b  (A3),D1
+            cmp.b   (A1)+,D1
+            bne.b   .InitError
+            subq.b  #1,D0
+            bne.b   .CheckCodeLoop
+            bra.b   .SegLoop
+.LoadDone:
+            move.w  #$31F,(A2)
+            clr.b   (A3)
+            movea.l (A4),A1
+            move.b  #$36,(A1)
+            moveq   #-1,D0
+.AliveWaitLoop:
+            move.w  #$31F,(A2)
+            cmpi.b  #$FF,(A3)
+            dbeq    D0,.AliveWaitLoop
+            beq.b   .Alive
+.InitError:
             move    (SP)+,SR
-.L3:
-            jsr     QStuff
-            moveq   #0,D0
-            rts
-.L4:
-            moveq   #-2,D0
-            rts
-VRemove:
-            cmpi.w  #1,(4,A0)
-            bne.b   VInstall.L4
-            move.l  A1,-(SP)
-            lea     VBLQueue,A1
-            jsr     DequeueTrap
-            movea.l (SP)+,A1
-.L1:
-            rts
-VBLInt:
-            addq.l  #1,Ticks
-            move.b  #2,($1A00,A1)
-            bset    #6,VBLQueue
-            bne.b   VRemove.L1
-            move    #$2000,SR
-            move.l  StkLowPt,D0
+            bra.w   .paramError
+.Alive:
+            move.w  #$200,(A2)
+            addq.l  #8,A4
+            move.b  (A3),(A4)+
+            move.w  #$300,(A2)
+            move.b  (A3),(A4)
+            suba.w  #$11,A4
+            move.l  A4,([IOPMgrVars.w],D3.w*4)
+            lea     ($14,A4),A0
+            lea     (6,A0),A1
+            move.b  D3,(A1)+
+            move.b  #2,(A1)+
+            move.l  #$10C0C00,(A1)+
+            lea     ($2C,A4),A2
+            move.l  A2,(A1)+
+            move.l  A2,(A1)+
+            lea     MOVEREQHANDLER,A2
+            move.l  A2,(A1)+
+            _IOPMsgRequest
+            move    (SP)+,SR
+            bra.w   .Done
+IOPMsgRequest:
+            movem.l D3-D4/A2-A3,-(SP)
+            moveq   #-$32,D0
+            moveq   #0,D2
+            lea     (6,A0),A1
+            move.b  (A1)+,D2
+            cmpi.w  #7,D2
+            bhi.b   .L3
+            movea.l IOPMgrVars,A2
+            movea.l (0,A2,D2.w*4),A2
+            move.l  A2,D3
             beq.b   .L2
-            cmpa.l  D0,SP
-            bcc.b   .L1
-            move.l  SP,StkLowPt
-.L1:
-            movea.l ApplZone,A1
-            cmpa.l  (A1),SP
-            bcc.b   .L2
-            moveq   #$1C,D0
-            _SysError
+            move.b  ($10,A2),D3
+            move.b  (A1)+,D2
+            beq.b   .CheckReqKind
+            move.b  ($11,A2),D3
+.CheckReqKind:
+            cmpi.w  #3,D2
+            bhi.b   .L3
+            move.w  .JumpTable(PC,D2.w*2),D1
+            move.b  (A1)+,D2
 .L2:
-            lea     VBLQueue,A1
+            beq.b   .paramError
+            cmp.b   D3,D2
 .L3:
-            lea     (2,A1),A0
+            bhi.b   .paramError
+            move.w  D2,D3
+            lsl.w   #4,D2
+            moveq   #$20,D4
+            cmp.b   (A1)+,D4
+            bcs.b   .paramError
+            cmp.b   (A1)+,D4
+            bcs.b   .paramError
+            lea     ($28,A2,D2.w),A3
+            jmp     .JumpTable(PC,D1.w)
+.JumpTable:
+            dc.w    .SendXmtMessage-.JumpTable
+            dc.w    .SendRcvReply-.JumpTable
+            dc.w    .WaitRcvMessage-.JumpTable
+            dc.w    .RemoveRcvWaiter-.JumpTable
+.SendXmtMessage:
+            st      (A1)
+            dc.w    $43EB,$0006,$40C2
+            dc.w    $007C,$0700,$B1E9,$0002,$670A,$4EBA,$4ADC,$B1E9
+            dc.w    $0002,$6640,$46C2,$7000,$1028,$0009,$2268,$000C
+            dc.w    $1F3C,$0001,$0043,$0200
+.SendAndInterrupt:
+            move.w  D3,-(SP)
+            lsl.b   #5,D3
+            move.l  (8,A2),-(SP)
+            movea.l (4,A2),A3
+            movea.l (A2),A2
+            move.w  (A2),-(SP)
+            move.w  D3,(A2)
+            bsr.w   CopyToIop
+            move.w  (SP)+,D0
+            movea.l (SP)+,A1
+            move.w  (SP)+,(A2)
+            move.b  (SP)+,(A3)
+            move.w  D0,(A2)
+            move.b  #$E,(A1)
+.success:
+            moveq   #0,D0
+.paramError:
+            movem.l (SP)+,D3-D4/A2-A3
+            rts
+.notAtHead:
+            move    D2,SR
+            bra.b   .success
+.SendRcvReply:
+            cmpa.l  (A3),A0
+            bne.b   .paramError
+            tst.b   (A1)
+            bne.b   .paramError
+            st      (A1)
+            moveq   #0,D0
+            move.b  ($A,A0),D0
+            movea.l ($10,A0),A1
+            move.b  #3,-(SP)
+            ori.w   #$300,D3
+            bra.b   .SendAndInterrupt
+.WaitRcvMessage:
+            tst.l   (A3)
+            bne.b   .paramError
+            st      (A1)
+            move.l  A0,(A3)
+            bra.b   .success
+.RemoveRcvWaiter:
+            cmpa.l  (A3),A0
+            bne.b   .paramError
+            clr.b   (A1)
+            clr.l   (A3)
+            bra.b   .success
+IOPMOVEDATA:
+            movem.l A2-A3,-(SP)
+            moveq   #-$32,D0
+            moveq   #0,D2
+            move.b  (A0)+,D2
+            cmpi.w  #3,D2
+            bhi.b   .L1
+            move.w  .L2(PC,D2.w*2),D1
+            move.b  (A0)+,D2
+            cmpi.w  #7,D2
+            bhi.b   .L1
+            movea.l IOPMgrVars,A1
+            movea.l (0,A1,D2.w*4),A2
+            move.l  A2,D2
+            beq.b   .L1
+            movea.l (4,A2),A3
+            movea.l (A2),A2
+            moveq   #0,D0
+            move.w  (A0)+,D0
+            movea.l (A0)+,A1
+            move.w  (A2),-(SP)
+            move.w  (A0)+,(A2)
+            jsr     .L2(PC,D1.w)
+            move.w  (SP)+,(A2)
+            moveq   #0,D0
+.L1:
+            movem.l (SP)+,A2-A3
+            rts
+.L2:
+            dc.w    $0034,$0088,$00DC,$0008,$40C2,$007C,$0700,$323C
+            dc.w    $021F,$3481,$7001,$1680,$3481,$B013,$67FA,$1019
+            dc.w    $670A,$3499,$1699,$5300,$66FA,$60F2,$3481,$4213
+            dc.w    $46C2,$4E75
+CopyFromIop:
+            cmpi.w  #3,D0
+            bls.b   .L6
+            move.l  A1,D1
+            andi.w  #3,D1
+            beq.b   .L1
+            subq.w  #4,D1
+            add.w   D1,D0
+            jmp     .L1(PC,D1.w*2)
+            move.b  (A3),(A1)+
+            move.b  (A3),(A1)+
+            move.b  (A3),(A1)+
+.L1:
+            ror.l   #2,D0
+            moveq   #7,D1
+            and.w   D0,D1
+            neg.w   D1
+            lsr.w   #3,D0
+            jmp     .L3(PC,D1.w*2)
+.L2:
+            move.l  (A3),(A1)+
+            move.l  (A3),(A1)+
+            move.l  (A3),(A1)+
+            move.l  (A3),(A1)+
+            move.l  (A3),(A1)+
+            move.l  (A3),(A1)+
+            move.l  (A3),(A1)+
+            move.l  (A3),(A1)+
+.L3:
+            dbra    D0,.L2
+            add.l   D0,D0
+            bcs.b   .L7
 .L4:
-            move.l  (A0),D0
-            beq.b   .L5
-            movea.l D0,A0
-            subq.w  #1,($A,A0)
-            bne.b   .L4
+            bpl.b   .L5
+            move.b  (A3),(A1)
+.L5:
+            rts
+.L6:
+            roxr.l  #2,D0
+            bcc.b   .L4
+.L7:
+            bpl.b   .L8
+            move.b  (A3),(A1)+
+.L8:
+            move.w  (A3),(A1)
+            rts
+CopyToIop:
+            cmpi.w  #3,D0
+            bls.b   .L6
+            move.l  A1,D1
+            andi.w  #3,D1
+            beq.b   .Aligned
+            subq.w  #4,D1
+            add.w   D1,D0
+            jmp     .Aligned(PC,D1.w*2)
+            move.b  (A1)+,(A3)
+            move.b  (A1)+,(A3)
+            move.b  (A1)+,(A3)
+.Aligned:
+            ror.l   #2,D0
+            moveq   #7,D1
+            and.w   D0,D1
+            neg.w   D1
+            lsr.w   #3,D0
+            jmp     .L3(PC,D1.w*2)
+.L2:
+            move.l  (A1)+,(A3)
+            move.l  (A1)+,(A3)
+            move.l  (A1)+,(A3)
+            move.l  (A1)+,(A3)
+            move.l  (A1)+,(A3)
+            move.l  (A1)+,(A3)
+            move.l  (A1)+,(A3)
+            move.l  (A1)+,(A3)
+.L3:
+            dbra    D0,.L2
+            add.l   D0,D0
+            bcs.b   .L7
+.L4:
+            bpl.b   .L5
+            move.b  (A1),(A3)
+.L5:
+            rts
+.L6:
+            roxr.l  #2,D0
+            bcc.b   .L4
+.L7:
+            bpl.b   .L8
+            move.b  (A1)+,(A3)
+.L8:
+            move.w  (A1),(A3)
+            rts
+            cmpi.w  #3,D0
+            bls.b   .L10
+            move.l  A1,D1
+            andi.w  #3,D1
+            beq.b   .L10
+            subq.w  #4,D1
+            add.w   D1,D0
+            not.w   D1
+.L9:
+            move.b  (A3),D2
+            cmp.b   (A1)+,D2
+            dbne    D1,.L9
+            bne.b   .L14
+.L10:
+            moveq   #3,D1
+            and.w   D0,D1
+            lsr.w   #2,D0
+            beq.b   .L13
+            subq.w  #1,D0
+.L11:
+            move.l  (A3),D2
+            cmp.l   (A1)+,D2
+            dbne    D0,.L11
+            bra.b   .L13
+.L12:
+            move.b  (A3),D2
+            cmp.b   (A1)+,D2
+.L13:
+            dbne    D1,.L12
+.L14:
+            sne     (A0)
+            bls.b   .L15
+            neg.b   (A0)
+.L15:
+            rts
+IOPINTERRUPT:
+            movea.l IOPMgrVars,A0
+            jmp     ([-4.w,A0])
+vIOPInterrupt:
+            move.l  (0,A0,D0.w*4),D1
+            beq.b   .noIop
+            movea.l D1,A0
+            movea.l (A0)+,A2
+            movea.l (A0)+,A3
+            move    SR,D2
+            move.b  D0,D2
             move.l  A0,-(SP)
+.checkAgain:
+            movea.l (A0)+,A1
+            move.b  (A1),D1
+            lsr.b   #5,D1
+            bcs.b   .xmtComp
+            lsr.b   #1,D1
+            bcs.b   .rcvNew
+            lsr.b   #1,D1
+            bcs.b   .bypassInt
+.IntHandled:
+            move    D2,SR
+            addq.l  #4,SP
+            lsr.l   #8,D0
+            bne.w   .RunNonDeferrable
+            rts
+.noIop:
+            cmpi.w  #0,D0
+            beq.w   SCCIOPBYPASSINT
+            rts
+.bypassInt:
+            move.l  (A0),D1
+            beq.b   .IntHandled
+            move    D2,SR
+            move.l  D0,(SP)
+            movea.l D1,A0
+            jsr     (A0)
+            move.l  (SP)+,D0
+            bra.b   IOPINTERRUPT
+.rcvNew:
+            move.b  #$26,(A1)
+            move.w  #$201,D1
+            move.w  #$301,D3
+            lea     .RcvFound,A1
+            move.b  (5,A0),D0
+            lea     ($1C,A0),A0
+            move.w  (A2),-(SP)
+            bra.b   .SearchStart
+.xmtComp:
+            move.b  #$16,(A1)
+            moveq   #3,D1
+            move.w  #$201,D3
+            lea     .xmtFound,A1
+            move.b  (4,A0),D0
+            lea     ($1C,A0),A0
+            move.w  (A2),-(SP)
+            bra.b   .SearchStart
+.L7:
+            lea     ($10,A0),A0
+            cmp.b   (A3),D1
+            dbeq    D0,.L7
+            bne.b   .searchDone
+            move.w  (A2),D3
+            movem.l D0-D3/A0-A1,-(SP)
+            subq.w  #1,D3
+            move.w  D3,(A2)
+            lsr.w   #8,D1
+            move.b  D1,(A3)
+            move    D2,SR
+            jsr     (A1)
+            movem.l (SP)+,D0-D3/A0-A1
+.SearchStart:
+            ori     #$700,SR
+            move.w  D3,(A2)
+            dbra    D0,.L7
+.searchDone:
+            move.w  (SP)+,(A2)
+            clr.w   D0
+            move.b  D2,D0
+            movea.l IOPMgrVars,A1
+            tst.b   (-$F,A1)
+            bne.b   .toCkAgain
+            tst.l   (-$C,A1)
+            beq.b   .toCkAgain
+            st      (-$F,A1)
+            lea     (-$24,A1),A0
+            movem.l D0/D2/A2,-(SP)
+            jsr     ([JDTInstall.w])
+            movem.l (SP)+,D0/D2/A2
+.toCkAgain:
+            move    D2,SR
+            movea.l (SP),A0
+            bra.w   .checkAgain
+.xmtFound:
+            lea     (8,A0),A1
+            move.l  (A1),D1
+            beq.b   .empty
             move.l  A1,-(SP)
-            movea.l (6,A0),A1
+            movea.l D1,A0
+            subq.l  #2,A1
+            jsr     (DequeueTrap.w,PC)
+            movea.l ($10,A0),A1
+            moveq   #0,D0
+            move.b  ($A,A0),D0
+            bsr.b   .CopyAndQueue
+            movea.l (SP)+,A1
+            move.l  (A1),D1
+            beq.b   .empty
+            movea.l D1,A0
+            jmp     ([$61C.w])
+.empty:
+            rts
+.RcvFound:
+            move.l  (A0),D1
+            beq.b   .empty
+            movea.l D1,A0
+            movea.l ($C,A0),A1
+            moveq   #0,D0
+            move.b  (9,A0),D0
+.CopyAndQueue:
+            beq.b   .CopyDone
+            move.w  D3,D1
+            lsl.b   #5,D1
+            move.w  D1,(A2)
+            bsr.w   CopyFromIop
+.CopyDone:
+            movea.l IOPMgrVars,A1
+            lea     (-$E,A1),A1
+            tst.l   ($14,A0)
+            beq.b   .NoHandler
+            jmp     (QStuff.w,PC)
+.NoHandler:
+            clr.b   ($B,A0)
+            rts
+.RunNonDeferrable:
+            move.l  D0,D3
+            lsr.l   #8,D3
+            movea.l IOPMgrVars,A1
+            lea     (-$E,A1),A1
+            lea     (2,A1),A0
+            ori     #$700,SR
+.RunLoop:
+            move.l  (A0),D0
+            beq.b   .RunDone
+            movea.l D0,A0
+            cmp.b   (6,A0),D2
+            bne.b   .RunLoop
+            move.b  (8,A0),D0
+            tst.b   (7,A0)
+            bne.b   .ChkMsgNum
+            addq.b  #8,D0
+.ChkMsgNum:
+            btst    D0,D3
+            beq.b   .RunLoop
+            jsr     (DequeueTrap.w,PC)
+            move.l  A0,-(SP)
+            bsr.b   .RunLoop
+            movea.l (SP)+,A0
+            clr.b   ($B,A0)
+            move.l  ($14,A0),D0
+            beq.b   .RunRTS
+            movea.l D0,A1
+            jmp     (A1)
+.RunDone:
+            move    D2,SR
+.RunRTS:
+            rts
+CallCompHandler:
+            move    (SP)+,SR
+            movea.l D0,A0
+            jsr     (DequeueTrap.w,PC)
+            clr.b   ($B,A0)
+            move.l  ($14,A0),D0
+            beq.b   IOPDefTask
+            move.l  A1,-(SP)
+            movea.l D0,A1
             jsr     (A1)
             movea.l (SP)+,A1
-            movea.l (SP)+,A0
-            tst.w   ($A,A0)
-            bne.b   .L4
-            jsr     DequeueTrap
-            bra.b   .L4
-.L5:
-            bclr    #6,(A1)
+IOPDefTask:
+            move    SR,-(SP)
+            ori     #$700,SR
+            move.l  (2,A1),D0
+            bne.b   CallCompHandler
+            clr.b   -(A1)
+            move    (SP)+,SR
             rts
-GetSlotVBLQHdr:
-            ext.w   D0
-            cmpi.w  #$E,D0
-            bgt.b   .L1
-            movea.l ([$D04.w],D0.w*4),A1
+MOVEREQHANDLER:
+            movea.l A0,A2
+            movea.l ($C,A0),A0
+            move.b  (6,A2),(1,A0)
+            jsr     ([$620.w])
+            movea.l A2,A0
+            move.b  #1,(7,A0)
+            jmp     ([$61C.w])
+INITIOPMGR:
+            movem.l D0/A0-A3,-(SP)
+            move    SR,-(SP)
+            ori     #$700,SR
+            moveq   #0,D0
+            btst    #1,($DD1).w                     ; TestFor SCCIOPExists
+            beq.b   .noSCCIOP
+            addi.w  #$A8,D0
+.noSCCIOP:
+            btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
+            beq.b   .noSWIMIOP
+            addi.w  #$A8,D0
+.noSWIMIOP:
+            tst.w   D0
+            beq.b   .noIOPs
+            addi.w  #$44,D0
+            _NewPtrSysClear
+            lea     ($24,A0),A2
+            move.l  A2,IOPMgrVars
+            move.w  #7,(-$20,A2)
+            lea     IOPDefTask,A0
+            move.l  A0,(-$1C,A2)
+            lea     (-$E,A2),A0
+            move.l  A0,(-$18,A2)
+            lea     vIOPInterrupt,A0
+            move.l  A0,(-4,A2)
+            lea     ($20,A2),A2
+            btst    #1,($DD1).w                     ; TestFor SCCIOPExists
+            beq.b   .SCCIOPdone
+            moveq   #0,D0
+            movea.l SCCRd,A1
+            lea     (SCCIOPBYPASSINT.w,PC),A3
+            bsr.b   .InstallIOP
+.SCCIOPdone:
+            btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
+            beq.b   .SWIMIOPdone
+            moveq   #1,D0
+            movea.l IWM,A1
+            suba.l  A3,A3
+            bsr.b   .InstallIOP
+.SWIMIOPdone:
+.Done
+            move    (SP)+,SR
+            movem.l (SP)+,D0/A0-A3
             rts
+.noIOPs:
+            lea     .traps,A1
+            move.w  (A1)+,D0
+            _GetToolBoxTrapAddress
+.trapLoop:
+            move.w  (A1)+,D0
+            beq.b   .SWIMIOPdone
+            _SetOSTrapAddress
+            bra.b   .trapLoop
+.traps:
+            dc.w    $A89F,$A086,$A087,$A088,0
+.InstallIOP:
+            movea.l A2,A0
+            move.l  A0,-(SP)
+            clr.w   -(SP)
+            move.w  D0,-(SP)
+            lea     (-$1F,A1),A1
+            move.l  A1,(A0)+
+            addq.w  #7,A1
+            move.l  A1,(A0)+
+            subq.w  #4,A1
+            move.l  A1,(A0)+
+            move.l  A3,(A0)+
+            movea.l SP,A0
+            _IOPInfoAccess
+            addq.l  #8,SP
+            lea     ($A8,A2),A2
+            rts
+SCCIOPByPass:
+            movem.l D0/A0-A2,-(SP)
+            move.l  #$10089,D0
+            clr.b   -(SP)
+            movea.l SP,A0
+            _ReadXPRam
+            bsr.b   sub_40805364
+            and.b   (SP)+,D0
+            bne.b   .Done
+            clr.l   -(SP)
+            clr.l   -(SP)
+            pea     (4,SP)
+            pea     .ByPassMsg
+            move.l  #$10301FF,-(SP)
+            clr.l   -(SP)
+            clr.l   -(SP)
+            movea.l SP,A0
+            _IOPMsgRequest
+            bne.b   .FlagBypass
+.Sync_Loop:
+            tst.b   ($B,SP)
+            bne.b   .Sync_Loop
+.FlagBypass:
+            lea     ($1C,SP),SP
+            bsr.b   sub_4080536E
+.Done:
+            movem.l (SP)+,D0/A0-A2
+            rts
+.ByPassMsg:
+            dc.w    $0400,$FF00
+SCCIOPHwInit:
+            movea.l SCCRd,A1
+            move.b  #$32,(-$1C,A1)
+            lea     .L3,A0
+            move.w  (A0)+,D0
+            move.w  (A0)+,(-$1F,A1)
 .L1:
-            move.w  #$FEAF,D0
-            addq.w  #4,SP
+            move.b  (A0)+,(-$18,A1)
+            dbra    D0,.L1
+            move.b  #$36,(-$1C,A1)
+            lsr.w   #6,D0
+.L2:
+            dbra    D0,.L2
             rts
-SlotVInstall:
-            bsr.b   GetSlotVBLQHdr
-            bra.w   VInstall.L1
-SlotVRemove:
-            bsr.b   GetSlotVBLQHdr
-            cmpi.w  #1,(4,A0)
-            bne.w   VInstall.L4
-            jmp     DequeueTrap
-AttachVBL:
-            bsr.b   GetSlotVBLQHdr
-            move.l  A1,($D10).w
+.L3:
+            dc.w    $0011,$7FEE,$A981,$8D30,$F0A9,$238D,$31F0,$80FE
+            dc.w    $EE7F,$EE7F,$EE7F
+sub_40805364:
+            move.b  (4,SP),($BFE).w
+            moveq   #1,D0
+            rts
+sub_4080536E:
+            beq.b   .L1
+            bset    #0,($BFE).w
+.L1:
+            rts
+            dc.b    'GaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGary'
+            dc.b    'GaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGary'
+            dc.b    'GaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGaryGary'
+            dc.w    $4761,$7279
+HWPRIVPROC:
+            dc.w    HWPRIV.L2-HWPRIVPROC
+            dc.w    HWPRIV.L3-HWPRIVPROC
+            dc.w    HWPRIV.L4-HWPRIVPROC
+            dc.w    HWPRIV.L5-HWPRIVPROC
+            dc.w    EnableExtCache-HWPRIVPROC
+            dc.w    sub_408054F4-HWPRIVPROC
+            dc.w    sub_408054F4.L2-HWPRIVPROC
+            dc.w    0,$0034,$0056,$02C4,0
+HWPRIV:
+            cmpi.w  #$A,D0
+            bhi.b   .L1
+            move.w  HWPRIVPROC(PC,D0.w*2),D0
+            jmp     HWPRIVPROC(PC,D0.w)
+.L1:
+            move.l  #$FFFFFE0A,D0
+            rts
+.L2:
+            bra.l   HWPrivPatch
+            dc.w    $60FF,$0008,$1A8A
+            ds.b    18
+.L3:
+            bra.l   FLUSHICACHEPATCH
+            ds.b    4
+            dc.w    $60FF,$0008,$1C26
+.L4:
+            bra.l   SWAPDCACHEPATCH
+            ds.b    24
+.L5:
+            bra.l   FLUSHDCACHEPATCH
+            ds.b    10
+EnableExtCache:
+            move    SR,-(SP)
+            ori     #$700,SR
+            movea.l UnivInfoPtr,A0
+            cmpi.b  #5,($13,A0)
+            bne.b   .L2
+            movea.l VIA2,A0
+            lea     (A0),A0
+            moveq   #-9,D0
+            and.b   (A0),D0
+            btst    #0,D0
+            beq.b   .L2
+            move.b  D0,(A0)
+            bset    #3,D0
+.L1:
+            move.b  D0,(A0)
+            move.b  (A0),(A0)
+            move.b  (A0),(A0)
+            bclr    #0,D0
+            bne.b   .L1
+.L2:
+            move    (SP)+,SR
             moveq   #0,D0
             rts
-DoVBLTask:
-            bsr.b   GetSlotVBLQHdr
-            addq.l  #1,($A,A1)
-            cmpa.l  ($D10).w,A1
+sub_408054F4:
+            movea.l UnivInfoPtr,A0
+            cmpi.b  #5,($13,A0)
             bne.b   .L1
-            move.l  JCrsrTask,D0
-            beq.b   .L1
-            movea.l D0,A0
-            move.l  A1,-(SP)
-            jsr     (A0)
-            movea.l (SP)+,A1
+            movea.l VIA2,A0
+            lea     (A0),A0
+            ori.b   #1,(A0)
 .L1:
-            bra.w   VBLInt.L3
-InitVBLQs:
-            lea     DoVBLTask,A0
-            move.l  A0,($D28).w
-            clr.l   ($D10).w
+            moveq   #0,D0
+            rts
+.L2:
+            bsr.b   sub_408054F4
+            bsr.b   EnableExtCache
+            rts
+            ds.b    12
+MEMORYDPROC:
+            dc.w    MEMORYDISPATCH.L2-MEMORYDPROC
+            dc.w    MEMORYDISPATCH.L3-MEMORYDPROC
+            dc.w    MEMORYDISPATCH.L4-MEMORYDPROC
+            dc.w    MEMORYDISPATCH.L5-MEMORYDPROC
+            dc.w    MEMORYDISPATCH.L6-MEMORYDPROC
+            dc.w    MEMORYDISPATCH.L7-MEMORYDPROC
+            dc.w    sub_408055DE.L11-MEMORYDPROC
+            dc.w    sub_408055DE.L12-MEMORYDPROC
+            ds.b    8
+MEMORYDISPATCH:
+            cmpi.w  #7,D0
+            bhi.b   .L1
+            move.w  MEMORYDPROC(PC,D0.w*2),D0
+            jmp     MEMORYDPROC(PC,D0.w)
+.L1:
+            move.l  #$FFFFFE0A,D0
+            rts
+.L2:
+            moveq   #0,D0
+            rts
+.L3:
+            moveq   #0,D0
+            rts
+.L4:
+            bra.l   NEWLOCKMEMORY
+.L5:
+            bra.l   NEWUNLOCKMEMORY
+.L6:
+            bra.l   NEWLOCKMEMORYCONTIGUOUS
+.L7:
+            movem.l D3/A3-A4,-(SP)
+            move.l  A0,-(SP)
+            movea.l A0,A4
+            move.l  A1,D3
+            move.l  (A4)+,D2
+            movea.l D2,A0
+            add.l   (A4),D2
+            cmp.l   RealMemTop,D2
+            bhi.b   .L10
+            bsr.l   GETREALPROC
+            tst.w   D0
+            bmi.b   .L10
+            movea.l A0,A3
+            movea.l D2,A0
+            subq.l  #1,A0
+            bsr.l   GETREALPROC
+            tst.w   D0
+            bmi.b   .L10
+            suba.l  A3,A0
+            addq.l  #1,A0
+            cmpa.l  (A4),A0
+            bne.b   .L11
+            tst.l   D3
+            beq.b   .L8
+            move.l  (A4)+,D0
+            add.l   D0,(-8,A4)
+            clr.l   (-4,A4)
+            move.l  A3,(A4)+
+            move.l  D0,(A4)
+.L8:
+            movea.w #1,A0
+            clr.w   D2
+.L9:
+            move.l  D2,D0
+            movea.l (SP)+,A1
+            movem.l (SP)+,D3/A3-A4
+            rts
+.L10:
+            suba.l  A0,A0
+            move.w  #$FFCE,D2
+            bra.b   .L9
+.L11:
+            movea.l (SP),A4
+            movea.l (A4),A0
+            addq.l  #8,A4
+            move.l  D3,D1
+            bsr.w   sub_408055DE
+            tst.w   D2
+            bmi.b   .L10
+            movea.l D1,A0
+            bra.b   .L9
+sub_408055DE:
+            link.w  A6,#-$24
+            movem.l D3-D7,-(SP)
+            move.l  D1,(-$14,A6)
+            move.l  #1,(-$18,A6)
+            clr.l   (-$1C,A6)
+            move.l  (-8,A4),(-$20,A6)
+            move.l  (-4,A4),(-$24,A6)
+            bsr.l   GETREALPROC
+            tst.w   D0
+            bmi.w   .L10
+            move.l  A0,(-4,A6)
+            move.l  #'pgsz',D0
+            _Gestalt
+            move.l  A0,(-$C,A6)
+            move.l  A0,D2
+            subq.w  #1,D2
+            move.l  (-4,A6),D3
+            neg.l   D3
+            and.l   D3,D2
+            move.l  D2,(-$10,A6)
+            movea.l (-$20,A6),A3
+            adda.l  D2,A3
+.L1:
+            movea.l A3,A0
+            bsr.l   GETREALPROC
+            tst.w   D0
+            bmi.w   .L10
+            move.l  (-4,A6),D3
+            add.l   (-$10,A6),D3
+            cmpa.l  D3,A0
+            bne.b   .L3
+            move.l  (-$10,A6),D3
+.L2:
+            add.l   (-$C,A6),D3
+            cmp.l   (-4,A4),D3
+            bcc.b   .L5
+            move.l  D3,(-$10,A6)
+            adda.l  (-$C,A6),A3
+            bra.b   .L1
+.L3:
+            tst.l   (-$14,A6)
+            beq.b   .L4
+            move.l  (-$1C,A6),D3
+            move.l  (-4,A6),(0,A4,D3.l*8)
+            move.l  (-$10,A6),(4,A4,D3.l*8)
+            addq.l  #1,D3
+            cmp.l   (-$14,A6),D3
+            bcc.b   .L7
+            move.l  D3,(-$1C,A6)
+.L4:
+            addq.l  #1,(-$18,A6)
+            move.l  (-$10,A6),D3
+            add.l   D3,(-8,A4)
+            sub.l   D3,(-4,A4)
+            move.l  A0,(-4,A6)
+            moveq   #0,D3
+            bra.b   .L2
+.L5:
+            tst.l   (-$14,A6)
+            bne.b   .L6
+            move.l  (-$18,A6),D1
+            move.l  (-$20,A6),(-8,A4)
+            move.l  (-$24,A6),(-4,A4)
+            bra.b   .L8
+.L6:
+            move.l  (-$1C,A6),D3
+            move.l  (-4,A6),(0,A4,D3.l*8)
+            move.l  (-4,A4),(4,A4,D3.l*8)
+            move.l  (-4,A4),D2
+            add.l   D2,(-8,A4)
+            clr.l   (-4,A4)
+            addq.l  #1,D3
+.L7:
+            move.l  D3,D1
+.L8:
+            moveq   #0,D2
+.L9:
+            movem.l (SP)+,D3-D7
+            unlk    A6
+            rts
+.L10:
+            move.w  #$FFFF,D2
+            bra.b   .L9
+.L11:
+            bra.l   WRITEPROTECTPROC
+.L12:
+            bra.l   UNWRITEPROTECTPROC
+WAITFORSCSIDEVSNUB:
+            dc.w    $60FF,$0008,$1D88
+            ds.b    406
+READSLOTBYTE:
+            move.l  (4,A0),-(SP)
+            clr.b   (3,A0)
+            _sOffsetData
+            bne.b   .L1
+            move.b  ($F,A0),(3,A0)
+            moveq   #0,D0
+.L1:
+            move.l  (SP)+,(4,A0)
+            rts
+            ds.b    4
+READSLOTWORD:
+            move.l  (4,A0),-(SP)
+            clr.w   (2,A0)
+            _sOffsetData
+            bne.b   .L1
+            move.w  ($E,A0),(2,A0)
+            moveq   #0,D0
+.L1:
+            move.l  (SP)+,(4,A0)
+            rts
+            ds.b    4
+READSLOTLONG:
+            move.l  (4,A0),-(SP)
+            clr.l   (A0)
+            bclr    #1,($36,A0)
+            _sReadPBSize
+            bne.b   .L1
+            move.l  (8,A0),(A0)
+            moveq   #0,D0
+.L1:
+            move.l  (SP)+,(4,A0)
             rts
             dc.w    0
+GETCSTRING:
+            movem.l A2-A3,-(SP)
+            move.l  (4,A0),-(SP)
+            move.b  ($31,A0),-(SP)
+            _sFindStruct
+            bne.b   sub_40805950.L1
+            movea.l (4,A0),A3
+            bset    #5,($36,A0)
+            _sCalcStep
+            bne.b   sub_40805950.L1
+            move.l  (A0),D1
+            moveq   #0,D0
+            moveq   #0,D2
+            movea.l A3,A1
+            lea     sub_40805950.L1,A2
+            pea     sub_4080592C
+            move.l  ([SDMJmpTblPtr.w],$E8.w),-(SP)
+            rts
+sub_4080592C:
+            addq.l  #1,D0
+            move.b  (A1),D2
+            beq.b   .L2
+            move.b  D1,D2
+            adda.w  D2,A1
+.L1:
+            ror.l   #8,D1
+            tst.b   D1
+            beq.b   .L1
+            bra.b   sub_4080592C
+.L2:
+            move.l  D0,(8,A0)
+            pea     sub_40805950
+            move.l  ([SDMJmpTblPtr.w],$EC.w),-(SP)
+            rts
+sub_40805950:
+            movea.l A0,A2
+            _NewPtr
+            bne.b   .L1
+            move.l  A0,(A2)
+            movea.l A2,A0
+            move.l  A3,(4,A0)
+            _sReadStruct
+            beq.b   .L1
+            move.l  D0,D1
+            movea.l A0,A1
+            movea.l (4,A1),A0
+            _DisposPtr
+            movea.l A1,A0
+            move.l  D1,D0
+.L1:
+            move.b  (SP)+,($31,A0)
+            move.l  (SP)+,(4,A0)
+            movem.l (SP)+,A2-A3
+            rts
+GETSLOTBLOCK:
+            move.l  (4,A0),-(SP)
+            bset    #1,($36,A0)
+            _sReadPBSize
+            bne.b   .L2
+            move.l  (8,A0),D0
+            subq.l  #4,D0
+            bgt.b   .L1
+            move.w  #$FEB0,D0
+            bra.b   .L2
+.L1:
+            move.l  D0,(8,A0)
+            movea.l A0,A1
+            _NewPtrSys
+            bne.b   .L2
+            move.l  A0,(A1)
+            movea.l A1,A0
+            _sReadStruct
+            beq.b   .L2
+            move.l  D0,D1
+            movea.l A0,A1
+            movea.l (4,A1),A0
+            _DisposPtr
+            movea.l A1,A0
+            move.l  D1,D0
+.L2:
+            move.l  (SP)+,(4,A0)
+            rts
+            ds.b    10
+FINDSLOTSTRUCT:
+            _sOffsetData
+            bne.b   .L1
+            _sCalcsPointer
+.L1:
+            rts
+            ds.b    4
+READSLOTSTRUCT:
+            movem.l D1-D3/A1-A3,-(SP)
+            move.b  ($31,A0),-(SP)
+            movea.l (4,A0),A3
+            move.l  A3,-(SP)
+            move.l  (A0),D0
+            _StripAddress
+            move.l  D0,-(SP)
+            movea.l D0,A1
+            _sPtrToSlot
+            bne.b   sub_40805A26.L4
+            _sFindsInfoRecPtr
+            bne.b   sub_40805A26.L4
+            movea.l (A0),A2
+            move.b  (9,A2),($35,A0)
+            bset    #5,($36,A0)
+            _sCalcStep
+            bne.b   sub_40805A26.L4
+            move.l  (A0),D1
+            pea     sub_40805A26
+            move.l  ([SDMJmpTblPtr.w],$E8.w),-(SP)
+            rts
+sub_40805A26:
+            moveq   #0,D3
+            move.l  (8,A0),D2
+            subq.l  #1,D2
+            lea     .L3,A2
+            move.w  #$FECC,D0
+.L1:
+            move.b  (A3),(A1)+
+            move.b  D1,D3
+            adda.w  D3,A3
+.L2:
+            ror.l   #8,D1
+            tst.b   D1
+            beq.b   .L2
+            dbra    D2,.L1
+            moveq   #0,D0
+.L3:
+            pea     .L4
+            move.l  ([SDMJmpTblPtr.w],$EC.w),-(SP)
+            rts
+.L4:
+            move.l  (SP)+,(A0)
+            move.l  (SP)+,(4,A0)
+            move.b  (SP)+,($31,A0)
+            movem.l (SP)+,D1-D3/A1-A3
+            tst.w   D0
+            rts
+            ds.b    8
+READSLOTINFO:
+            movem.l A2,-(SP)
+            movea.l (A0),A2
+            move.l  A2,-(SP)
+            _sFindsInfoRecPtr
+            bne.w   .L2
+            movea.l (A0),A1
+            moveq   #$F,D2
+.L1:
+            move.b  (A1)+,(A2)+
+            dbra    D2,.L1
+            moveq   #0,D0
+.L2:
+            move.l  (SP)+,(A0)
+            movem.l (SP)+,A2
+            rts
+            ds.b    12
+SLOTDISPOSPTR:
+            move.l  A0,-(SP)
+            movea.l (4,A0),A0
+            _DisposPtr
+            beq.b   .L1
+            move.l  #$FFFFFEC8,D0
+.L1:
+            movea.l (SP)+,A0
+            rts
+            ds.b    12
+READSLOTDRVRNAME:
+            movem.l A2-A3,-(SP)
+            move.b  ($32,A0),D2
+            movea.l (A0),A3
+            move.l  A3,-(SP)
+            clr.b   ($33,A0)
+            clr.l   ($18,A0)
+            _sGetsRsrcPtr
+            bne.b   .L2
+            move.b  #2,($32,A0)
+            _sGetcString
+            bne.b   .L2
+            movea.l (A0),A2
+            move.l  (8,A0),D1
+            subq.b  #1,D1
+            cmpi.l  #$FE,D1
+            bhi.b   .L1
+            move.b  ($B,A0),(A3)+
+            move.b  #$2E,(A3)+
+            movem.l A0-A1,-(SP)
+            movea.l A2,A0
+            movea.l A3,A1
+            move.l  D1,D0
+            _BlockMove
+            movem.l (SP)+,A0-A1
+            bne.b   .L1
+            exg     A2,A0
+            _DisposPtr
+            movea.l A2,A0
+            moveq   #0,D0
+            bra.b   .L3
+.L1:
+            exg     A2,A0
+            _DisposPtr
+            movea.l A2,A0
+.L2:
+            move.l  #$FFFFFEAA,D0
+.L3:
+            move.l  (SP)+,(A0)
+            move.b  D2,($32,A0)
+            movem.l (SP)+,A2-A3
+            rts
+            ds.b    14
+FINDDEVBASE:
+            move.l  A1,-(SP)
+            move.b  ($32,A0),-(SP)
+            move.l  ($18,A0),-(SP)
+            clr.l   ($18,A0)
+            bset    #1,($1B,A0)
+            pea     sub_40805B62
+            move.l  ([SDMJmpTblPtr.w],$2C.w),-(SP)
+            rts
+sub_40805B62:
+            bne.b   .L5
+            moveq   #0,D2
+            move.b  ($31,A0),D2
+            move.b  #$A,($32,A0)
+            _sReadLong
+            bne.b   .L1
+            move.l  (A0),D1
+            andi.l  #$FFFFFF,D1
+            bra.b   .L2
+.L1:
+            move.b  #$C,($32,A0)
+            _sReadLong
+            bne.b   .L5
+            move.l  (A0),D1
+            andi.l  #$FFFFFFF,D1
+            ror.l   #4,D2
+            or.l    D1,D2
+            bra.b   .L4
+.L2:
+            move.l  #$F0000000,D0
+            or.l    D1,D0
+            bfins   D2,D0{4:4}
+            bfins   D2,D0{8:4}
+            move.l  D0,D2
+            nop
+            nop
+            nop
+            tst.b   ($31,A0)
+            bne.b   .L3
+            movea.l UnivInfoPtr,A1
+            adda.l  (8,A1),A1
+            move.l  (8,A1),D2
+            move.l  (4,A1),D1
+.L3:
+            move.b  #7,($32,A0)
+            _sReadWord
+            bne.b   .L4
+            bsr.l   Overpatch
+            nop
+.L4:
+            move.l  D2,(A0)
+            moveq   #0,D0
+.L5:
+            move.l  (SP)+,($18,A0)
+            move.b  (SP)+,($32,A0)
+            movem.l (SP)+,A1
+            rts
+            dc.w    0
+CARDCHANGED:
+            clr.b   (3,A0)
+            _sFindsInfoRecPtr
+            bne.b   .L1
+            movea.l (A0),A1
+            btst    #1,($B,A1)
+            sne     (3,A0)
+            moveq   #0,D0
+.L1:
+            rts
+            ds.b    6
+SLOTEXEC:
+            dc.w    $6028
+sub_40805C12:
+            cmpi.b  #2,(A2)
+            beq.b   .L1
+            move.l  #$FFFFFEB3,D0
+            bra.b   .L3
+.L1:
+            cmpi.b  #2,(1,A2)
+            bls.b   .L2
+            move.l  #$FFFFFEB2,D0
+            bra.b   .L3
+.L2:
+            addq.l  #4,A2
+            movea.l (A2),A1
+            adda.l  A1,A2
+            moveq   #0,D0
+.L3:
+            rts
+            movem.l D3-D4/A2-A3,-(SP)
+            move.l  (4,A0),-(SP)
+            _sGetBlock
+            bne.b   .L5
+            movea.l (A0),A2
+            movea.l A2,A3
+            bsr.b   sub_40805C12
+            bne.b   .L4
+            bsr.l   SLOTMGRPATCH
+            bra.b   .L4
+            ds.b    8
+.L4:
+            exg     D0,D2
+            exg     A3,A0
+            _DisposPtr
+            movea.l A3,A0
+            exg     D2,D0
+.L5:
+            move.l  (SP)+,(4,A0)
+            movem.l (SP)+,D3-D4/A2-A3
+            rts
+            ds.b    12
+CALCSPOINTER:
+            movem.l D3-D6,-(SP)
+            movea.l (4,A0),A1
+            moveq   #0,D1
+            move.w  A1,D1
+            andi.b  #3,D1
+            btst    D1,($35,A0)
+            bne.b   .L1
+            move.l  #$FFFFFEA6,D0
+            bra.b   .L10
+.L1:
+            moveq   #0,D2
+            moveq   #3,D3
+.L2:
+            btst    D3,($35,A0)
+            beq.b   .L3
+            addq.w  #1,D2
+.L3:
+            dbra    D3,.L2
+            tst.b   D2
+            bne.b   .L4
+            move.l  #$FFFFFEA5,D0
+            bra.b   .L10
+.L4:
+            move.l  ($C,A0),D4
+            btst    #$17,D4
+            beq.b   .L5
+            ori.l   #$FF000000,D4
+.L5:
+            move.l  D4,D5
+            divsl.l D2,D6:D5
+            lsl.l   #2,D5
+            tst.b   D6
+            beq.b   .L9
+            bpl.b   .L7
+            neg.w   D6
+            subq.w  #1,D6
+.L6:
+            subq.b  #1,D1
+            andi.b  #3,D1
+            subq.l  #1,D5
+            btst    D1,($35,A0)
+            beq.b   .L6
+            dbra    D6,.L6
+            bra.b   .L9
+.L7:
+            subq.w  #1,D6
+.L8:
+            addq.b  #1,D1
+            andi.b  #3,D1
+            addq.l  #1,D5
+            btst    D1,($35,A0)
+            beq.b   .L8
+            dbra    D6,.L8
+.L9:
+            add.l   D5,(4,A0)
+            moveq   #0,D0
+.L10:
+            movem.l (SP)+,D3-D6
+            rts
+GETSLOTDRVR:
+            bra.w   sub_40805D4A.L5
+DynLoadDrvr:
+            clr.l   ($18,A0)
+            _sGetsRsrcPtr
+            bne.b   .L1
+            move.b  #5,($32,A0)
+            _sExec
+            bne.b   .L1
+            movea.l ($14,A0),A2
+            tst.w   (2,A2)
+            bne.b   .L1
+            move.l  (8,A2),(A0)
+            move.b  (4,A2),($36,A0)
+            moveq   #0,D0
+            bra.b   .L2
+.L1:
+            move.l  #$FFFFFEA7,D0
+.L2:
+            rts
+sub_40805D4A:
+            _sRsrcInfo
+            bne.b   .L3
+            move.b  #4,($32,A0)
+            _sFindStruct
+            bne.b   .L3
+            move.b  #2,($32,A0)
+            bset    #1,($36,A0)
+            _sReadPBSize
+            beq.b   .L1
+            move.b  #1,($32,A0)
+            bset    #1,($36,A0)
+            _sReadPBSize
+            bne.b   .L3
+.L1:
+            subq.l  #4,(8,A0)
+            move.l  (8,A0),D0
+            _ResrvMem sys
+            bne.b   .L3
+            move.l  (8,A0),D0
+            _NewHandle sys
+            bne.b   .L3
+            movea.l A0,A3
+            move.l  (A0),D0
+            _StripAddress
+            move.l  D0,(A1)
+            movea.l A1,A0
+            _sReadStruct
+            bne.b   .L2
+            bsr.l   STATLOADPATCH
+            bra.b   .L4
+.L2:
+            movea.l A3,A0
+            _DisposHandle
+.L3:
+            movea.l A1,A0
+            clr.l   (A0)
+            move.l  #$FFFFFEA7,D0
+.L4:
+            rts
+.L5:
+            bra.l   SLOTGETDRIVERPATCH
+ORIGGETSLOTDRVR:
+            move.b  ($32,A0),D2
+            bsr.w   DynLoadDrvr
+            beq.b   .L1
+            move.b  D2,($32,A0)
+            bsr.w   sub_40805D4A
+.L1:
+            movea.l A1,A0
+            move.b  D2,($32,A0)
+            movem.l (SP)+,A2-A3
+ENDGETSLOTDRVR:
+            rts
+StartSDeclMgr:
+            suba.w  #$38,SP
+            movea.l SP,A0
+            jsr     INITJMPTBL
+            bne.b   .L2
+            bsr.b   INITSLOTMGR
+            bsr.w   InitsRsrcTable
+            bsr.w   InitPRAMRecs
+            clr.b   ($36,A0)
+            move.l  WarmStart,D0
+            cmpi.l  #'WLSC',D0
+            bne.b   .L1
+            bset    #2,($36,A0)
+.L1:
+            bsr.w   PRIMARY_INIT
+            moveq   #0,D0
+.L2:
+            lea     ($38,SP),SP
+            rts
+            ds.b    8
+INITSLOTMGR:
+            movem.l D1/A1-A2,-(SP)
+            bsr.w   sub_40805E48
+            moveq   #$E,D1
+.L1:
+            move.b  D1,($31,A0)
+            _sFindsInfoRecPtr
+            movea.l (A0),A1
+            tst.w   (4,A1)
+            bmi.b   .L2
+            bsr.w   sub_40805F2A
+.L2:
+            dbra    D1,.L1
+            movem.l (SP)+,D1/A1-A2
+            rts
+sub_40805E48:
+            movem.l D1-D2/A0-A3,-(SP)
+            move.l  SP,SInfoPtr
+            suba.w  #$14,SP
+            movea.l #$FEFFFFFF,A1
+            moveq   #$E,D1
+            moveq   #0,D2
+            movea.l UnivInfoPtr,A3
+            adda.l  ($C,A3),A3
+            lea     sub_40805E78.L1,A2
+            pea     sub_40805E78
+            move.l  ([SDMJmpTblPtr.w],$E8.w),-(SP)
+            rts
+sub_40805E78:
+            move.w  #$FFFE,-(SP)
+            bsr.l   ALLOCSLOTOVERPATCH1
+            bne.b   .L2
+            move.b  (A1),D0
+            addq.w  #1,D2
+            move.w  D2,(SP)
+            bra.b   .L2
+.L1:
+            move.w  #$FFFF,(SP)
+.L2:
+            suba.l  #$1000000,A1
+            subq.w  #1,D1
+            bne.b   sub_40805E78
+            pea     sub_40805EA8
+            move.l  ([SDMJmpTblPtr.w],$EC.w),-(SP)
+            rts
+sub_40805EA8:
+            move.l  D2,D0
+            mulu.w  #$18,D0
+            addi.l  #$B0,D0
+            _NewPtrSysClear
+            lea     ($14,A0),A0
+            move.l  A0,SInfoPtr
+            movea.l A0,A1
+            lea     ($3C,A0),A0
+            bsr.l   ALLOCSLOTOVERPATCH2
+            lea     ($18,A0),A0
+            move.w  #$FED4,(4,A0)
+            lea     ($18,A0),A0
+            move.l  ([ROMBase.w],$40.w),D0
+            subq.l  #1,D0
+            add.l   ROMBase,D0
+            move.l  D0,($10,A0)
+            move.w  #1,($C,A0)
+            move.l  A0,(A1)
+            move.w  #1,D0
+.L1:
+            movea.l A0,A2
+            move.w  (SP)+,D1
+            muls.w  #$18,D1
+            adda.l  D1,A2
+            move.l  A2,(0,A1,D0.w*4)
+            move.w  #$64,($C,A2)
+            move.b  D0,($14,A2)
+            not.l   ($10,A2)
+            bfins   D0,($10,A2){4:4}
+            addq.w  #1,D0
+            cmpi.w  #$E,D0
+            ble.b   .L1
+            lea     ($14,SP),SP
+            movem.l (SP)+,D1-D2/A0-A3
+            rts
+sub_40805F2A:
+            movem.l D1/A2,-(SP)
+            suba.w  #$14,SP
+            movea.l SP,A2
+            move.l  A2,(A0)
+            moveq   #3,D1
+.L1:
+            bsr.b   sub_40805F90
+            bne.b   .L4
+            _sReadFHeader
+            bne.b   .L2
+            cmpi.l  #videoMagic,($E,A2)
+            bne.b   .L2
+            bsr.w   sub_40805FEE
+            bne.b   .L2
+            bsr.w   sub_40806014
+            beq.b   .L3
+.L2:
+            subq.l  #1,($10,A1)
+            dbra    D1,.L1
+            move.w  #$FECB,D0
+            bra.b   .L4
+.L3:
+            move.l  ($10,A1),(4,A0)
+            move.l  (A2),($C,A0)
+            addi.l  #$FFFFFFED,($C,A0)
+            _sCalcsPointer
+            bne.b   .L4
+            move.l  (4,A0),(A1)
+.L4:
+            lea     ($14,SP),SP
+            move.w  D0,(4,A1)
+            movem.l (SP)+,D1/A2
+            rts
+sub_40805F90:
+            movem.l D2/A0/A2,-(SP)
+            movea.l ($10,A1),A0
+            pea     sub_40805FA6
+            move.l  ([SDMJmpTblPtr.w],$E8.w),-(SP)
+            rts
+sub_40805FA6:
+            lea     .L2,A2
+.L1:
+            move.b  (A0),D0
+            moveq   #$F,D2
+            and.b   D0,D2
+            beq.b   .L2
+            not.b   D0
+            asr.w   #4,D0
+            cmp.b   D0,D2
+            bne.b   .L2
+            btst    D1,D0
+            bne.b   .L3
+.L2:
+            subq.w  #1,A0
+            dbra    D1,.L1
+            move.w  #$FECB,D0
+            bra.b   .L4
+.L3:
+            move.b  D0,(9,A1)
+            move.l  A0,($10,A1)
+            move.l  A0,D0
+            move.b  D0,($A,A1)
+            moveq   #0,D0
+.L4:
+            pea     sub_40805FE8
+            move.l  ([SDMJmpTblPtr.w],$EC.w),-(SP)
+            rts
+sub_40805FE8:
+            movem.l (SP)+,D2/A0/A2
+            rts
+sub_40805FEE:
+            cmpi.b  #1,($D,A2)
+            bne.b   .L1
+            cmpi.b  #9,($C,A2)
+            bhi.b   .L1
+            tst.b   ($12,A2)
+            bne.b   .L1
+            move.l  (A2),D0
+            beq.b   .L1
+            rol.l   #8,D0
+            ext.w   D0
+            beq.b   .L2
+.L1:
+            move.w  #$FED2,D0
+.L2:
+            rts
+sub_40806014:
+            movem.l D1-D4/A2-A4,-(SP)
+            movea.l A2,A4
+            move.l  (4,A4),D2
+            beq.b   sub_40806058.L6
+            moveq   #1,D1
+            sub.l   D2,D1
+            move.l  ($10,A1),(4,A0)
+            move.l  D1,($C,A0)
+            _sCalcsPointer
+            bne.b   sub_40806058.L6
+            movea.l (4,A0),A3
+            bset    #5,($36,A0)
+            _sCalcStep
+            bne.b   sub_40806058.L6
+            move.l  (A0),D4
+            moveq   #0,D1
+            moveq   #0,D3
+            pea     sub_40806058
+            move.l  ([SDMJmpTblPtr.w],$E8.w),-(SP)
+            rts
+sub_40806058:
+            move.w  #$FED3,D0
+            lea     .L5,A2
+.L1:
+            rol.l   #1,D1
+            cmpi.l  #$C,D2
+            bhi.b   .L2
+            cmpi.l  #8,D2
+            bhi.b   .L3
+.L2:
+            move.b  (A3),D3
+            add.l   D3,D1
+.L3:
+            move.b  D4,D3
+            adda.w  D3,A3
+.L4:
+            ror.l   #8,D4
+            tst.b   D4
+            beq.b   .L4
+            subq.l  #1,D2
+            bne.b   .L1
+            cmp.l   (8,A4),D1
+            bne.b   .L5
+            moveq   #0,D0
+.L5:
+            pea     .L6
+            move.l  ([SDMJmpTblPtr.w],$EC.w),-(SP)
+            rts
+.L6:
+            movem.l (SP)+,D1-D4/A2-A4
+            rts
+InitsRsrcTable:
+            movem.l A1-A2,-(SP)
+            pea     sub_408060B2
+            move.l  ([SDMJmpTblPtr.w],$F0.w),-(SP)
+            rts
+sub_408060B2:
+            move.l  A1,SRsrcTblPtr
+            clr.b   ($31,A0)
+            clr.w   ($24,A0)
+            clr.w   ($26,A0)
+            clr.b   ($33,A0)
+            clr.b   ($34,A0)
+.L1:
+            _sFindsInfoRecPtr
+            movea.l (A0),A2
+            tst.w   (4,A2)
+            bmi.b   .L2
+            bsr.w   sub_408060EC
+.L2:
+            addq.b  #1,($31,A0)
+            cmpi.b  #$E,($31,A0)
+            ble.b   .L1
+            movem.l (SP)+,A1-A2
+            rts
+sub_408060EC:
+            movem.l D3-D5/A3,-(SP)
+            move.l  (A2),(4,A0)
+            move.b  (9,A2),($35,A0)
+            bset    #5,($36,A0)
+            _sCalcStep
+            bne.w   sub_4080617E.L1
+            move.l  (A0),($18,A0)
+            move.l  (A2),D4
+            moveq   #0,D3
+.L1:
+            move.l  D4,(4,A0)
+            pea     sub_40806122
+            move.l  ([SDMJmpTblPtr.w],$DC.w),-(SP)
+            rts
+sub_40806122:
+            bne.b   sub_4080617E.L1
+            move.l  (4,A0),D5
+            move.l  D4,(4,A0)
+            move.l  D5,D4
+            move.b  (A0),D5
+            cmpi.b  #$FF,D5
+            beq.b   sub_4080617E.L1
+            cmp.b   D3,D5
+            bls.b   sub_4080617E.L1
+            move.b  D5,D3
+            move.b  D3,($32,A0)
+            move.l  (A0),D5
+            andi.l  #$FFFFFF,D5
+            move.l  D5,($C,A0)
+            _sCalcsPointer
+            bne.b   sub_4080617E.L1
+            cmpi.w  #$FFFF,(A1)
+            bne.b   .L2
+            movea.l A1,A3
+            pea     .L1
+            move.l  ([SDMJmpTblPtr.w],$F0.w),-(SP)
+            rts
+.L1:
+            move.l  A1,(2,A3)
+.L2:
+            clr.l   ($18,A0)
+            pea     sub_4080617E
+            move.l  ([SDMJmpTblPtr.w],$D4.w),-(SP)
+            rts
+sub_4080617E:
+            bne.b   .L1
+            addq.w  #1,([SInfoPtr.w],-$12.w)
+            move.l  A1,([SInfoPtr.w],-$10.w)
+            adda.w  #$18,A1
+            bra.w   sub_408060EC.L1
+.L1:
+            movem.l (SP)+,D3-D5/A3
+            rts
+            dc.w    0
+InitPRAMRecs:
+            movem.l D1-D5/A1-A2,-(SP)
+            nop
+            nop
+            nop
+            subq.w  #8,SP
+            movea.l SP,A1
+            moveq   #$E,D1
+.L1:
+            move.b  D1,($31,A0)
+            movea.l UnivInfoPtr,A2
+            adda.l  ($C,A2),A2
+            btst    #3,(0,A2,D1.w)
+            bne.b   .L6
+            clr.w   (A1)
+            move.l  A1,(A0)
+            _sReadPRAMrec
+            move.w  (A1),D4
+            clr.l   (A1)
+            clr.l   (4,A1)
+            moveq   #0,D5
+.L2:
+            move.b  D5,($32,A0)
+            bsr.w   sub_4080636E
+            bne.b   .L5
+            movea.l (A0),A2
+            tst.w   (4,A2)
+            bmi.b   .L5
+            cmpi.b  #2,(8,A2)
+            bge.b   .L6
+            move.b  ($32,A0),D5
+            move.b  #$20,($32,A0)
+            _sReadWord
+            beq.b   .L3
+            move.w  #$FEC5,(4,A2)
+            bra.b   .L5
+.L3:
+            move.w  (2,A0),D2
+            cmp.w   D4,D2
+            beq.b   .L6
+            tst.b   D1
+            beq.b   .L2
+            move.b  #$21,($32,A0)
+            _sReadPBSize
+            bne.b   .L4
+            subq.l  #4,(8,A0)
+            move.l  A1,(A0)
+            _sReadStruct
+            bne.b   .L4
+            bset    #1,($B,A2)
+.L4:
+            move.w  D2,(A1)
+.L5:
+            move.l  A1,(4,A0)
+            _sInitSlotPRAM
+.L6:
+            dbra    D1,.L1
+            moveq   #0,D0
+            addq.w  #8,SP
+            movem.l (SP)+,D1-D5/A1-A2
+            rts
+PRIMARYINITRTN:
+            move.l  A2,($14,A0)
+            move.b  #$20,(1,A2)
+            moveq   #0,D0
+            _SwapMMUMode
+            move.b  D0,-(SP)
+            clr.b   ($31,A0)
+            bsr.b   sub_4080627A
+            moveq   #$E,D1
+.L1:
+            move.b  D1,($31,A0)
+            bsr.b   sub_4080627A
+            subq.w  #1,D1
+            bne.b   .L1
+            move.b  (SP)+,D0
+            _SwapMMUMode
+            lea     ($18,SP),SP
+            movem.l (SP)+,D1/A1-A3
+            rts
+sub_4080627A:
+            clr.b   ($32,A0)
+            bsr.w   sub_4080636E
+            bne.w   .L1
+            movea.l (4,A0),A3
+            movea.l (A0),A1
+            tst.w   (4,A1)
+            bmi.b   .L1
+            cmpi.b  #3,(8,A1)
+            bcc.b   .L1
+            move.b  #$22,($32,A0)
+            _sFindStruct
+            bne.b   .L1
+            move.l  A2,-(SP)
+            BigJmp  SLOTPRIMARYINITPATCH,A2
+            ds.b    8
+.L1:
+            rts
+SECONDARY_INIT:
+            movem.l D1-D2/A1-A3,-(SP)
+            suba.w  #$18,SP
+            movea.l SP,A2
+            move.l  A2,($14,A0)
+            move.b  #$20,(1,A2)
+            moveq   #$E,D1
+.L1:
+            move.b  D1,($31,A0)
+            clr.b   ($32,A0)
+            bsr.w   sub_4080636E
+            bne.b   .L4
+            movea.l (4,A0),A3
+            movea.l (A0),A1
+            cmpi.b  #4,(8,A1)
+            bcc.b   .L4
+            move.w  (4,A1),D0
+            bpl.b   .L2
+            cmpi.w  #$FEC4,D0
+            bne.b   .L4
+            cmpi.w  #$8080,(6,A1)
+            bgt.b   .L4
+            clr.w   (4,A1)
+            bset    #2,($B,A1)
+.L2:
+            move.w  D0,D2
+            move.b  #$26,($32,A0)
+            _sFindStruct
+            beq.b   .L3
+            move.w  D2,(4,A1)
+            bclr    #2,($B,A1)
+            beq.b   .L4
+            move.w  #$FEC4,(4,A1)
+            bra.b   .L4
+.L3:
+            move.l  A3,(4,A0)
+            move.b  D1,(A2)
+            move.b  ($36,A0),(4,A2)
+            _sExec
+            bclr    #2,($B,A1)
+            move.b  #4,(8,A1)
+            move.w  (2,A2),(6,A1)
+            bpl.b   .L4
+            move.w  #$FEC4,(4,A1)
+.L4:
+            dbra    D1,.L1
+            cmpi.b  #$E,D1
+            bls.w   .L1
+            lea     ($18,SP),SP
+            movem.l (SP)+,D1-D2/A1-A3
+            rts
+sub_4080636E:
+            move.l  A1,-(SP)
+            _sFindsInfoRecPtr
+            movea.l (A0),A1
+            move.l  #$10000,($28,A0)
+            clr.l   ($2C,A0)
+            clr.b   ($30,A0)
+            clr.b   ($33,A0)
+            clr.l   ($18,A0)
+            ori.b   #3,($1B,A0)
+            _sGetTypesRsrc
+            beq.b   .L1
+            move.w  #$FEC7,D0
+.L1:
+            move.l  A1,(A0)
+            movea.l (SP)+,A1
+            tst.w   D0
+            rts
+            ds.b    10
+SLOTPRAM:
+READSLOTPRAM:
+            moveq   #0,D0
+            move.l  (A0),($18,A0)
+            bra.b   CommonPRAM
+PutSlotPRAM:
+            moveq   #1,D0
+            move.l  (4,A0),($18,A0)
+            bra.b   CommonPRAM
+InitSlotPRAM:
+            moveq   #2,D0
+            move.l  (4,A0),($18,A0)
+CommonPRAM:
+            movem.l D1/D3/A0-A1,-(SP)
+            clr.w   D3
+            move.l  D0,D1
+            move.b  ($31,A0),D3
+            bne.b   .CheckRange
+            nop
+            nop
+            nop
+            nop
+            movea.l UnivInfoPtr,A1
+            adda.l  (8,A1),A1
+            move.b  ($C,A1),D3
+.CheckRange:
+            movea.l ($18,A0),A1
+            move.w  #$FEAF,D0
+            cmpi.b  #$E,D3
+            bhi.b   .Done
+            cmpi.b  #9,D3
+            bge.b   .InternalPRAM
+            tst.w   ([SInfoPtr.w],-$13.w)
+            beq.b   .Done
+            bra.b   .Done
+.InternalPRAM:
+            subi.b  #9,D3
+            mulu.w  #8,D3
+            addi.w  #$46,D3
+            move.l  #$80000,D0
+            move.w  D3,D0
+            movea.l A1,A0
+            tst.b   D1
+            bne.b   .WritePRAM
+            _ReadXPRam
+            bra.b   .Done
+.WritePRAM:
+            subq.l  #2,D1
+            beq.b   .DoWrite
+            addq.l  #2,A0
+            subi.l  #$1FFFE,D0
+.DoWrite:
+            _WriteXPRam
+.Done:
+            movem.l (SP)+,D1/D3/A0-A1
+            rts
+            dc.w    0
+FINDSINFORECPTR:
+            moveq   #0,D0
+            move.b  ($31,A0),D0
+            cmpi.b  #$E,D0
+            bhi.b   .L1
+            move.l  ([SInfoPtr.w],D0.w*4),(A0)
+            moveq   #0,D0
+            bra.b   .L2
+.L1:
+            move.w  #$FEAF,D0
+.L2:
+            rts
+            ds.b    4
+FINDSRSRCPTR:
+            clr.b   ($33,A0)
+            clr.l   ($18,A0)
+GETSRSRCPTR:
+            move.l  A1,-(SP)
+            _sFindSRTRec
+            bne.b   .L1
+            movea.l (4,A0),A1
+            move.l  ($10,A1),(4,A0)
+.L1:
+            movea.l (SP)+,A1
+            rts
+            dc.w    0
+PTRTOSLOT:
+            movem.l D1-D2,-(SP)
+            move.w  #$FEB1,D0
+            move.l  (4,A0),D1
+            beq.b   .L3
+            clr.b   D1
+            rol.l   #4,D1
+            cmpi.b  #$F,D1
+            beq.b   .L1
+            move.b  ROMBase,D2
+            lsr.b   #4,D2
+            cmp.b   D2,D1
+            bhi.b   .L2
+            moveq   #0,D1
+            bra.b   .L2
+.L1:
+            clr.b   D1
+            rol.l   #4,D1
+.L2:
+            move.w  #$FEAF,D0
+            cmpi.b  #$E,D1
+            bhi.b   .L3
+            move.b  D1,($31,A0)
+            moveq   #0,D0
+.L3:
+            tst.w   D0
+            movem.l (SP)+,D1-D2
+            rts
+            ds.b    14
+READFHEADER:
+            movem.l A1-A2,-(SP)
+            movea.l (A0),A2
+            _sFindsInfoRecPtr
+            bne.b   .L1
+            movea.l (A0),A1
+            move.w  (4,A1),D0
+            bmi.b   .L1
+            move.l  ($10,A1),(4,A0)
+            move.l  #$FFFFFFED,($C,A0)
+            move.b  (9,A1),($35,A0)
+            _sCalcsPointer
+            bne.b   .L1
+            move.l  A2,(A0)
+            move.l  #$14,(8,A0)
+            _sReadStruct
+.L1:
+            movem.l (SP)+,A1-A2
+            rts
+            ds.b    14
+CKCARDSTAT:
+            move.l  A2,-(SP)
+            _sFindsInfoRecPtr
+            bne.b   .L1
+            movea.l (A0),A2
+            tst.w   (4,A2)
+            bmi.b   .L1
+            moveq   #0,D0
+            bra.b   .L2
+.L1:
+            move.l  #$FFFFFEAB,D0
+.L2:
+            movea.l (SP)+,A2
+            rts
+            dc.w    0
+SLOTVERSION:
+            move.l  #2,(A0)
+            clr.l   (4,A0)
+            moveq   #0,D0
+            rts
+            dc.w    0
+NEXTSRSRC:
+            clr.l   ($18,A0)
+            bset    #2,($1B,A0)
+GETSRSRC:
+            move.l  A1,-(SP)
+            _sFindSRTRec
+            bne.b   .L2
+            movea.l (4,A0),A1
+            pea     .L1
+            move.l  ([SDMJmpTblPtr.w],$D8.w),-(SP)
+            rts
+.L1:
+            bra.b   .L3
+.L2:
+            move.w  #$FEA8,D0
+.L3:
+            movea.l (SP)+,A1
+            tst.w   D0
+            rts
+NEXTTYPESRSRC:
+            clr.l   ($18,A0)
+GETTYPESRSRC:
+            movem.l D1-D6/A1,-(SP)
+            moveq   #0,D0
+            move.b  ($30,A0),D0
+            lea     sub_408065E6.L2,A1
+            lsr.b   #2,D0
+            move.l  (0,A1,D0.w*4),D1
+            move.b  ($30,A0),D0
+            andi.b  #3,D0
+            move.l  (0,A1,D0.w*4),D2
+            move.l  ($28,A0),D3
+            move.l  ($2C,A0),D4
+            and.l   D1,D3
+            and.l   D2,D4
+.L1:
+            bset    #2,($1B,A0)
+            _sFindSRTRec
+            bne.b   sub_408065E6.L1
+            movea.l (4,A0),A1
+            move.l  (A1),($31,A0)
+            move.l  D1,D5
+            and.l   (8,A1),D5
+            cmp.l   D3,D5
+            bne.b   .L1
+            move.l  D2,D6
+            and.l   ($C,A1),D6
+            cmp.l   D4,D6
+            bne.b   .L1
+            pea     sub_408065E6
+            move.l  ([SDMJmpTblPtr.w],$D8.w),-(SP)
+            rts
+sub_408065E6:
+            moveq   #0,D0
+            nop
+.L1:
+            movem.l (SP)+,D1-D6/A1
+            rts
+.L2:
+            dc.w    $FFFF,$FFFF,$FFFF
+            ds.b    4
+            dc.w    $FFFF
+            ds.b    4
+UPDATESRT:
+            moveq   #1,D0
+            clr.l   (4,A0)
+            clr.l   ($18,A0)
+            bra.b   sub_4080660E
+INSERTSRT:
+            moveq   #0,D0
+sub_4080660E:
+            movem.l D1-D2/A1-A2,-(SP)
+            move.l  D0,D1
+            movea.l (4,A0),A2
+            move.l  ($18,A0),D2
+            clr.l   ($18,A0)
+            bset    #0,($1B,A0)
+            _sFindSRTRec
+            beq.b   .L2
+            move.l  A2,(4,A0)
+            move.l  D2,($18,A0)
+            pea     .L1
+            move.l  ([SDMJmpTblPtr.w],$D0.w),-(SP)
+            rts
+.L1:
+            bra.b   .L5
+.L2:
+            movea.l (4,A0),A1
+            tst.w   D1
+            beq.b   .L3
+            move.w  #$FEA8,D0
+            btst    #0,($17,A1)
+            bne.b   .L5
+            move.w  ($24,A0),(6,A1)
+            move.w  ($26,A0),(4,A1)
+            moveq   #0,D0
+            bra.b   .L5
+.L3:
+            move.l  A2,D0
+            beq.b   .L5
+            move.l  A2,(4,A0)
+            move.l  D2,($18,A0)
+            pea     .L4
+            move.l  ([SDMJmpTblPtr.w],$D4.w),-(SP)
+            rts
+.L4:
+            nop
+.L5:
+            movem.l (SP)+,D1-D2/A1-A2
+            rts
+SEARCHSRT:
+            clr.l   ($18,A0)
+            btst    #0,($36,A0)
+            beq.b   FINDSRTREC
+            bset    #2,($1B,A0)
+FINDSRTREC:
+            movem.l D2-D4/A1-A3,-(SP)
+            movea.l SRsrcTblPtr,A1
+            move.l  ($31,A0),D2
+            clr.b   D2
+            movea.l A1,A2
+            movea.l A1,A3
+            move.l  MinusOne,D3
+.L1:
+            bsr.w   sub_40806984
+            bne.b   .L4
+            move.l  (A1),D4
+            clr.b   D4
+            cmp.l   D2,D4
+            bgt.b   .L2
+            blt.b   .L3
+            movea.l A1,A2
+            btst    #2,($1B,A0)
+            beq.b   .L6
+            bra.b   .L3
+.L2:
+            cmp.l   D3,D4
+            bhi.b   .L3
+            movea.l A1,A3
+            move.l  D4,D3
+.L3:
+            lea     ($18,A1),A1
+            bra.b   .L1
+.L4:
+            tst.l   D3
+            bmi.b   .L5
+            moveq   #0,D0
+            movea.l A3,A2
+            btst    #2,($1B,A0)
+            beq.b   .L5
+            btst    #1,($1B,A0)
+            beq.b   .L6
+            move.b  ($31,A0),D1
+            cmp.b   (A2),D1
+            beq.b   .L6
+.L5:
+            move.w  #$FEA8,D0
+.L6:
+            move.l  A2,(4,A0)
+            movem.l (SP)+,D2-D4/A1-A3
+            tst.w   D0
+            rts
+DELETESRTREC:
+            movem.l A0-A2,-(SP)
+            clr.l   ($18,A0)
+            bset    #0,($1B,A0)
+            _sFindSRTRec
+            bne.w   .L5
+            movea.l (4,A0),A1
+            move.w  #$FF01,(A1)
+            movea.l ([SInfoPtr.w],-$10.w),A2
+            move.w  #$17,D0
+.L1:
+            move.b  (A2)+,(A1)+
+            dbra    D0,.L1
+            movea.l ([SInfoPtr.w],-$10.w),A2
+            move.w  #$FF01,(A2)
+            subq.w  #1,([SInfoPtr.w],-$12.w)
+            move.w  ([SInfoPtr.w],-$12.w),D0
+            divu.w  #8,D0
+            andi.l  #$FFFF0000,D0
+            bne.b   .L4
+            move.b  MMU32bit,-(SP)
+            clr.b   D0
+            _SwapMMUMode
+            movea.l A2,A0
+            _DisposPtr
+            move.b  (SP)+,D0
+            _SwapMMUMode
+            movea.l SRsrcTblPtr,A1
+.L2:
+            lea     ($C0,A1),A1
+            cmpa.l  (2,A1),A2
+            beq.b   .L3
+            movea.l (2,A1),A1
+            bra.b   .L2
+.L3:
+            clr.l   (2,A1)
+            movea.l A1,A2
+.L4:
+            suba.w  #$18,A2
+            move.l  A2,([SInfoPtr.w],-$10.w)
+            moveq   #0,D0
+            bra.b   .L6
+.L5:
+            move.w  #$FEA1,D0
+.L6:
+            movem.l (SP)+,A0-A2
+            rts
+SLOTRSRCINFO:
+            clr.l   ($18,A0)
+GETSRSRCINFO:
+            move.l  A1,-(SP)
+            _sFindSRTRec
+            bne.b   .L2
+            movea.l (4,A0),A1
+            pea     .L1
+            move.l  ([SDMJmpTblPtr.w],$D8.w),-(SP)
+            rts
+.L1:
+            bra.b   .L2
+            move.w  #$FEA1,D0
+.L2:
+            movea.l (SP)+,A1
+            rts
+SETSRSRCSTATE:
+            movem.l D1/A1,-(SP)
+            move.l  ($18,A0),D1
+            clr.l   ($18,A0)
+            bset    #0,($1B,A0)
+            _sFindSRTRec
+            bne.b   .L1
+            movea.l (4,A0),A1
+            bclr    #0,($17,A1)
+            tst.b   D1
+            beq.b   .L1
+            bset    #0,($17,A1)
+            moveq   #0,D0
+.L1:
+            move.l  D1,($18,A0)
+            movem.l (SP)+,D1/A1
+            tst.w   D0
+            rts
+PNEWSRTENTRY:
+            movem.l D1/A1-A2,-(SP)
+            move.l  (4,A0),D0
+            bne.b   .L1
+            move.l  ($18,A0),D1
+            _sFindsInfoRecPtr
+            movea.l (A0),A1
+            move.l  (A1),(4,A0)
+            _sFindStruct
+            bne.b   sub_4080686A.L1
+            move.l  D1,($18,A0)
+.L1:
+            movea.l ([SInfoPtr.w],-$10.w),A1
+.L2:
+            cmpi.w  #$FF01,(A1)
+            beq.b   sub_40806856.L1
+            cmpi.w  #$FFFF,(A1)
+            beq.b   .L3
+            lea     ($18,A1),A1
+            bra.b   .L2
+.L3:
+            movea.l A1,A2
+            pea     sub_40806856
+            move.l  ([SDMJmpTblPtr.w],$F0.w),-(SP)
+            rts
+sub_40806856:
+            bne.b   sub_4080686A.L1
+            move.l  A1,(2,A2)
+.L1:
+            pea     sub_4080686A
+            move.l  ([SDMJmpTblPtr.w],$D4.w),-(SP)
+            rts
+sub_4080686A:
+            bne.b   .L1
+            addq.w  #1,([SInfoPtr.w],-$12.w)
+            move.l  A1,([SInfoPtr.w],-$10.w)
+.L1:
+            movem.l (SP)+,D1/A1-A2
+            rts
+PINITENTRY:
+            movem.l D1/A2,-(SP)
+            subq.w  #8,SP
+            movea.l SP,A2
+            move.b  ($31,A0),(A1)
+            move.b  ($32,A0),(1,A1)
+            move.b  ($33,A0),(2,A1)
+            clr.b   (3,A1)
+            move.w  ($26,A0),(4,A1)
+            move.w  ($24,A0),(6,A1)
+            move.l  (4,A0),($10,A1)
+            clr.l   ($14,A1)
+            move.l  ($18,A0),D0
+            beq.b   .L1
+            bset    #0,($17,A1)
+.L1:
+            move.b  #8,($32,A0)
+            _sReadByte
+            bne.b   .L2
+            move.b  (3,A0),(3,A1)
+.L2:
+            move.b  #1,($32,A0)
+            _sFindStruct
+            bne.b   .L3
+            move.l  #8,(8,A0)
+            move.l  A2,(A0)
+            _sReadStruct
+            bne.b   .L3
+            move.l  (A2),(8,A1)
+            move.l  (4,A2),($C,A1)
+            moveq   #0,D0
+            move.w  ($26,A0),D1
+            beq.b   .L4
+            bsr.b   sub_40806930
+            bne.b   .L3
+            _sFindDevBase
+            bne.b   .L3
+            move.l  (A0),($2A,A2)
+            move.b  (1,A1),($29,A2)
+            move.b  (2,A1),($32,A2)
+            bra.b   .L4
+.L3:
+            move.w  #$FF01,(A1)
+.L4:
+            move.l  ($10,A1),(4,A0)
+            addq.w  #8,SP
+            movem.l (SP)+,D1/A2
+            tst.w   D0
+            rts
+sub_40806930:
+            move.w  #$FFCD,D0
+            not.w   D1
+            bmi.b   .L1
+            cmp.w   UnitNtryCnt,D1
+            bge.b   .L1
+            asl.w   #2,D1
+            movea.l UTableBase,A2
+            move.l  (0,A2,D1.w),D1
+            beq.b   .L1
+            movea.l D1,A2
+            move.l  (A2),D1
+            beq.b   .L2
+            movea.l D1,A2
+            moveq   #0,D0
+.L1:
+            tst.w   D0
+            rts
+.L2:
+            moveq   #$E,D0
+            _SysError
+PALLOCSRTBLK:
+            move.l  A0,-(SP)
+            move.l  #$C6,D0
+            _NewPtrSysClear
+            bne.b   .L2
+            movea.l A0,A1
+            move.w  #7,D0
+.L1:
+            move.w  #$FF01,(A0)
+            lea     ($18,A0),A0
+            dbra    D0,.L1
+            move.w  #$FFFF,(A0)
+            moveq   #0,D0
+.L2:
+            movea.l (SP)+,A0
+            rts
+sub_40806984:
+            movem.l D1-D2/A0,-(SP)
+.L1:
+            move.w  (A1),D1
+            bmi.b   .L2
+            btst    #0,($1B,A0)
+            bne.b   .L5
+            btst    #0,($17,A1)
+            beq.b   .L5
+            bra.b   .L3
+.L2:
+            cmpi.w  #$FFFF,D1
+            bne.b   .L3
+            tst.l   (2,A1)
+            beq.b   .L4
+            movea.l (2,A1),A1
+            bra.b   .L1
+.L3:
+            lea     ($18,A1),A1
+            bra.b   .L1
+.L4:
+            move.w  #$FEA1,D0
+            bra.b   .L6
+.L5:
+            moveq   #0,D0
+.L6:
+            movem.l (SP)+,D1-D2/A0
+            rts
+PSRTOSPBLOCK:
+            move.b  (A1),($31,A0)
+            move.b  (1,A1),($32,A0)
+            move.b  (2,A1),($33,A0)
+            move.b  (3,A1),($34,A0)
+            move.w  (4,A1),($26,A0)
+            move.w  (6,A1),($24,A0)
+            move.w  (8,A1),($28,A0)
+            move.w  ($A,A1),($2A,A0)
+            move.w  ($C,A1),($2C,A0)
+            move.w  ($E,A1),($2E,A0)
+            move.l  ($10,A1),(4,A0)
+            clr.l   ($18,A0)
+            btst    #0,($17,A1)
+            beq.b   .L1
+            move.l  #1,($18,A0)
+.L1:
+            rts
+            ds.b    6
+CALCSTEP:
+            movem.l D1-D3/A1,-(SP)
+            move.w  #$FEA6,D0
+            clr.w   D1
+            clr.w   D2
+            move.b  (7,A0),D1
+            andi.l  #3,D1
+            move.b  ($35,A0),D2
+            btst    D1,D2
+            beq.b   .L3
+            move.l  D2,D3
+            asl.w   #2,D3
+            btst    #5,($36,A0)
+            beq.b   .L1
+            lea     .L4,A1
+            move.l  (0,A1,D3.w),D2
+            mulu.w  #8,D1
+            ror.l   D1,D2
+            move.l  D2,(A0)
+            bra.b   .L2
+.L1:
+            lea     .L5,A1
+            move.l  (0,A1,D3.w),(A0)
+            bpl.b   .L2
+            lea     .L6,A1
+            andi.b  #7,D2
+            subq.b  #3,D2
+            asl.l   #4,D2
+            adda.l  D1,A1
+            move.l  (0,A1,D2.w),(A0)
+.L2:
+            clr.w   D0
+.L3:
+            movem.l (SP)+,D1-D3/A1
+            rts
+.L4:
+            ds.b    4
+            dc.w    $0404,$0404,$0404,$0404,$0301,$0301,$0404,$0404
+            dc.w    $0202,$0202,$0301,$0301,$0002,$0101,$0404,$0404
+            dc.w    $0103,$0103,$0202,$0202,$0001,$0201,$0301,$0301
+            dc.w    $0001,$0102,$0002,$0101,$0101,$0101
+.L5:
+            ds.b    4
+            dc.w    $1010,$1010,$1010,$1010,$0808,$0808,$1010,$1010
+            dc.w    $0808,$0808,$0808,$0808,$FFFF,$FFFF,$1010,$1010
+            dc.w    $0808,$0808,$0808,$0808,$FFFF,$FFFF,$0808,$0808
+            dc.w    $FFFF,$FFFF,$FFFF,$FFFF,$0404,$0404
+.L6:
+            dc.w    $0505,$0505,$0606,$0606
+            ds.b    4
+            dc.w    $0505,$0505
+            ds.b    16
+            dc.w    $0606,$0606
+            ds.b    4
+            dc.w    $0505,$0505,$0505,$0505
+            ds.b    4
+            dc.w    $0505,$0505,$0505,$0505,$0606,$0606,$0505,$0505
+            dc.w    $0505,$0505,$0606,$0606
+            ds.b    4
+OFFSETDATA:
+            movem.l D1-D2/A1,-(SP)
+            move.b  ($31,A0),-(SP)
+            move.w  #$FEB6,D0
+            cmpi.b  #$FF,($32,A0)
+            beq.w   sub_40806BA6.L1
+            _sPtrToSlot
+            bne.w   sub_40806BA6.L1
+            _sFindsInfoRecPtr
+            movea.l (A0),A1
+            move.w  (4,A1),D0
+            bmi.b   sub_40806BA6.L1
+            move.b  (9,A1),($35,A0)
+            bset    #5,($36,A0)
+            _sCalcStep
+            bne.b   sub_40806BA6.L1
+            move.l  (A0),($18,A0)
+            moveq   #0,D1
+.L1:
+            move.b  D1,D2
+            movea.l (4,A0),A1
+            pea     sub_40806BA6
+            move.l  ([SDMJmpTblPtr.w],$DC.w),-(SP)
+            rts
+sub_40806BA6:
+            bne.b   .L1
+            move.b  (A0),D1
+            move.w  #$FEB5,D0
+            cmp.b   D2,D1
+            bcs.b   .L1
+            move.w  #$FEB6,D0
+            cmpi.b  #$FF,D1
+            beq.b   .L1
+            cmp.b   ($32,A0),D1
+            bne.b   OFFSETDATA.L1
+            move.l  (A0),D0
+            andi.l  #$FFFFFF,D0
+            move.l  D0,($C,A0)
+            move.l  A1,(4,A0)
+            moveq   #0,D0
+.L1:
+            move.b  (SP)+,($31,A0)
+            movem.l (SP)+,D1-D2/A1
+            tst.w   D0
+            rts
+READPBSIZE:
+            movem.l D1/A1,-(SP)
+            move.b  ($31,A0),-(SP)
+            _sFindStruct
+            bne.b   sub_40806C24.L1
+            _sPtrToSlot
+            bne.b   sub_40806C24.L1
+            _sFindsInfoRecPtr
+            movea.l (A0),A1
+            move.w  (4,A1),D0
+            bmi.b   sub_40806C24.L1
+            move.b  (9,A1),($35,A0)
+            bset    #5,($36,A0)
+            _sCalcStep
+            bne.b   sub_40806C24.L1
+            move.l  (A0),($18,A0)
+            pea     sub_40806C24
+            move.l  ([SDMJmpTblPtr.w],$DC.w),-(SP)
+            rts
+sub_40806C24:
+            bne.b   .L1
+            move.l  (A0),(8,A0)
+            moveq   #0,D0
+            btst    #1,($36,A0)
+            beq.b   .L1
+            move.b  (A0),D1
+            beq.b   .L1
+            move.w  #$FEB4,D0
+.L1:
+            move.b  (SP)+,($31,A0)
+            movem.l (SP)+,D1/A1
+            tst.w   D0
+            rts
+            ds.b    8
+PREAD4BYTES:
+            movem.l D1-D4/A1-A2,-(SP)
+            move.l  ($18,A0),D2
+            movea.l (4,A0),A1
+            moveq   #3,D3
+            moveq   #0,D4
+            pea     sub_40806C6E
+            move.l  ([SDMJmpTblPtr.w],$E8.w),-(SP)
+            rts
+sub_40806C6E:
+            lea     .L3,A2
+            move.w  #$FECC,D0
+.L1:
+            asl.l   #8,D1
+            move.b  (A1),D1
+            move.b  D2,D4
+            adda.w  D4,A1
+.L2:
+            ror.l   #8,D2
+            tst.b   D2
+            beq.b   .L2
+            dbra    D3,.L1
+            move.l  D1,(A0)
+            move.l  A1,(4,A0)
+            moveq   #0,D0
+.L3:
+            pea     sub_40806C9E
+            move.l  ([SDMJmpTblPtr.w],$EC.w),-(SP)
+            rts
+sub_40806C9E:
+            movem.l (SP)+,D1-D4/A1-A2
+            rts
+            ds.b    12
+PBUSEXCEPTION:
+            move.l  D0,-(SP)
+            move.w  ($E,SP),D0
+            andi.w  #$F1C0,D0
+            cmpi.w  #$140,D0
+            bne.b   .L1
+            move.b  ($A,SP),D0
+            lsr.b   #4,D0
+            cmpi.b  #$B,D0
+            bne.b   .L1
+            move.b  ($14,SP),D0
+            cmpi.b  #$90,D0
+            bcs.b   .L1
+            cmpi.b  #$FF,D0
+            beq.b   .L1
+            cmpi.b  #$F0,D0
+            beq.b   .L1
+            move.l  A0,-(SP)
+            BigJmp  SLOTBUSEXCPTNPTCH,A0
+.L1:
+            move.l  (SP)+,D0
+            move.l  ([SInfoPtr.w],-8.w),-(SP)
+            rts
+; pInstallBus
+; Install the slot manager's bus exception vector
+pInstallBus:
+            move    SR,-(SP)
+            ori     #$700,SR
+            moveq   #1,D0
+            _SwapMMUMode
+            move.b  D0,([SInfoPtr.w],-4.w)
+            move.l  BusErrVct,([SInfoPtr.w],-8.w)
+            move.l  ([SDMJmpTblPtr.w],$E4.w),BusErrVct
+            move    (SP)+,SR
+            rts
+pRestoreBus:
+            move.l  D0,-(SP)
+            move    SR,-(SP)
+            ori     #$700,SR
+            move.b  ([SInfoPtr.w],-4.w),D0
+            _SwapMMUMode
+            move.l  ([SInfoPtr.w],-8.w),BusErrVct
+            move    (SP)+,SR
+            move.l  (SP)+,D0
+            rts
+PRIMARY_INIT:
+            movem.l D1/A1-A3,-(SP)
+            suba.w  #$18,SP
+            movea.l SP,A2
+            jmp     PRIMARYINITRTN
+            ds.b    12
+INITJMPTBL:
+            movem.l A0-A2,-(SP)
+            cmpi.l  #$FFFFFFFF,SDMJmpTblPtr
+            beq.b   .L1
+            movea.l SDMJmpTblPtr,A0
+            _DisposPtr
+.L1:
+            move.l  #$F4,D0
+            _NewPtrSysClear
+            move.l  A0,SDMJmpTblPtr
+            moveq   #$3C,D0
+            lea     SDMJmpTable,A1
+.Loop:
+            movea.l A1,A2
+            adda.w  (A1)+,A2
+            move.l  A2,(A0)+
+            dbra    D0,.Loop
+            bra.l   INITJMPTBLPATCH
+            dc.w    0
+SDMJmpTable:
+            dc.w    $EAF8,$EB16,$EB34,$EB52,$0084,$EBDE,$EC2C,$EC3A
+            dc.w    $F798,$FA26,$F860,$F7AC,$F7D4,$0072,$0070,$006E
+            dc.w    $ECB8,$F5F6,$F5FC,$F712,$F790,$F7BE,$F9E4,$ECDA
+            dc.w    $F758,$ECF6,$F8D0,$ED72,$ED70,$F696,$0050,$004E
+            dc.w    $F048,$FF6C,$EE14,$EE32,$FD70,$F3BE,$FDFC,$003E
+            dc.w    $FC38,$F2B6,$F89E,$F812,$EE90,$EF1E,$F68C,$F64A
+            dc.w    $F668,$F912,$F4C0,$F5C4,$FA0A,$FA80,$FBC0,$FE4A
+            dc.w    $001C,$FEA6,$FEEE,$FF16,$FB4C,$322E,$3130
+SlotManager:
+            cmpi.w  #$3D,D0
+            bhi.b   .L1
+            movea.l ([SDMJmpTblPtr.w],D0.w*4),A1
+            jmp     (A1)
+.L1:
+            move.w  #$FEAE,D0
+            rts
+            ds.b    6
+SINTCORE:
+            cmpi.w  #6,(4,A0)
+            bne.b   .L1
+            ext.w   D0
+            cmpi.w  #$E,D0
+            bgt.b   .L2
+            lea     ([$D04.w],D0.w*4,$40.w),A1
+            rts
+.L1:
+            moveq   #-2,D0
+            bra.b   .L3
+.L2:
+            move.w  #$FEAF,D0
+.L3:
+            addq.w  #4,SP
+            rts
+SIntInstall:
+            bsr.b   SINTCORE
+            move.b  (7,A0),D0
+            move    SR,-(SP)
+            ori     #$700,SR
+.L1:
+            move.l  (A1),D1
+            beq.b   .L2
+            exg     D1,A1
+            cmp.b   (7,A1),D0
+            bls.b   .L1
+            exg     D1,A1
+.L2:
+            move.l  D1,(A0)
+            move.l  A0,(A1)
+            move    (SP)+,SR
+            moveq   #0,D0
+            rts
+SIntRemove:
+            bsr.b   SINTCORE
+            moveq   #-1,D0
+            move    SR,-(SP)
+            ori     #$700,SR
+.L1:
+            move.l  (A1),D1
+            beq.b   .L2
+            exg     D1,A1
+            cmpa.l  A0,A1
+            bne.b   .L1
+            movea.l D1,A1
+            move.l  (A0),(A1)
+            moveq   #0,D0
+.L2:
+            move    (SP)+,SR
+            rts
+SlotInt:
+VIA2SLOTINT:
+            move.b  #2,($1A00,A1)
+            moveq   #-$40,D0
+            or.b    ($1E00,A1),D0
+            not.l   D0
+            bne.b   SlotIntCommon
+            rts
+RBVSLOTINT:
+            move.b  #$82,(3,A1)
+            moveq   #-$80,D0
+            or.b    (2,A1),D0
+            not.l   D0
+            and.b   ($12,A1),D0
+            bne.b   SlotIntCommon
+            rts
+OSSSLOTINT:
+            moveq   #$3F,D0
+            and.b   ($203,A1),D0
+            bne.b   SlotIntCommon
+            rts
+SlotIntCommon:
+            subq.l  #4,SP
+            move.b  D0,(SP)
+.loop:
+            move.b  SlotPriority(PC,D0.w),D0
+            bclr    D0,(SP)
+            lsr.b   #4,D0
+            bsr.b   RunSlotHandlers
+            bne.b   .noHandler
+            move.b  (SP),D0
+            bne.b   .loop
+            addq.l  #4,SP
+            movea.l VIA2,A1
+            movea.l ($D74).w,A0
+            jmp     (A0)
+.noHandler:
+            _SysError
+RunSlotHandlers:
+            lea     ([$D04.w],D0.w*4,$40.w),A1
+.RunNext:
+            move.l  (A1),D0
+            beq.b   .notFound
+            movea.l D0,A1
+            move.l  A1,-(SP)
+            movea.l (8,A1),A0
+            movea.l ($C,A1),A1
+            jsr     (A0)
+            movea.l (SP)+,A1
+            tst.w   D0
+            beq.b   .RunNext
+            moveq   #0,D0
+            rts
+.notFound:
+            moveq   #dsBadSlotInt,D0
+            rts
+SlotPriority:
+            dc.w    $0090,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+            dc.w    $D490,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+            dc.w    $E590,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+            dc.w    $D490,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+            dc.w    $0690,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+            dc.w    $D490,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+            dc.w    $E590,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+            dc.w    $D490,$A190,$B290,$A190,$C390,$A190,$B290,$A190
+InitSDTbl:
+            move.l  #$170,D0
+            _NewPtrSysClear
+            move.l  A0,($D04).w
+            lea     ($82,A0),A1
+            moveq   #$E,D0
+.init:
+            move.l  A1,(A0)+
+            lea     ($10,A1),A1
+            dbra    D0,.init
+            moveq   #0,D0
+            rts
+InitSPTbl:
+            rts
+            ds.b    10
 
             EVEN
