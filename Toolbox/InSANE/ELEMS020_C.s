@@ -1,0 +1,135 @@
+            include "Include/ROMHeader.s"
+
+            EXPORT  ATANQ_PACK_5_2,COSQ_PACK_5_2,EXP21P_PACK_5_2,EXP21Q_PACK_5_2,FPK0,FPK1
+            EXPORT  FPK2,FPK3,FPK34,FPK78,FPKARAND,FPKATNCONS_PACK_5_2
+            EXPORT  FPKFOURTH,FPKHALF,FPKINF,FPKLOGE2,FPKM0,FPKM1
+            EXPORT  FPKMAXINT,FPKMINF,FPKPI2_PACK_5_2,FPKPRAND,FPKSQRT2_PACK_5_2,FPKSQRTHALF_PACK_5_2
+            EXPORT  FPKX2_PACK_5_2,FPKX2FX2_PACK_5_2,LOG21P_PACK_5_2,LOG21Q_PACK_5_2,SINQ_PACK_5_2,TANQ_PACK_5_2
+
+            SECTION "ELEMS020_C",CODE
+
+LOG21P_PACK_5_2:
+            dc.w    5                                       ; degree of LOG21P_PACK_5_2
+            dc.b    $3F,$F6,$B9,$46,$46,$AF,$F6,$CE,$3B,$FF
+            dc.b    $3F,$F9,$94,$F4,$32,$21,$4D,$61,$FB,$EB
+            dc.b    $3F,$FB,$DC,$97,$89,$03,$D9,$44,$78,$93
+            dc.b    $3F,$FF,$9F,$9E,$39,$46,$57,$CA,$1D,$05
+            dc.b    $C0,$01,$CD,$6B,$C5,$3A,$46,$EC,$DC,$9A
+            dc.b    $40,$01,$B4,$83,$97,$E7,$BA,$E6,$FC,$E0
+LOG21Q_PACK_5_2:
+            dc.w    2                                       ; degree of LOG21Q_PACK_5_2
+            dc.b    $3F,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+            dc.b    $C0,$00,$B8,$18,$35,$C3,$CE,$0A,$5E,$1D
+            dc.b    $3F,$FF,$FA,$3E,$DF,$0E,$DD,$F4,$1A,$96
+EXP21P_PACK_5_2:
+            dc.w    3                                       ; degree of EXP21P_PACK_5_2
+            dc.b    $BF,$EE,$FF,$88,$90,$C8,$1B,$20,$9B,$79
+            dc.b    $3F,$F9,$DA,$5C,$84,$EF,$B8,$13,$27,$2F
+            dc.b    $40,$03,$97,$D3,$BA,$EA,$F8,$0F,$FD,$45
+            dc.b    $40,$09,$AB,$86,$71,$A1,$95,$BE,$FF,$0C
+EXP21Q_PACK_5_2:
+            dc.w    2                                       ; degree of LOG21Q_PACK_5_2
+            dc.b    $3F,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+            dc.b    $40,$06,$D5,$48,$70,$02,$98,$4B,$5A,$B4
+            dc.b    $40,$0A,$F7,$75,$61,$2E,$96,$B7,$07,$80
+FPK1:
+            dc.b    $3F,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+FPKM1:
+            dc.b    $BF,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+FPK0:
+            dc.b    $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+FPKM0:
+            dc.b    $80,$00,$00,$00,$00,$00,$00,$00,$00,$00
+FPK2:
+            dc.b    $40,$00,$80,$00,$00,$00,$00,$00,$00,$00
+FPKMAXINT:
+            dc.w    $400D,$FFFE,$0000,$0000,$0000           ; 32767.0 (not in the 1992 source)
+FPKINF:
+            dc.b    $7F,$FF,$00,$00,$00,$00,$00,$00,$00,$00
+FPKMINF:
+            dc.b    $FF,$FF,$00,$00,$00,$00,$00,$00,$00,$00
+FPK3:
+            dc.b    $40,$00,$C0,$00,$00,$00,$00,$00,$00,$00
+FPKFOURTH:
+            dc.b    $3F,$FD,$80,$00,$00,$00,$00,$00,$00,$00
+FPKHALF:
+            dc.b    $3F,$FE,$80,$00,$00,$00,$00,$00,$00,$00
+FPK34:
+            dc.b    $3F,$FE,$C0,$00,$00,$00,$00,$00,$00,$00
+FPK78:
+            dc.b    $3F,$FE,$E0,$00,$00,$00,$00,$00,$00,$00
+FPKPI2_PACK_5_2:
+            dc.b    $3F,$FF,$C9,$0F,$DA,$A2,$21,$68,$C2,$35
+FPKPI4:
+            dc.b    $3F,$FE,$C9,$0F,$DA,$A2,$21,$68,$C2,$35
+FPKARAND:
+            dc.b    $40,$0D,$83,$4E,$00,$00,$00,$00,$00,$00
+FPKPRAND:
+            dc.b    $40,$1D,$FF,$FF,$FF,$FE,$00,$00,$00,$00
+FPKSQRT2_PACK_5_2:
+            dc.b    $3F,$FF,$B5,$04,$F3,$33,$F9,$DE,$64,$84
+FPKSQRTHALF_PACK_5_2:
+            dc.b    $3F,$FE,$B5,$04,$F3,$33,$F9,$DE,$64,$84
+FPKE:
+            dc.b    $40,$00,$AD,$F8,$54,$58,$A2,$BB,$4A,$9B
+FPKLOGE2:
+            dc.b    $3F,$FE,$B1,$72,$17,$F7,$D1,$CF,$79,$AC
+FPKX2_PACK_5_2:
+            dc.b    $3F,$FE,$93,$CD,$3A,$2C,$81,$98,$E2,$6A
+FPKX2FX2_PACK_5_2:
+            dc.b    $3F,$FA,$DC,$2A,$86,$B1,$5F,$DB,$64,$62
+FPKATNCONS_PACK_5_2:
+            dc.b    $3F,$FD,$89,$30,$A2,$F4,$F6,$6A,$B1,$8A
+SINQ_PACK_5_2:
+            dc.w    3                                       ; degree of SINQ_PACK_5_2
+            dc.b    $3F,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+            dc.b    $40,$07,$88,$D8,$B8,$44,$A6,$A8,$5A,$30
+            dc.b    $40,$0E,$8A,$15,$8A,$49,$09,$79,$23,$20
+            dc.b    $40,$13,$FA,$A9,$FE,$26,$FE,$63,$F2,$2B
+SINP:
+            dc.w    3                                       ; degree of SINP
+            dc.b    $BF,$FE,$C2,$50,$86,$AE,$43,$F5,$CB,$F5
+            dc.b    $40,$06,$9E,$76,$EC,$66,$BE,$E7,$6B,$A2
+            dc.b    $C0,$0C,$AF,$51,$A1,$D6,$C4,$C4,$AA,$01
+            dc.b    $40,$11,$A7,$1B,$FE,$C4,$A9,$97,$F6,$CE
+COSQ_PACK_5_2:
+            dc.w    3                                       ; degree of COSQ_PACK_5_2
+            dc.b    $3F,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+            dc.b    $40,$07,$A6,$D9,$6A,$95,$FB,$DF,$96,$85
+            dc.b    $40,$0E,$C7,$A7,$EA,$65,$E8,$5D,$15,$6B
+            dc.b    $40,$14,$D2,$6E,$87,$1C,$7B,$17,$52,$B2
+COSP:
+            dc.w    3                                       ; degree of COSP
+            dc.b    $BF,$FB,$D5,$7E,$18,$D7,$A6,$F6,$D7,$58
+            dc.b    $40,$03,$E3,$64,$93,$7E,$32,$B3,$D0,$72
+            dc.b    $C0,$0A,$A6,$2D,$40,$56,$58,$6B,$C0,$45
+            dc.b    $40,$10,$8C,$49,$AF,$68,$52,$0F,$8C,$7A
+TANQ_PACK_5_2:
+            dc.w    3                                       ; degree of TANQ_PACK_5_2
+            dc.b    $BF,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+            dc.b    $40,$05,$B5,$13,$03,$24,$83,$C0,$09,$55
+            dc.b    $C0,$09,$D1,$FF,$B2,$42,$57,$62,$E0,$CF
+            dc.b    $40,$0A,$E1,$90,$93,$09,$93,$76,$66,$AB
+TANP:
+            dc.w    3                                       ; degree of TANP
+            dc.b    $BF,$E9,$B1,$FC,$33,$63,$D7,$9B,$28,$38
+            dc.b    $3F,$FD,$AA,$9D,$71,$D8,$3E,$C7,$4C,$D1
+            dc.b    $C0,$03,$E9,$CD,$8E,$24,$B9,$65,$7D,$BB
+            dc.b    $40,$07,$F0,$9A,$36,$70,$9D,$4B,$18,$36
+ATANQ_PACK_5_2:
+            dc.w    4                                       ; degree of ATANQ_PACK_5_2
+            dc.b    $3F,$FF,$98,$D3,$1E,$AE,$2A,$FA,$5D,$AD
+            dc.b    $40,$03,$8F,$79,$4C,$D8,$B3,$CD,$EF,$D9
+            dc.b    $40,$05,$8E,$37,$ED,$85,$70,$B8,$B3,$68
+            dc.b    $40,$05,$CD,$A4,$BE,$A1,$AC,$59,$F3,$B8
+            dc.b    $40,$04,$C4,$05,$9C,$55,$4C,$F0,$C6,$56
+ATANP:
+            dc.w    4                                       ; degree of ATANP
+            dc.b    $3F,$FF,$80,$00,$00,$00,$00,$00,$00,$00
+            dc.b    $40,$02,$A2,$3B,$6C,$13,$1F,$92,$0E,$30
+            dc.b    $40,$03,$C3,$C8,$59,$3D,$FA,$3A,$48,$6F
+            dc.b    $40,$03,$82,$AE,$68,$38,$DD,$F5,$D9,$45
+            dc.b    $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+            ds.b    10
+
+            EVEN
