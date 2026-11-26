@@ -6,6 +6,8 @@ OS/StartMgr/StartAlert
 Main/Part2
 OS/MMU/MMU
 Main/Part3
+OS/SlotMgr/SlotMgr
+OS/SlotMgr/SlotInterrupts
 OS/Beep
 Main/Part4
 OS/ADBMgr
