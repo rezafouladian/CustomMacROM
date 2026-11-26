@@ -1,11255 +1,16673 @@
             include "Include/ROMHeader.s"
 
-            EXPORT  RsrcEntryPACK_5
+            EXPORT  RsrcEntryDRVR_3
 
-            IMPORT  BaseOfROM,RsrcEntryDRVR_51
+            IMPORT  BaseOfROM,sub_40855EEA_L7
 
             SECTION "Part9",CODE
 
-RsrcEntryPACK_4_2:
-            dc.b    $08,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 4 (8308 bytes) - Combo mask
-            dc.l    RsrcEntryDRVR_51-BaseOfROM      ; Next entry
-            dc.l    RsrcPACK_4_2-BaseOfROM          ; Data
-            dc.b    'PACK'                          ; Type
-            dc.w    4                               ; ID
+RsrcEntryDRVR_127:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'DRVR' 127 ".ENET" (340 bytes) - Combo mask
+            dc.l    0                               ; Next entry
+            dc.l    RsrcDRVR_127-BaseOfROM          ; Data
+            dc.b    'DRVR'                          ; Type
+            dc.w    127                             ; ID
             dc.b    $58                             ; Attributes
-            dc.b    0                               ; Name
-            dc.b    'le Computer,'
-            dc.l    $C0A00000,$00002080,$000001FC   ; Block header
-RsrcPACK_4_2:
-            subq.l  #4,SP
-            movem.l D0/A0,-(SP)
+            dc.b    5,'.ENET'                       ; Name
+            dc.b    'AAGCSLR'
+            dc.l    $C0A00000,$00000160,$0000028C   ; Block header
+RsrcDRVR_127:
+            dc.w    $4400                           ; drvrFlags
+            dc.w    0                               ; drvrDelay
+            dc.w    $0000                           ; drvrEMask
+            dc.w    0                               ; drvrMenu
+            dc.w    ENETOpen-RsrcDRVR_127           ; drvrOpen
+            dc.w    ENETPrime-RsrcDRVR_127          ; drvrPrime
+            dc.w    ENETPrime-RsrcDRVR_127          ; drvrCtl
+            dc.w    ENETPrime-RsrcDRVR_127          ; drvrStatus
+            dc.w    ENETClose-RsrcDRVR_127          ; drvrClose
+            dc.b    5,'.ENET'
+            dc.b    $7F,$02,$80,$00,$00,$00,$09
+            dc.b    '127.0.2  ;Ethernet Shell v127.0.2  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1990-1991'
+ENETOpen:
+            link.w  A6,#0
+            movea.l A0,A2
+            move.w  (6,A2),D0
+            andi.w  #$200,D0
+            beq.w   .L6
+            move.w  #$1B,D0
 .L1:
-            moveq   #0,D0
-            move.w  ($10,SP),D0
-            bftst   D0{18:3}
-            beq.b   .L2
-            btst    #0,D0
-            beq.b   .L4
-.L2:
-            andi.w  #$1F,D0
-            add.w   D0,D0
-            move.w  .L5(PC,D0.w),D0
-            lea     .L1(PC,D0.w),A0
-.L3:
-            move.l  A0,(8,SP)
-            movem.l (SP)+,D0/A0
-            rts
-.L4:
-            andi.w  #$1E,D0
-            move.w  .L6(PC,D0.w),D0
-            lea     .L1(PC,D0.w),A0
-            bra.b   .L3
-.L5:
-            dc.w    $060E,$116E,$062E,$117E,$0880,$118E,$0916,$119E
-            dc.w    $0AF2,$161C,$0AF2,$144E,$09DC,$11AE,$0B70,$11BE
-            dc.w    $0B70,$11CE,$0BCC,$1288,$0CCE,$121C,$0D4E,$11EC
-            dc.w    $1024,$1238,$0FB8,$1200,$105C
-.L6:
-            dc.w    $061E,$063E,$0890,$0926,$0B02,$0B02,$09EC,$0BA0
-            dc.w    $0DFE,$0BCC,$0CCE,$0D4E,$1024,$0FB8,$10DC
-.L7:
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($A,A6),A1
-            bsr.w   UNPXOP
-            movea.l A4,A3
-            move.l  D4,D3
-            movea.l D5,A2
-            lsr.b   #1,D6
-            move.l  D0,D1
-            clr.w   D1
-            add.l   D0,D0
-            add.l   D1,D0
-            movea.l ($E,A6),A1
-            bsr.w   UNPXOP
-.L8:
-            asl.b   #1,D6
-            bvc.b   .L9
-            bset    #6,D6
-.L9:
-            roxr.b  #1,D6
-            moveq   #0,D7
-            tst.w   D0
-            bne.b   UNPACKXB.L2
-            swap    D0
-            jmp     (A0)
-UNPACKXB:
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($A,A6),A1
-            bsr.w   UNPXOP
-            movea.l A4,A3
-            move.l  D4,D3
-            movea.l D5,A2
-            lsr.b   #1,D6
-            move.l  D0,D1
-            clr.w   D1
-            add.l   D0,D0
-            add.l   D1,D0
-            move.l  D6,D1
-            clr.w   D1
-            rol.l   #6,D1
-            andi.w  #$E,D1
-            subq.w  #2,D1
-            movea.l ($E,A6),A1
-            bsr.w   sub_408E80D0
-            bra.b   RsrcPACK_4_2.L8
-.L1:
-            bset    #8,D6
-            swap    D0
-            bset    #$1E,D0
-            move.l  D0,D4
-            moveq   #0,D5
-            movea.w #$7FFF,A4
-            bra.w   sub_408E832E.L20
-.L2:
-            lea     sub_408E832E.L23,A0
-            subq.w  #2,D0
-            beq.b   .L4
-            subq.w  #2,D0
-            beq.b   .L3
-            move.l  D3,D7
-            move.l  #$FF0000,D1
-            and.l   D1,D7
-            and.l   D4,D1
-            cmp.l   D7,D1
-            bgt.b   .L4
-.L3:
-            add.b   D6,D6
-            movea.l A3,A4
-            move.l  D3,D4
-            move.l  A2,D5
-.L4:
-            bfextu  D6{11:5},D1
-            subq.w  #8,D1
-            beq.b   .L5
-            subq.w  #2,D1
-            bne.b   .L6
-            bset    #8,D6
-.L5:
-            moveq   #2,D7
-            bra.w   sub_408E832E.L24
-.L6:
-            bsr.b   sub_408E8052
-            bra.w   sub_408E832E.L20
-sub_408E8052:
-            move.l  D4,D1
-            bclr    #$1E,D1
-            or.l    D5,D1
-            bne.b   .L1
-            moveq   #$15,D4
-            swap    D4
-            bset    #$1E,D4
-.L1:
-            rts
-UNPXOP:
-            move.w  (A1)+,D1
-            bpl.b   .L1
-            bset    #7,D6
-            bclr    #$F,D1
-.L1:
-            btst    #$15,D6
-            beq.b   .L2
-            addq.w  #2,A1
-.L2:
-            move.l  (A1)+,D4
-            move.l  (A1),D5
-            cmpi.w  #$7FFF,D1
-            beq.b   .L7
-            tst.l   D4
-            bpl.b   .L4
-.L3:
-            ext.l   D1
-            movea.l D1,A4
-            rts
-.L4:
-            tst.l   D4
-            bne.b   .L6
-            tst.l   D5
-            bne.b   .L6
-.L5:
-            suba.l  A4,A4
-            addi.l  #$20000,D0
-            rts
-.L6:
-            subq.w  #1,D1
-            add.l   D5,D5
-            addx.l  D4,D4
-            bpl.b   .L6
-            bra.b   .L3
-.L7:
-            movea.w #$7FFF,A4
-            bclr    #$1F,D4
-            tst.l   D4
-            bne.b   .L8
-            tst.l   D5
-            bne.b   .L8
-            addi.l  #$40000,D0
-            rts
-.L8:
-            bset    #$1E,D4
-            bne.b   .L9
-            bset    #8,D6
-.L9:
-            addq.w  #2,D0
-            rts
-sub_408E80D0:
-            move.w  .L1(PC,D1.w),D1
-            jmp     sub_408E80D0(PC,D1.w)
-.L1:
-            dc.w    .L12-sub_408E80D0
-            dc.w    .L9-sub_408E80D0
-            dc.w    UNPXOP-sub_408E80D0
-            dc.w    .L2-sub_408E80D0
-            dc.w    .L3-sub_408E80D0
-            dc.w    .L6-sub_408E80D0
-.L2:
-            moveq   #0,D4
-            move.w  #$400E,D1
-            move.l  D4,D5
-            move.w  (A1),D4
-            swap    D4
-            bra.b   .L4
-.L3:
-            move.w  #$401E,D1
-            moveq   #0,D5
-            move.l  (A1),D4
-.L4:
-            beq.b   UNPXOP.L5
-            bpl.b   .L5
-            bset    #7,D6
-            neg.l   D4
-            bmi.b   UNPXOP.L3
-.L5:
-            bfffo   D4{0:0},D2
-            sub.w   D2,D1
-            lsl.l   D2,D4
-            bra.w   UNPXOP.L3
-.L6:
-            move.w  #$403E,D1
-            move.l  (A1)+,D4
-            move.l  (A1),D5
-            bne.b   .L7
-            tst.l   D4
-            beq.w   UNPXOP.L5
-            bpl.b   .L5
-            bset    #7,D6
-            neg.l   D4
-            bpl.b   .L5
-            movea.w #$7FFF,A4
-            bclr    #7,D6
-            moveq   #$14,D4
-            swap    D4
-            bset    #$1E,D4
-            addq.w  #2,D0
-            rts
-.L7:
-            tst.l   D4
-            bpl.b   .L8
-            bset    #7,D6
-            neg.l   D5
-            negx.l  D4
-            tst.l   D4
-.L8:
-            bne.w   UNPXOP.L6
-            subi.w  #$20,D1
-            exg     D4,D5
-            tst.l   D4
-            bpl.b   .L5
-            bra.w   UNPXOP.L3
-.L9:
-            moveq   #0,D5
-            move.l  (A1),D4
-            bpl.b   .L10
-            bset    #7,D6
-.L10:
-            bfextu  D4{1:8},D1
-            beq.b   .L11
-            lsl.l   #8,D4
-            cmpi.b  #$FF,D1
-            beq.w   UNPXOP.L7
-            addi.w  #$3F80,D1
-            bset    #$1F,D4
-            bra.w   UNPXOP.L3
-.L11:
-            lsl.l   #8,D4
-            beq.w   UNPXOP.L5
-            move.w  #$3F81,D1
-            bra.w   .L5
-.L12:
-            move.l  (A1),D4
-            bpl.b   .L13
-            bset    #7,D6
-.L13:
-            move.l  (4,A1),D5
-            bfextu  D4{1:11},D1
-            bfextu  D5{0:11},D2
-            lsl.l   #8,D4
-            lsl.l   #8,D5
-            lsl.l   #3,D4
-            lsl.l   #3,D5
-            or.w    D2,D4
-            bclr    #$1F,D4
-            tst.l   D1
-            bne.b   .L14
-            move.w  #$3C01,D1
-            bra.w   UNPXOP.L4
-.L14:
-            cmpi.w  #$7FF,D1
-            beq.w   UNPXOP.L7
-            bset    #$1F,D4
-            addi.w  #$3C00,D1
-            bra.w   UNPXOP.L3
-RTSHIFT:
-            cmpi.w  #$42,D0
-            bls.b   .L1
-            move.w  #$42,D0
-.L1:
-            cmpi.w  #$20,D0
-            blt.b   sub_408E81FA
-            tst.l   D7
-            sne     D3
-            move.l  D5,D7
-            move.l  D4,D5
-            or.b    D3,D7
-            moveq   #0,D4
-            subi.w  #$20,D0
-            bne.b   .L1
-            rts
-sub_408E81FA:
-            bfins   D7,D3{0:D0}
-            sne     D3
-            lsr.l   D0,D7
-            bfins   D5,D7{0:D0}
-            lsr.l   D0,D5
-            bfins   D4,D5{0:D0}
-            lsr.l   D0,D4
-            or.b    D3,D7
-            rts
-sub_408E8212:
-            moveq   #0,D7
-            tst.l   D4
-            bne.b   .L1
-            tst.l   D5
-            bne.b   .L1
-            suba.l  A4,A4
-            bra.w   sub_408E832E.L20
-.L1:
-            tst.l   D4
-            bmi.w   sub_408E832E.L11
-.L2:
-            subq.l  #1,A4
-            add.l   D5,D5
-            addx.l  D4,D4
-            bpl.b   .L2
-            bra.w   sub_408E832E.L11
-NORMCOERCE:
-            tst.l   D4
-            bmi.b   .L2
-.L1:
-            subq.l  #1,A4
-            add.l   D7,D7
-            addx.l  D5,D5
-            addx.l  D4,D4
-            bpl.b   .L1
-.L2:
-            move.w  FPState,D1
-            bftst   D1{25:2}
-            beq.w   sub_408E832E.L11
-            bpl.w   sub_408E8304
-.L3:
-            bsr.b   SCOERCE
-            bra.w   sub_408E8304.L1
-SCOERCE:
-            move.l  #$3F81,D0
-            sub.l   A4,D0
-            ble.b   .L1
-            bset    #9,D6
-            movea.w #$3F81,A4
-            bsr.w   RTSHIFT
-.L1:
-            tst.l   D5
-            sne     D0
-            or.b    D0,D7
-            add.b   D4,D4
-            roxr.l  #1,D7
-            or.b    D4,D7
-            moveq   #0,D5
-            clr.b   D4
-            tst.l   D7
-            bne.b   .L2
-            bclr    #9,D6
-            bra.b   .L6
-.L2:
-            bset    #$C,D6
-            bftst   D1{17:2}
-            beq.b   .L4
-            bmi.b   .L3
-            tst.b   D6
-            bpl.b   .L5
-            bra.b   .L6
-.L3:
-            btst    #$D,D1
-            bne.b   .L6
-            tst.b   D6
-            bpl.b   .L6
-            bra.b   .L5
-.L4:
-            add.l   D7,D7
-            bcc.b   .L6
-            bne.b   .L5
-            btst    #8,D4
-            beq.b   .L6
-.L5:
-            addi.l  #$100,D4
-            bcc.b   .L6
-            roxr.l  #1,D4
-            addq.l  #1,A4
-.L6:
-            movea.w #$407E,A3
-            cmpa.l  A4,A3
-            blt.b   sub_408E82C8
-            rts
-sub_408E82C8:
-            bset    #$A,D6
-            bset    #$C,D6
-            movea.w #$7FFF,A4
-            sub.l   D4,D4
-            sub.l   D5,D5
-            lsr.w   #8,D1
-            andi.b  #$60,D1
-            bne.b   .L1
-            rts
-.L1:
-            cmpi.b  #$60,D1
-            beq.b   .L3
-            tst.b   D6
-            bmi.b   .L2
-            cmpi.b  #$20,D1
-            bne.b   .L3
-            rts
-.L2:
-            cmpi.b  #$40,D1
-            bne.b   .L3
-            rts
-.L3:
-            moveq   #-1,D4
-            movea.l A3,A4
-            clr.b   D4
-            rts
-sub_408E8304:
-            bsr.b   sub_408E832E
-.L1:
-            btst    #9,D6
-            beq.w   sub_408E832E.L20
-            move.w  A4,D3
-            beq.w   sub_408E832E.L20
-            tst.l   D4
-            bne.b   .L3
-            tst.l   D5
-            bne.b   .L2
-            suba.l  A4,A4
-            bra.w   sub_408E832E.L20
-.L2:
-            subq.w  #1,A4
-            add.l   D5,D5
-            addx.l  D4,D4
-.L3:
-            bpl.b   .L2
-            bra.w   sub_408E832E.L20
-sub_408E832E:
-            move.l  #$3C01,D0
-            sub.l   A4,D0
-            ble.b   .L1
-            bset    #9,D6
-            movea.w #$3C01,A4
-            bsr.w   RTSHIFT
-.L1:
-            move.l  #$7FF,D0
-            and.w   D5,D0
-            andi.w  #$F800,D5
-            lsl.w   #5,D0
-            swap    D0
-            tst.l   D7
-            sne     D0
-            move.l  D0,D7
-            tst.l   D7
-            bne.b   .L2
-            bclr    #9,D6
-            bra.b   .L6
-.L2:
-            bset    #$C,D6
-            bftst   D1{17:2}
-            beq.b   .L4
-            bmi.b   .L3
-            tst.b   D6
-            bpl.b   .L5
-            bra.b   .L6
-.L3:
-            btst    #$D,D1
-            bne.b   .L6
-            tst.b   D6
-            bpl.b   .L6
-            bra.b   .L5
-.L4:
-            add.l   D7,D7
-            bcc.b   .L6
-            bne.b   .L5
-            btst    #$B,D5
-            beq.b   .L6
-.L5:
-            moveq   #0,D0
-            move.l  #$800,D2
-            add.l   D2,D5
-            addx.l  D0,D4
-            bcc.b   .L6
-            roxr.l  #1,D4
-            addq.l  #1,A4
-.L6:
-            movea.w #$43FE,A3
-            cmpa.l  A4,A3
-            blt.b   .L7
-            rts
-.L7:
-            bset    #$A,D6
-            bset    #$C,D6
-            movea.w #$7FFF,A4
-            sub.l   D4,D4
-            sub.l   D5,D5
-            lsr.w   #8,D1
-            andi.b  #$60,D1
-            bne.b   .L8
-            rts
-.L8:
-            cmpi.b  #$60,D1
-            beq.b   .L10
-            tst.b   D6
-            bmi.b   .L9
-            cmpi.b  #$20,D1
-            bne.b   .L10
-            rts
-.L9:
-            cmpi.b  #$40,D1
-            bne.b   .L10
-            rts
-.L10:
-            moveq   #-1,D4
-            movea.l A3,A4
-            move.l  #$FFFFF800,D5
-            rts
-.L11:
-            move.l  A4,D0
-            bpl.b   .L12
-            neg.l   D0
-            bset    #9,D6
-            suba.l  A4,A4
-            bsr.w   RTSHIFT
-.L12:
-            tst.l   D7
-            bne.b   .L13
-            bclr    #9,D6
-            bra.b   .L17
-.L13:
-            bset    #$C,D6
-            bftst   D1{17:2}
-            beq.b   .L15
-            bmi.b   .L14
-            tst.b   D6
-            bpl.b   .L16
-            bra.b   .L17
-.L14:
-            btst    #$D,D1
-            bne.b   .L17
-            tst.b   D6
-            bpl.b   .L17
-            bra.b   .L16
-.L15:
-            add.l   D7,D7
-            bcc.b   .L17
-            bne.b   .L16
-            btst    #0,D5
-            beq.b   .L17
-.L16:
-            moveq   #0,D0
-            addq.l  #1,D5
-            addx.l  D0,D4
-            bcc.b   .L17
-            roxr.l  #1,D4
-            addq.l  #1,A4
-.L17:
-            movea.w #$7FFF,A3
-            cmpa.l  A3,A4
-            blt.b   .L20
-            bset    #$A,D6
-            bset    #$C,D6
-            movea.w A3,A4
-            sub.l   D4,D4
-            sub.l   D5,D5
-            lsr.w   #8,D1
-            andi.b  #$60,D1
-            beq.b   .L20
-            cmpi.b  #$60,D1
-            beq.b   .L19
-            tst.b   D6
-            bmi.b   .L18
-            cmpi.b  #$20,D1
-            beq.b   .L20
-            bra.b   .L19
-.L18:
-            cmpi.b  #$40,D1
-            beq.b   .L20
-.L19:
-            subq.w  #1,A4
-            not.l   D4
-            not.l   D5
-.L20:
-            move.w  A4,D3
-            movea.l ($A,A6),A3
-            tst.b   D6
-            bpl.b   .L21
-            bset    #$F,D3
-.L21:
-            move.w  D3,(A3)+
-            btst    #$15,D6
-            beq.b   .L22
-            addq.w  #2,A3
-.L22:
-            move.l  D4,(A3)+
-            move.l  D5,(A3)
-            jmp     (A0)
-.L23:
-            clr.w   D7
-.L24:
-            movea.w #$A4A,A1
-            move.w  (A1),D0
-            clr.b   D6
-            or.w    D6,D0
-            move.w  D0,(A1)+
-            lsr.w   #8,D6
-            and.w   D6,D0
-            bne.b   .L26
-.L25:
-            move    D7,CCR
-            movem.l (SP)+,D0-D7/A0-A4
-            unlk    A6
-            rtd     #$A
-.L26:
-            lea     .L25,A4
-.L27:
-            move.w  D7,-(SP)
+            clr.w   -(SP)
+            dbra    D0,.L1
+            movea.l SP,A0
+            move.b  #3,($30,A0)
+            move.b  ($22,A2),($31,A0)
+            move.w  #1,($28,A0)
+            clr.w   ($2A,A0)
+            _sNextTypesRsrc
+            bne.w   .L6
+            move.b  ($31,A0),D0
+            cmp.b   ($22,A2),D0
+            bne.w   .L6
+            move.b  #$20,($32,A0)
+            _sReadWord
+            bne.w   .L6
+            move.l  (A0),D0
+            clr.l   -(SP)
+            move.l  #'enet',-(SP)
             move.w  D0,-(SP)
-            pea     (SP)
-            movem.l (6,A6),D0-D3
-            movem.l D0-D3,-(SP)
-            addq.w  #2,SP
-            movea.l (A1),A1
-            jsr     (A1)
-            move.l  (SP)+,D7
-            jmp     (A4)
-FINI1OP:
-            movea.w #$A4A,A1
-            clr.w   D7
-            move.w  (A1),D0
-            clr.b   D6
-            or.w    D6,D0
-            move.w  D0,(A1)+
-            ror.w   #8,D6
-            and.w   D6,D0
+            _GetResource
+            tst.l   (SP)
             bne.b   .L2
-.L1:
-            move    D7,CCR
-            movem.l (SP)+,D0-D7/A0-A4
-            unlk    A6
-            rtd     #6
+            addq.w  #4,SP
+            movea.l SP,A0
+            move.b  ($23,A2),($32,A0)
+            _sGetDriver
+            bne.b   .L6
+            move.l  (A0),-(SP)
+            movea.l (SP),A0
+            _MoveHHi sys
+            movea.l (SP),A0
+            _HLock async
+            bra.b   .L3
 .L2:
-            lea     .L1,A4
-            bra.b   sub_408E832E.L27
-sub_408E84F8:
-            add.b   D6,D6
-.L1:
-            move.l  A2,D5
-            move.l  D3,D4
-            movea.l A3,A4
-            bra.w   sub_408E832E.L20
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544.L1,A0
-            bra.w   RsrcPACK_4_2.L7
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544.L1,A0
-            bra.w   UNPACKXB
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544,A0
-            bra.w   RsrcPACK_4_2.L7
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544,A0
-            bra.w   UNPACKXB
-sub_408E8544:
-            eori.b  #$A0,D6
-.L1:
-            lea     sub_408E832E.L23,A0
-            move.w  .L2(PC,D0.w),D0
-            jmp     .L1(PC,D0.w)
-.L2:
-            dc.w    .L3-.L1
-            dc.w    .L30-.L1
-            dc.w    sub_408E832E.L20-.L1
-            dc.w    .L31-.L1
-            dc.w    .L27-.L1
-            dc.w    sub_408E832E.L20-.L1
-            dc.w    sub_408E84F8-.L1
-            dc.w    sub_408E84F8-.L1
-            dc.w    .L32-.L1
+            move.l  (SP),-(SP)
+            _DetachResource
 .L3:
-            exg     D4,D3
-            exg     D5,A2
-            move.w  A4,D0
-            sub.w   A3,D0
-            beq.w   .L25
-            bgt.b   .L4
-            exg     D5,A2
-            exg     D4,D3
-            movea.l A3,A4
-            add.b   D6,D6
-            neg.w   D0
-            asr.b   #1,D6
-.L4:
-            move.l  D0,D2
-            cmpi.w  #$42,D0
-            bhi.w   .L6
-            add.w   D2,D2
-            move.w  .L5(PC,D2.w),D2
-            jmp     .L3(PC,D2.w)
-.L5:
-            dc.w    .L25-.L3
-            dc.w    .L24-.L3
-            dc.w    .L23-.L3
-            dc.w    .L22-.L3
-            dc.w    .L21-.L3
-            dc.w    .L20-.L3
-            dc.w    .L19-.L3
-            dc.w    .L18-.L3
-            dc.w    .L17-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L16-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L14-.L3
-            dc.w    .L13-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L9-.L3
-            dc.w    .L8-.L3
-            dc.w    .L7-.L3
-.L6:
-            moveq   #0,D4
-            moveq   #0,D5
-            not.b   D7
-            bra.w   .L25
-.L7:
-            or.w    D4,D5
-            tst.l   D5
-            sne     D7
-            lsr.l   #2,D4
-            bra.b   .L10
-.L8:
-            or.w    D4,D5
-            tst.l   D5
-            sne     D7
-            lsr.l   #1,D4
-            bra.b   .L10
-.L9:
-            tst.l   D5
-            sne     D7
-.L10:
-            or.l    D4,D7
-            moveq   #0,D4
-            moveq   #0,D5
-            bra.w   .L25
-.L11:
-            move.l  D5,D7
-            subi.w  #$20,D0
-            move.l  D4,D5
-            ror.l   D0,D7
-            lsr.l   D0,D5
-            bftst   D7{0:D0}
-            beq.b   .L12
-            ori.w   #$FF,D7
-.L12:
-            bfins   D4,D7{0:D0}
-            moveq   #0,D4
-            bra.w   .L25
-.L13:
-            move.l  D5,D7
-            move.l  D4,D5
-            moveq   #0,D4
-            lsr.l   #1,D5
-            roxr.l  #1,D7
-            scs     D7
-            bra.w   .L25
-.L14:
-            move.l  D5,D7
-            move.l  D4,D5
-            moveq   #0,D4
-            bra.w   .L25
-.L15:
-            bfins   D5,D7{0:D0}
-            lsr.l   D0,D5
-            bfins   D4,D5{0:D0}
-            lsr.l   D0,D4
-            bra.b   .L25
-.L16:
-            move.w  D5,D7
-            move.w  D4,D5
-            clr.w   D4
-            swap    D5
-            swap    D4
-            swap    D7
-            bra.b   .L25
-.L17:
-            bfins   D5,D7{0:8}
-            move.b  D4,D5
-            lsr.l   #8,D4
-            ror.l   #8,D5
-            bra.b   .L25
-.L18:
-            bfins   D5,D7{0:7}
-            lsr.l   #7,D5
-            bfins   D4,D5{0:7}
-            lsr.l   #7,D4
-            bra.b   .L25
-.L19:
-            bfins   D5,D7{0:6}
-            lsr.l   #6,D5
-            bfins   D4,D5{0:6}
-            lsr.l   #6,D4
-            bra.b   .L25
-.L20:
-            bfins   D5,D7{0:5}
-            lsr.l   #5,D5
-            bfins   D4,D5{0:5}
-            lsr.l   #5,D4
-            bra.b   .L25
-.L21:
-            bfins   D5,D7{0:4}
-            lsr.l   #4,D5
-            bfins   D4,D5{0:4}
-            lsr.l   #4,D4
-            bra.b   .L25
-.L22:
-            bfins   D5,D7{0:3}
-            lsr.l   #3,D5
-            bfins   D4,D5{0:3}
-            lsr.l   #3,D4
-            bra.b   .L25
-.L23:
-            bfins   D5,D7{0:2}
-            lsr.l   #2,D5
-            bfins   D4,D5{0:2}
-            lsr.l   #2,D4
-            bra.b   .L25
-.L24:
-            lsr.l   #1,D4
-            roxr.l  #1,D5
-            roxr.l  #1,D7
-.L25:
-            btst    #5,D6
-            bne.b   .L26
-            add.l   A2,D5
-            addx.l  D3,D4
-            bcc.w   NORMCOERCE.L2
-            roxr.l  #1,D4
-            roxr.l  #1,D5
-            roxr.l  #1,D7
-            scs     D1
-            or.b    D1,D7
-            addq.l  #1,A4
-            bra.w   NORMCOERCE.L2
-.L26:
-            not.b   D6
-            sub.l   A2,D5
-            subx.l  D3,D4
-            beq.b   .L28
-            bcc.w   NORMCOERCE
-            neg.l   D7
-            negx.l  D5
-            negx.l  D4
-            not.b   D6
-            bra.w   NORMCOERCE
-.L27:
-            btst    #5,D6
-            beq.w   sub_408E832E.L20
-.L28:
-            suba.l  A4,A4
-            movea.w #$A4A,A1
-            clr.b   D6
-            btst    #6,(A1)
-            beq.b   .L29
-            btst    #5,(A1)
-            bne.b   .L29
-            not.b   D6
-.L29:
-            bra.w   sub_408E832E.L20
-.L30:
-            move.l  A2,D5
-            move.l  D3,D4
-            movea.l A3,A4
-            add.b   D6,D6
-.L31:
-            bra.w   NORMCOERCE.L2
-.L32:
-            btst    #5,D6
-            bne.b   .L33
-            bra.w   sub_408E832E.L20
-.L33:
-            moveq   #2,D0
-            bra.w   UNPACKXB.L1
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8796,A0
-            bra.w   RsrcPACK_4_2.L7
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8796,A0
-            bra.w   UNPACKXB
-sub_408E8796:
-            lea     sub_408E832E.L23,A0
-            lsl.b   #2,D6
-            move.w  .L1(PC,D0.w),D0
-            jmp     sub_408E8796(PC,D0.w)
-.L1:
-            dc.w    .L2-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
-            dc.w    sub_408E84F8.L1-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
-            dc.w    .L5-sub_408E8796
-            dc.w    sub_408E84F8.L1-sub_408E8796
-            dc.w    .L5-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
-.L2:
-            adda.l  A3,A4
-            suba.w  #$3FFE,A4
-            move.l  D3,D2
-            move.l  A2,D3
-            movea.l D6,A1
-            movea.l D4,A2
-            movea.l D5,A3
-            moveq   #0,D7
-            moveq   #0,D6
-            move.l  A2,D5
-            mulu.l  D2,D4:D5
-            move.l  A3,D7
-            beq.b   .L3
-            mulu.l  D2,D0:D7
-            add.l   D0,D5
-            addx.l  D6,D4
-.L3:
-            move.l  D3,D0
+            movea.l (SP),A3
+            move.l  (A3),D0
+            _StripAddress
+            movea.l D0,A3
+            movea.l (A1),A4
+            move.w  (4,A1),D1
+            move.l  A3,(A1)
+            move.b  (A3),(4,A1)
+            bclr    #6,(5,A1)
+            movea.l A2,A0
+            move.w  (8,A3),D0
+            movem.l D1/A1/A4,-(SP)
+            jsr     (0,A3,D0.w)
+            movem.l (SP)+,D1/A1/A4
+            move.w  D0,D3
             beq.b   .L4
-            move.l  A2,D1
-            mulu.l  D0,D0:D1
-            add.l   D1,D7
-            addx.l  D0,D5
-            addx.l  D6,D4
-            move.l  A3,D1
-            beq.b   .L4
-            mulu.l  D3,D0:D1
-            add.l   D0,D7
-            addx.l  D6,D5
-            addx.l  D6,D4
-            tst.l   D1
-            sne     D1
-            or.b    D1,D7
+            movea.l (SP)+,A0
+            _DisposHandle
+            move.l  A4,(A1)
+            move.w  D1,(4,A1)
+            move.w  D3,D0
+            bra.b   .L7
 .L4:
-            move.l  A1,D6
-            bra.w   NORMCOERCE
+            lea     RsrcDRVR_127,A0
+            _RecoverHandle
+            tst.w   MemErr
+            bne.b   .L5
+            move.l  A0,-(SP)
+            _DetachResource
 .L5:
-            moveq   #8,D0
-            bra.w   UNPACKXB.L1
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E882C,A0
-            bra.w   RsrcPACK_4_2.L7
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E882C,A0
-            bra.w   UNPACKXB
-sub_408E882C:
-            lea     sub_408E832E.L23,A0
-            lsl.b   #2,D6
-            move.w  .L1(PC,D0.w),D0
-            jmp     sub_408E882C(PC,D0.w)
-.L1:
-            dc.w    .L5-sub_408E882C
-            dc.w    .L2-sub_408E882C
-            dc.w    .L3-sub_408E882C
-            dc.w    .L3-sub_408E882C
-            dc.w    .L4-sub_408E882C
-            dc.w    .L3-sub_408E882C
-            dc.w    sub_408E84F8.L1-sub_408E882C
-            dc.w    sub_408E84F8.L1-sub_408E882C
-            dc.w    .L4-sub_408E882C
-.L2:
-            bset    #$B,D6
-            movea.w #$7FFF,A4
-            moveq   #0,D4
-            moveq   #0,D5
-            bra.w   sub_408E832E.L20
-.L3:
-            suba.l  A4,A4
-            move.l  A4,D4
-            move.l  D4,D5
-            bra.w   sub_408E832E.L20
-.L4:
-            moveq   #4,D0
-            bra.w   UNPACKXB.L1
-.L5:
-            exg     A3,A4
-            suba.l  A3,A4
-            lea     ($3FFF,A4),A4
-            movea.l D6,A3
-            move.l  D3,D2
-            move.l  A2,D3
-            moveq   #0,D1
-            move.l  D2,D6
-            sub.l   D5,D3
-            subx.l  D4,D2
-            bcc.b   .L6
-            subq.l  #1,A4
-            add.l   A2,D3
-            addx.l  D6,D2
-.L6:
-            bsr.b   DIV32
-            movea.l D0,A2
-            bsr.b   DIV32
-            move.l  D0,D5
-            move.l  A2,D4
-            move.l  A3,D6
-            moveq   #1,D7
-            lsr.l   #1,D7
-            roxr.l  #1,D4
-            roxr.l  #1,D5
-            roxr.l  #1,D7
-            or.l    D2,D3
-            sne     D7
-            bra.w   NORMCOERCE.L2
-DIV32:
-            divu.l  D4,D2:D3
-            bvs.b   sub_408E88C8
-            move.l  D3,D0
-            move.l  D3,D7
-            mulu.l  D5,D6:D7
-.L1:
-            move.l  D1,D3
-            sub.l   D7,D3
-            subx.l  D6,D2
-            bcc.b   .L3
-.L2:
-            subq.l  #1,D0
-            add.l   D5,D3
-            addx.l  D4,D2
-            bcc.b   .L2
-.L3:
-            rts
-sub_408E88C8:
-            move.l  D5,D6
-            moveq   #0,D7
-            move.l  D3,D2
             moveq   #0,D0
-            bra.b   DIV32.L1
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E88F2,A0
-            bra.w   RsrcPACK_4_2.L7
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E88F2,A0
-            bra.w   UNPACKXB
-sub_408E88F2:
-            lea     sub_408E832E.L23,A0
-            clr.w   (2,SP)
-            add.b   D6,D6
-            move.w  .L1(PC,D0.w),D0
-            jmp     sub_408E88F2(PC,D0.w)
-.L1:
-            dc.w    .L3-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    .L4-sub_408E88F2
-            dc.w    sub_408E84F8.L1-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    sub_408E84F8.L1-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-.L2:
-            moveq   #9,D0
-            bra.w   UNPACKXB.L1
-.L3:
-            move.l  A3,D0
-            addq.l  #1,D0
-            sub.l   A4,D0
-            bpl.b   .L5
-.L4:
-            move.l  D3,D4
-            move.l  A2,D5
-            movea.l A3,A4
-            bra.b   .L11
-.L5:
-            subq.l  #1,A4
-            cmpi.l  #9,D0
-            bgt.b   sub_408E89A0
-            move.l  D3,D1
-            move.l  A2,D2
-            move.l  D4,D3
-            movea.l D5,A2
-            addq.l  #1,D0
-            bsr.b   RESTORE_FPOPS
+            bra.b   .L7
 .L6:
-            btst    #0,D5
-            beq.b   .L9
-            tst.l   D1
-            bne.b   .L7
-            tst.l   D2
-            bne.b   .L7
-            btst    #1,D5
-            beq.b   .L8
+            moveq   #-$17,D0
 .L7:
-            bchg    #7,D6
-            addq.w  #2,D5
-.L8:
-            exg     D2,A2
-            exg     D1,D3
-            sub.l   A2,D2
-            subx.l  D3,D1
-.L9:
-            lsr.b   #1,D5
-            btst    #6,D6
-            beq.b   .L10
-            neg.b   D5
-.L10:
-            ext.w   D5
-            move.w  D5,(2,SP)
-            move.l  D1,D4
-            move.l  D2,D5
-.L11:
-            bra.w   sub_408E8212
-RESTORE_FPOPS:
-            moveq   #0,D4
-            move.l  D4,D5
+            unlk    A6
+ENETPrime:
+            rts
+ENETClose:
+            moveq   #-$18,D0
+            bra.b   ENETPrime
+            dc.b    'MLPATWTO'
+RsrcEntryatlk_10:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'atlk' 10 "Main" (3236 bytes) - Combo mask
+            dc.l    RsrcEntryDRVR_127-BaseOfROM     ; Next entry
+            dc.l    Rsrcatlk_10-BaseOfROM           ; Data
+            dc.b    'atlk'                          ; Type
+            dc.w    10                              ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'Main'                        ; Name
+            dc.b    ' Apple C'
+            dc.l    $C0A00000,$00000CB0,$00000284   ; Block header
+Rsrcatlk_10:
+            bra.b   .L1
+            dc.w    $6004,0,$0078,$0C40,$0001,$6700,$00B2,$487A
+            dc.w    $000E
+            movem.l D0/A0,-(SP)
+            move.w  #8,D0
+            bra.w   sub_408D9DB2.L7
+            cmpi.w  #2,D0
+            beq.w   sub_408D91CA.L2
+            cmpi.w  #3,D0
+            beq.w   sub_408D94C2
+            cmpi.w  #4,D0
+            beq.w   sub_408D950E
+            cmpi.w  #5,D0
+            beq.w   sub_408D952C
+            cmpi.w  #6,D0
+            beq.w   sub_408D952C.L1
+            moveq   #-1,D0
+            rts
+.L1:
+            pea     sub_408D91CA
+            movem.l D0/A0,-(SP)
+            clr.w   D0
+            bra.w   sub_408D9DB2.L7
+sub_408D91CA:
+            cmpi.b  #1,D0
+            beq.w   sub_408D96A2.L6
+            cmpi.b  #0,D0
+            beq.w   sub_408D952C.L4
+            cmpi.b  #$FF,D0
+            beq.w   sub_408D96A2.L8
+            jmp     (A0)
+            ds.b    4
+            dc.b    $02,$22,$80,$00,$00,$00,$07
+            dc.b    '2.2.2  9EtherTalk atlk v2.2.2  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1987-1991 <'
+            dc.w    0,$03EA,$A71E,$6600,$01FC,$2678,$02B6,$47EB
+            dc.b    $01,$0C,$26,$88,$26,$48,$37,$7C,$00,$06,$01
+            dc.b    'HYO/<aarp '
+            dc.b    $01,$48,$40,$E0,$48,$3F,$00,$A9,$A0,$20,$1F,$67,$08
+            dc.b    ' @ P7P'
+            dc.w    $0148,$6100,$079A,$4841,$3741,$0032,$303C,$A06E
+            dc.w    $A346,$2F08,$303C,$A89F,$A746,$B1DF,$57C3,$41EB
+            dc.w    $0010,$4A03,$670C,$43FA,$01AC,$2149,$0012,$A000
+            dc.w    $600A,$43FA,$019A,$2149,$0012,$A200,$6748,$4A03
+            dc.w    $6600,$0174,$701B,$4267,$51C8,$FFFC,$204F,$317C
+            dc.w    $0004,$0028,$317C,$0001,$002A,$117C,$0003,$0030
+            dc.w    $7015,$A06E,$3228,$0031,$4FEF,$0038,$4A40,$6708
+            dc.w    $50C3,$323C,$FFFF,$60A6,$3741,$0032,$41EB,$0010
+            dc.w    $A200,$6600,$0132,$4841
+            movem.l D1/A0,-(SP)
+            move.w  ($18,A0),D2
+            lea     sub_408D993C,A0
+            lea     sub_408D9A72.L1,A1
+            moveq   #$15,D0
+            movea.l LAPMgrPtr,A2
+            jsr     (2,A2)
+            movem.l (SP)+,D1/A0
+            bne.w   .L1
+            movem.l D1/A0,-(SP)
+            move.w  ($18,A0),D2
+            lea     sub_408D97D0,A0
+            lea     sub_408D9A72.L2,A1
+            moveq   #$15,D0
+            movea.l LAPMgrPtr,A2
+            jsr     (2,A2)
+            movem.l (SP)+,D1/A0
+            bne.w   .L1
+            move.w  #$F6,($1A,A0)
+            lea     ($1C,A0),A1
+            move.l  #$9000700,(A1)
+            st      (3,A1)
+            st      (4,A1)
+            st      (5,A1)
+            _Control
+            bne.w   .L1
+            move.w  #$FC,($1A,A0)
+            move.w  #6,($22,A0)
+            lea     ($CE,A3),A1
+            move.l  A1,($1E,A0)
+            _Control
+            move.w  #$F9,($1A,A0)
+            lea     ($E2,A3),A1
+            move.l  #$9000700,(A1)
+            st      (3,A1)
+            st      (4,A1)
+            st      (5,A1)
+            lea     ($C,A1),A1
+            move.w  #$24,(A1)+
+            move.w  #$AAAA,(A1)+
+            move.b  #3,(A1)+
+            clr.b   (A1)+
+            clr.w   (A1)+
+            move.w  #$80F3,(A1)+
+            move.w  #1,(A1)+
+            move.w  #$809B,(A1)+
+            move.b  #6,(A1)+
+            move.b  #4,(A1)+
+            addq.w  #2,A1
+            move.l  ($CE,A3),(A1)+
+            move.w  ($D2,A3),(A1)+
+            lea     ($4A,A3),A1
+            moveq   #$3A,D0
+            _BlockMove
+            lea     ($7C,A3),A0
+            move.l  A0,($1E,A1)
+            move.w  #$32,(A0)+
+            lea     ($114,A3),A1
+            move.l  A1,(A0)
+            lea     ($C,A1),A1
+            move.w  #$24,(A1)+
+            move.w  #$AAAA,(A1)+
+            move.b  #3,(A1)+
+            clr.b   (A1)+
+            clr.w   (A1)+
+            move.w  #$80F3,(A1)+
+            lea     ($D4,A3),A0
+            move.w  #1,(4,A0)
+            lea     sub_408D964A,A1
+            move.l  A1,(6,A0)
+            move.w  #$E10,($A,A0)
+            _VInstall
+            clr.b   D1
+            moveq   #2,D0
+            move.w  #$FD00,D2
+            lea     Rsrcatlk_10,A0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            moveq   #0,D0
+            rts
+.L1:
+            move.l  D0,-(SP)
+            bsr.w   sub_408D9B54
+            movea.l A3,A0
+            _DisposPtr
+            movea.l ExpandMem,A3
+            lea     ($10C,A3),A3
+            clr.l   (A3)
+            move.l  (SP)+,D0
+            rts
+            dc.b    5,'.ENET'
+            dc.b    6,'.ENET0'
+            dc.b    $00
+.L2:
+            moveq   #3,D0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            lea     ($10,A3),A0
+            move.w  #$F5,($1A,A0)
+            lea     ($1C,A0),A1
+            move.l  #$9000700,(A1)
+            st      (3,A1)
+            st      (4,A1)
+            st      (5,A1)
+            _Control
+            movem.l A2,-(SP)
+            move.w  ($18,A0),D2
+            lea     sub_408D9A72.L1,A1
+            moveq   #$16,D0
+            movea.l LAPMgrPtr,A2
+            jsr     (2,A2)
+            move.w  ($18,A0),D2
+            lea     sub_408D9A72.L2,A1
+            moveq   #$16,D0
+            movea.l LAPMgrPtr,A2
+            jsr     (2,A2)
+            movem.l (SP)+,A2
+            lea     ($D4,A3),A0
+            _VRemove
+            bsr.w   sub_408D9B54
+            movea.l A3,A0
+            _DisposPtr
+            movea.l ExpandMem,A3
+            lea     ($10C,A3),A3
+            clr.l   (A3)
+            moveq   #0,D0
+            rts
+sub_408D94C2:
+            movem.l A1,-(SP)
+            cmpi.w  #$16,D1
+            blt.b   .L1
+            move.l  A3,-(SP)
+            movea.l ExpandMem,A3
+            move.l  ($10C,A3),D0
+            movea.l (SP)+,A3
+            beq.b   .L1
+            move.w  #3,(A1)+
+            move.w  #$16,(A1)+
+            move.l  #$989680,(A1)+
+            clr.l   (A1)+
+            moveq   #0,D0
+            bset    #7,D0
+            move.b  D0,(A1)+
+            move.b  #6,(A1)+
+            movea.l D1,A0
+            move.l  ($CE,A0),(A1)+
+            move.w  ($D2,A0),(A1)+
+            clr.w   (A1)+
+            moveq   #0,D0
             bra.b   .L2
 .L1:
-            add.l   D5,D5
-            addx.l  D4,D4
-            add.l   D2,D2
-            addx.l  D1,D1
-            bcs.b   .L4
+            moveq   #-1,D0
 .L2:
-            cmp.l   D3,D1
-            bne.b   .L3
-            cmp.l   A2,D2
-.L3:
-            bcs.b   .L5
-.L4:
-            addq.b  #1,D5
-            sub.l   A2,D2
-            subx.l  D3,D1
-.L5:
-            subq.w  #1,D0
-            bne.b   .L1
+            movem.l (SP)+,A1
             rts
-sub_408E89A0:
-            movea.l D6,A3
-            move.l  A2,D1
-            moveq   #0,D2
-            movea.l D0,A2
-            andi.l  #$1F,D0
-            beq.b   .L1
-            bfextu  D3{0:D0},D2
-            lsl.l   D0,D3
-            bfextu  D1{0:D0},D6
-            lsl.l   D0,D1
-            or.l    D6,D3
-.L1:
-            bsr.w   DIV32
-            move.l  A2,D6
-            bfextu  D6{16:11},D6
-            beq.b   .L3
-            movea.l D6,A1
-            moveq   #0,D1
-.L2:
-            bsr.w   DIV32
-            subq.l  #1,A1
-            move.l  A1,D6
-            bne.b   .L2
-.L3:
-            move.l  D2,D1
-            move.l  D3,D2
-            move.l  D4,D3
-            movea.l D5,A2
-            move.l  D0,D5
-            move.l  A3,D6
-            bra.w   sub_408E88F2.L6
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8A08,A0
-            bra.w   RsrcPACK_4_2.L7
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8A08,A0
-            bra.w   UNPACKXB
-sub_408E8A08:
-            move.w  .L1(PC,D0.w),D0
-            jmp     sub_408E8A08(PC,D0.w)
-.L1:
-            dc.w    .L7-sub_408E8A08
-            dc.w    .L2-sub_408E8A08
-            dc.w    .L3-sub_408E8A08
-            dc.w    .L3-sub_408E8A08
-            dc.w    .L6-sub_408E8A08
-            dc.w    .L3-sub_408E8A08
-            dc.w    .L2-sub_408E8A08
-            dc.w    .L2-sub_408E8A08
-            dc.w    .L5-sub_408E8A08
-.L2:
-            add.b   D6,D6
-            not.b   D6
-.L3:
-            moveq   #0,D7
-            tst.b   D6
-            bmi.b   .L4
-            moveq   #$19,D7
-.L4:
-            bra.w   sub_408E832E.L24
-.L5:
-            btst    #5,D6
-            bne.b   .L3
-.L6:
-            moveq   #4,D7
-            bra.w   sub_408E832E.L24
-.L7:
-            btst    #5,D6
-            bne.b   .L3
-            cmpa.l  A4,A3
-            bgt.b   .L8
-            blt.b   .L9
-            cmp.l   D4,D3
-            bhi.b   .L8
-            bcs.b   .L9
-            cmpa.l  D5,A2
-            beq.b   .L6
-            bcs.b   .L9
-.L8:
-            not.b   D6
-.L9:
-            moveq   #$19,D7
-            tst.b   D6
-            bpl.w   sub_408E832E.L24
-            moveq   #0,D7
-            bra.w   sub_408E832E.L24
-sub_408E8A66:
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
-            move.w  (8,A6),D6
+sub_408D950E:
+            move.l  #$9000700,(A1)
+            clr.b   (4,A1)
+            andi.l  #$FFFF,D1
+            divu.w  #$FD,D1
+            swap    D1
+            move.b  D1,(5,A1)
             moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($E,A6),A1
-            bsr.w   UNPXOP
+            rts
+sub_408D952C:
+            movea.l ExpandMem,A0
+            movea.l ($10C,A0),A0
+            move.w  ($28,A0),($9C,A0)
+            lea     ($84,A0),A0
+            move.w  #$F6,($1A,A0)
+            bra.b   .L2
 .L1:
-            moveq   #0,D7
-            tst.w   D0
-            bne.w   UNPACKXB.L6
-            tst.l   D0
-            beq.w   NORMCOERCE.L2
-            bra.w   sub_408E832E.L20
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            move.l  D6,D1
-            clr.w   D1
-            rol.l   #6,D1
-            andi.w  #$E,D1
-            subq.w  #2,D1
-            movea.l ($E,A6),A1
-            bsr.w   sub_408E80D0
-            bra.b   .L1
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     FINI1OP,A0
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($A,A6),A1
-            bsr.w   UNPXOP
-            tst.l   D0
-            beq.b   .L3
-            tst.w   D0
-            bne.w   UNPACKXB.L6
-            btst    #$11,D0
-            bne.w   sub_408E832E.L20
-            tst.b   D6
-            bpl.w   sub_408E832E.L20
+            movea.l ExpandMem,A0
+            movea.l ($10C,A0),A0
+            move.w  ($28,A0),($BE,A0)
+            lea     ($A6,A0),A0
+            move.w  #$F5,($1A,A0)
 .L2:
-            moveq   #1,D0
-            bra.w   UNPACKXB.L1
+            move.w  (A1)+,($1C,A0)
+            move.l  (A1)+,($1E,A0)
+            moveq   #-1,D0
+            tst.w   ($10,A0)
+            bgt.b   .L3
+            _Control async
 .L3:
-            tst.b   D6
-            bmi.b   .L2
-            move.w  A4,D0
-            asr.w   #1,D0
-            move    SR,D7
-            bcc.b   .L4
-            addq.w  #1,D0
-.L4:
-            addi.w  #$1FFF,D0
-            movea.w D0,A4
-            movea.l D6,A3
-            move.l  D5,D3
-            move.l  D4,D2
-            add.l   D3,D3
-            addx.l  D2,D2
-            moveq   #1,D1
-            move    D7,CCR
-            bcs.b   .L5
-            add.l   D3,D3
-            addx.l  D2,D2
-            addx.w  D1,D1
-.L5:
-            subq.w  #1,D1
-            moveq   #1,D0
-            moveq   #0,D4
-            move.l  D4,D5
-            move.l  #$40000000,D6
-            bra.b   .L7
-.L6:
-            add.l   D3,D3
-            addx.l  D2,D2
-            addx.w  D1,D1
-.L7:
-            or.l    D6,D4
-            sub.l   D4,D2
-            subx.w  D0,D1
-            bcc.b   .L8
-            add.l   D4,D2
-            addx.w  D0,D1
-            eor.l   D6,D4
-            bra.b   .L9
-.L8:
-            add.l   D6,D4
-.L9:
-            lsr.l   #1,D6
-            bcc.b   .L6
-            move.l  #$80000000,D6
-            add.l   D3,D3
-            addx.l  D2,D2
-            addx.w  D1,D1
-            sub.l   D6,D3
-            subx.l  D4,D2
-            subx.w  D0,D1
-            bcc.b   .L10
-            add.l   D6,D3
-            addx.l  D4,D2
-            addx.w  D0,D1
-            bra.b   .L11
-.L10:
-            addq.w  #1,D4
-.L11:
-            move.l  D3,D7
-            or.w    D1,D7
-            or.l    D2,D7
-            bne.b   .L12
-            lsr.w   #1,D0
-            roxr.l  #1,D4
-            roxr.l  #1,D5
-            bra.b   .L17
-.L12:
-            ror.l   #1,D6
-.L13:
-            add.l   D3,D3
-            addx.l  D2,D2
-            addx.w  D1,D1
-            or.l    D6,D5
-            sub.l   D5,D3
-            subx.l  D4,D2
-            subx.w  D0,D1
-            bcc.b   .L14
-            add.l   D5,D3
-            addx.l  D4,D2
-            addx.w  D0,D1
-            eor.l   D6,D5
-            bra.b   .L15
-.L14:
-            add.l   D6,D5
-.L15:
-            lsr.l   #1,D6
-            bcc.b   .L13
-            moveq   #0,D7
-            addq.w  #1,D5
-            lsr.w   #1,D0
-            roxr.l  #1,D4
-            roxr.l  #1,D5
-            subx.l  D5,D3
-            subx.l  D4,D2
-            subx.w  D7,D1
-            bcs.b   .L16
-            bset    #$1F,D7
-.L16:
-            addi.w  #$FF,D7
-.L17:
-            move.l  A3,D6
-            bra.w   NORMCOERCE.L2
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     FINI1OP,A0
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($A,A6),A1
-            bsr.w   UNPXOP
-            tst.l   D0
-            beq.b   .L18
-            tst.w   D0
-            bne.w   UNPACKXB.L6
-            bra.w   sub_408E832E.L20
-.L18:
-            bsr.w   sub_408E8C86
-            bgt.b   .L20
-.L19:
-            bftst   D1{25:2}
-            beq.w   sub_408E832E.L11
-            bpl.w   sub_408E8304
-            bra.w   NORMCOERCE.L3
-.L20:
-            bsr.w   RNDINT
-            tst.l   D4
-            bmi.w   sub_408E832E.L20
-.L21:
-            bfffo   D4{0:0},D0
-            beq.b   .L22
-            suba.w  D0,A4
-            lsl.l   D0,D4
-            bfextu  D5{0:D0},D2
-            lsl.l   D0,D5
-            or.l    D2,D4
-            bra.w   sub_408E832E.L20
-.L22:
-            suba.w  #$20,A4
-            exg     D4,D5
-            bfffo   D4{0:0},D0
-            beq.b   .L23
-            bmi.w   sub_408E832E.L20
-            suba.w  D0,A4
-            lsl.l   D0,D4
-            bra.w   sub_408E832E.L20
-.L23:
-            suba.l  A4,A4
-            bra.w   sub_408E832E.L20
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     FINI1OP,A0
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($A,A6),A1
-            bsr.w   UNPXOP
-            tst.l   D0
-            beq.b   .L24
-            tst.w   D0
-            bne.w   UNPACKXB.L6
-            bra.w   sub_408E832E.L20
-.L24:
-            bsr.b   sub_408E8C86
-            bgt.b   .L25
-            ori.w   #$6000,D1
-            bra.w   .L19
-.L25:
-            tst.l   D7
-            beq.b   .L21
-            bset    #$C,D6
-            bra.b   .L21
-sub_408E8C86:
-            move.w  FPState,D1
-            bftst   D1{25:2}
-            beq.b   sub_408E8C9A
-            bmi.b   .L1
-            moveq   #$34,D0
-            bra.b   sub_408E8C9A.L1
-.L1:
-            moveq   #$17,D0
-            bra.b   sub_408E8C9A.L1
-sub_408E8C9A:
-            moveq   #$3F,D0
-.L1:
-            moveq   #0,D7
-            addi.w  #$3FFF,D0
-            move.w  D0,D2
-            sub.l   A4,D0
-            bgt.b   .L2
-            rts
-.L2:
-            movea.w D2,A4
-            bsr.w   RTSHIFT
-            move    #0,CCR
-            rts
-RNDINT:
-            tst.l   D7
-            bne.b   .L1
-            rts
-.L1:
-            bset    #$C,D6
-            bftst   D1{17:2}
-            beq.b   .L4
-            bmi.b   .L2
-            tst.b   D6
-            bpl.b   .L6
-            rts
-.L2:
-            btst    #$D,D1
-            beq.b   .L3
-            rts
-.L3:
-            tst.b   D6
-            bmi.b   .L6
             rts
 .L4:
-            add.l   D7,D7
-            bcs.b   .L5
-            rts
-.L5:
-            bne.b   .L6
-            btst    #0,D5
-            bne.b   .L6
-            rts
-.L6:
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            bset    #4,($C8,A3)
+            move.l  A0,($3D2,A3)
+            move.l  A1,($3C6,A3)
+            movea.l (2,A1),A0
+            move.l  A0,($3C0,A3)
+            addq.w  #3,(2,A1)
             moveq   #0,D0
-            addq.l  #1,D5
-            addx.l  D0,D4
-            rts
-sub_408E8CF4:
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($E,A6),A1
-            bsr.w   UNPXOP
-            moveq   #$1A,D7
-            move.l  D6,D1
-            lsr.l   D7,D1
-            andi.w  #$E,D1
-            subq.w  #2,D1
-            moveq   #0,D7
-            move.w  .L1(PC,D1.w),D1
-            jmp     sub_408E8CF4(PC,D1.w)
-.L1:
-            dc.w    .L2-sub_408E8CF4
-            dc.w    .L9-sub_408E8CF4
-            dc.w    sub_408E8A66-sub_408E8CF4
-            dc.w    .L25-sub_408E8CF4
-            dc.w    .L20-sub_408E8CF4
-            dc.w    .L15-sub_408E8CF4
-.L2:
-            movea.l ($A,A6),A2
-            tst.l   D0
-            beq.b   .L3
+            move.w  (A1),D0
+            move.w  D0,($3C4,A3)
+            subq.w  #3,(A1)
+            move.l  A4,-(SP)
+            lea     ($15C,A3),A4
+            move.w  #$AAAA,(A4)+
+            move.b  #3,(A4)+
+            move.b  #8,(A4)+
+            clr.b   (A4)+
+            move.b  #7,(A4)+
+            move.w  #$809B,(A4)+
+            addq.w  #3,A0
+            subq.w  #3,D0
+            movea.l A4,A1
+            movea.l (SP)+,A4
             tst.w   D0
             beq.b   .L5
-            andi.w  #$F800,D5
-            bsr.w   sub_408E8052
-            bra.b   .L5
-.L3:
-            move.w  FPState,D1
-            btst    #6,D1
-            beq.b   .L4
-            bsr.w   SCOERCE
-            bra.b   .L5
-.L4:
-            bsr.w   sub_408E832E
+            _BlockMove
 .L5:
-            move.w  A4,D3
-            cmpi.w  #$7FFF,D3
+            lea     ($14E,A3),A1
+            cmpi.b  #$FF,D2
             bne.b   .L6
-            move.w  #$4400,D3
-            bra.b   .L7
+            move.l  #$9000700,(A1)
+            st      (3,A1)
+            st      (4,A1)
+            st      (5,A1)
+            bra.w   sub_408D96A2.L1
 .L6:
-            tst.w   D3
-            bne.b   .L7
-            move.w  #$3C01,D3
-.L7:
-            subi.w  #$3C00,D3
-            tst.l   D4
-            bmi.b   .L8
-            subq.w  #1,D3
-.L8:
-            lsr.l   #8,D5
-            lsr.l   #3,D5
-            bfins   D4,D5{0:11}
-            lsr.l   #8,D4
-            lsr.l   #2,D4
-            bfins   D3,D4{0:11}
-            add.b   D6,D6
-            roxr.l  #1,D4
-            move.l  D4,(A2)+
-            move.l  D5,(A2)
-            jmp     (A0)
-.L9:
-            movea.l ($A,A6),A2
-            tst.l   D0
-            beq.b   .L10
-            tst.w   D0
-            beq.b   .L11
-            moveq   #0,D5
-            clr.b   D4
-            bsr.w   sub_408E8052
-            bra.b   .L11
-.L10:
-            move.w  FPState,D1
-            bsr.w   SCOERCE
-.L11:
-            move.w  A4,D3
-            cmpi.w  #$7FFF,D3
-            bne.b   .L12
-            move.w  #$4080,D3
-            bra.b   .L13
-.L12:
-            tst.w   D3
-            bne.b   .L13
-            move.w  #$3F81,D3
-.L13:
-            subi.w  #$3F80,D3
-            add.l   D4,D4
-            bcs.b   .L14
-            subq.w  #1,D3
-.L14:
-            or.w    D3,D4
-            ror.l   #8,D4
-            add.b   D6,D6
-            roxr.l  #1,D4
-            move.l  D4,(A2)
-            jmp     (A0)
-.L15:
-            tst.l   D0
-            beq.b   .L18
-            btst    #$11,D0
-            bne.b   .L19
-            tst.b   D0
-            bne.b   .L17
-.L16:
-            bset    #8,D6
-            bclr    #$C,D6
-.L17:
-            moveq   #1,D4
-            moveq   #0,D5
-            ror.l   #1,D4
-            bra.b   .L19
-.L18:
-            bsr.w   sub_408E8C9A
-            ble.b   .L16
-            move.w  FPState,D1
-            bsr.w   RNDINT
-            tst.l   D4
-            bmi.b   .L16
-            tst.b   D6
-            bpl.b   .L19
-            neg.l   D5
-            negx.l  D4
-.L19:
-            movea.l ($A,A6),A2
-            move.l  D4,(A2)+
-            move.l  D5,(A2)
-            jmp     (A0)
-.L20:
-            tst.l   D0
-            beq.b   .L22
-            btst    #$11,D0
-            bne.b   .L24
-.L21:
-            moveq   #1,D5
-            bset    #8,D6
-            ror.l   #1,D5
-            bclr    #$C,D6
-            bra.b   .L24
-.L22:
-            bsr.w   sub_408E8C9A
-            ble.b   .L21
-            move.w  FPState,D1
-            bsr.w   RNDINT
-            tst.l   D4
-            bne.b   .L21
-            tst.l   D5
-            bpl.b   .L23
-            neg.l   D5
-            bpl.b   .L21
-            tst.b   D6
-            bpl.b   .L21
-.L23:
-            tst.b   D6
-            bpl.b   .L24
-            neg.l   D5
-.L24:
-            movea.l ($A,A6),A2
-            move.l  D5,(A2)
-            jmp     (A0)
-.L25:
-            tst.l   D0
-            beq.b   .L27
-            btst    #$11,D0
-            bne.b   .L29
-.L26:
-            move.w  #$8000,D5
-            bset    #8,D6
-            bclr    #$C,D6
-            bra.b   .L29
-.L27:
-            bsr.w   sub_408E8C9A
-            ble.b   .L26
-            move.w  FPState,D1
-            bsr.w   RNDINT
-            tst.l   D4
-            bne.b   .L26
-            cmpi.l  #$8000,D5
-            bcs.b   .L28
-            bhi.b   .L26
-            tst.b   D6
-            bpl.b   .L26
-.L28:
-            tst.b   D6
-            bpl.b   .L29
-            neg.w   D5
-.L29:
-            movea.l ($A,A6),A2
-            move.w  D5,(A2)
-            jmp     (A0)
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     FINI1OP,A0
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($A,A6),A1
-            bsr.w   UNPXOP
-            clr.b   D6
-            tst.l   D0
-            beq.b   .L30
-            tst.w   D0
-            bne.w   UNPACKXB.L6
-            btst    #$11,D0
-            beq.w   sub_408E832E.L20
-            ori.w   #$880,D6
-            movea.w #$7FFF,A4
-            moveq   #0,D4
-            move.l  D4,D5
-            bra.w   sub_408E832E.L20
-.L30:
-            moveq   #0,D5
-            suba.w  #$3FFF,A4
-            move.l  A4,D4
-            bgt.b   .L32
-            blt.b   .L31
-            suba.l  A4,A4
-            move.l  D5,D4
-            bra.w   sub_408E832E.L20
-.L31:
-            ori.b   #$80,D6
-            neg.l   D4
-.L32:
-            movea.w #$401E,A4
-            bfffo   D4{0:0},D0
-            lsl.l   D0,D4
-            suba.w  D0,A4
-            bra.w   sub_408E832E.L20
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
-            move.w  (8,A6),D6
-            moveq   #0,D0
-            swap    D6
-            clr.w   D6
-            movea.l ($A,A6),A1
-            bsr.w   UNPXOP
-            tst.l   D0
-            beq.b   .L33
-            tst.w   D0
-            bne.w   UNPACKXB.L6
-            bra.w   sub_408E832E.L20
-.L33:
-            movea.l ($E,A6),A2
-            adda.w  (A2),A4
-            moveq   #0,D7
-            bra.w   NORMCOERCE.L2
-            movem.l D0-D1/A0,-(SP)
-            movea.l ($16,SP),A0
-            move.w  (A0)+,D0
-            btst    #5,($11,SP)
-            beq.b   .L34
-            addq.w  #2,A0
-.L34:
-            add.l   D0,D0
-            lsr.w   #1,D0
-            bset    #$1F,D0
-            bclr    #$F,D0
-            cmpi.w  #$7FFF,D0
-            beq.b   .L38
-            move.l  (A0)+,D1
-            bpl.b   .L41
-.L35:
-            moveq   #5,D1
-.L36:
-            btst    #$10,D0
-            beq.b   .L37
-            neg.w   D1
-.L37:
-            movea.l ($12,SP),A0
-            move.w  D1,(A0)
-            movem.l (SP)+,D0-D1/A0
-            rtd     #$A
-.L38:
-            move.l  (A0)+,D1
-            add.l   D1,D1
-            lsr.l   #1,D1
-            beq.b   .L40
-            btst    #$1E,D1
-            beq.b   .L39
-            moveq   #2,D1
-            bra.b   .L36
-.L39:
-            moveq   #1,D1
-            bra.b   .L36
-.L40:
-            move.l  (A0),D1
-            bne.b   .L39
-            moveq   #3,D1
-            bra.b   .L36
-.L41:
-            beq.b   .L44
-.L42:
-            subq.w  #1,D0
-            add.l   D1,D1
-            bpl.b   .L42
-.L43:
-            tst.w   D0
-            bpl.b   .L35
-            moveq   #6,D1
-            bra.b   .L36
-.L44:
-            subi.w  #$20,D0
-            move.l  (A0),D1
-            beq.b   .L45
-            bpl.b   .L42
-            bra.b   .L43
-.L45:
-            moveq   #4,D1
-            bra.b   .L36
-            movem.l D0-D1/A0,-(SP)
-            move.w  ($10,SP),D0
-            movea.l ($16,SP),A0
-            btst    #$B,D0
-            bne.b   .L46
-            btst    #$D,D0
-            bne.b   .L55
-            move.l  (A0),D0
-            add.l   D0,D0
-            beq.b   .L48
-            bfextu  D0{0:8},D1
-            beq.b   .L49
-            cmpi.b  #$FF,D1
-            bne.b   .L50
-            bftst   D0{8:23}
-            beq.b   .L53
-            btst    #$17,D0
-            bne.b   .L47
-            bra.b   .L54
-.L46:
-            move.l  (A0)+,D0
-            or.w    (A0)+,D0
-            or.w    (A0),D0
-            add.l   D0,D0
-            beq.b   .L48
-            bfextu  D0{0:11},D1
-            beq.b   .L49
-            cmpi.w  #$7FF,D1
-            bne.b   .L50
-            bftst   D0{11:20}
-            beq.b   .L53
-            btst    #$14,D0
-            beq.b   .L54
-.L47:
-            moveq   #2,D0
-            bra.b   .L51
-.L48:
-            moveq   #4,D0
-            bra.b   .L51
-.L49:
-            moveq   #6,D0
-            bra.b   .L51
-.L50:
-            moveq   #5,D0
-.L51:
-            movea.l ($12,SP),A0
-            roxr.w  #1,D1
-            bpl.b   .L52
-            neg.w   D0
-.L52:
-            move.w  D0,(A0)
-            movem.l (SP)+,D0-D1/A0
-            rtd     #$A
-.L53:
-            moveq   #3,D0
-            bra.b   .L51
-.L54:
-            moveq   #1,D0
-            bra.b   .L51
-.L55:
-            move.l  (A0)+,D0
-            add.l   D0,D0
-            or.l    (A0),D0
-            bne.b   .L50
-            addx.w  D0,D0
-            beq.b   .L48
-            bra.b   .L47
-            move.l  A0,-(SP)
-            movea.l ($A,SP),A0
-            move.w  (A0),FPState
-            movea.l (SP)+,A0
-            rtd     #6
-            move.l  A0,-(SP)
-            movea.l ($A,SP),A0
-            move.w  FPState,(A0)
-            movea.l (SP)+,A0
-            rtd     #6
-            move.l  A0,-(SP)
-            movea.l ($A,SP),A0
-            move.l  (A0),($A4C).w
-            movea.l (SP)+,A0
-            rtd     #6
-            move.l  A0,-(SP)
-            movea.l ($A,SP),A0
-            move.l  ($A4C).w,(A0)
-            movea.l (SP)+,A0
-            rtd     #6
-            move.l  A0,-(SP)
-            movea.l ($A,SP),A0
-            bchg    #7,(A0)
-            movea.l (SP)+,A0
-            rtd     #6
-            move.l  A0,-(SP)
-            movea.l ($A,SP),A0
-            bclr    #7,(A0)
-            movea.l (SP)+,A0
-            rtd     #6
-            movem.l A0,-(SP)
-            movea.l ($E,SP),A0
-            bclr    #7,(A0)
-            tst.b   ([$A.w,SP])
-            bpl.b   .L56
-            bset    #7,(A0)
-.L56:
-            movea.l (SP)+,A0
-            rtd     #$A
-            move.l  A0,-(SP)
-            movea.l ($A,SP),A0
-            move.w  FPState,(A0)
-            clr.w   FPState
-            movea.l (SP)+,A0
-            rtd     #6
-            movem.l D0/A0,-(SP)
-            movea.l ($E,SP),A0
-            move.w  (A0),D0
-            btst    D0,FPState
-            sne     D0
-            neg.b   D0
-            move.b  D0,(A0)
-            movem.l (SP)+,D0/A0
-            rtd     #6
-            movem.l D0/D6/A0,-(SP)
-            move.w  #$15,D6
-            swap    D6
-            clr.w   D6
-            movea.l ($12,SP),A0
-            move.w  (A0),D0
-            addq.w  #8,D0
-            bset    D0,D6
-            move.w  FPState,D0
-            bra.b   .L57
-            movem.l D0/D6/A0,-(SP)
-            movea.l ($12,SP),A0
-            move.w  #$19,D6
-            swap    D6
-            move.w  #$1F00,D6
-            and.w   FPState,D6
-            move.w  (A0),D0
-.L57:
-            or.w    D6,D0
-            move.w  D0,FPState
-            lsr.w   #8,D6
-            and.w   D6,D0
-            bne.b   .L59
-.L58:
-            move    D0,CCR
-            movem.l (SP)+,D0/D6/A0
-            rtd     #6
-.L59:
-            lea     ($12,SP),A0
-            clr.w   -(SP)
-            move.w  D0,-(SP)
-            pea     (SP)
-            move.l  (8,A0),-(SP)
-            move.l  (4,A0),-(SP)
-            move.l  (A0),-(SP)
-            swap    D6
-            move.w  D6,-(SP)
-            movea.l ($A4C).w,A0
-            jsr     (A0)
-            move.l  (SP)+,D0
-            bra.b   .L58
-            link.w  A6,#0
-            movem.l D0-D7/A0-A4,-(SP)
-            move.w  (8,A6),D6
-            movem.l ($A,A6),A1-A2
-            suba.w  #$16,SP
-            movea.l SP,A4
-            move.w  FPState,D3
-            clr.w   FPState
-            moveq   #0,D2
-            move.w  D6,D5
-            andi.w  #$3800,D5
-            bne.b   .L60
-            move.b  #$20,D2
-            and.b   D6,D2
-            beq.b   .L60
-            move.w  (A2),(2,A2)
-            addq.l  #2,A2
-.L60:
-            swap    D6
-            clr.w   D6
-            pea     (A2)
-            pea     ($C,A4)
-            moveq   #$E,D0
-            or.w    D5,D0
-            move.w  D0,-(SP)
-            bsr.w   RsrcPACK_4_2
-            tst.w   D5
-            bne.b   .L61
-            move.l  ($C,A4),(A2)
-            move.l  ($10,A4),(4,A2)
-            move.w  ($14,A4),(8,A2)
-.L61:
-            bfextu  ($C,A4){1:15},D1
-            or.l    ($E,A4),D1
-            or.l    ($12,A4),D1
-            sne     D4
-            pea     (A1)
-            pea     (A4)
-            or.b    D2,D0
-            move.w  D0,-(SP)
-            bsr.w   RsrcPACK_4_2
-            tst.b   D2
-            beq.b   .L62
-            move.l  (4,A4),(2,A4)
-            move.l  (8,A4),(6,A4)
-.L62:
-            pea     (A4)
-            pea     ($C,A4)
-            move.w  #8,-(SP)
-            bsr.w   RsrcPACK_4_2
-            bvc.b   .L63
-            pea     (A4)
-            pea     ($C,A4)
-            move.w  #4,-(SP)
-            bsr.w   RsrcPACK_4_2
-            pea     ($C,A4)
-            pea     (A2)
-            moveq   #$10,D0
-            or.w    D5,D0
-            move.w  D0,-(SP)
-            bsr.w   RsrcPACK_4_2
-            bra.w   .L73
-.L63:
-            beq.w   .L73
-            bcc.b   .L64
-            btst    #7,(A2)
-            beq.b   .L65
-            bra.w   .L75
-.L64:
-            btst    #7,(A2)
-            beq.w   .L75
-.L65:
-            btst    #$C,D5
-            beq.b   .L66
-            addq.l  #1,(A2)
-            bra.b   .L70
-.L66:
-            btst    #$B,D5
-            beq.b   .L68
-            addq.l  #1,(4,A2)
-            bcc.b   .L67
-            addq.l  #1,(A2)
-.L67:
-            bra.b   .L70
-.L68:
-            addq.l  #1,(6,A2)
-            bcc.b   .L70
-            addq.l  #1,(2,A2)
-            bcc.b   .L70
-            roxr    (2,A2)
-            addq.w  #1,(A2)
-            cmpi.w  #$7FFF,(A2)
-            beq.b   .L69
-            cmpi.w  #$FFFF,(A2)
-            bne.b   .L70
-.L69:
-            bclr    #7,(2,A2)
-.L70:
-            pea     (A2)
-            pea     ($A,A4)
-            moveq   #$1C,D0
-            or.w    D5,D0
-            move.w  D0,-(SP)
-            bsr.w   RsrcPACK_4_2
-            move.w  ($A,A4),D1
-            bpl.b   .L71
-            neg.w   D1
-.L71:
-            cmpi.w  #3,D1
-            bne.b   .L72
-            ori.w   #$1400,D6
-            bra.b   .L73
-.L72:
-            cmpi.w  #5,D1
-            beq.b   .L73
-            ori.w   #$1200,D6
-.L73:
-            lea     ($16,SP),SP
-            tst.b   D2
-            beq.b   .L74
-            move.w  (A2),(-2,A2)
-.L74:
-            move.w  FPState,D7
-            move.w  D3,FPState
-            or.w    D7,D6
-            bra.w   sub_408E832E.L23
-.L75:
-            btst    #$C,D5
-            beq.b   .L77
-            tst.b   D4
-            bne.b   .L76
-            bchg    #7,(A2)
-            addq.l  #1,(A2)
-            bra.b   .L70
-.L76:
-            subq.l  #1,(A2)
-            bra.b   .L70
-.L77:
-            btst    #$B,D5
-            beq.b   .L80
-            tst.b   D4
-            bne.b   .L78
-            bchg    #7,(A2)
-            addq.w  #1,(6,A2)
-            bra.b   .L70
-.L78:
-            subq.l  #1,(4,A2)
-            bcc.b   .L79
-            subq.l  #1,(A2)
-.L79:
-            bra.b   .L70
-.L80:
-            tst.b   D4
-            bne.b   .L81
-            bchg    #7,(A2)
-            addq.w  #1,(8,A2)
-            bra.w   .L70
-.L81:
-            subq.l  #1,(6,A2)
-            bcc.b   .L84
-            subq.l  #1,(2,A2)
-            bmi.b   .L82
-            tst.w   (A2)
-            beq.b   .L84
-            cmpi.w  #$8000,(A2)
-            beq.b   .L84
-            addi.w  #$8000,(2,A2)
-            bra.b   .L83
-.L82:
-            bcc.b   .L84
-.L83:
-            subq.w  #1,(A2)
-.L84:
-            bra.w   .L70
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  ($3C,A6),D7
-            andi.w  #$3820,D7
-            move.w  FPState,D3
-            move.w  D3,(-2,A6)
-            andi.w  #$6000,D3
-            move.w  D3,FPState
-            movea.l ($42,A6),A3
-            lea     (-$10,A6),A0
-            move.l  A0,($42,A6)
-            move.l  A3,-(SP)
-            move.l  A0,-(SP)
-            move.w  D7,-(SP)
-            addi.w  #$E,(SP)
-            bsr.w   RsrcPACK_4_2
-            tst.b   D7
-            beq.b   .L85
-            move.l  (-$C,A6),(-$E,A6)
-            move.l  (-8,A6),(-$A,A6)
-.L85:
-            movea.l ($46,A6),A1
-            move.l  (A1),D2
-            movea.l ($3E,A6),A1
-            move.w  (A0)+,D0
-            clr.w   (A1)
-            bclr    #$F,D0
-            beq.b   .L86
-            move.b  #1,(A1)
-.L86:
-            move.l  (A0)+,D4
-            move.l  (A0),D5
-            move.b  #1,(4,A1)
-            cmpi.w  #$7FFF,D0
-            bne.b   .L88
-            move.l  D4,D0
-            andi.l  #$7FFFFFFF,D0
-            bne.b   .L89
-            tst.l   D5
-            bne.b   .L89
-            moveq   #$49,D0
-.L87:
-            move.b  D0,(5,A1)
-            bra.w   sub_408E93FE.L13
-.L88:
-            tst.l   D4
-            bne.b   sub_408E93FE.L3
-            tst.l   D5
-            bne.b   sub_408E93FE.L3
-            moveq   #$30,D0
-            bra.b   .L87
-.L89:
-            bset    #$1E,D4
-            bne.b   .L90
-            bset    #0,FPState
-.L90:
-            addq.l  #4,A1
-            move.b  #$11,(A1)+
-            move.b  #$4E,(A1)+
-            bsr.b   sub_408E93FE
-            move.l  D5,D4
-            bsr.b   sub_408E93FE
-            suba.w  #$16,A1
-            bra.w   sub_408E93FE.L13
-sub_408E93FE:
-            moveq   #8,D0
-.L1:
-            rol.l   #4,D4
-            moveq   #$F,D1
-            and.b   D4,D1
-            ori.b   #$30,D1
-            cmpi.b  #$39,D1
-            ble.b   .L2
-            addq.b  #7,D1
-.L2:
-            move.b  D1,(A1)+
-            subq.w  #1,D0
-            bne.b   .L1
-            rts
-.L3:
-            tst.l   D4
-            bmi.b   .L5
-.L4:
-            subq.w  #1,D0
-            add.l   D5,D5
-            addx.l  D4,D4
-            bpl.b   .L4
-.L5:
-            move.l  D4,D1
-            move.w  D0,D1
-            subi.w  #$3FFF,D1
-            swap    D1
-            add.w   D1,D1
-            move.l  #$4D104D42,D0
-            tst.l   D1
-            bpl.b   .L6
-            addq.w  #1,D0
-.L6:
-            move.l  D0,D4
-            swap    D4
-            mulu.w  D1,D4
-            clr.w   D4
-            swap    D4
-            swap    D1
-            move.w  D1,D5
-            muls.w  D0,D5
-            swap    D5
-            ext.l   D5
-            add.l   D5,D4
-            swap    D0
-            muls.w  D1,D0
-            add.l   D0,D4
-            swap    D4
-            move.w  D2,D1
+            bsr.w   sub_408D9A48
             bmi.b   .L7
-            cmpi.w  #$2000,D1
-            blt.b   .L8
-            move.w  #$2000,D1
-            bra.b   .L8
+            move.w  D1,(A1)+
+            move.l  D0,(A1)+
+            bra.w   sub_408D96A2.L1
 .L7:
-            cmpi.w  #$E000,D1
-            bgt.b   .L8
-            move.w  #$E000,D1
+            move.l  D2,($14A,A3)
+            lea     ($F8,A3),A1
+            move.w  #1,(6,A1)
+            move.l  D2,($18,A1)
+            lea     ($10,A3),A0
+            move.w  #$F9,($1A,A0)
+            lea     ($42,A3),A1
+            move.l  A1,($1E,A0)
+            bclr    #5,($C8,A3)
+            move.w  #$A,($146,A3)
+            move.w  ($148,A3),($DE,A3)
 .L8:
-            swap    D2
-            lsr.w   #8,D2
-            tst.b   D2
-            bne.b   .L9
-            tst.w   D1
-            bgt.b   .L9
-            moveq   #1,D1
+            bset    #6,($C8,A3)
+            bne.b   sub_408D9682.L1
+            lea     sub_408D9682,A1
 .L9:
-            addq.w  #1,D4
-            move.w  D1,D5
-            tst.b   D2
+            move.l  A1,($C,A0)
+            _Control async
+            cmpi.w  #$FFE4,D0
             beq.b   .L10
-            add.w   D4,D5
+            rts
 .L10:
-            cmpi.w  #$13,D5
-            ble.b   .L11
-            move.w  #$13,D5
-.L11:
-            move.w  D5,(2,A1)
-            sub.w   D4,(2,A1)
-            tst.w   D5
-            bgt.b   .L12
-            moveq   #1,D5
-.L12:
-            move.l  ($42,A6),-(SP)
-            move.l  A1,-(SP)
-            move.b  D5,(4,A1)
-            jsr     sub_408E9936
-            cmp.b   (4,A1),D5
-            bcs.b   .L9
-            neg.w   (2,A1)
-.L13:
-            move.w  FPState,D0
-            andi.w  #$1F00,D0
-            or.w    D0,(-2,A6)
-            move.w  (-2,A6),FPState
-            lsr.w   #8,D0
-            and.w   (-2,A6),D0
-            beq.b   .L14
-            move.l  (4,A6),(-8,A6)
-            swap    D0
-            clr.w   D0
-            move.l  D0,(-$C,A6)
-            pea     (-$C,A6)
-            move.l  ($46,A6),-(SP)
-            move.l  A3,-(SP)
-            move.l  ($3E,A6),-(SP)
-            move.w  ($3C,A6),-(SP)
-            movea.l ($A4C).w,A0
-            jsr     (A0)
-.L14:
-            unlk    A6
-            movem.l (SP)+,D0-D7/A0-A4
-            move.l  (SP),($E,SP)
-            lea     ($E,SP),SP
-            move    #0,CCR
-            rts
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  ($3C,A6),D7
-            andi.w  #$3800,D7
-            beq.b   .L18
-            cmpi.w  #$1000,D7
-            blt.b   .L16
-            beq.b   .L15
-            move.w  #$6000,D0
-            bra.b   .L17
-.L15:
-            move.w  #$6040,D0
-            bra.b   .L17
-.L16:
-            move.w  #$6060,D0
-.L17:
-            move.w  FPState,D3
-            move.w  D3,(-2,A6)
-            and.w   D0,D3
-            ori.w   #$80,D3
-            bra.b   .L19
-.L18:
-            move.w  #$6060,D0
-            move.w  FPState,D3
-            move.w  D3,(-2,A6)
-            and.w   D0,D3
-.L19:
-            move.w  D3,FPState
-            movea.l ($3E,A6),A3
-            cmpi.w  #0,D7
-            beq.b   .L20
-            lea     (-$10,A6),A0
-            move.l  A0,($3E,A6)
-.L20:
-            movea.l ($42,A6),A2
-            lea     (4,A2),A4
-            moveq   #0,D4
-            move.l  D4,D5
-            move.b  (A4)+,D6
-            beq.b   sub_408E95AE.L6
-            move.b  (A4),D0
-            cmpi.b  #$49,D0
-            beq.b   sub_408E95AE.L4
-            cmpi.b  #$4E,D0
-            bne.b   sub_408E95AE.L5
-            move.b  (-1,A4),D2
-            addq.l  #1,A4
-            subq.b  #1,D2
-            moveq   #8,D0
-            cmpi.b  #4,D2
-            bge.b   .L21
-            subq.b  #4,D0
-            add.b   D2,D0
-.L21:
-            bsr.b   sub_408E95AE
-            move.l  D5,D4
-            moveq   #0,D5
-            moveq   #8,D0
-            bsr.b   sub_408E95AE
-            bra.b   sub_408E95AE.L3
-sub_408E95AE:
-            rol.l   #4,D5
-            subq.b  #1,D2
-            bmi.b   .L2
-            move.b  (A4)+,D1
-            cmpi.b  #$39,D1
-            ble.b   .L1
-            addi.b  #9,D1
+            tst.w   D0
+            jmp     (A1)
+sub_408D964A:
+            move.w  #$E10,($A,A0)
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            tst.w   ($146,A3)
+            beq.b   sub_408D9682.L1
+            subq.w  #1,($146,A3)
+            beq.b   .L2
 .L1:
-            andi.b  #$F,D1
-            or.b    D1,D5
+            move.w  ($148,A3),($A,A0)
+            lea     ($10,A3),A0
+            bra.b   sub_408D952C.L8
 .L2:
-            subq.w  #1,D0
-            bne.b   sub_408E95AE
-            rts
+            btst    #6,($C8,A3)
+            beq.b   .L3
+            addq.w  #1,($146,A3)
+            bra.b   .L1
 .L3:
-            bset    #$1E,D4
-            move.l  D4,D0
-            swap    D0
-            andi.b  #$FF,D0
-            bne.b   .L4
-            ori.w   #$15,D0
-            swap    D0
-            move.l  D0,D4
+            moveq   #-$5F,D0
+            bra.b   sub_408D96A2.L5
+sub_408D9682:
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            move    SR,-(SP)
+            move    #$2600,SR
+            bclr    #6,($C8,A3)
+            btst    #5,($C8,A3)
+            bne.b   sub_408D96A2
+            move    (SP)+,SR
+.L1:
+            rts
+sub_408D96A2:
+            move    (SP)+,SR
+            movea.l ($3CA,A3),A2
+.L1:
+            moveq   #0,D0
+            movea.l ($3C6,A3),A1
+            movea.l A1,A0
+            tst.w   (A0)
+            beq.b   .L3
+.L2:
+            move.w  (A0),D1
+            beq.b   .L4
+            add.w   D1,D0
+.L3:
+            addq.w  #6,A0
+            bra.b   .L2
 .L4:
-            move.w  #$7FFF,D0
-            bra.b   .L7
+            addq.w  #8,D0
+            lea     ($15A,A3),A0
+            move.w  D0,(A0)
+            lea     ($10,A3),A0
+            move.w  #$F9,($1A,A0)
+            move.l  A1,($1E,A0)
+            addi.w  #$16,(A1)+
+            lea     ($14E,A3),A3
+            move.l  A3,(A1)
+            lea     .L5,A1
+            bra.w   sub_408D952C.L9
 .L5:
-            cmpi.b  #$30,D0
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            movea.l ($3CA,A3),A2
+            movea.l ($3C6,A3),A1
+            move.w  ($3C4,A3),(A1)
+            movea.l ($3C0,A3),A0
+            move.l  A0,(2,A1)
+            movea.l ($3D2,A3),A0
+            jmp     (A0)
+.L6:
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            move.l  A0,($3D2,A3)
+            move.l  A1,($3C6,A3)
+            movea.l (2,A1),A0
+            move.l  A0,($3C0,A3)
+            addq.w  #3,(2,A1)
+            addq.w  #3,A0
+            moveq   #0,D0
+            move.w  (A1),D0
+            move.w  D0,($3C4,A3)
+            subq.w  #3,(A1)
+            subq.w  #3,D0
+            lea     ($15C,A3),A1
+            move.w  #$AAAA,(A1)+
+            move.b  #3,(A1)+
+            move.b  #8,(A1)+
+            clr.b   (A1)+
+            move.b  #7,(A1)+
+            move.w  #$809B,(A1)+
+            tst.w   D0
+            beq.b   .L7
+            _BlockMove
+.L7:
+            lea     ($14E,A3),A1
+            movea.l D2,A0
+            move.w  (A0)+,(A1)+
+            move.l  (A0)+,(A1)+
+            bra.w   .L1
+.L8:
+            move.l  A0,-(SP)
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            move.l  A2,($3CA,A3)
+            move.l  A1,($3CE,A3)
+            bclr    #4,($C8,A3)
+            lea     ($42,A3),A1
+            move.l  A1,($2E,A3)
+            move.w  #$32,(A1)+
+            lea     ($E2,A3),A0
+            move.l  A0,(A1)+
+            clr.w   (A1)+
+            move.w  #3,($1C,A0)
+            move.l  D2,($CA,A3)
+            lea     ($F8,A3),A1
+            move.l  D2,($E,A1)
+            move.l  D2,($18,A1)
+            lea     ($10,A3),A0
+            move.w  #$F9,($1A,A0)
+            bclr    #3,($C8,A3)
+            _Control
+            moveq   #0,D0
+            move.w  ($148,A3),D0
+            add.w   D0,D0
+            add.l   Ticks,D0
+.L9:
+            btst    #3,($C8,A3)
             bne.b   .L10
-.L6:
-            moveq   #0,D0
-.L7:
-            tst.b   (A2)
-            beq.b   .L8
-            bset    #$F,D0
-.L8:
-            movea.l ($3E,A6),A0
-            move.w  D0,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            bra.b   .L11
-.L9:
-            move.w  (2,A2),-(SP)
-            moveq   #0,D0
-            move.b  D6,D0
-            subi.w  #$13,D0
-            sub.w   D0,(2,A2)
-            move.l  ($3E,A6),-(SP)
-            move.l  ($42,A6),-(SP)
-            jsr     sub_408E96D4
-            move.w  (SP)+,(2,A2)
-            bra.b   .L11
-.L10:
-            cmpi.b  #$13,D6
+            cmp.l   Ticks,D0
             bhi.b   .L9
-            move.l  ($3E,A6),-(SP)
-            move.l  ($42,A6),-(SP)
-            jsr     sub_408E96D4
-.L11:
-            cmpi.w  #0,D7
-            bgt.b   .L12
-            btst    #5,($3D,A6)
-            beq.b   .L14
-            move.l  (6,A3),(8,A3)
-            move.l  (2,A3),(4,A3)
-            bra.b   .L14
-.L12:
-            pea     (-$10,A6)
-            move.l  A3,-(SP)
-            move.w  D7,-(SP)
-            addi.w  #$10,(SP)
-            bsr.w   RsrcPACK_4_2
-            move.w  FPState,D0
-            btst    #8,D0
-            beq.b   .L13
-            andi.w  #$E1FF,D0
-            bra.b   .L15
-.L13:
-            cmpi.w  #$1000,D7
-            ble.b   .L15
-            bclr    #9,D0
-            bra.b   .L15
-.L14:
-            move.w  FPState,D0
-.L15:
-            andi.w  #$1F00,D0
-            or.w    D0,(-2,A6)
-            move.w  (-2,A6),FPState
-            lsr.w   #8,D0
-            and.w   (-2,A6),D0
-            beq.b   .L16
-            move.l  (4,A6),(-8,A6)
-            swap    D0
-            clr.w   D0
-            move.l  D0,(-$C,A6)
-            pea     (-$C,A6)
-            move.l  ($46,A6),-(SP)
-            move.l  ($42,A6),-(SP)
-            move.l  A3,-(SP)
-            move.w  ($3C,A6),-(SP)
-            movea.l ($A4C).w,A0
-            jsr     (A0)
-.L16:
-            unlk    A6
-            movem.l (SP)+,D0-D7/A0-A4
-            move.l  (SP),($A,SP)
-            lea     ($A,SP),SP
-            move    #0,CCR
+.L10:
             rts
-sub_408E96D4:
-            movem.l D0-D7/A1-A4,-(SP)
-            link.w  A6,#-$A0
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            move.w  (A0),D0
-            blt.w   StuffIt_PACK_4_2.L9
-            bsr.w   sub_408E9D38
-            bsr.w   sub_408E9EF8
-            bsr.w   StoD_PACK_4_2
-            move.l  (-$10,A6),(-$C,A6)
-            bsr.w   cXb2a_PACK_4_2
-            movea.l A1,A3
-            move.w  #$4F,D6
-            move.w  D1,D2
-            movea.l A3,A2
+sub_408D97D0:
+            pea     sub_408D97E0
+            movem.l D0/A0,-(SP)
+            move.w  #$C,D0
+            bra.w   sub_408D9DB2.L7
+sub_408D97E0:
+            movea.l ExpandMem,A2
+            movea.l ($10C,A2),A2
+            bset    #7,($C8,A2)
+            bne.w   sub_408D9842.L1
+            lea     ($12A,A2),A3
+            move.l  D0,(A3)+
+            move.w  #$18,D3
+            jsr     (2,A4)
+            movea.l A2,A3
+            bne.b   .L1
+            movea.l ($3CA,A3),A2
+            lea     ($12A,A3),A1
+            lea     (4,A1),A0
+            cmpi.w  #$604,(A0)+
+            bne.b   .L1
+            move.l  ($E,A1),D2
+            move.w  (8,A1),D1
+            move.l  ($A,A1),D0
+            cmpi.w  #2,(A0)
+            bne.b   sub_408D9842.L2
+            bsr.w   sub_408D991E
+            bne.b   .L1
+            btst    #4,($C8,A3)
+            bne.b   sub_408D9842
+            bsr.w   sub_408D990E
 .L1:
-            subi.w  #$10,D6
-            move.w  (A2)+,D0
-            bne.b   .L3
-            dbra    D2,.L1
+            bclr    #7,($C8,A3)
 .L2:
-            addq.w  #1,D6
-            lsl.w   #1,D0
+            rts
+sub_408D9842:
+            bsr.w   sub_408D9A2A
+            cmp.l   ($14A,A3),D2
+            bne.b   sub_408D97E0.L1
+            tst.w   ($146,A3)
+            beq.b   sub_408D97E0.L1
+            clr.w   ($146,A3)
+            move.w  #$E10,($DE,A3)
+            move.w  D1,($14E,A3)
+            move.l  D0,($150,A3)
+            bclr    #7,($C8,A3)
+            bset    #5,($C8,A3)
+            btst    #6,($C8,A3)
+            bne.b   sub_408D97E0.L2
+            bra.w   sub_408D96A2.L1
+.L1:
+            moveq   #0,D3
+            jmp     (2,A4)
+.L2:
+            cmpi.w  #3,(A0)
+            bne.b   sub_408D98A4
+            bsr.w   sub_408D9A72
+            bsr.w   sub_408D991E
+            bne.b   .L3
+            btst    #4,($C8,A3)
+            bne.b   sub_408D98A4.L1
+            bsr.b   sub_408D990E
 .L3:
-            bpl.b   .L2
-            moveq   #-1,D5
-            bsr.w   Roundit_FP020BD
-            move.w  D1,D7
-            asl.w   #4,D7
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            add.w   (A0),D7
-            addi.w  #$400E,D7
-            bsr.b   StuffIt_PACK_4_2
-            tst.l   D4
-            bmi.b   .L5
+            bclr    #7,($C8,A3)
+            rts
+sub_408D98A4:
+            cmpi.w  #1,(A0)
+            bne.b   sub_408D9842.L3
+            bsr.w   sub_408D9A2A
+            bsr.b   sub_408D991E
+            bne.b   sub_408D9842.L3
+            btst    #4,($C8,A3)
+            beq.b   sub_408D9842.L3
+.L1:
+            move.l  (8,A1),D1
+            move.l  D1,(-$16,A1)
+            move.l  D1,($12,A1)
+            move.w  ($C,A1),D1
+            move.w  D1,(-$12,A1)
+            move.w  D1,($16,A1)
+            move.l  ($E,A1),D1
+            move.l  ($18,A1),($E,A1)
+            move.l  D1,($18,A1)
+            move.l  ($CE,A3),(8,A1)
+            move.w  ($D2,A3),($C,A1)
+            move.w  #2,(6,A1)
+            lea     ($4A,A3),A0
+            lea     sub_408D98FE,A1
+            bra.w   sub_408D952C.L9
+sub_408D98FE:
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            bclr    #7,($C8,A3)
+            rts
+sub_408D990E:
+            bset    #3,($C8,A3)
+            moveq   #5,D0
+            movea.l LAPMgrPtr,A0
+            jmp     (2,A0)
+sub_408D991E:
+            move.l  ($3CE,A3),D3
+            beq.b   .L1
+            movea.l D3,A0
+            move.b  (A0),D3
+            bmi.b   .L2
+            andi.b  #$F,D3
+.L1:
+            subq.b  #1,D3
+            bne.b   .L2
+            move.l  ($18,A1),D3
+            cmp.l   ($CA,A3),D3
+.L2:
+            rts
+sub_408D993C:
+            movea.l ExpandMem,A2
+            movea.l ($10C,A2),A2
+            move.l  ($3CE,A2),D2
+            beq.w   sub_408D99F2.L1
+            movea.l D2,A5
+            move.b  (A5),D2
+            bmi.w   sub_408D99F2.L1
+            andi.b  #$F,D2
+            subq.b  #1,D2
+            bne.w   sub_408D99F2.L1
+            move.l  D1,D3
+            move.w  (-$10,A3),D0
+            move.l  (-$E,A3),D1
+            movem.l D0-D1,($3D6,A2)
+            move.l  D3,D1
+            movea.l ($3CA,A2),A2
+            move.w  ($1C,A2),D3
+            addi.w  #$100,D3
+            move    D3,SR
+            lea     (4,A2),A3
+            moveq   #$D,D3
+            jsr     (A4)
+            bne.b   sub_408D99F2.L2
+            lea     (4,A2),A3
+            move.w  (A3),D0
+            andi.w  #$3FF,D0
+            subi.w  #$D,D0
+            cmp.w   D1,D0
+            bhi.b   .L1
+            move.w  D0,D1
+.L1:
+            move.w  (A3),D0
+            andi.w  #$3C00,D0
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            beq.b   .L2
+            lea     ($3D8,A3),A3
+            move.l  A3,D3
+            bra.b   .L3
+.L2:
+            move.l  D1,D3
+            movem.l ($3D6,A3),D0-D1
+            exg     D0,D1
+            moveq   #0,D2
+            move.w  ($A,A2),D2
+            lsl.l   #8,D2
+            move.b  ($D,A2),D2
+            bsr.b   sub_408D9A2A
+            move.l  D3,D1
+            moveq   #0,D3
+.L3:
+            move.b  ($C,A2),(1,A2)
+            move.b  ($D,A2),(2,A2)
+            move.b  #2,(3,A2)
+            pea     sub_408D99F2
+            movem.l D0/A0,-(SP)
+            move.w  #4,D0
+            bra.w   sub_408D9DB2.L7
+sub_408D99F2:
+            lea     ($11,A2),A3
+            moveq   #1,D0
+            movea.l LAPMgrPtr,A5
+            jsr     (2,A5)
+.L1:
+            moveq   #0,D3
+            jmp     (2,A4)
+.L2:
+            rts
+            movem.l D1-D2/A1-A2,-(SP)
+            moveq   #$3C,D0
+            move.w  #$FD,D1
+            swap    D1
+            move.w  #$64,D1
+            move.w  #4,D2
+            swap    D2
+            move.w  #6,D2
+            bsr.b   sub_408D9A9E
+            movem.l (SP)+,D1-D2/A1-A2
+            rts
+sub_408D9A2A:
+            movem.l A0-A3,-(SP)
+            move.l  D2,-(SP)
+            movea.l SP,A0
+            move.l  D0,-(SP)
+            move.w  D1,-(SP)
+            movea.l SP,A1
+            bsr.w   sub_408D9B76
+            move.w  (SP)+,D1
+            move.l  (SP)+,D0
+            move.l  (SP)+,D2
+            movem.l (SP)+,A0-A3
+            rts
+sub_408D9A48:
+            movem.l A0-A3,-(SP)
+            move.l  D2,-(SP)
+            movea.l SP,A0
+            subq.w  #6,SP
+            movea.l SP,A1
+            bsr.w   sub_408D9C96
+            tst.w   D0
+            beq.b   .L1
+            move    #8,CCR
+.L1:
+            movem.w (SP)+,D1
+            movem.l (SP)+,D0
+            movem.l (SP)+,D2
+            movem.l (SP)+,A0-A3
+            rts
+sub_408D9A72:
+            movem.l D0-D1/A0-A3,-(SP)
+            move.l  D2,-(SP)
+            movea.l SP,A0
+            bsr.w   sub_408D9CC4
+            move.l  (SP)+,D2
+            movem.l (SP)+,D0-D1/A0-A3
+            rts
+.L1:
+            dc.b    $01,$AA,$05,$08,$00,$07,$80,$9B,$00
+.L2:
+            dc.b    $01,$AA,$05,$00,$00,$00,$80,$F3,$04,$00,$01,$80,$9B,$00,$00
+sub_408D9A9E:
+            move.l  D0,-(SP)
+            moveq   #$2A,D0
+            _NewPtrSysClear
+            movem.l (SP)+,D0
+            bne.w   .L6
+            lea     ($3E6,A3),A2
+            move.l  A0,(A2)
+            movea.l A0,A2
+            move.l  #'xAMT',(A2)
+            move.w  D0,($A,A2)
+            move.w  D1,($C,A2)
+            swap    D1
+            move.w  D1,(4,A2)
+            move.w  D2,(8,A2)
+            swap    D2
+            move.w  D2,(6,A2)
+            moveq   #0,D0
+            move.w  (4,A2),D0
+            lsl.l   #2,D0
+            _NewPtrSysClear
+            bne.b   .L5
+            move.l  A0,($14,A2)
+            moveq   #0,D0
+            move.w  (6,A2),D0
+            add.w   (8,A2),D0
+            addq.w  #6,D0
+            move.w  D0,($E,A2)
+            mulu.w  ($C,A2),D0
+            _NewPtrSysClear
+            bne.b   .L4
+            move.l  A0,($18,A2)
+            moveq   #0,D1
+            move.w  ($C,A2),D1
+            subq.w  #1,D1
+.L1:
+            move.l  ($10,A2),(A0)
+            move.l  A0,($10,A2)
+            adda.w  ($E,A2),A0
+            dbra    D1,.L1
+            lea     ($1C,A2),A0
+            move.w  #1,(4,A0)
+            lea     sub_408D9D1C,A1
+            move.l  A1,(6,A0)
+            move.w  ($A,A2),D0
+            beq.b   .L2
+            mulu.w  #$3C,D0
+            move.w  D0,($A,A0)
+            _VInstall
+            tst.w   D0
+            bne.b   .L3
+.L2:
+            rts
+.L3:
+            movea.l ($18,A2),A0
+            _DisposPtr
 .L4:
-            subq.w  #1,D7
-            asl.l   #1,D6
-            roxl.l  #1,D5
-            roxl.l  #1,D4
-            bpl.b   .L4
+            movea.l ($14,A2),A0
+            _DisposPtr
 .L5:
-            movea.l ($3C,A6),A0
-            cmpi.w  #$7FFF,D7
-            bcc.b   .L7
-            asl.w   #1,D7
+            movea.l A2,A0
+            _DisposPtr
 .L6:
-            asl     (A0)
-            roxr.w  #1,D7
-            move.w  D7,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            bra.w   sub_408E9936.L4
+            move.w  #$FFFF,D0
+            rts
+sub_408D9B54:
+            movea.l ($3E6,A3),A1
+            move.w  ($A,A1),D0
+            beq.b   .L1
+            lea     ($1C,A1),A0
+            _VRemove
+.L1:
+            movea.l ($14,A1),A0
+            _DisposPtr
+            movea.l ($18,A1),A0
+            _DisposPtr
+            movea.l A1,A0
+            _DisposPtr
+            rts
+sub_408D9B76:
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            movea.l ($3E6,A3),A3
+            move    SR,-(SP)
+            move    #$2600,SR
+            jsr     sub_408D9D72
+            bne.b   .L2
+            bset    #7,(4,A2)
+            move.w  (8,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+            addq.w  #6,A2
+            adda.w  (6,A3),A2
+.L1:
+            move.w  (A1)+,(A2)+
+            dbra    D1,.L1
+            suba.w  (8,A3),A1
+            move    (SP)+,SR
+            clr.w   D0
+            rts
+.L2:
+            move.l  A1,D1
+            lea     ($10,A3),A1
+            move.l  (A1),D0
+            beq.b   .L6
+            movea.l D0,A2
+            move.l  (A2),(A1)
+            movea.l D1,A1
+.L3:
+            bset    #7,(4,A2)
+            addq.w  #6,A2
+            move.w  (6,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+.L4:
+            move.w  (A0)+,(A2)+
+            dbra    D1,.L4
+            move.w  (8,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+.L5:
+            move.w  (A1)+,(A2)+
+            dbra    D1,.L5
+            suba.w  (8,A3),A1
+            suba.w  (8,A3),A2
+            suba.w  (6,A3),A2
+            suba.w  (6,A3),A0
+            subq.w  #6,A2
+            movea.l D2,A3
+            move.l  (A3),(A2)
+            move.l  A2,(A3)
+            move    (SP)+,SR
+            clr.w   D0
+            rts
+.L6:
+            movea.l D1,A1
+            move.w  ($A,A3),D0
+            bne.b   .L7
+            move    (SP)+,SR
+            move.w  #$FFFF,D0
+            rts
 .L7:
-            ori.w   #$1400,FPState
-            move.w  FPState,D2
-            btst    #$E,D2
+            movem.l D2/A0-A1,-(SP)
+            move.w  ($20E).w,-(SP)
+            move.w  ($20E).w,-(SP)
+            move.w  ($20E).w,-(SP)
+            movea.l SP,A0
+            jsr     sub_408D9DB2
+            addq.l  #6,SP
+.L8:
+            movea.l A2,A0
+.L9:
+            movea.l A2,A1
+            movea.l (A2),A2
+            move.l  A2,D1
+            beq.b   .L11
+            btst    #7,(4,A2)
+            bne.b   .L9
+            move.l  (A2),(A1)
+.L10:
+            movem.l (SP)+,D2/A0-A1
+            bra.w   .L3
+.L11:
+            movea.l A0,A2
+            addq.l  #4,A2
+            cmpa.l  D2,A2
+            bne.b   .L14
+.L12:
+            movea.l A2,A0
+            movea.l A2,A1
+            movea.l (A2),A2
+            move.l  A2,D1
+            beq.b   .L13
+            move.l  (A2),(A1)
+            bra.b   .L10
+.L13:
+            movea.l A0,A2
+            addq.l  #4,A2
+            moveq   #0,D1
+            move.w  (4,A3),D1
+            lsl.l   #2,D1
+            movea.l ($14,A3),A0
+            adda.l  D1,A0
+            cmpa.l  A2,A0
+            bne.b   .L12
+            movea.l ($14,A3),A2
+            bra.b   .L12
+.L14:
+            moveq   #0,D1
+            move.w  (4,A3),D1
+            lsl.l   #2,D1
+            movea.l ($14,A3),A0
+            adda.l  D1,A0
+            cmpa.l  A2,A0
             bne.b   .L8
-            btst    #$D,D2
-            beq.b   .L10
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
-            bpl.b   .L10
+            movea.l ($14,A3),A2
+            cmpa.l  D2,A2
+            beq.b   .L12
+            bra.b   .L8
+sub_408D9C96:
+            movea.l ($3E6,A3),A3
+            jsr     sub_408D9D72
+            bne.b   .L2
+            move    SR,D0
+            move    #$2600,SR
+            addq.w  #6,A2
+            adda.w  (6,A3),A2
+            move.w  (8,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+.L1:
+            move.w  (A2)+,(A1)+
+            dbra    D1,.L1
+            move    D0,SR
+            suba.w  (8,A3),A1
+            clr.w   D0
+.L2:
+            rts
+sub_408D9CC4:
+            movea.l ($3E6,A3),A3
+            jsr     sub_408D9DB2
+.L1:
+            movea.l A2,A1
+            movea.l (A2),A2
+            move.l  A2,D0
+            beq.b   .L4
+            addq.w  #6,A2
+            move.w  (6,A3),D0
+            asr.w   #1,D0
+            subq.w  #1,D0
+.L2:
+            cmpm.w  (A0)+,(A2)+
+            dbne    D0,.L2
+            bne.b   .L3
+            move.w  (6,A3),D0
+            suba.w  D0,A2
+            suba.w  D0,A0
+            subq.w  #6,A2
+            move    SR,D0
+            move    #$2600,SR
+            move.l  (A2),(A1)
+            lea     ($10,A3),A1
+            move.l  (A1),(A2)
+            move.l  A2,(A1)
+            move    D0,SR
+            clr.w   D0
+            rts
+.L3:
+            move.w  (6,A3),D1
+            asl.w   #1,D0
+            sub.w   D0,D1
+            suba.w  D1,A0
+            suba.w  D1,A2
+            subq.w  #6,A2
+            bra.b   .L1
+.L4:
+            move.w  #$FFFF,D0
+            rts
+sub_408D9D1C:
+            movea.l ExpandMem,A3
+            movea.l ($10C,A3),A3
+            movea.l ($3E6,A3),A3
+            move.w  ($A,A3),D0
+            mulu.w  #$3C,D0
+            move.w  D0,($A,A0)
+            movea.l ($14,A3),A2
+            move.w  (4,A3),D0
+            subq.w  #1,D0
+.L1:
+            movea.l A2,A0
+            move    SR,-(SP)
+            move    #$2600,SR
+.L2:
+            movea.l A2,A1
+            movea.l (A2),A2
+            move.l  A2,D1
+            beq.b   .L3
+            bclr    #7,(4,A2)
+            bne.b   .L2
+            move.l  A1,D2
+            move.l  (A2),(A1)
+            lea     ($10,A3),A1
+            move.l  (A1),(A2)
+            move.l  A2,(A1)
+            movea.l D2,A2
+            bra.b   .L2
+.L3:
+            move    (SP)+,SR
+            movea.l A0,A2
+            addq.l  #4,A2
+            dbra    D0,.L1
+            rts
+sub_408D9D72:
+            jsr     sub_408D9DB2
+.L1:
+            movea.l (A2),A2
+            move.l  A2,D0
+            beq.b   .L4
+            move.w  (6,A3),D0
+            asr.w   #1,D0
+            subq.w  #1,D0
+            addq.w  #6,A2
+.L2:
+            cmpm.w  (A0)+,(A2)+
+            dbne    D0,.L2
+            bne.b   .L3
+            move.w  (6,A3),D0
+            suba.w  D0,A2
+            suba.w  D0,A0
+            subq.w  #6,A2
+            clr.w   D0
+            rts
+.L3:
+            move.w  (6,A3),D1
+            asl.w   #1,D0
+            sub.w   D0,D1
+            suba.w  D1,A0
+            suba.w  D1,A2
+            subq.w  #6,A2
+            bra.b   .L1
+.L4:
+            move.w  #$FFFF,D0
+            rts
+sub_408D9DB2:
+            cmpi.w  #2,(6,A3)
+            bne.b   .L1
+            moveq   #0,D0
+            move.w  (A0),D0
+            bra.b   .L5
+.L1:
+            adda.w  (6,A3),A0
+            move.l  -(A0),D0
+            bpl.b   .L2
+            neg.l   D0
+.L2:
+            cmpi.w  #4,(6,A3)
+            beq.b   .L3
+            subq.w  #2,A0
+.L3:
+            moveq   #0,D2
+            move.w  (4,A3),D2
+            swap    D2
+.L4:
+            sub.l   D2,D0
+            bge.b   .L4
+            divu.w  (4,A3),D0
+            bvc.b   .L6
+            add.l   D2,D0
+.L5:
+            divu.w  (4,A3),D0
+.L6:
+            swap    D0
+            asl.w   #2,D0
+            movea.l ($14,A3),A2
+            adda.w  D0,A2
+            move.l  A2,D2
+            rts
+.L7:
+            movea.l ExpandMem,A0
+            movea.l ($10C,A0),A0
+            move.l  (0,A0,D0.w),D0
+            beq.b   .L8
+            movea.l D0,A0
+            jmp     (A0)
+.L8:
+            movem.l (SP)+,D0/A0
+            rts
+            dc.b    ' DEVAJMP>>[(c)'
+RsrcEntryiopc_128:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'iopc' 128 "IOPCLap A" (2676 bytes) - Combo mask
+            dc.l    RsrcEntryatlk_10-BaseOfROM      ; Next entry
+            dc.l    Rsrciopc_128-BaseOfROM          ; Data
+            dc.b    'iopc'                          ; Type
+            dc.w    128                             ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    9,'IOPCLap A'                   ; Name
+            dc.b    $39,$38,$39
+            dc.l    $C0A00000,$00000A80,$0000027C   ; Block header
+Rsrciopc_128:
+            dc.w    $4C5D,$2D4C,$842D,$09A6,$A036,$A2C1,$A900,$2069
+            dc.w    $37A0,$2EA9,$97A2,$0438,$2048,$37A0,$2EA9,$90A2
+            dc.b    4,'8 E7'
+            dc.b    $A2,$00,$A9,$02,$20,$5A,$37,$4C,$B0,$2D,$38,$20,$60,$37,$A0,$00
+            dc.b    $A2,$00,$A9,$00,$20,$69,$37,$A2,$04,$18,$20,$48,$37,$A2,$06,$18
+            dc.b    $20,$4E,$37,$A2,$0E,$18,$20,$4E,$37,$A2,$04,$18,$20,$45,$37,$A2
+            dc.b    $05,$18,$20,$51,$37,$60,$A9,$07,$20,$57,$37,$0A,$AA,$7C,$B8,$2D
+            dc.b    $35,$2E,$FF,$2D,$35,$2E,$CA,$2D,$CA,$2D,$FF,$2D,$35,$2E,$CA,$2D
+            dc.b    $A9,$FB,$20,$5D,$37,$A0,$02,$BE,$6C,$37,$BD,$00,$02,$C9,$05,$B0
+            dc.b    $0A,$C9,$01,$90,$06,$DA,$0A,$AA,$7C,$F5,$2D,$A9,$FE,$9D,$00,$02
+            dc.b    $A9,$03,$99,$00,$02,$A9,$04,$0C,$35,$F0,$4C,$B0,$2D,$9E,$2E,$FF
+            dc.b    $2E,$39,$2F,$E1,$2F,$A9,$FD,$20,$5D,$37,$A2,$02,$BC,$6C,$37,$A9
+            dc.b    $01,$99,$00,$03,$A6,$55,$BD,$AB,$37,$99,$01,$03,$BD,$A1,$37,$99
+            dc.b    $02,$03,$B5,$73,$99,$03,$03,$B5,$6A,$99,$04,$03,$A2,$02,$A9,$01
+            dc.b    $9D,$00,$03,$A9,$08,$0C,$35,$F0,$4C,$B0,$2D,$08,$78,$A9,$FE,$20
+            dc.b    $5D,$37,$A5,$57,$F0,$0D,$A6,$56,$E8,$E0,$09,$90,$02,$A2,$00,$86
+            dc.b    $56,$64,$57,$A6,$55,$74,$61,$E8,$E0,$09,$90,$02,$A2,$00,$86,$55
+            dc.b    $E4,$56,$F0,$2E,$A2,$02,$BC,$6C,$37,$A9,$01,$99,$00,$03,$A6,$55
+            dc.b    $BD,$AB,$37,$99,$01,$03,$BD,$A1,$37,$99,$02,$03,$B5,$73,$99,$03
+            dc.b    $03,$B5,$6A,$99,$04,$03,$A2,$02,$A9,$01,$9D,$00,$03,$A9,$08,$0C
+            dc.b    $35,$F0,$28,$4C,$B0,$2D,$A2,$05,$A9,$04,$4C,$5A,$37,$A2,$05,$A9
+            dc.b    $01,$4C,$5A,$37,$A2,$08,$74,$61,$CA,$10,$FB,$64,$56,$64,$55,$A9
+            dc.b    $FF,$85,$57,$A6,$56,$A9,$80,$95,$61,$A9,$C1,$85,$7C,$A9,$37,$85
+            dc.b    $7D,$FA,$9E,$00,$02,$BD,$01,$02,$85,$8A,$A9,$54,$9D,$01,$02,$A9
+            dc.b    $4C,$9D,$02,$02,$5A,$A0,$34,$A9,$47,$A2,$06,$38,$20,$4B,$37,$A0
+            dc.b    $34,$A9,$47,$A2,$0E,$38,$20,$4E,$37,$08,$78,$A9,$02,$0C,$33,$F0
+            dc.b    $20,$FE
+            dc.b    '/ ]6(z'
+            dc.b    $A9,$03,$99,$00,$02,$A9,$04,$0C,$35,$F0,$4C,$B0,$2D,$FA,$5A,$BD
+            dc.b    $01,$02,$9E,$01,$02,$85,$7F,$DA,$78,$A2,$06,$8E,$41,$F0,$8D,$41
+            dc.b    $F0,$58,$A4,$7F,$A6,$7F,$A9,$81,$20,$3F,$31,$90,$06,$FA,$9E,$00
+            dc.b    $02,$80,$06,$FA,$A9,$FF,$9D,$00,$02,$7A,$A9,$03,$99,$00,$02,$A9
+            dc.b    $04,$0C,$35,$F0,$4C,$B0,$2D,$FA,$BD,$01,$02,$8D,$C3,$37,$9E,$01
+            dc.b    $02,$BD,$02,$02,$8D,$C4,$37,$9E,$02,$02,$5A,$DA,$AC,$4C,$54,$AD
+            dc.b    $4E,$54,$A6,$7F,$20,$3F,$31,$90,$04,$A9,$FF,$80,$24,$EE,$98,$37
+            dc.b    $D0,$0D,$EE,$99,$37,$D0,$08,$EE,$9A,$37,$D0,$03,$EE,$9B,$37,$A6
+            dc.b    $56,$74,$61,$64,$57,$A9,$95,$8D,$FB,$2D,$A9,$2F,$8D,$FC,$2D,$A9
+            dc.b    $00,$FA,$9D,$00,$02,$7A,$A9,$03,$99,$00,$02,$A9,$04,$0C,$35,$F0
+            dc.b    $4C,$B0,$2D,$FA,$BD,$01,$02,$8D,$C3,$37,$9E,$01,$02,$BD,$02,$02
+            dc.b    $8D,$C4,$37,$9E,$02,$02,$5A,$DA,$AC,$4C,$54,$AD,$4E,$54,$A6,$7F
+            dc.b    $20,$3F,$31,$90,$04,$A9,$FF,$80,$14,$EE,$98,$37,$D0,$0D,$EE,$99
+            dc.b    $37,$D0,$08,$EE,$9A,$37,$D0,$03,$EE,$9B,$37,$A9,$00,$FA,$9D,$00
+            dc.b    $02,$7A,$A9,$03,$99,$00,$02,$A9,$04,$0C,$35,$F0,$4C,$B0,$2D,$FA
+            dc.b    $5A,$9E,$00,$02,$A9,$37,$8D,$01,$02,$A9,$74,$8D,$02,$02,$7A,$A9
+            dc.b    $03,$99,$00,$02,$A9,$04,$0C,$35,$F0,$4C,$B0,$2D,$A5,$5F,$05,$5E
+            dc.b    $D0,$04,$A9,$03,$85,$5E,$A9,$01,$85,$5C,$85,$5D,$85,$5A,$3A,$3A
+            dc.b    $85,$5B,$38,$20,$60,$37,$A5,$8A,$10,$17,$A0,$00,$B9,$B6,$30,$99
+            dc.b    $84,$00,$C8,$C0,$06,$90,$F5,$AD,$32,$F0,$09,$10,$8D,$32,$F0,$80
+            dc.b    $15,$AD,$30,$F0,$29,$E7,$8D,$30,$F0,$A0,$00,$B9,$B0,$30,$99,$84
+            dc.b    $00,$C8,$C0,$06,$90,$F5,$AD,$41,$F0,$A5,$8A,$10,$16,$A2,$00,$BD
+            dc.b    $99,$30,$A8,$C8,$F0,$23,$8D,$41,$F0,$E8,$BD,$99,$30,$8D,$41,$F0
+            dc.b    $E8,$80,$EC,$A2,$00,$BD,$7C,$30,$A8,$C8,$F0,$0D,$8D,$41,$F0,$E8
+            dc.b    $BD,$7C,$30,$8D,$41,$F0,$E8,$80,$EC,$60,$04,$20,$0A,$E0,$06,$00
+            dc.b    $07,$7E,$0C,$06,$0D,$00,$0E,$C0,$03,$DD,$02,$00,$0F,$00,$01,$18
+            dc.b    $0B,$70,$0E,$21,$05,$60,$FF,$04,$20,$0A,$E0,$06,$00,$07,$7E,$03
+            dc.b    $DD,$02,$00,$0F,$00,$01,$18,$0B,$00,$0E,$60,$05,$60,$FF,$08,$04
+            dc.b    $24,$1A,$07,$0E,$04,$02,$0A,$02,$00,$01,$A8,$29,$0F,$AA,$98,$4A
+            dc.b    $4A,$4A,$4A,$A8,$18,$BD,$CE,$30,$79,$CE,$30,$60,$00,$01,$01,$02
+            dc.b    $01,$02,$02,$03,$01,$02,$02,$03,$02,$03,$03,$04,$20,$E1,$30,$A2
+            dc.b    $04,$A5,$5E,$6A,$6A,$45,$5E,$85,$7E,$A5
+            dc.b    '_jjjjE_jjjE~j&^&_'
+            dc.w    $CAD0,$E3A5,$5E60,$A019,$A656,$AD23,$F0C9,$5DD0
+            dc.w    $0CAD,$24F0,$C902,$D005,$88D0,$EF18,$6038,$60A0
+            dc.w    $27AD,$23F0,$C905,$D005,$88D0,$F618,$6038,$60A9
+            dc.w    $20A2,$10CA,$D0FD,$2C32,$F0D0,$0588,$D0F3,$1860
+            dc.w    $3860,$8581,$8482,$8683,$8E4D,$54A9,$2085,$5885
+            dc.w    $59A5,$5A20,$BC30,$C903,$900B,$A55C,$2A29,$0F85
+            dc.w    $5C64,$5A80,$0FA5,$5B20,$BC30,$C902,$9006,$465C
+            dc.w    $A0FF,$845B,$065B,$065A,$A55C,$855D,$20E1,$30A9
+            dc.w    $202C,$32F0,$F01E,$3826,$5DA9,$0104,$5BA0,$0FA2
+            dc.w    $F1A9,$202C,$32F0,$F00C,$CAF0,$0480,$0080,$F488
+            dc.w    $D0F1,$80D8,$78A4,$8420,$2C31,$B00E,$A55E,$255D
+            dc.w    $290F,$F027,$A820,$2C31,$9021,$EE74,$37D0,$0DEE
+            dc.w    $7537,$D008,$EE76,$37D0,$03EE,$7737,$A901,$045B
+            dc.w    $C659,$F004
+            dc.b    'XLy1X8`'
+            dc.b    $A5,$81,$10,$11,$0A,$AA,$7C,$E1,$31,$00,$00,$99,$32,$D7,$32,$00
+            dc.b    $00,$C3,$32,$CD,$32,$A4,$83,$8C,$B9,$37,$A4,$82,$8C,$B8,$37,$C0
+            dc.b    $FF,$F0
+            dc.b    'I )3 ]6'
+            dc.w    $E68B,$A585,$0AA8,$202C,$3190,$5F20,$1C31,$905A
+            dc.w    $2023,$34B0,$5564,$8BA5,$60C9,$80D0,$4DA2,$06CA
+            dc.w    $D0FD,$A000,$B17C,$8D21,$F0C8,$B17C,$8D22,$F0C8
+            dc.b    $B1,$7C,$8D,$24,$F0,$C8,$B1,$7C,$8D,$23,$F0
+            dc.b    ' ;3 ]6X` )3 ]6'
+            dc.b    $A0,$00,$B1,$7C,$8D,$21,$F0,$C8,$B1,$7C,$8D,$22,$F0,$C8,$B1,$7C
+            dc.b    $8D,$24,$F0,$C8,$B1,$7C,$8D,$23,$F0
+            dc.b    ' ;3 ]6X`'
+            dc.w    $EE78,$37D0,$0DEE,$7937,$D008,$EE7A,$37D0,$03EE
+            dc.w    $7B37,$A501,$045A,$3826,$5DC6,$58F0,$0920,$5D36
+            dc.w    $648B
+            dc.b    'XLy1 ]6d'
+            dc.w    $8B38,$5860,$A482,$8CBE,$378C,$BF37,$20E1,$3220
+            dc.w    $5D36,$A585,$0AA8,$202C,$3190,$BB20,$0331,$90B6
+            dc.w    $2023,$34B0,$B1A5,$60C9,$40D0,$AB18,$5860,$A482
+            dc.w    $A683
+            dc.b    ' )3L]6'
+            dc.w    $A482,$A683,$200F,$334C,$5D36,$A482,$A683,$20F5
+            dc.w    $324C,$5D36,$A9BE,$8D21,$F0A9,$378D,$22F0,$9C24
+            dc.w    $F0A9,$038D,$23F0,$8046,$8CB5,$378E,$B637,$A9B5
+            dc.w    $8D21,$F0A9,$378D,$22F0,$9C24,$F0A9,$038D,$23F0
+            dc.w    $802C,$8CBB,$378E,$BC37,$A9BB,$8D21,$F0A9,$378D
+            dc.w    $22F0,$9C24,$F0A9,$038D,$23F0,$8012,$A9B8,$8D21
+            dc.w    $F0A9,$378D,$22F0,$9C24,$F0A9,$038D,$23F0,$A68A
+            dc.w    $1027,$AD30,$F029,$E709,$088D,$30F0,$A00A,$8C41
+            dc.w    $F0A9,$E08D,$41F0,$A003,$8C41,$F0A9,$D08D,$41F0
+            dc.w    $A931,$8D20,$F0A0,$0580,$27A0,$038C,$41F0,$A9D0
+            dc.w    $8D41,$F0A9,$318D,$20F0,$A005,$8C41,$F0A9,$638D
+            dc.w    $41F0,$EA8C,$41F0,$A961,$8D41,$F0A2,$01CA,$D0FD
+            dc.w    $8C41,$F0A9,$6B8D,$41F0,$A689,$CAD0,$FDA9,$018D
+            dc.w    $41F0,$A9C0,$8D41,$F0A9,$808D,$41F0,$A9C0,$8D41
+            dc.w    $F0A0,$0FA2,$F1A9,$402C,$41F0,$D00D,$CAF0,$0480
+            dc.w    $0080,$F488,$D0F1,$4C05,$34A6,$87A9,$042C,$41F0
+            dc.w    $D006,$CAD0,$F84C,$0534,$A688,$CAD0,$FDA0,$058C
+            dc.w    $41F0,$A9E3,$8D41,$F0A6,$86CA,$D0FD,$8C41,$F0A9
+            dc.w    $E18D,$41F0,$9C20,$F0A9,$108D,$41F0,$A90A,$8D34
+            dc.w    $F0A9,$308D,$41F0,$1860,$A905,$8D41,$F0A9,$E18D
+            dc.w    $41F0,$9C20,$F0A9,$108D,$41F0,$A90A,$8D34,$F0A9
+            dc.w    $308D,$41F0,$3860,$A030,$A201,$8E41,$F0AD,$41F0
+            dc.w    $3018,$88D0,$F5EE,$9037,$D00D,$EE91,$37D0,$08EE
+            dc.w    $9237,$D003,$EE93,$374C,$5D36,$9C20,$F0A9,$038D
+            dc.w    $41F0,$A9D0,$8D41,$F064,$60A9,$018D,$41F0,$AD41
+            dc.w    $F089,$60F0,$3089,$40F0,$12EE,$7C37,$D00D,$EE7D
+            dc.w    $37D0,$08EE,$7E37,$D003,$EE7F,$3789,$20F0,$12EE
+            dc.w    $8037,$D00D,$EE81,$37D0,$08EE,$8237,$D003,$EE83
+            dc.w    $3738,$4C5D,$36A9,$108D,$41F0,$A90A,$8D34,$F0A9
+            dc.w    $308D,$41F0,$A590,$1015,$297F,$C906,$B00F,$0AAA
+            dc.w    $7CAE,$34BD,$34CC,$34BA,$34F6,$34D4,$344C,$5D36
+            dc.w    $A206,$CAD0,$FDA4,$7FA6,$7F20,$F532,$4C5D,$36A9
+            dc.l    sub_40855EEA_L7
+            dc.w    $4C5D,$36A5,$8BF0,$0864,$8BA9,$8085,$6018,$60EE
+            dc.w    $9437,$D00D,$EE95,$37D0,$08EE,$9637,$D003,$EE97
+            dc.w    $3718,$4C5D,$36A6,$57D0,$51A5,$8EC9,$FFF0,$0CA2
+            dc.w    $06CA,$D0FD,$A48F,$A67F,$200F,$3320,$F635,$A585
+            dc.w    $0AA8,$202C,$3190,$1D20,$0331,$9018,$A0A2,$A20B
+            dc.w    $A901,$8D41,$F0AD,$41F0,$304C,$88F0,$0480,$0080
+            dc.w    $EFCA,$D0EC,$EE90,$37D0,$0DEE,$9137,$D008,$EE92
+            dc.w    $37D0,$03EE,$9337,$384C,$5D36,$EE9C,$37D0,$0DEE
+            dc.w    $9D37,$D008,$EE9E,$37D0,$03EE,$9F37,$A58E,$C9FF
+            dc.b    $F0,$04,$18
+            dc.b    'L]6 ]6'
+            dc.b    $A4,$85,$C8,$20,$2C,$31,$20,$1C,$31,$18,$4C,$5D,$36,$29,$60,$D0
+            dc.b    $4B,$A6,$56,$BD,$A1,$37,$85,$8C,$BD,$AB,$37,$85,$8D,$A0,$02,$B1
+            dc.b    $8C,$30,$39,$38,$A9,$5D,$ED,$23,$F0,$95,$6A,$A9,$02,$ED,$24,$F0
+            dc.b    $95,$73,$A9,$81,$95,$61,$E4,$55,$D0,$09,$DA,$A2,$05,$A9,$02,$20
+            dc.b    $5A,$37,$FA,$E8,$E0,$09,$90,$02,$A2,$00,$E4,$55,$F0,$06,$86,$56
+            dc.b    $18,$4C,$5D,$36,$A9,$FF,$85,$57,$18,$4C,$5D,$36,$89,$40,$F0,$12
+            dc.b    $EE,$7C,$37,$D0,$0D,$EE,$7D,$37,$D0,$08,$EE,$7E,$37,$D0,$03,$EE
+            dc.b    $7F,$37,$89,$20,$F0,$12,$EE,$80,$37,$D0,$0D,$EE,$81,$37,$D0,$08
+            dc.b    $EE,$82,$37,$D0,$03,$EE,$83,$37,$38,$4C,$5D,$36,$A9,$03,$8D,$41
+            dc.b    $F0,$A9,$C0,$8D,$41,$F0,$AD,$43,$F0,$AD,$43,$F0,$AD,$43,$F0,$A5
+            dc.b    $8A,$10,$14,$AD,$30,$F0,$29,$E7,$09,$10,$8D,$30,$F0,$A9,$0A,$8D
+            dc.b    $41,$F0,$A9,$80,$8D,$41,$F0,$A9,$30,$8D,$41,$F0,$A9,$03,$8D,$41
+            dc.b    $F0,$A9,$DD,$8D,$41,$F0,$A9,$01,$8D,$41,$F0,$A9,$F8,$8D,$41,$F0
+            dc.b    $A6,$56,$BD,$A1,$37,$8D,$21,$F0,$BD,$AB,$37,$8D,$22,$F0,$A9,$02
+            dc.b    $8D,$24,$F0,$A9,$5D,$8D,$23,$F0,$A9,$35,$8D,$20,$F0,$A9,$0A,$8D
+            dc.b    $34,$F0,$60,$A9,$03,$8D,$41,$F0,$A9,$C0,$8D,$41,$F0,$A9,$10,$8D
+            dc.b    $41,$F0,$AD,$43,$F0,$AD,$43,$F0,$AD,$43,$F0,$A5,$8A,$10,$14,$AD
+            dc.b    $30,$F0,$29,$E7,$09,$10,$8D,$30,$F0,$A9,$0A,$8D,$41,$F0,$A9,$80
+            dc.b    $8D,$41,$F0,$A9,$30,$8D,$41,$F0,$A9,$03,$8D,$41,$F0,$A9,$DD,$8D
+            dc.b    $41,$F0,$A9,$01,$8D,$41,$F0,$A9,$F8,$8D,$41,$F0,$A9,$8E,$8D,$21
+            dc.b    $F0,$9C,$22,$F0,$9C,$24,$F0,$A9,$05,$8D,$23,$F0,$A9,$35,$8D,$20
+            dc.b    $F0,$A9,$0A,$8D,$34,$F0,$60,$02,$0B
+            dc.b    'LocalTalk++,Version 56.0 '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer Inc. 1988-19918'
+            dc.b    $01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$39
+            dc.b    'IOP LocalTalk v56.0.1  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1988-1991l'
+            dc.b    $00,$00,$6C,$02,$00,$6C,$04,$00,$6C,$06,$00,$6C,$08,$00,$6C,$0A
+            dc.b    $00,$6C,$0C,$00,$6C,$0E,$00,$6C,$10,$00,$6C,$12,$00,$6C,$14,$00
+            dc.b    $6C,$16,$00,$6C,$18,$00,$00,$20,$40,$60,$80,$A0,$C0,$E0,$01,$00
+            dc.b    $00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00
+            dc.b    $00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00
+            dc.b    $00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$08,$EF,$92,$35,$D8,$7B
+            dc.b    $1E,$C1,$64,$07,$AA
+            dc.b    'QOMJHFCA?<'
+            dc.w    0,$8200,$0084,0,$8500,$0081,$4C54,0
+RsrcEntryatlk_3:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'atlk' 3 "ATalk" (372 bytes) - Combo mask
+            dc.l    RsrcEntryiopc_128-BaseOfROM     ; Next entry
+            dc.l    Rsrcatlk_3-BaseOfROM            ; Data
+            dc.b    'atlk'                          ; Type
+            dc.w    3                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    5,'ATalk'                       ; Name
+            dc.b    'BGMSHJM'
+            dc.l    $C0A00000,$00000180,$00000274   ; Block header
+Rsrcatlk_3:
+            bra.b   .L1
+            dc.b    $60,$54,$00,$00,$00,$08,$38,$01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$3A
+            dc.b    'LocalTalk atlk v56.0.1  ; '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer, Inc. 1984-1991'
+            dc.b    $00
+.L1:
+            moveq   #-$5F,D0
+            jmp     (A0)
+            movem.l D0-D7/A1-A6,-(SP)
+            cmpi.w  #8,D0
+            bhi.w   .L7
+            lsl.w   #1,D0
+            move.w  .L2(PC,D0.w),D0
+            jmp     .L2(PC,D0.w)
+.L2:
+            dc.w    .L7-.L2
+            dc.w    .L3-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+.L3:
+            tst.w   ROM85
+            bmi.w   .L7
+            move.l  #$72A,D0
+            _NewPtrSysClear
+            bne.w   .L7
+            move.b  D4,($2E4,A0)
+            movea.l ExpandMem,A2
+            move.l  A0,($100,A2)
+            movea.l A0,A2
+            move.w  #$A89F,D0
+            _GetTrapAddress
+            movea.l A0,A1
+            move.w  #$A1AD,D0
+            _GetOSTrapAddress
+            move.l  A1,D0
+            cmp.l   A0,D0
+            beq.b   .L4
+            move.l  #$766D2020,D0
+            _Gestalt
+            bne.b   .L4
+            move.l  A0,D0
+            beq.b   .L4
+            move.b  D0,($727,A2)
+.L4:
+            move.w  #$A086,D0
+            _GetOSTrapAddress
+            move.l  A0,D0
+            _StripAddress
+            move.l  D0,-(SP)
+            move.w  #$A89F,D0
+            _GetOSTrapAddress
+            move.l  A0,D0
+            _StripAddress
+            cmp.l   (SP)+,D0
+            beq.b   .L5
+            move.b  ($BFE).w,D0
+            btst    #0,D0
+            bne.b   .L5
+            move.w  #3,D0
+            bsr.b   sub_408DAA22
+            bra.b   .L6
+.L5:
+            move.w  #2,D0
+            bsr.b   sub_408DAA22
+.L6:
+            move.l  A0,D0
+            beq.b   .L7
+            move.l  (A0),D0
+            _StripAddress
+            move.l  D0,-(SP)
+            lea     Rsrcatlk_3,A0
+            movea.l LAPMgrPtr,A1
+            moveq   #3,D0
+            jsr     (2,A1)
+            movea.l (SP),A0
+            moveq   #2,D0
+            moveq   #$38,D1
+            clr.w   D2
+            jsr     (2,A1)
+            movea.l (SP)+,A0
+            movem.l (SP)+,D0-D7/A1-A6
+            jmp     (2,A0)
+.L7:
+            movem.l (SP)+,D0-D7/A1-A6
+            move.w  #$FFFF,D0
+            rts
+sub_408DAA22:
+            move.w  D0,-(SP)
+            move.w  CurMap,-(SP)
+            move.w  #1,CurMap
+            move.w  #$FFFF,ROMMapInsert
+            subq.w  #4,SP
+            move.l  #'ltlk',-(SP)
+            move.w  D0,-(SP)
+            _GetResource
+            movea.l (SP)+,A0
+            move.w  (SP)+,CurMap
+            move.l  A0,D0
+            bne.b   .L1
+            move.w  (SP)+,D0
+            subq.w  #4,SP
+            move.l  #'ltlk',-(SP)
+            move.w  D0,-(SP)
+            _Get1Resource
+            movea.l (SP)+,A0
+            rts
+.L1:
+            addq.w  #2,SP
+            rts
+RsrcEntryltlk_2:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'ltlk' 2 "LTLK" (2868 bytes) - Combo mask
+            dc.l    RsrcEntryatlk_3-BaseOfROM       ; Next entry
+            dc.l    Rsrcltlk_2-BaseOfROM            ; Data
+            dc.b    'ltlk'                          ; Type
+            dc.w    2                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'LTLK'                        ; Name
+            dc.b    '9-1990]['
+            dc.l    $C0A00000,$00000B40,$0000026C   ; Block header
+Rsrcltlk_2:
+            bra.b   .L1
+            dc.b    $60,$54,$05,$EC,$00,$08,$38,$01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$3E
+            dc.b    'SCC LocalTalk ltlk v56.0.1  ; '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer, Inc. 1984-1991'
+            dc.b    $00,$0C,$40,$00,$08,$62,$1C,$E3,$48,$30,$3B,$00,$06,$4E,$FB,$00
+            dc.b    $02,$00,$12,$00,$94,$00,$C8,$00,$12,$00,$12,$00,$12,$00,$12,$00
+            dc.b    $AA,$00,$B6,$70,$FF,$4E,$75
+.L1:
+            movea.l ExpandMem,A3
+            movea.l ($100,A3),A3
+            movem.l D2/A0-A2,($2C4,A3)
+            exg     A2,A3
+            tst.b   D0
+            beq.b   .L4
+            tst.b   ($2BA,A2)
+            bne.b   .L2
+            move.l  A3,($2BC,A2)
+            move.l  A1,($2E6,A2)
+            bsr.w   sub_408DAC28
+            st      ($2BA,A2)
+.L2:
+            st      ($5E2,A2)
+            move.b  D2,(A2)
+            movea.l SCCWr,A1
+            addq.w  #2,A1
+            move.b  #6,(A1)
+            nop
+            move.b  (A2),(A1)
+            bsr.w   sub_408DAD6E
+            tst.b   ($5E1,A2)
+            beq.b   .L5
+            clr.b   ($5E1,A2)
+            moveq   #$C,D0
+            movea.l LAPMgrPtr,A3
+            move.b  ($2E4,A2),D4
+            move.l  A2,-(SP)
+            movea.l ($2BC,A2),A2
+            jsr     (2,A3)
+            tst.w   D0
+            beq.b   .L3
+            moveq   #5,D0
+            jsr     (2,A3)
+.L3:
+            movea.l (SP)+,A2
+            bra.b   .L5
+.L4:
+            st      ($5DF,A2)
+            bsr.w   sub_408DAD66
+.L5:
+            movem.l ($2C4,A2),D2/A0-A2
+            jmp     (A0)
+            movem.l D1/D4,-(SP)
+            lea     Rsrcltlk_2,A0
+            _RecoverHandle
+            move.l  A0,-(SP)
+            _DetachResource
+            movem.l (SP)+,D1/D4
+            clr.w   D0
+            rts
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            bsr.b   sub_408DABE0
+            rts
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            move.l  A2,-(SP)
+            bsr.b   sub_408DABF4
+            movea.l (SP)+,A2
+            bsr.b   sub_408DABFA
+            rts
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            move.l  A2,-(SP)
+            bsr.b   sub_408DABF4
+            movea.l (SP),A2
+            bsr.b   sub_408DABFA
+            movea.l LAPMgrPtr,A1
+            moveq   #3,D0
+            jsr     (2,A1)
+            movea.l (SP)+,A0
+            _DisposPtr
+            rts
+sub_408DABE0:
+            moveq   #-$61,D0
+            tst.b   PortAUse
+            bpl.b   .L1
+            move.b  #1,PortAUse
+            moveq   #0,D0
+.L1:
+            tst.w   D0
+            rts
+sub_408DABF4:
+            st      PortAUse
+            rts
+sub_408DABFA:
+            tst.b   ($2BA,A2)
+            beq.b   .L1
+            lea     sub_408DB296.L24,A0
+            bsr.w   sub_408DAD52
+            lea     ($292,A2),A0
+            _VRemove
+            lea     ($618,A2),A0
+            lea     ($1CA).w,A3
+            move.l  (A0)+,(A3)+
+            move.l  (A0)+,(A3)+
+            move.l  (A0)+,($2C6).w
+            clr.b   ($5DF,A2)
+            clr.b   ($2BA,A2)
+.L1:
+            rts
+sub_408DAC28:
+            movem.l D0-D7/A0-A6,-(SP)
+            suba.w  #$10,SP
+            movea.l SP,A0
+            moveq   #1,D0
+            _SysEnvirons
+            move.w  (2,A0),D0
+            addq.w  #2,D0
+            move.w  D0,($6E2,A2)
+            adda.w  #$10,SP
+            movea.l ROMBase,A3
+            movea.l VIA,A1
+            lea     ($1E00,A1),A1
+            cmpi.b  #3,(8,A3)
+            bne.b   .L1
+            suba.w  #$1E00,A1
+            bra.b   .L2
+.L1:
+            cmpi.w  #$D,($6E2,A2)
+            bne.b   .L2
+            movea.l SCCRd,A1
+            lea     (-$1C,A1),A1
+.L2:
+            move.l  A1,($638,A2)
+            lea     sub_408DB296.L21,A0
+            move.l  (A0)+,($63C,A2)
+            move.w  (A0)+,($640,A2)
+            move.w  (A0)+,($1C,A2)
+            cmpi.b  #$75,(9,A3)
+            beq.b   .L3
+            cmpi.b  #$76,(9,A3)
+            beq.b   .L3
+            move.w  #$2300,($1C,A2)
+.L3:
+            cmpi.b  #$75,(9,A3)
+            bhi.b   .L4
+            moveq   #$14,D0
+            lea     sub_408DB296.L22,A0
+            lea     ($5EC,A2),A1
+            _BlockMove
+            bra.b   .L9
+.L4:
+            bsr.w   sub_408DB3E2
+            moveq   #0,D7
+            move.w  D0,D7
+            bsr.w   sub_408DB4C8
+            moveq   #0,D6
+            move.w  D0,D6
+            moveq   #$14,D0
+            lea     ($5EC,A2),A1
+            movea.l ROMBase,A0
+            moveq   #0,D1
+            move.w  D7,D1
+            divu.w  #$64,D1
+            lea     sub_408DB296.L23,A3
+.L5:
+            move.w  (A3)+,D3
+            moveq   #0,D2
+            move.b  (A3)+,D2
+            divu.w  D1,D2
+            sub.w   D2,D3
+            tst.b   (A3)+
+            bmi.b   .L8
+            mulu.w  D7,D3
+.L6:
+            divu.w  #$3E8,D3
+            subq.w  #1,D3
+            bpl.b   .L7
+            moveq   #0,D3
+.L7:
+            move.w  D3,(A1)+
+            subq.w  #2,D0
+            bne.b   .L5
             bra.b   .L9
 .L8:
-            btst    #$D,D2
+            mulu.w  D6,D3
+            bra.b   .L6
+.L9:
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($1CA).w,A3
+            lea     ($618,A2),A1
+            lea     sub_408DB0B0,A0
+            move.l  (A3),(A1)+
+            move.l  A0,(A3)+
+            lea     sub_408DB204.L3,A0
+            move.l  (A3),(A1)+
+            move.l  A0,(A3)+
+            lea     sub_408DAF22,A0
+            move.l  ($2C6).w,(A1)
+            move.l  A0,($2C6).w
+            lea     ($292,A2),A0
+            move.w  #1,(4,A0)
+            lea     sub_408DAF6E,A1
+            move.l  A1,(6,A0)
+            move.w  #$14,($A,A0)
+            _VInstall
+            bsr.b   sub_408DAD48
+            move    (SP)+,SR
+            movem.l (SP)+,D0-D7/A0-A6
+            rts
+sub_408DAD48:
+            lea     sub_408DB296.L19,A0
+            bsr.b   sub_408DAD52
+            lea     sub_408DB296.L20,A0
+sub_408DAD52:
+            movea.l SCCWr,A3
+            addq.w  #2,A3
+.L1:
+            move.w  (A0)+,D0
+            beq.b   .L2
+            move.b  D0,(A3)
+            ror.w   #8,D0
+            move.b  D0,(A3)
+            bra.b   .L1
+.L2:
+            rts
+sub_408DAD66:
+            clr.b   ($5E2,A2)
+            move.l  A1,($5D4,A2)
+sub_408DAD6E:
+            movea.l ROMBase,A3
+            cmpi.b  #3,(8,A3)
+            bne.b   .L1
+            movea.l PmgrBase,A3
+            move.b  #$10,($E,A3)
+            tst.w   ($FE0000).l
+.L1:
+            btst    #0,HWCfgFlags                   ; TestFor hwCbPwrMgr
+            beq.b   .L2
+            _IdleUpdate
+.L2:
+            move.l  (SP)+,($5D8,A2)
+            move.b  D2,($5DE,A2)
+            lea     ($5E5,A2),A3
+            move.b  (A3)+,D3
+            move.b  (A3),D2
+            add.b   D2,(A3)+
+            bsr.b   sub_408DADB8
+            ble.b   sub_408DADB8.L3
+            add.b   D3,D3
+            addq.b  #1,D3
+            andi.w  #$F,D3
+            clr.b   (-1,A3)
+            bra.b   sub_408DADB8.L4
+sub_408DADB8:
+            moveq   #0,D0
+            moveq   #7,D1
+.L1:
+            btst    D1,D2
+            beq.b   .L2
+            addq.w  #1,D0
+.L2:
+            dbra    D1,.L1
+            subq.b  #2,D0
+            rts
+.L3:
+            move.b  (A3),D2
+            bsr.b   sub_408DADB8
+            bge.b   .L4
+            lsr.b   #1,D3
+            st      (A3)
+.L4:
+            move.b  (A3),D2
+            add.b   D2,(A3)+
+            moveq   #$20,D0
+            move.b  D0,(A3)+
+            move.b  D0,(A3)
+            subq.w  #5,A3
+            move.b  D3,(A3)+
+            move.b  D3,(A3)+
+            movem.l SCCRd,A0-A1
+            addq.w  #2,A0
+            addq.w  #2,A1
+.L5:
+            move    SR,-(SP)
+.L6:
+            move.w  D0,D3
+            btst    #4,(A0)
+            beq.b   .L10
+            bsr.w   sub_408DAFD4
+            and.b   ($5E4,A2),D0
+            andi.w  #$F,D0
+            move.w  D0,D3
+            beq.b   .L8
+.L7:
+            bsr.b   sub_408DAE88
+            beq.b   .L10
+            subq.w  #1,D0
+            bne.b   .L7
+.L8:
+            move    #$2600,SR
+            moveq   #3,D0
+            addq.w  #3,D3
+.L9:
+            move.b  #$E,(A1)
+            nop
+            move.b  #$41,(A1)
+            bsr.b   sub_408DAE88
+            dbeq    D0,.L9
+.L10:
+            beq.w   sub_408DAE88.L9
+            move.b  #$A,(A1)
+            move.b  ($5DE,A2),D2
+            tst.b   (A0)
+            bmi.w   sub_408DAE88.L9
+            move.b  #5,(A1)
+            moveq   #-$7C,D0
+            move.b  #$62,(A1)
+            tst.b   ($5E2,A2)
+            beq.b   .L11
+            moveq   #-$7F,D0
+.L11:
+            move.b  #5,(A1)
+            nop
+            move.b  ($63D,A2),(A1)
+            move.w  ($5FE,A2),D1
+.L12:
+            dbra    D1,.L12
+            bsr.w   sub_408DB068
+            addq.b  #1,D2
+            beq.b   sub_408DAE88.L4
+            clr.b   ($5E0,A2)
+            bsr.w   sub_408DAFB8
+            tst.b   ($5E2,A2)
+            beq.b   .L13
+            tst.b   ($5E1,A2)
+            beq.b   sub_408DAE88.L8
+            bra.b   sub_408DAE88.L6
+.L13:
+            tst.b   ($5E0,A2)
+            st      ($5E0,A2)
+            beq.b   sub_408DAE88.L8
+            bra.b   sub_408DAE88.L5
+sub_408DAE88:
+            move.w  ($5FA,A2),D1
+            bra.b   .L2
+.L1:
+            dbra    D1,.L1
+            bra.b   .L3
+.L2:
+            bra.b   .L1
+.L3:
+            btst    #4,(A0)
+            rts
+.L4:
+            bsr.b   sub_408DAE88
+            beq.b   .L8
+            cmpi.w  #$72,($5FA,A2)
+            bcs.b   .L5
+            bsr.b   sub_408DAE88
+            beq.b   .L8
+.L5:
+            bsr.w   sub_408DB01C
+.L6:
+            moveq   #0,D0
+            addq.l  #1,($6F2,A2)
+.L7:
+            move    (SP)+,SR
+            movea.l ($5D8,A2),A0
+            jmp     (A0)
+.L8:
+            addq.l  #1,($70E,A2)
+            move    (SP),SR
+            bset    #0,($5E6,A2)
+            move.b  ($5E4,A2),D0
+            add.b   D0,D0
+            addq.b  #1,D0
+            move.b  D0,($5E4,A2)
+            moveq   #-$5F,D0
+            subq.b  #1,($5E9,A2)
+            beq.b   .L7
+            bra.w   sub_408DADB8.L6
+.L9:
+            sub.w   D0,D3
+            subq.w  #4,D3
+            blt.b   .L10
+            addq.l  #1,($712,A2)
+            moveq   #-$5F,D0
+            subq.b  #1,($5E8,A2)
+            beq.b   .L7
+            bset    #0,($5E4,A2)
+            bset    #0,($5E7,A2)
+.L10:
+            clr.b   ($726,A2)
+            move    #$2600,SR
+            move.b  #$F,(A1)
+            moveq   #-$78,D0
+            move.b  D0,(A1)
+            move.b  #2,($5E3,A2)
+            moveq   #0,D0
+            movem.l ($2C4,A2),D2/A0-A2
+.L11:
+            move    (SP)+,SR
+            rts
+sub_408DAF22:
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            tst.b   ($5E3,A2)
+            bne.b   .L1
+            btst    #3,D1
+            beq.w   sub_408DAFB8.L3
+            movea.l ($2CA).w,A3
+            jmp     (A3)
+.L1:
+            move.b  #$F,(A1)
+            moveq   #8,D0
+            move.b  D0,(A1)
+            clr.b   ($5E3,A2)
+            move    ($1C,A2),SR
+            tst.b   ($727,A2)
+            beq.b   sub_408DAF5E.L1
+            move.l  A2,D0
+            lea     sub_408DAF5E,A0
+            _DeferUserFn
+            rts
+sub_408DAF5E:
+            movea.l A0,A2
+            movem.l SCCRd,A0-A1
+            addq.w  #2,A0
+            addq.w  #2,A1
+.L1:
+            bra.w   sub_408DADB8.L5
+sub_408DAF6E:
+            bsr.w   sub_408DB3D2
+            move    SR,-(SP)
+            move    #$2600,SR
+            tst.b   ($5E3,A2)
+            beq.b   sub_408DAE88.L11
+            subq.b  #1,($5E3,A2)
+            bne.b   sub_408DAE88.L11
+            addq.w  #2,SP
+            movem.l SCCRd,A0-A1
+            addq.w  #2,A0
+            addq.w  #2,A1
+            bsr.w   sub_408DB25A
+            addq.l  #1,($716,A2)
+            move.b  #$F,(A1)
+            moveq   #8,D0
+            move.b  D0,(A1)
+            move    ($1C,A2),SR
+            bra.w   sub_408DADB8.L5
+            move.w  #$3FC,($A,A0)
+            lea     (-$6AE,A0),A2
+            clr.w   ($6AC,A2)
+            rts
+sub_408DAFB8:
+            movem.l A0-A2,-(SP)
+            move.w  ($5F4,A2),D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.b   .L2
+            bsr.w   sub_408DB0BC
+.L2:
+            movem.l (SP)+,A0-A2
+.L3:
+            rts
+sub_408DAFD4:
+            move.w  ($5DC,A2),D0
+            mulu.w  #$305,D0
+            addq.w  #1,D0
+            move.w  D0,-(SP)
+            lsl.w   #8,D0
+            move.b  (SP)+,D0
+            move.w  D0,($5DC,A2)
+            rts
+.L1:
+            dc.w    $056B,$03D0
+sub_408DAFEE:
+            move.w  ($5F0,A2),D1
+.L1:
+            btst    #2,(A0)
+            dbne    D1,.L1
+            beq.b   .L2
+            move.b  D3,(4,A1)
+.L2:
+            tst.w   D1
+            rts
+sub_408DB004:
+            lea     sub_408DAFD4.L1,A3
+            moveq   #4,D3
+            bsr.w   sub_408DB0A8
+            move.w  ($5F6,A2),D3
+.L1:
+            dbra    D3,.L1
+            move.b  #$80,(A1)
+            rts
+sub_408DB01C:
+            movem.l A0-A1/A4-A6,($624,A2)
+            movea.l ($5D4,A2),A4
+            bsr.b   sub_408DB004
+            move.w  (A4)+,D3
+            movea.l (A4)+,A3
+            move.b  (A3)+,(4,A1)
+            subq.w  #1,D3
+            move.b  (A2),(A3)
+.L1:
+            move.w  ($5F0,A2),D0
+.L2:
+            btst    #2,(A0)
+            dbne    D0,.L2
+            bne.b   .L3
+            bsr.b   sub_408DB0A2
+            bra.b   .L5
+.L3:
+            move.b  (A3)+,(4,A1)
+            subq.w  #1,D3
+            bgt.b   .L1
+            move.w  (A4)+,D3
+            beq.b   .L4
+            movea.l (A4)+,A3
+            bra.b   .L1
+.L4:
+            bsr.b   sub_408DB07E
+.L5:
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            movem.l ($624,A2),A0-A1/A4-A6
+            rts
+sub_408DB068:
+            bsr.b   sub_408DB004
+            move.b  D2,(4,A1)
+            move.b  (A2),D3
+            bsr.w   sub_408DAFEE
+            bmi.b   sub_408DB0A2
+            move.b  D0,D3
+            bsr.w   sub_408DAFEE
+            bmi.b   sub_408DB0A2
+sub_408DB07E:
+            move.b  #$C0,(A1)
+            lsl.w   #1,D3
+.L1:
+            btst    #6,(A0)
+            beq.b   .L1
+.L2:
+            btst    #2,(A0)
+            beq.b   .L2
+            move.b  #5,(A1)
+            moveq   #0,D3
+            move.b  #$62,(A1)
+            move.w  ($5EC,A2),D3
+.L3:
+            dbra    D3,.L3
+sub_408DB0A2:
+            lea     ($63C,A2),A3
+            moveq   #6,D3
+sub_408DB0A8:
+            move.b  (A3)+,(A1)
+            subq.w  #1,D3
+            bne.b   sub_408DB0A8
+            rts
+sub_408DB0B0:
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            addq.l  #1,($6EA,A2)
+sub_408DB0BC:
+            move.b  (4,A0),D0
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            movea.l ($2BC,A2),A3
+            lea     (1,A3),A3
+            move.b  D0,(A3)+
+            move.b  D0,(1,A2)
+            move.w  ($5EE,A2),D1
+            add.w   D1,D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.b   .L5
+            move.b  (4,A0),(A3)+
+            move.b  (-1,A3),(2,A2)
+.L2:
+            btst    #0,(A0)
+            dbne    D1,.L2
+            beq.b   .L5
+            move.b  (4,A0),D0
+            move.b  D0,(A3)+
+            bmi.w   .L7
+            move.b  D0,D2
+            move.w  ($5EE,A2),D0
+            add.w   D0,D0
+.L3:
+            btst    #0,(A0)
+            dbne    D0,.L3
+            beq.b   .L5
+            move.b  (4,A0),(A3)
+            moveq   #3,D1
+            and.b   (A3)+,D1
+            lsl.w   #8,D1
+            movem.l A4-A5,($2FE,A2)
+.L4:
+            btst    #0,(A0)
+            dbne    D0,.L4
+.L5:
+            beq.w   sub_408DB204.L2
+            move.b  (4,A0),D1
+            move.b  D1,(A3)+
+            subq.w  #2,D1
+            move.l  ($2E6,A2),D0
+            beq.b   .L6
+            movea.l D0,A5
+            move.b  (A5),D0
+            bmi.b   .L6
+            andi.b  #$F,D0
+            subq.b  #1,D0
+            bne.b   .L6
+            movea.l ($2BC,A2),A2
+            movea.l LAPMgrPtr,A5
+            lea     sub_408DB296.L6,A4
+            moveq   #1,D0
+            jsr     (2,A5)
+.L6:
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            movem.l ($2FE,A2),A4-A5
+            move.b  #1,(A1)
+            moveq   #-$60,D0
+            and.b   (A0),D0
+            bne.w   sub_408DB296.L1
+            addq.l  #1,($702,A2)
+            clr.w   D3
+            bra.w   sub_408DB296.L7
+.L7:
+            moveq   #$7F,D2
+            and.b   D0,D2
+            cmpi.b  #5,D2
+            bgt.w   sub_408DB204.L1
+            bsr.w   sub_408DB220
+            bne.b   .L8
+            move.b  (A2),D0
+            cmpi.b  #$FF,(1,A2)
+            seq     D1
+            beq.b   .L9
+            tst.b   ($5DF,A2)
             bne.b   .L9
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
+            cmp.b   (1,A2),D0
+            bne.b   .L8
+            st      ($5E1,A2)
+.L8:
+            rts
+.L9:
+            cmp.b   (1,A2),D0
+            bne.b   .L11
+            subq.b  #1,D2
+            beq.b   .L16
+            subq.b  #3,D2
+            beq.b   .L12
+            tst.b   ($5E0,A2)
+            beq.b   .L10
+            addq.l  #1,($722,A2)
+.L10:
+            subq.b  #1,D2
+            seq     ($5E0,A2)
+.L11:
+            rts
+.L12:
+            tst.b   D1
+            bne.b   .L14
+            move.w  ($5F8,A2),D0
+.L13:
+            dbra    D0,.L13
+            moveq   #-$7B,D0
+            bsr.b   sub_408DB204
+.L14:
+            move.w  ($5F2,A2),D1
+.L15:
+            btst    #0,(A0)
+            dbne    D1,.L15
+            bne.w   sub_408DB0BC
+            addq.l  #1,($71E,A2)
+            rts
+.L16:
+            move.w  ($5F8,A2),D0
+.L17:
+            dbra    D0,.L17
+            moveq   #-$7E,D0
+sub_408DB204:
+            move.b  (2,A2),D2
+            bra.w   sub_408DB068
+            addq.l  #1,($702,A2)
+            bra.b   .L3
+.L1:
+            addq.l  #1,($70A,A2)
+            bra.b   .L3
+.L2:
+            addq.l  #1,($6FE,A2)
+.L3:
+            bsr.b   sub_408DB25A
+            bra.b   sub_408DB25A
+sub_408DB220:
+            clr.w   D0
+            move.w  ($5EE,A2),D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.w   sub_408DB296.L3
+            bsr.b   sub_408DB296
+            bmi.b   sub_408DB296.L2
+            tst.b   (4,A0)
+            move.w  ($5EE,A2),D1
+.L2:
+            btst    #0,(A0)
+            dbne    D1,.L2
+            beq.b   sub_408DB296.L3
+            bsr.b   sub_408DB296
+            bpl.b   sub_408DB296.L2
+            lsl.b   #1,D1
+            bmi.b   sub_408DB296.L4
+            move.w  ($5FC,A2),D1
+.L3:
+            dbra    D1,.L3
+            bra.b   sub_408DB25A.L3
+sub_408DB25A:
+            bsr.b   sub_408DB296
+            btst    #5,D1
+            beq.b   .L1
+            bclr    #7,($15F).w
+.L1:
+            moveq   #-$30,D1
+            bsr.b   sub_408DB28C
+            moveq   #2,D1
+.L2:
+            tst.b   (4,A0)
+            move.b  #$30,(A1)
+            dbra    D1,.L2
+            moveq   #-$23,D1
+            bsr.b   sub_408DB28C
+.L3:
+            move.b  #$30,(A1)
+            move.w  (SP),(SP)
+            move.b  #$20,(A1)
+            tst.w   D0
+            rts
+sub_408DB28C:
+            move.b  #3,(A1)
+            nop
+            move.b  D1,(A1)
+            rts
+sub_408DB296:
+            move.b  #1,(A1)
+            nop
+            move.b  (A0),D1
+            rts
+.L1:
+            move.b  D0,D1
+            moveq   #0,D0
+.L2:
+            btst    #5,D1
+            bne.b   .L5
+            addq.l  #1,($706,A2)
+            moveq   #-4,D0
+            bra.b   sub_408DB25A
+.L3:
+            addq.l  #1,($6FE,A2)
+            moveq   #-3,D0
+            bra.b   sub_408DB25A
+.L4:
+            addq.l  #1,($6F6,A2)
+            moveq   #-2,D0
+            bra.b   sub_408DB25A
+.L5:
+            addq.l  #1,($6FA,A2)
+            moveq   #-1,D0
+            bra.b   sub_408DB25A
+.L26:
+            bra.w   .L25
+.L6:
+            bra.b   .L26
+.L7:
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            movea.l ($638,A2),A5
+            movea.l SP,A4
+.L8:
+            move.w  ($5EE,A2),D0
+            subq.w  #1,D1
             bmi.b   .L10
 .L9:
-            move.w  #$FFFC,D7
-            moveq   #-1,D4
-            moveq   #-1,D5
-            bra.b   .L6
-.L10:
-            move.w  #$FFFE,D7
-            moveq   #0,D4
-            moveq   #0,D5
-            bra.b   .L6
-StuffIt_PACK_4_2:
-            moveq   #0,D4
-            moveq   #0,D5
-            moveq   #0,D6
-            tst.w   D1
-            bgt.b   .L1
-            move.w  (A3)+,D4
-            swap    D4
-            rts
-.L1:
-            move.l  (A3)+,D4
-            subq.w  #2,D1
-            bgt.b   .L2
-            blt.w   .L14
-            move.w  (A3)+,D5
-            swap    D5
-            rts
-.L2:
-            move.l  (A3)+,D5
-            subq.w  #2,D1
-            bgt.b   .L3
-            blt.w   .L14
-            move.w  (A3)+,D6
-            swap    D6
-            rts
-.L3:
-            move.l  (A3)+,D6
-            rts
-.L4:
-            move.w  D1,D4
-            cmp.w   D3,D1
-            bge.b   .L5
-            move.w  D3,D4
-.L5:
-            tst.w   D4
+            btst    #0,(A0)
+            dbne    D0,.L9
             beq.b   .L10
-            lea     (2,A1),A2
-            lea     (2,A3),A4
-            moveq   #0,D2
-.L6:
-            addq.w  #1,D2
-            cmp.w   D2,D1
-            bge.b   .L7
-            clr.w   (A2)
-.L7:
-            cmp.w   D2,D3
-            bge.b   .L8
-            clr.w   (A4)
-.L8:
-            cmpm.w  (A4)+,(A2)+
-            bne.b   .L10
-            cmp.w   D2,D4
-            bgt.b   .L6
-            bra.b   .L10
-.L9:
-            bsr.w   sub_408E9D24
-            bsr.w   StoD_PACK_4_2
-            bsr.w   Nrmlz10_PACK_4_2
-            movea.l A4,A3
-            moveq   #4,D6
-            cmp.w   (A3),D0
-            beq.b   .L4
+            move.b  (4,A0),D0
+            subq.w  #1,D3
+            bmi.b   .L8
+            move.b  D0,(A3)+
+            bra.b   .L8
 .L10:
-            bhi.b   .L11
-            addq.w  #1,D3
-            clr.w   -(A3)
-            moveq   #5,D6
+            bsr.w   sub_408DB220
 .L11:
-            move.w  D3,D2
-            asl.w   #4,D2
-            sub.w   D7,D2
-            addi.w  #$3FFE,D2
-            move.w  D2,-(SP)
-            bsr.w   BgnDiv_PACK_4_2
-            moveq   #0,D6
-            move.w  (A3),D0
-            bra.b   .L13
-.L12:
-            addq.w  #1,D6
-            lsl.w   #1,D0
-.L13:
-            bpl.b   .L12
-            move.w  (SP)+,D7
-            movea.l D7,A1
-            sub.w   D6,D7
-            bmi.b   NeedWrd_FP020BD.L2
-            addi.w  #$3F,D6
-            moveq   #-1,D5
-            bsr.w   Roundit_FP020BD
-            move.l  A1,D7
-            bsr.w   StuffIt_PACK_4_2
-.L14:
-            tst.l   D4
-            bmi.b   .L16
-.L15:
-            subq.w  #1,D7
-            asl.l   #1,D6
-            roxl.l  #1,D5
-            roxl.l  #1,D4
-            bpl.b   .L15
-.L16:
-            movea.l ($3C,A6),A0
-            asl.w   #1,D7
-            asl     (A0)
-            roxr.w  #1,D7
-            move.w  D7,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            bra.w   sub_408E9936.L4
-NeedWrd_FP020BD:
+            movem.l ($2FE,A2),A4-A5
             tst.w   D0
-            bge.b   .L1
-            clr.w   -(A3)
-            addq.w  #1,D1
-            addi.w  #$10,D6
-            subi.w  #$10,D7
-            addi.w  #$10,D0
+            bne.b   .L12
+            addq.l  #1,($6EE,A2)
+.L12:
+            tst.w   D0
+.L13:
+            movea.l ($2BC,A2),A2
+            rts
+.L25:
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            sub.w   D3,D1
+.L14:
+            move.w  ($5EE,A2),D0
+.L15:
+            btst    #0,(A0)
+            dbne    D0,.L15
+            beq.b   .L16
+            move.b  (4,A0),(A3)+
+            subq.w  #1,D3
+            bne.b   .L14
+            move.b  #1,(A1)
+            moveq   #-$60,D0
+            and.b   (A0),D0
+            beq.b   .L13
+            bmi.b   .L17
+            addq.l  #1,($6FA,A2)
+            moveq   #-1,D0
+            bra.b   .L18
+.L16:
+            addq.l  #1,($6FE,A2)
+            moveq   #-3,D0
+            bra.b   .L18
+.L17:
+            addq.l  #1,($706,A2)
+            moveq   #-4,D0
+.L18:
+            bsr.w   sub_408DB25A
+            bra.b   .L11
+.L19:
+            dc.w    $8009,$2004,$E00A,$0006,$7E07,$060C,$000D,$C00E
+            dc.w    $DD03,$0002,$080F,$0901,$0A09,0
+.L20:
+            dc.w    $700B,$210E,$6005,0
+.L21:
+            dc.w    $0560,$0E41,$03DD,$2100
+.L22:
+            dc.w    $0035,$0014,$001E,$0082,$0066,$0010,0,$0039
+            ds.b    4
+.L23:
+            dc.w    $006E,$3A00,$0064,$00FF,$00C8,$00FF,$01F4,$00FF
+            dc.w    $0190,$72FF,$0046,$2C00,$001E,0,$0064,$5A00
+            dc.w    $003C,$FF00,$000A,$4000
+.L24:
+            dc.w    $8A09,$000A,$1000,$080F,$0101,0
+sub_408DB3D2:
+            move.w  #$14,($A,A0)
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            rts
+sub_408DB3E2:
+            movem.l D1-D7/A1,-(SP)
+            lea     sub_408DB3E2,A1
+            movea.l ROMBase,A0
+            cmpi.b  #$75,(9,A0)
+            bcs.b   .L2
+            move.l  A0,D0
+            _StripAddress
+            cmpa.l  D0,A1
+            bcs.b   .L1
+            movea.l D0,A0
+            add.l   ($40,A0),D0
+            cmpa.l  D0,A1
+            bcs.b   .L2
 .L1:
+            suba.w  #$E,SP
+            movea.l SP,A0
+            clr.l   ($A,A0)
+            move.w  #$FFFF,(4,A0)
+            _InsTime
+            move.b  (4,A0),D0
+            bpl.b   .L3
+            _RmvTime
+            adda.w  #$E,SP
+.L2:
+            move.w  TimeDBRA,D0
+            movem.l (SP)+,D1-D7/A1
+            rts
+.L3:
+            _RmvTime
+            adda.w  #$E,SP
+            movem.l D4-D7,-(SP)
+            moveq   #6,D0
+.L4:
+            clr.w   -(SP)
+            dbra    D0,.L4
+            moveq   #9,D4
+            move.l  #$FFFF,D5
+.L5:
+            move.l  #$3938700,D7
+            movea.l SP,A0
+            move    SR,-(SP)
+            move    #$2700,SR
+            _InsTime
+            move.l  D7,D6
+            move.l  D7,D0
+            neg.l   D0
+            _PrimeTime
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D7
+            movea.l SP,A0
+            _InsTime
+            move    SR,-(SP)
+            move    #$2700,SR
+            move.l  D6,D0
+            neg.l   D0
+            _PrimeTime
+            move.w  TimeDBRA,D0
+.L6:
+            dbra    D0,.L6
+            move.w  TimeDBRA,D0
+.L7:
+            dbra    D0,.L7
+            move.w  TimeDBRA,D0
+.L8:
+            dbra    D0,.L8
+            move.w  TimeDBRA,D0
+.L9:
+            dbra    D0,.L9
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D6
+            sub.l   D7,D6
+            cmp.l   D6,D5
+            bcs.b   .L10
+            move.l  D6,D5
+.L10:
+            dbra    D4,.L5
+            move.w  TimeDBRA,D1
+            mulu.w  #$FA0,D1
+            divu.w  D5,D1
+            move.w  D1,D0
+            movem.l (SP)+,D4-D7
+            adda.w  #$E,SP
+            movem.l (SP)+,D1-D7/A1
+            rts
+sub_408DB4C8:
+            movem.l D1-D7/A1,-(SP)
+            lea     sub_408DB4C8,A1
+            movea.l ROMBase,A0
+            cmpi.b  #$75,(9,A0)
+            bcs.b   .L2
+            move.l  A0,D0
+            _StripAddress
+            cmpa.l  D0,A1
+            bcs.b   .L1
+            movea.l D0,A0
+            add.l   ($40,A0),D0
+            cmpa.l  D0,A1
+            bcs.b   .L2
+.L1:
+            suba.w  #$E,SP
+            movea.l SP,A0
+            clr.l   ($A,A0)
+            move.w  #$FFFF,(4,A0)
+            _InsTime
+            move.b  (4,A0),D0
+            bpl.b   .L3
+            _RmvTime
+            adda.w  #$E,SP
+.L2:
+            move.w  TimeSCCDB,D0
+            movem.l (SP)+,D1-D7/A1
+            rts
+.L3:
+            _RmvTime
+            adda.w  #$E,SP
+            movem.l D4-D7,-(SP)
+            moveq   #6,D0
+.L4:
+            clr.w   -(SP)
+            dbra    D0,.L4
+            moveq   #9,D4
+            move.l  #$FFFF,D5
+.L5:
+            move.l  #$3938700,D7
+            movea.l SP,A0
+            move    SR,-(SP)
+            move    #$2700,SR
+            _InsTime
+            move.l  D7,D6
+            move.l  D7,D0
+            neg.l   D0
+            _PrimeTime
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D7
+            movea.l SP,A0
+            _InsTime
+            move    SR,-(SP)
+            move    #$2700,SR
+            move.l  D6,D0
+            neg.l   D0
+            _PrimeTime
+            move.w  TimeSCCDB,D0
+            movea.l SCCRd,A1
+.L6:
+            btst    #0,(A1)
+            dbra    D0,.L6
+            move.w  TimeSCCDB,D0
+.L7:
+            btst    #0,(A1)
+            dbra    D0,.L7
+            move.w  TimeSCCDB,D0
+.L8:
+            btst    #0,(A1)
+            dbra    D0,.L8
+            move.w  TimeSCCDB,D0
+.L9:
+            btst    #0,(A1)
+            dbra    D0,.L9
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D6
+            sub.l   D7,D6
+            cmp.l   D6,D5
+            bcs.b   .L10
+            move.l  D6,D5
+.L10:
+            dbra    D4,.L5
+            move.w  TimeSCCDB,D1
+            mulu.w  #$FA0,D1
+            divu.w  D5,D1
+            move.w  D1,D0
+            movem.l (SP)+,D4-D7
+            adda.w  #$E,SP
+            movem.l (SP)+,D1-D7/A1
+            rts
+            dc.b    'CHDAFDJWGMRSWC'
+RsrcEntryltlk_3:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'ltlk' 3 "LTLK" (1716 bytes) - Combo mask
+            dc.l    RsrcEntryltlk_2-BaseOfROM       ; Next entry
+            dc.l    Rsrcltlk_3-BaseOfROM            ; Data
+            dc.b    'ltlk'                          ; Type
+            dc.w    3                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'LTLK'                        ; Name
+            dc.b    'GSG DEVA'
+            dc.l    $C0A00000,$000006C0,$00000264   ; Block header
+Rsrcltlk_3:
+            bra.b   .L1
+            dc.b    $60,$00,$01,$1A,$00,$08,$38,$01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$3E
+            dc.b    'IOP LocalTalk ltlk v56.0.1  ; '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer, Inc. 1984-1991'
+            dc.b    $00
+.L1:
+            movea.l ExpandMem,A3
+            movea.l ($100,A3),A3
+            tst.b   D0
+            bne.b   sub_408DB6B2.L2
+            movem.l D2/A0-A2,($2EE,A3)
+            move.w  ($308,A3),($58C,A3)
+            moveq   #0,D1
+.L2:
+            move.w  (A1)+,D2
+            beq.b   .L3
+            add.w   D2,D1
+            move.w  D2,($586,A3)
+            move.l  (A1)+,($588,A3)
+            lea     ($584,A3),A0
+            _IOPMoveData
+            add.w   D2,($58C,A3)
+            bra.b   .L2
+.L3:
+            move.b  #3,($590,A3)
+            move.w  D1,($591,A3)
+            move.w  #$310,($575,A3)
+            lea     sub_408DB6B2,A0
+            move.l  A0,($580,A3)
+            lea     ($56C,A3),A0
+            _IOPMsgRequest
+            movem.l ($2EE,A3),D2/A0-A2
+            rts
+sub_408DB6B2:
+            movea.l ExpandMem,A3
+            movea.l ($100,A3),A3
+            tst.b   ($590,A3)
+            bne.b   .L1
+            moveq   #0,D0
+            movem.l ($2EE,A3),D2/A0-A2
+            jmp     (A0)
+.L1:
+            moveq   #-1,D0
+            movem.l ($2EE,A3),D2/A0-A2
+            jmp     (A0)
+.L2:
+            movem.l D2/A0-A2,($2EE,A3)
+            move.b  #2,($590,A3)
+            move.b  D2,($591,A3)
+            move.w  #$210,($575,A3)
+            clr.l   ($580,A3)
+            lea     ($56C,A3),A0
+            _IOPMsgRequest
+.L3:
+            tst.b   ($577,A3)
+            bne.b   .L3
+            tst.b   ($590,A3)
+            bne.b   .L4
+            movem.l ($2EE,A3),D2/A0-A2
+            move.l  A2,($2EA,A3)
+            jmp     (A0)
+.L4:
+            moveq   #5,D0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            movem.l ($2EE,A3),D2/A0-A2
+            jmp     (A0)
+            cmpi.w  #8,D0
+            bhi.b   .L6
+            lsl.w   #1,D0
+            move.w  .L5(PC,D0.w),D0
+            jmp     .L5(PC,D0.w)
+.L5:
+            dc.w    .L6-.L5
+            dc.w    .L7-.L5
+            dc.w    sub_408DB884.L3-.L5
+            dc.w    .L6-.L5
+            dc.w    .L6-.L5
+            dc.w    .L6-.L5
+            dc.w    .L6-.L5
+            dc.w    .L8-.L5
+            dc.w    sub_408DB884.L2-.L5
+.L6:
+            moveq   #-1,D0
+            rts
+.L7:
+            movem.l D1/D4,-(SP)
+            lea     Rsrcltlk_3,A0
+            _RecoverHandle
+            move.l  A0,-(SP)
+            _DetachResource
+            movem.l (SP)+,D1/D4
+            clr.w   D0
+            rts
+.L8:
+            movem.l D1-D3/A0-A3,-(SP)
+            bsr.w   sub_408DBA3E
+            bne.w   .L17
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            move.w  #$100,($584,A2)
+            clr.w   ($5B8,A2)
+            move.l  #$103,($572,A2)
+            move.l  #$1000100,($590,A2)
+            move.b  #$10,($576,A2)
+            lea     ($590,A2),A0
+            move.l  A0,($57C,A2)
+            move.l  A0,($578,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L9:
+            tst.b   ($577,A2)
+            bne.b   .L9
+            tst.b   ($590,A2)
+            bne.w   .L16
+            move.w  #$80,D0
+            bsr.w   sub_408DB884
+            tst.l   A0
+            beq.w   .L14
+            move.w  D1,($586,A2)
+            move.l  (A0),($588,A2)
+            move.w  #$2D55,($58C,A2)
+            lea     ($584,A2),A0
+            _IOPMoveData
+            move.w  #$300,($590,A2)
+            move.w  #$210,($575,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L10:
+            tst.b   ($577,A2)
+            bne.b   .L10
+            tst.b   ($590,A2)
+            bne.b   .L14
+            move.b  #2,($574,A2)
+            move.w  #$210,($575,A2)
+            move.b  ($BFE).w,D0
+            btst    #2,D0
+            beq.b   .L11
+            move.w  #$180,($590,A2)
+            bra.b   .L12
+.L11:
+            move.w  #$100,($590,A2)
+.L12:
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L13:
+            tst.b   ($577,A2)
+            bne.b   .L13
+            tst.b   ($590,A2)
+            bne.b   .L14
+            move.w  ($591,A2),($308,A2)
+            move.l  #$20210,($5A6,A2)
+            move.b  #4,($5AA,A2)
+            lea     ($5C4,A2),A0
+            move.l  A0,($5AC,A2)
+            move.l  A0,($5B0,A2)
+            lea     sub_408DB8F8,A0
+            move.l  A0,($5B4,A2)
+            lea     ($5A0,A2),A0
+            _IOPMsgRequest
+            movem.l (SP)+,D1-D3/A0-A3
+            clr.w   D0
+            rts
+.L14:
+            move.l  #$1021000,($574,A2)
+            move.w  #$200,($590,A2)
+            clr.l   ($580,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L15:
+            tst.b   ($577,A2)
+            bne.b   .L15
+.L16:
+            bsr.w   sub_408DBA38
+.L17:
+            movem.l (SP)+,D1-D3/A0-A3
+            moveq   #-1,D0
+            rts
+sub_408DB884:
+            subq.w  #4,SP
+            move.l  #'iopc',-(SP)
+            move.w  D0,-(SP)
+            bsr.w   sub_408DBA52
+            movea.l (SP),A0
+            move.l  A0,D0
+            beq.b   .L1
+            _GetHandleSize
+            move.l  D0,D1
+.L1:
+            movea.l (SP)+,A0
             rts
 .L2:
-            move.l  A1,D0
-            cmpi.w  #$FFBE,D0
-            bpl.b   .L3
-            move.w  #$FFBE,D7
-            move.w  D7,D0
-            sub.w   D6,D7
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            bsr.b   sub_408DB8C8
+            rts
 .L3:
-            add.w   D7,D6
-            bsr.b   NeedWrd_FP020BD
-            bsr.b   NeedWrd_FP020BD
-            bsr.b   NeedWrd_FP020BD
-            bsr.b   NeedWrd_FP020BD
-            bsr.b   NeedWrd_FP020BD
-            addi.w  #$3F,D6
-            move.w  D0,-(SP)
-            moveq   #-1,D5
-            movea.l A3,A1
-            bsr.w   Roundit_FP020BD
-            movea.l A1,A3
-            move.w  (SP)+,D7
-            bsr.w   StuffIt_PACK_4_2
-            tst.l   D4
-            bmi.b   .L5
-.L4:
-            tst.w   D7
-            ble.b   .L5
-            subq.w  #1,D7
-            asl.l   #1,D6
-            roxl.l  #1,D5
-            roxl.l  #1,D4
-            bpl.b   .L4
-.L5:
-            movea.l ($3C,A6),A0
-            asl.w   #1,D7
-            asl     (A0)
-            roxr.w  #1,D7
-            move.w  D7,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            tst.l   D4
-            bmi.b   .L6
-            ori.w   #$1200,FPState
-.L6:
-            bra.w   sub_408E9936.L4
-StoD_PACK_4_2:
-            moveq   #0,D3
-            movea.l (-$10,A6),A3
-            subq.l  #2,A3
-            clr.w   (A3)+
-            movea.l ($38,A6),A0
-            movea.l ($3C,A6),A4
-            tst.b   (A0)
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            bsr.b   sub_408DB8C8
+            moveq   #3,D0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            movea.l A2,A0
+            _DisposPtr
+            moveq   #0,D0
+            rts
+sub_408DB8C8:
+            bsr.w   sub_408DBA38
+            move.b  #3,($5A7,A2)
+            lea     ($5A0,A2),A0
+            _IOPMsgRequest
+            move.l  #$1021000,($574,A2)
+            move.w  #$200,($590,A2)
+            clr.l   ($580,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L1:
+            tst.b   ($577,A2)
+            bne.b   .L1
+            rts
+sub_408DB8F8:
+            movea.l ExpandMem,A3
+            movea.l ($100,A3),A3
+            move    SR,($2C0,A3)
+            move    #$2600,SR
+            movem.l A4-A5,($2FE,A3)
+            move.w  ($5C7,A3),D0
+            subq.w  #2,D0
+            move.w  D0,($5BA,A3)
+            lea     ($30E,A3),A0
+            move.l  A0,($5BC,A3)
+            move.w  ($5C5,A3),($5C0,A3)
+            lea     ($5B8,A3),A0
+            _IOPMoveData
+            movea.l ($2EA,A3),A2
+            lea     (1,A2),A0
+            lea     ($30E,A3),A1
+            move.l  (A1)+,(A0)+
+            move.b  (A1)+,(A0)+
+            move.l  A1,($30A,A3)
+            move.w  ($5C7,A3),D1
+            subq.w  #5,D1
+            move.w  (4,A2),D2
+            andi.w  #$3FF,D2
+            cmp.w   D2,D1
             beq.b   .L1
-            bset    #7,(A4)
+            addq.l  #1,($706,A3)
             bra.b   .L2
 .L1:
-            bclr    #7,(A4)
+            subq.w  #2,D1
+            move.w  D1,($306,A3)
+            movea.l A0,A3
+            lea     .L3,A4
+            move.b  (3,A2),D2
+            moveq   #1,D0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            movea.l ExpandMem,A3
+            movea.l ($100,A3),A3
+            addq.l  #1,($702,A3)
 .L2:
-            addq.l  #4,A0
+            move    ($2C0,A3),SR
+            move.b  #1,($5A7,A3)
+            clr.b   ($5C4,A2)
+            lea     ($5A0,A3),A0
+            _IOPMsgRequest
+            movem.l ($2FE,A3),A4-A5
+            rts
+.L3:
+            bra.b   .L10
+            bra.b   .L11
+.L10:
+            movem.l A0-A1,-(SP)
+            movea.l ExpandMem,A0
+            movea.l ($100,A0),A0
+            cmp.w   ($306,A0),D3
+            bgt.b   .L6
+            sub.w   D3,($306,A0)
+            movea.l ($30A,A0),A1
+            bra.b   .L5
+.L4:
+            move.b  (A1)+,(A3)+
+.L5:
+            dbra    D3,.L4
+            move.l  A1,($30A,A0)
+            move.w  ($306,A0),D1
+            moveq   #0,D0
+            moveq   #0,D3
+            movem.l (SP)+,A0-A1
+            rts
+.L6:
+            move    ($2C0,A0),SR
+            movem.l ($2FE,A0),A4-A5
+            movem.l (SP)+,A0-A1
+            move.b  #$FF,D0
+            rts
+.L11:
+            movem.l A0-A2,-(SP)
+            movea.l ExpandMem,A2
+            movea.l ($100,A2),A2
+            tst.w   D3
+            beq.b   .L9
+            tst.w   ($306,A2)
+            beq.b   .L9
+            movea.l ($30A,A2),A1
+            move.w  ($306,A2),D0
+            cmp.w   D0,D3
+            bge.b   .L8
+            move.w  D3,D0
+            bra.b   .L8
+.L7:
+            move.b  (A1)+,(A3)+
+.L8:
+            dbra    D0,.L7
+.L9:
+            move    ($2C0,A2),SR
+            move.b  #1,($5A7,A2)
+            clr.b   ($5C4,A2)
+            lea     ($5A0,A2),A0
+            _IOPMsgRequest
+            sub.w   ($306,A2),D3
+            movem.l ($2FE,A2),A4-A5
+            movem.l (SP)+,A0-A2
+            moveq   #0,D0
+            rts
+sub_408DBA38:
+            st      PortAUse
+            rts
+sub_408DBA3E:
+            moveq   #-$61,D0
+            tst.b   PortAUse
+            bpl.b   .L1
+            move.b  #1,PortAUse
+            moveq   #0,D0
+.L1:
+            tst.w   D0
+            rts
+sub_408DBA52:
+            link.w  A6,#-2
+            movem.l D1-D4/A1-A3,-(SP)
+            move.w  CurMap,(-2,A6)
+            moveq   #0,D3
+            moveq   #0,D4
+            move.w  #1,CurMap
+            move.w  #$FFFF,ROMMapInsert
+            clr.l   -(SP)
+            move.l  ($A,A6),-(SP)
+            move.w  (8,A6),-(SP)
+            _Get1Resource
+            movea.l (SP)+,A2
+            tst.w   ResErr
+            beq.b   .L1
+            suba.l  A2,A2
+.L1:
+            move.w  SysMap,CurMap
+            clr.l   -(SP)
+            move.l  ($A,A6),-(SP)
+            move.w  (8,A6),-(SP)
+            _Get1Resource
+            movea.l (SP)+,A3
+            tst.w   ResErr
+            beq.b   .L2
+            suba.l  A3,A3
+.L2:
+            subq.w  #4,SP
+            move.l  A2,-(SP)
+            move.l  A3,-(SP)
+            move.l  ($A,A6),-(SP)
+            bsr.w   sub_408DBB06
+            movea.l (SP)+,A2
+            move.l  D0,D3
+            move.w  (-2,A6),CurMap
+            clr.l   -(SP)
+            move.l  ($A,A6),-(SP)
+            move.w  (8,A6),-(SP)
+            _GetResource
+            movea.l (SP)+,A3
+            tst.w   ResErr
+            beq.b   .L3
+            suba.l  A3,A3
+.L3:
+            subq.w  #4,SP
+            movem.l A2-A3,-(SP)
+            move.l  ($A,A6),-(SP)
+            bsr.w   sub_408DBB06
+            movea.l (SP)+,A2
+            move.l  D0,D3
+            clr.w   ResErr
+            move.l  A2,($E,A6)
+            bne.b   .L4
+            move.w  #$FF40,ResErr
+.L4:
+            movea.l A2,A0
+            move.l  D3,D0
+            movem.l (SP)+,D1-D4/A1-A3
+            move.l  (4,A6),($A,A6)
+            unlk    A6
+            addq.w  #6,SP
+            rts
+sub_408DBB06:
+            link.w  A6,#0
+            movem.l D1-D4/A1-A3,-(SP)
+            movea.l ($10,A6),A2
+            movea.l ($C,A6),A3
+            subq.w  #4,SP
+            move.l  A2,-(SP)
+            move.l  (8,A6),-(SP)
+            bsr.w   sub_408DBB7E
+            move.l  (SP)+,D3
+            cmpi.w  #$8000,D3
+            bne.b   .L1
+            move.b  #$FF,D3
+.L1:
+            subq.w  #4,SP
+            move.l  A3,-(SP)
+            move.l  (8,A6),-(SP)
+            bsr.w   sub_408DBB7E
+            move.l  (SP)+,D4
+            cmpi.w  #$8000,D4
+            bne.b   .L2
+            move.b  #$FF,D4
+.L2:
+            cmp.l   D3,D4
+            bcs.b   .L3
+            exg     A2,A3
+            exg     D3,D4
+.L3:
+            cmpa.l  A2,A3
+            beq.b   .L4
+            cmpa.w  #0,A3
+            beq.b   .L4
+            move.l  A3,-(SP)
+            _ReleaseResource
+.L4:
+            move.l  A2,($14,A6)
+            movea.l A2,A0
+            cmpi.w  #$80FF,D3
+            bne.b   .L5
+            clr.b   D3
+.L5:
+            move.l  D3,D0
+            movem.l (SP)+,D1-D4/A1-A3
+            move.l  (4,A6),($10,A6)
+            unlk    A6
+            lea     ($C,SP),SP
+            rts
+sub_408DBB7E:
+            link.w  A6,#0
+            movem.l D1-D5/A1-A2,-(SP)
+            tst.l   ($C,A6)
+            beq.w   .L4
+            movea.l ($C,A6),A0
+            move.l  (A0),D5
+            beq.w   .L4
+            movea.l ($C,A6),A0
+            _GetHandleSize
+            move.l  D0,D2
+            bmi.b   .L4
+            movea.l D5,A2
+            cmpi.l  #'DRVR',(8,A6)
+            beq.b   .L1
+            cmpi.l  #8,D2
+            bls.b   .L4
+            move.w  (6,A2),D4
+            adda.w  D4,A2
+            addi.l  #$B,D4
+            cmp.l   D4,D2
+            bls.b   .L4
+            move.l  (A2),D3
+            clr.w   -(SP)
+            move.l  A2,-(SP)
+            bsr.w   sub_408DBC2E
+            tst.w   (SP)+
+            bne.b   .L5
+            bra.b   .L4
+.L1:
+            move.w  #$12,D4
+            cmp.l   D4,D2
+            bls.b   .L4
+            moveq   #0,D0
+            move.b  (0,A2,D4.w),D0
+            addq.w  #1,D0
+            btst    #0,D0
+            beq.b   .L2
+            addq.w  #1,D0
+            add.w   D0,D4
+.L2:
+            adda.w  D4,A2
+            addi.l  #$B,D4
+            cmp.l   D4,D2
+            bls.b   .L4
+            move.l  (A2),D3
+            clr.w   -(SP)
+            move.l  A2,-(SP)
+            bsr.w   sub_408DBC2E
+            tst.w   (SP)+
+            bne.b   .L3
+            move.w  (A2),D3
+            clr.b   D3
+            swap    D3
+            move.w  #$8000,D3
+.L3:
+            bra.b   .L5
+.L4:
+            moveq   #0,D3
+.L5:
+            move.l  D3,($10,A6)
+            move.l  D3,D0
+            movem.l (SP)+,D1-D5/A1-A2
+            move.l  (4,A6),($C,A6)
+            unlk    A6
+            addq.w  #8,SP
+            rts
+sub_408DBC2E:
+            link.w  A6,#-$10
+            movem.l D1-D4/A1-A2,-(SP)
+            tst.l   (8,A6)
+            beq.b   .L1
+            movea.l (8,A6),A2
+            move.l  (A2),D3
+            lea     (-$10,A6),A0
+            move.l  D3,D0
+            swap    D0
+            lsr.w   #8,D0
+            andi.l  #$FF,D0
+            clr.w   -(SP)
+            _DECSTR68K
             moveq   #0,D0
             move.b  (A0)+,D0
-            bra.b   .L5
-.L3:
-            moveq   #$F,D7
-            and.b   (A0)+,D7
-            movea.l A3,A4
-            move.w  D3,D4
-.L4:
-            move.w  -(A4),D6
-            mulu.w  #$A,D6
-            add.l   D6,D7
-            move.w  D7,(A4)
-            clr.w   D7
-            swap    D7
-            dbra    D4,.L4
-            beq.b   .L5
-            move.w  D7,-(A4)
-            addq.w  #1,D3
-.L5:
-            dbra    D0,.L3
-            rts
-sub_408E9936:
-            movem.l D0-D7/A1-A4,-(SP)
-            link.w  A6,#-$A0
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            move.w  (A0),D0
-            ble.b   .L1
-            bsr.w   sub_408E9D38
-            bsr.w   XbyA_PACK_4_2
-            bra.b   .L2
+            adda.w  D0,A0
+            move.l  D3,D0
+            swap    D0
+            lsr.w   #4,D0
+            andi.l  #$F,D0
+            clr.w   -(SP)
+            _DECSTR68K
+            lea     (-$10,A6),A0
+            moveq   #0,D0
+            move.b  (A0),D0
+            addq.w  #1,D0
+            move.b  #$2E,(0,A0,D0.w)
+            move.l  (A0),D0
+            andi.l  #$FFFFFF,D0
+            lea     (6,A2),A0
+            move.l  (A0),D1
+            andi.l  #$FFFFFF,D1
+            cmp.l   D0,D1
+            beq.b   .L2
 .L1:
-            bsr.w   sub_408E9D24
-            bsr.w   sub_408E9BC2
-            bsr.w   DivX_PACK_4_2
-            moveq   #0,D5
-            bsr.w   Roundit_FP020BD
+            moveq   #0,D0
+            bra.b   .L3
 .L2:
-            bsr.b   sub_408E9990
+            moveq   #1,D0
 .L3:
+            move.w  D0,($C,A6)
+            movem.l (SP)+,D1-D4/A1-A2
+            move.l  (4,A6),(8,A6)
             unlk    A6
-            movem.l (SP)+,D0-D7/A1-A4
-            movea.l (SP)+,A0
-            lea     (8,SP),SP
-            jmp     (A0)
-.L4:
-            move.w  FPState,D4
-            andi.w  #$60,D4
-            beq.b   .L3
-            pea     sub_408E9EF8.L2
-            move.l  ($3C,A6),-(SP)
-            move.w  #$2004,-(SP)
-            bsr.w   RsrcPACK_4_2
-            bra.b   .L3
-sub_408E9990:
-            movea.l (-$C,A6),A1
-            clr.l   (A1)
-            moveq   #0,D3
-            tst.w   D6
-            movea.l A1,A2
-            bmi.b   .L3
-            addq.w  #1,D1
-            moveq   #$F,D5
-            cmp.w   D5,D6
-            bge.b   .L1
-            move.w  D6,D5
-.L1:
-            subq.w  #1,D1
-            blt.b   .L2
-            move.w  (A3)+,D2
-.L2:
-            movea.l A1,A2
-            add.w   D2,D2
-            move.l  D3,D7
-            lea     (4,A2),A2
-            move.l  -(A2),D0
-            dc.w    $C100,$E098,$C100,$E098,$C100,$E098,$C100,$E098
-            dc.w    $2480,$51CF,$FFEA,$7000,$C100,$6704,$5283,$2500
-            dc.w    $51CD,$FFD2,$0446,$0010,$6CBC,$206E,$0038,$5848
-            dc.w    $43E8,$0001,$7A00,$1A10,$6122,$6120,$611E,$611C
-            dc.w    $51CB,$FFF6,$3009,$9048,$5300,$6704,$1080,$4E75
-.L3:
-            movea.l ($38,A6),A0
-            addq.w  #4,A0
-            move.w  #$130,(A0)
+            addq.w  #4,SP
             rts
-            moveq   #0,D1
-            move.b  (A2)+,D1
-            ror.w   #4,D1
-            bsr.b   BD1DIGOUT_PACK_4_2
-            rol.w   #4,D1
-BD1DIGOUT_PACK_4_2:
-            tst.w   D6
-            bpl.b   .L1
-            tst.b   D1
-            beq.b   .L3
-            moveq   #0,D6
-.L1:
-            subq.l  #1,D5
-            bmi.b   .L2
-            ori.b   #$30,D1
-            move.b  D1,(A1)
-.L2:
-            addq.l  #1,A1
-            sub.b   D1,D1
-.L3:
-            rts
-XbyA_PACK_4_2:
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            move.w  (A0),D6
-            movea.l ($3C,A6),A0
-            move.w  (A0)+,D7
-            bclr    #$F,D7
-            subi.w  #$403F,D7
-            add.w   D6,D7
-            move.w  (A0)+,D3
-            move.w  (A0)+,D4
-            move.w  (A0)+,D5
-            move.w  (A0)+,D6
-            movea.l (-4,A6),A3
-            adda.w  #$10,A3
-            movea.l (-4,A6),A1
-            subq.l  #2,A1
-            movea.l (-$C,A6),A4
-            subq.l  #2,A4
-            move.w  (A1),D0
-            move.w  D0,D2
-            mulu.w  D6,D2
-            move.l  D2,(A3)
-            move.w  D0,D2
-            mulu.w  D4,D2
-            move.l  D2,-(A3)
-            clr.w   -(A3)
-            lea     (4,A3),A3
-            move.w  D0,D2
-            mulu.w  D5,D2
-            add.l   D2,(A3)
-            mulu.w  D3,D0
-            move.l  D0,(A4)+
-            addx.l  -(A4),-(A3)
-            movea.l D1,A2
-            subq.w  #1,D1
-            bmi.b   .L4
-.L1:
-            lea     (4,A3),A3
-            move.w  -(A1),D0
-            move.w  D0,D2
-            mulu.w  D6,D2
-            add.l   D2,(A3)
-            move.w  D0,D2
-            mulu.w  D4,D2
-            move.l  D2,(A4)+
-            addx.l  -(A4),-(A3)
-            bcc.b   .L2
-            move.w  #1,-(A3)
-            bra.b   .L3
-.L2:
-            clr.w   -(A3)
-.L3:
-            lea     (4,A3),A3
-            move.w  D0,D2
-            mulu.w  D5,D2
-            add.l   D2,(A3)
-            mulu.w  D3,D0
-            move.l  D0,(A4)+
-            addx.l  -(A4),-(A3)
-            dbra    D1,.L1
-.L4:
-            move.l  A2,D1
-            addq.w  #4,D1
-            move.w  D1,D6
-            addq.w  #1,D6
-            asl.w   #4,D6
-            add.w   D7,D6
-            moveq   #0,D5
-Roundit_FP020BD:
-            tst.w   D6
-            bge.b   .L2
-            cmpi.w  #$FFBE,D6
-            bpl.b   .L1
-            move.w  #$FFBE,D6
-.L1:
-            clr.w   -(A3)
-            addq.w  #1,D1
-            addi.w  #$10,D6
-            blt.b   .L1
-.L2:
-            bsr.w   RndStk_PACK_4_2
-            tst.w   D5
-            beq.b   .L8
-            move.w  D6,D2
-            lsr.w   #4,D2
-            lsl.w   #1,D2
-            lea     (0,A3,D2.w),A2
-            move.w  (A2),D4
-            move.w  D6,D3
-            andi.w  #$F,D3
-            move.w  #$8000,D0
-            ror.w   D3,D0
-            and.w   D0,D4
-            beq.b   .L3
-            addq.w  #1,D5
-.L3:
-            bset    #4,FPState
-            move.w  FPState,D2
-            move.w  D2,D4
-            andi.w  #$E0,D4
-            beq.b   .L4
-            or.w    D0,(A2)
-            bra.b   .L8
-.L4:
-            btst    #$E,D2
-            bne.b   .L10
-            btst    #$D,D2
-            bne.b   .L11
-            cmpi.w  #5,D5
-            blt.b   .L8
-.L5:
-            add.w   D0,(A2)
-            bcc.b   .L8
-.L6:
-            cmpa.l  A2,A3
-            beq.b   .L7
-            addq.w  #1,-(A2)
-            bcs.b   .L6
-            bra.b   .L8
-.L7:
-            move.w  #1,-(A3)
-            addq.w  #1,D1
-            addi.w  #$10,D6
-            lea     ($10,A1),A1
-.L8:
-            tst.w   (A3)
-            bne.b   .L9
-            lea     (2,A3),A3
-            subq.w  #1,D1
-            subi.w  #$10,D6
-.L9:
-            rts
-.L10:
-            btst    #$D,D2
-            bne.b   .L8
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
-            bmi.b   .L5
-            bra.b   .L8
-.L11:
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
-            bpl.b   .L5
-            bra.b   .L8
-RndStk_PACK_4_2:
-            clr.w   D5
-            move.w  D6,D3
-            addq.w  #1,D3
-            move.l  D3,D4
-            lsr.w   #4,D4
-            cmp.w   D1,D4
-            ble.b   .L1
-            rts
-.L1:
-            andi.w  #$F,D3
-            move.w  #$8000,D0
-            ror.w   D3,D0
-            move.w  D4,D2
-            lsl.w   #1,D2
-            lea     (0,A3,D2.w),A2
-            and.w   (A2),D0
-            beq.b   .L2
-            moveq   #4,D5
-.L2:
-            move.w  #$7FFF,D0
-            lsr.w   D3,D0
-            and.w   (A2)+,D0
-            beq.b   .L5
-.L3:
-            addq.w  #2,D5
-            rts
-.L4:
-            tst.w   (A2)+
-            bne.b   .L3
-.L5:
-            addq.w  #1,D4
-            cmp.w   D1,D4
-            ble.b   .L4
-            rts
-sub_408E9BC2:
-            movea.l ($3C,A6),A0
-            move.w  (A0)+,D6
-            bclr    #$F,D6
-            subi.w  #$400C,D6
-            movea.l (-$10,A6),A3
-            suba.w  #$34,A3
-            move.l  (A0)+,(A3)
-            move.l  (A0)+,(4,A3)
-            moveq   #3,D3
-Nrmlz10_PACK_4_2:
-            move.w  D1,D7
-            asl.w   #4,D7
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            sub.w   (A0),D7
-            move.w  D1,D5
-            asl.w   #1,D5
-            move.w  (A1),D0
-            bmi.b   .L3
-.L1:
-            subq.w  #1,D7
-            move.w  D1,D4
-            lea     (2,A1,D5.w),A0
-            move    #0,CCR
-.L2:
-            roxl    -(A0)
-            dbra    D4,.L2
-            bpl.b   .L1
-            move.w  (A1),D0
-.L3:
-            rts
-DivX_PACK_4_2:
-            sub.w   D7,D6
-            ble.w   BgnDiv_PACK_4_2.L6
-            move.w  D6,D4
-            asr.w   #4,D6
-            andi.w  #$F,D4
-            beq.b   .L2
-            addq.w  #1,D3
-            clr.w   -(A3)
-            subq.w  #1,D4
-.L1:
-            asl     (8,A3)
-            roxl    (6,A3)
-            roxl    (4,A3)
-            roxl    (2,A3)
-            roxl    (A3)
-            dbra    D4,.L1
-            bra.b   BgnDiv_PACK_4_2
-.L2:
-            cmp.w   (A3),D0
-            bhi.b   .L3
-            addq.w  #1,D3
-            clr.w   -(A3)
-            bra.b   BgnDiv_PACK_4_2
-.L3:
-            subq.w  #1,D6
-BgnDiv_PACK_4_2:
-            bsr.b   PadIt_PACK_4_2
-            movea.l A3,A0
-.L1:
-            move.l  (A0),D2
-            divu.w  D0,D2
-            bvs.w   DecrIt_PACK_4_2.L2
-            swap    D2
-            move.l  D2,(A0)
-            swap    D2
-            lea     (2,A0),A0
-            cmpi.w  #2,D5
-            blt.b   .L4
-            beq.b   .L2
-            move.w  D5,D7
-            bclr    #1,D7
-            bsr.b   MandS_PACK_4_2
-            moveq   #0,D4
-            move.w  -(A4),D1
-            subx.w  D4,D1
-            move.w  D1,(A4)
-            negx.w  D7
-            tst.w   D7
-            bne.b   .L2
-            bsr.b   DecrIt_PACK_4_2
-.L2:
-            move.w  D5,D7
-            btst    #1,D7
-            bne.b   .L3
-            subq.w  #2,D7
-.L3:
-            bsr.b   MandS_PACK_4_2
-            negx.w  D7
-            tst.w   D7
-            bne.b   .L4
-            bsr.b   DecrIt_PACK_4_2
-.L4:
-            dbra    D6,.L1
-.L5:
-            suba.l  A3,A0
-            move.w  A0,D6
-            move.w  D3,D1
-            asl.w   #3,D6
-            subq.w  #3,D6
-            rts
-.L6:
-            movea.l A3,A0
-            clr.w   -(A3)
-            bra.b   .L5
-PadIt_PACK_4_2:
-            move.w  D1,D7
-            add.w   D6,D7
-            addq.w  #1,D7
-            sub.w   D3,D7
-            ble.b   .L2
-            move.w  D3,D2
-            asl.w   #1,D2
-            lea     (2,A3,D2.w),A2
-            add.w   D7,D3
-            asr.w   #1,D7
-.L1:
-            clr.l   (A2)+
-            dbra    D7,.L1
-.L2:
-            rts
-MandS_PACK_4_2:
-            lea     (2,A1,D7.w),A2
-            lea     (2,A0,D7.w),A4
-            subq.w  #2,D7
-            asr.w   #2,D7
-            move    #0,CCR
-.L1:
-            move.l  -(A2),D4
-            mulu.w  D2,D4
-            move.l  -(A4),D1
-            subx.l  D4,D1
-            move.l  D1,(A4)
-            dbra    D7,.L1
-            rts
-DecrIt_PACK_4_2:
-            subq.w  #1,(-2,A0)
-            move.l  D5,D1
-            lea     (2,A1,D1.w),A2
-            lea     (2,A0,D1.w),A4
-            asr.w   #1,D1
-            move    #0,CCR
-.L1:
-            addx.w  -(A2),-(A4)
-            dbra    D1,.L1
-            bcc.b   DecrIt_PACK_4_2
-            rts
-.L2:
-            clr.w   (A0)+
-            move.w  D5,D7
-            beq.b   DecrIt_PACK_4_2
-            lea     (2,A1,D7.w),A2
-            lea     (0,A0,D7.w),A4
-            asr.w   #1,D7
-            subq.w  #1,D7
-            move    #0,CCR
-.L3:
-            subx.w  -(A2),-(A4)
-            dbra    D7,.L3
-            bsr.b   DecrIt_PACK_4_2
-            bra.w   BgnDiv_PACK_4_2.L4
-sub_408E9D24:
-            neg.w   D0
-            cmpi.w  #$1458,D0
-            bcs.b   sub_408E9D38.L1
-            move.w  #$1457,D0
-            move.w  D0,D1
-            neg.w   D1
-            move.w  D1,(A0)
-            bra.b   sub_408E9D38.L1
-sub_408E9D38:
-            cmpi.w  #$1390,D0
-            bcs.b   .L1
-            move.w  #$138F,D0
-            move.w  D0,(A0)
-.L1:
-            moveq   #0,D4
-            move.w  D0,D4
-            addi.w  #$20F,D4
-            andi.b  #$F8,D4
-            cmpi.w  #$C40,D4
-            bcs.b   .L2
-            move.w  #$C40,D4
-.L2:
-            move.w  D4,D5
-            asr.w   #2,D5
-            move.l  D0,D1
-            _StackSpace
-            cmp.l   D4,D0
-            bpl.b   .L3
-            moveq   #$1C,D0
-            _SysError
-.L3:
-            move.l  D1,D0
-            movea.l (SP)+,A1
-            suba.w  D4,SP
-            move.l  A1,-(SP)
-            lea     (-$28,A6),A1
-            move.l  A1,(-4,A6)
-            suba.w  D4,A1
-            move.l  A1,(-$10,A6)
-            adda.w  D5,A1
-            move.l  A1,(-$C,A6)
-            adda.w  D5,A1
-            move.l  A1,(-8,A6)
-            movea.l (-4,A6),A1
-            moveq   #0,D2
-            move.w  D0,D2
-            divu.w  #$15,D2
-            move.w  D2,D0
-            swap    D2
-            cmpi.w  #7,D2
-            blt.b   .L5
-            cmpi.w  #$E,D2
-            bge.b   .L4
-            moveq   #1,D1
-            lea     sub_408E9EF8.L3,A2
-            subq.w  #7,D2
-            asl.w   #2,D2
-            move.l  (0,A2,D2.w),-(A1)
-            bra.b   .L7
-.L4:
-            moveq   #2,D1
-            lea     sub_408E9EF8.L4,A2
-            subi.w  #$E,D2
-            mulu.w  #6,D2
-            move.l  (2,A2,D2.w),-(A1)
-            bra.b   .L6
-.L5:
-            moveq   #0,D1
-            lea     sub_408E9EF8.L2,A2
-            asl.w   #1,D2
-.L6:
-            move.w  (0,A2,D2.w),-(A1)
-.L7:
-            tst.w   D0
-            bne.b   .L8
-            rts
-.L8:
-            bsr.b   sub_408E9E5E
-            moveq   #3,D2
-            movea.l (-8,A6),A2
-            subq.l  #4,A2
-            move.l  #$4D6E2EF5,(A2)
-            move.l  #$1B1AE,-(A2)
-            bra.b   .L11
-.L9:
-            bsr.b   sub_408E9E5E
-.L10:
-            bsr.b   sub_408E9E72
-.L11:
-            asr.w   #1,D0
-            bcc.b   .L10
-            bsr.b   cXb2a_PACK_4_2
-            tst.w   D0
-            bgt.b   .L9
-            rts
-cXb2a_PACK_4_2:
-            move.w  D2,D1
-            add.w   D3,D1
-            addq.w  #1,D1
-            move.w  D3,D7
-            addq.w  #1,D7
-            lsr.w   #1,D7
-            movea.l (-4,A6),A1
-.L1:
-            clr.l   -(A1)
-            dbra    D7,.L1
-            movea.l (-4,A6),A4
-            subq.l  #2,A4
-            movea.l (-8,A6),A2
-            subq.l  #2,A2
-            move.w  D2,D5
-            bra.b   .L3
-.L2:
-            clr.w   -(A1)
-            subq.l  #2,A2
-            subq.l  #2,A4
-.L3:
-            movea.l A4,A1
-            movea.l (-$C,A6),A3
-            move.w  D3,D6
-.L4:
-            move.w  -(A3),D7
-            mulu.w  (A2),D7
-            subq.w  #2,A1
-            add.l   D7,(A1)
-            bcc.b   .L6
-            movea.l A1,A0
-.L5:
-            addq.l  #1,-(A0)
-            bcs.b   .L5
-.L6:
-            dbra    D6,.L4
-            dbra    D5,.L2
-            tst.w   (A1)
-            bne.b   .L7
-            lea     (2,A1),A1
-            subq.w  #1,D1
-.L7:
-            rts
-sub_408E9E5E:
-            move.w  D1,D3
-            movea.l (-4,A6),A1
-            movea.l (-$C,A6),A3
-            lsr.w   #1,D1
-.L1:
-            move.l  -(A1),-(A3)
-            dbra    D1,.L1
-            rts
-sub_408E9E72:
-            move.w  D2,D1
-            move.w  D1,D7
-            asl.w   #1,D1
-            addq.w  #1,D1
-            movea.l (-4,A6),A1
-.L1:
-            clr.l   -(A1)
-            dbra    D7,.L1
-            move.w  D2,D5
-            subq.w  #1,D5
-            bmi.b   .L8
-            movea.l (-4,A6),A4
-            subq.l  #4,A4
-            movea.l (-8,A6),A2
-            subq.l  #2,A2
-            bra.b   .L3
-.L2:
-            subq.w  #2,A2
-            subq.w  #4,A4
-.L3:
-            movea.l A4,A1
-            movea.l A2,A3
-            move.w  D5,D6
-.L4:
-            move.w  -(A3),D7
-            mulu.w  (A2),D7
-            subq.w  #2,A1
-            add.l   D7,(A1)
-            bcc.b   .L6
-            movea.l A1,A0
-.L5:
-            addq.l  #1,-(A1)
-            bcs.b   .L5
-            movea.l A0,A1
-.L6:
-            dbra    D6,.L4
-            dbra    D5,.L2
-            movea.l (-4,A6),A1
-            move    #0,CCR
-            move.w  D1,D7
-.L7:
-            roxl    -(A1)
-            dbra    D7,.L7
-.L8:
-            movea.l (-4,A6),A1
-            movea.l (-8,A6),A2
-.L9:
-            move.w  -(A2),D7
-            mulu.w  D7,D7
-            add.l   D7,-(A1)
-            bcc.b   .L11
-            movea.l A1,A0
-.L10:
-            addq.l  #1,-(A1)
-            bcs.b   .L10
-            movea.l A0,A1
-.L11:
-            dbra    D2,.L9
-            tst.w   (A1)
-            bne.b   .L12
-            lea     (2,A1),A1
-            subq.w  #1,D1
-.L12:
-            tst.w   D0
-            bne.b   sub_408E9EF8
-            rts
-sub_408E9EF8:
-            move.w  D1,D2
-            movea.l (-4,A6),A1
-            movea.l (-8,A6),A2
-            lsr.w   #1,D1
-.L1:
-            move.l  -(A1),-(A2)
-            dbra    D1,.L1
-            rts
-.L2:
-            dc.w    $0001,$0005,$0019,$007D,$0271,$0C35,$3D09
-.L3:
-            dc.w    $0001,$312D,$0005,$F5E1,$001D,$CD65,$0095,$02F9
-            dc.w    $02E9,$0EDD,$0E8D,$4A51,$48C2,$7395
-.L4:
-            dc.w    $0001,$6BCC,$41E9,$0007,$1AFD,$498D,$0023,$86F2
-            dc.w    $6FC1,$00B1,$A2BC,$2EC5,$0378,$2DAC,$E9D9,$1158
-            dc.w    $E460,$913D,$56BC,$75E2,$D631
-RsrcEntryPACK_5_2:
-            dc.b    $08,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 5 (4660 bytes) - Combo mask
-            dc.l    RsrcEntryPACK_4_2-BaseOfROM     ; Next entry
-            dc.l    RsrcPACK_5_2-BaseOfROM          ; Data
-            dc.b    'PACK'                          ; Type
-            dc.w    5                               ; ID
+            dc.w    $4141
+RsrcEntryiopc_127:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'iopc' 127 "IOPCLap B" (2676 bytes) - Combo mask
+            dc.l    RsrcEntryltlk_3-BaseOfROM       ; Next entry
+            dc.l    Rsrciopc_127-BaseOfROM          ; Data
+            dc.b    'iopc'                          ; Type
+            dc.w    127                             ; ID
             dc.b    $58                             ; Attributes
-            dc.b    0                               ; Name
-            dc.b    'ter, Inc. 19'
-            dc.l    $C0A00000,$00001240,$000001F4   ; Block header
-RsrcPACK_5_2:
-            link.w  A6,#-$44
-            movem.l D0-D7/A0-A4,-(SP)
-            moveq   #0,D3
-            movea.l ($15AC).w,A3
-            lea     (4,A6),A2
-            lea     (8,A6),A0
-            move.w  (A0)+,D3
-            bpl.w   sub_408EA016.L2
-            movea.l (A0)+,A4
-            move.l  (A0),D4
-            btst    #$E,D3
+            dc.b    9,'IOPCLap B'                   ; Name
+            dc.b    $43,$53,$4D
+            dc.l    $C0A00000,$00000A80,$0000025C   ; Block header
+Rsrciopc_127:
+            dc.w    $4CB2,$564C,$D956,$09A6,$A060,$A216,$A901,$20BE
+            dc.w    $60A0,$57A9,$ECA2,$0A38,$209D,$60A0,$57A9,$E5A2
+            dc.w    $0A38,$209A,$60A2,$00A9,$0220,$AF60,$4C05,$5718
+            dc.w    $20B5,$60A0,$00A2,$00A9,$0120,$BE60,$A20A,$1820
+            dc.w    $9D60,$A204,$1820,$A360,$A206,$1820,$A360,$A20A
+            dc.w    $1820,$9A60,$A20A,$1820,$A660,$60A9,$0720,$AC60
+            dc.w    $0AAA,$7C0D,$578A,$5754,$578A,$571F,$571F,$5754
+            dc.w    $578A,$571F,$57A9,$FB20,$B260,$A005,$BEC1,$60BD
+            dc.w    $0002,$C905,$B00A,$C901,$9006,$DA0A,$AA7C,$4A57
+            dc.w    $A9FE,$9D00,$02A9,$0399,$0002,$A904,$0C35,$F04C
+            dc.w    $0557,$F357,$5458,$8E58,$3659,$A9FD,$20B2,$60A2
+            dc.w    $05BC,$C160,$A901,$9900,$03A6,$AABD,$0061,$9901
+            dc.w    $03BD,$F660,$9902,$03B5,$C899,$0303,$B5BF,$9904
+            dc.w    $03A2,$05A9,$019D,$0003,$A908,$0C35,$F04C,$0557
+            dc.w    $0878,$A9FE,$20B2,$60A5,$ACF0,$0DA6,$ABE8,$E009
+            dc.w    $9002,$A200,$86AB,$64AC,$A6AA,$74B6,$E8E0,$0990
+            dc.w    $02A2,$0086,$AAE4,$ABF0,$2EA2,$05BC,$C160,$A901
+            dc.w    $9900,$03A6,$AABD,$0061,$9901,$03BD,$F660,$9902
+            dc.w    $03B5,$C899,$0303,$B5BF,$9904,$03A2,$05A9,$019D
+            dc.w    $0003,$A908,$0C35,$F028,$4C05,$57A2,$0AA9,$044C
+            dc.w    $AF60,$A20A,$A901,$4CAF,$60A2,$0874,$B6CA,$10FB
+            dc.w    $64AB,$64AA,$A9FF,$85AC,$A6AB,$A980,$95B6,$A916
+            dc.w    $85D1,$A961,$85D2,$FA9E,$0002,$BD01,$0285,$DFA9
+            dc.w    $7D9D,$0102,$A991,$9D02,$025A,$A05D,$A99C,$A204
+            dc.w    $3820,$A060,$A05D,$A99C,$A206,$3820,$A360,$0878
+            dc.w    $A904,$0C33,$F020,$5359,$20B2,$5F28,$7AA9,$0399
+            dc.w    $0002,$A904,$0C35,$F04C,$0557,$FA5A,$BD01,$029E
+            dc.w    $0102,$85D4,$DA78,$A206,$8E40,$F08D,$40F0,$58A4
+            dc.w    $D4A6,$D4A9,$8120,$945A,$9006,$FA9E,$0002,$8006
+            dc.w    $FAA9,$FF9D,$0002,$7AA9,$0399,$0002,$A904,$0C35
+            dc.w    $F04C,$0557,$FABD,$0102,$8D18,$619E,$0102,$BD02
+            dc.w    $028D,$1961,$9E02,$025A,$DAAC,$917D,$AD93,$7DA6
+            dc.w    $D420,$945A,$9004,$A9FF,$8024,$EEED,$60D0,$0DEE
+            dc.w    $EE60,$D008,$EEEF,$60D0,$03EE,$F060,$A6AB,$74B6
+            dc.w    $64AC,$A9EA,$8D50,$57A9,$588D,$5157,$A900,$FA9D
+            dc.w    $0002,$7AA9,$0399,$0002,$A904,$0C35,$F04C,$0557
+            dc.w    $FABD,$0102,$8D18,$619E,$0102,$BD02,$028D,$1961
+            dc.w    $9E02,$025A,$DAAC,$917D,$AD93,$7DA6,$D420,$945A
+            dc.w    $9004,$A9FF,$8014,$EEED,$60D0,$0DEE,$EE60,$D008
+            dc.w    $EEEF,$60D0,$03EE,$F060,$A900,$FA9D,$0002,$7AA9
+            dc.w    $0399,$0002,$A904,$0C35,$F04C,$0557,$FA5A,$9E00
+            dc.w    $02A9,$608D,$0102,$A9C9,$8D02,$027A,$A903,$9900
+            dc.w    $02A9,$040C,$35F0,$4C05,$57A5,$B405,$B3D0,$04A9
+            dc.w    $0385,$B3A9,$0185,$B185,$B285,$AF3A,$3A85,$B018
+            dc.w    $20B5,$60A5,$DF10,$17A0,$00B9,$0B5A,$99D9,$00C8
+            dc.w    $C006,$90F5,$AD32,$F009,$408D,$32F0,$8015,$AD30
+            dc.w    $F029,$9F8D,$30F0,$A000,$B905,$5A99,$D900,$C8C0
+            dc.w    $0690,$F5AD,$40F0,$A5DF,$1016,$A200,$BDEE,$59A8
+            dc.w    $C8F0,$238D,$40F0,$E8BD,$EE59,$8D40,$F0E8,$80EC
+            dc.w    $A200,$BDD1,$59A8,$C8F0,$0D8D,$40F0,$E8BD,$D159
+            dc.w    $8D40,$F0E8,$80EC,$6004,$200A,$E006,$0007,$7E0C
+            dc.w    $060D,$000E,$C003,$DD02,$000F,$0001,$180B,$700E
+            dc.w    $2105,$60FF,$0420,$0AE0,$0600,$077E,$03DD,$0200
+            dc.w    $0F00,$0118,$0B00,$0E60,$0560,$FF08,$0424,$1A07
+            dc.w    $0E04,$020A,$0200,$01A8,$290F,$AA98,$4A4A,$4A4A
+            dc.b    $A8,$18,$BD
+            dc.b    '#Zy#Z`'
+            dc.b    $00,$01,$01,$02,$01,$02,$02,$03,$01,$02,$02,$03,$02,$03,$03,$04
+            dc.b    $20,$36,$5A,$A2,$04,$A5,$B3,$6A,$6A,$45,$B3,$85,$D3,$A5,$B4,$6A
+            dc.b    $6A,$6A,$6A,$45,$B4,$6A,$6A,$6A,$45,$D3,$6A,$26,$B3,$26,$B4,$CA
+            dc.b    $D0,$E3,$A5,$B3,$60,$A0,$19,$A6,$AB,$AD,$2B,$F0,$C9,$5D,$D0,$0C
+            dc.b    $AD,$2C,$F0,$C9,$02,$D0,$05,$88,$D0,$EF,$18,$60,$38,$60,$A0,$27
+            dc.b    $AD,$2B,$F0,$C9,$05,$D0,$05,$88,$D0,$F6,$18,$60,$38,$60,$A9,$80
+            dc.b    $A2,$10,$CA,$D0,$FD,$2C,$32,$F0,$D0,$05,$88,$D0,$F3,$18,$60,$38
+            dc.b    $60,$85,$D6,$84,$D7,$86,$D8,$8E,$92,$7D,$A9,$20,$85,$AD,$85,$AE
+            dc.b    $A5,$AF,$20,$11,$5A,$C9,$03,$90,$0B,$A5,$B1,$2A,$29,$0F,$85,$B1
+            dc.b    $64,$AF,$80,$0F,$A5,$B0,$20,$11,$5A,$C9,$02,$90,$06,$46,$B1,$A0
+            dc.b    $FF,$84,$B0,$06,$B0,$06,$AF,$A5,$B1,$85,$B2,$20,$36,$5A,$A9,$80
+            dc.b    $2C,$32,$F0,$F0,$1E,$38,$26,$B2,$A9,$01,$04,$B0,$A0,$0F,$A2,$F1
+            dc.b    $A9,$80,$2C,$32,$F0,$F0,$0C,$CA,$F0,$04,$80,$00,$80,$F4,$88,$D0
+            dc.b    $F1,$80,$D8,$78,$A4,$D9,$20,$81,$5A,$B0,$0E,$A5,$B3,$25,$B2,$29
+            dc.b    $0F,$F0,$27,$A8,$20,$81,$5A,$90,$21,$EE,$C9,$60,$D0,$0D,$EE,$CA
+            dc.b    $60,$D0,$08,$EE,$CB,$60,$D0,$03,$EE,$CC,$60,$A9,$01,$04,$B0,$C6
+            dc.b    $AE,$F0,$04,$58,$4C,$CE,$5A,$58,$38,$60,$A5,$D6,$10,$11,$0A,$AA
+            dc.b    $7C,$36,$5B,$00,$00,$EE,$5B,$2C,$5C,$00,$00,$18,$5C,$22,$5C,$A4
+            dc.b    $D8,$8C,$0E,$61,$A4,$D7,$8C,$0D,$61,$C0,$FF,$F0,$49,$20,$7E,$5C
+            dc.b    $20,$B2,$5F,$E6,$E0,$A5,$DA,$0A,$A8,$20,$81,$5A,$90,$5F,$20,$71
+            dc.b    $5A,$90,$5A,$20,$78,$5D,$B0,$55,$64,$E0,$A5,$B5,$C9,$80,$D0,$4D
+            dc.b    $A2,$06,$CA,$D0,$FD,$A0,$00,$B1,$D1,$8D,$29,$F0,$C8,$B1,$D1,$8D
+            dc.b    $2A,$F0,$C8,$B1,$D1,$8D,$2C,$F0,$C8,$B1,$D1,$8D,$2B,$F0,$20,$90
+            dc.b    $5C,$20,$B2,$5F,$58,$60,$20,$7E,$5C,$20,$B2,$5F,$A0,$00,$B1,$D1
+            dc.b    $8D,$29,$F0,$C8,$B1,$D1,$8D,$2A,$F0,$C8,$B1,$D1,$8D,$2C,$F0,$C8
+            dc.b    $B1,$D1,$8D,$2B,$F0,$20,$90,$5C,$20,$B2,$5F,$58,$60,$EE,$CD,$60
+            dc.b    $D0,$0D,$EE,$CE,$60,$D0,$08,$EE,$CF,$60,$D0,$03,$EE,$D0,$60,$A5
+            dc.b    $01,$04,$AF,$38,$26,$B2,$C6,$AD,$F0,$09,$20,$B2,$5F,$64,$E0,$58
+            dc.b    $4C,$CE,$5A,$20,$B2,$5F,$64,$E0,$38,$58,$60,$A4,$D7,$8C,$13,$61
+            dc.b    $8C,$14,$61,$20,$36,$5C,$20,$B2,$5F,$A5,$DA,$0A,$A8,$20,$81,$5A
+            dc.b    $90,$BB,$20,$58,$5A,$90,$B6,$20,$78,$5D,$B0,$B1,$A5,$B5,$C9,$40
+            dc.b    $D0,$AB,$18,$58,$60,$A4,$D7,$A6,$D8,$20,$7E,$5C,$4C,$B2,$5F,$A4
+            dc.b    $D7,$A6,$D8,$20,$64,$5C,$4C,$B2,$5F,$A4,$D7,$A6,$D8,$20,$4A,$5C
+            dc.b    $4C,$B2,$5F,$A9,$13,$8D,$29,$F0,$A9,$61,$8D,$2A,$F0,$9C,$2C,$F0
+            dc.b    $A9,$03,$8D,$2B,$F0,$80,$46,$8C,$0A,$61,$8E,$0B,$61,$A9,$0A,$8D
+            dc.b    $29,$F0,$A9,$61,$8D,$2A,$F0,$9C,$2C,$F0,$A9,$03,$8D,$2B,$F0,$80
+            dc.b    $2C,$8C,$10,$61,$8E,$11,$61,$A9,$10,$8D,$29,$F0,$A9,$61,$8D,$2A
+            dc.b    $F0,$9C,$2C,$F0,$A9,$03,$8D,$2B,$F0,$80,$12,$A9,$0D,$8D,$29,$F0
+            dc.b    $A9,$61,$8D,$2A,$F0,$9C,$2C,$F0,$A9,$03,$8D,$2B,$F0,$A6,$DF,$10
+            dc.b    $27,$AD,$30,$F0,$29,$9F,$09,$20,$8D,$30,$F0,$A0,$0A,$8C,$40,$F0
+            dc.b    $A9,$E0,$8D,$40,$F0,$A0,$03,$8C,$40,$F0,$A9,$D0,$8D,$40,$F0,$A9
+            dc.b    $21,$8D,$28,$F0,$A0,$05,$80,$27,$A0,$03,$8C,$40,$F0,$A9,$D0,$8D
+            dc.b    $40,$F0,$A9,$21,$8D,$28,$F0,$A0,$05,$8C,$40,$F0,$A9,$63,$8D,$40
+            dc.b    $F0,$EA,$8C,$40,$F0,$A9,$61,$8D,$40,$F0,$A2,$01,$CA,$D0,$FD,$8C
+            dc.b    $40,$F0,$A9,$6B,$8D,$40,$F0,$A6,$DE,$CA,$D0,$FD,$A9,$01,$8D,$40
+            dc.b    $F0,$A9,$C0,$8D,$40,$F0,$A9,$80,$8D,$40,$F0,$A9,$C0,$8D,$40,$F0
+            dc.b    $A0,$0F,$A2,$F1,$A9,$40,$2C,$40,$F0,$D0,$0D,$CA,$F0,$04,$80,$00
+            dc.b    $80,$F4,$88,$D0,$F1,$4C,$5A,$5D,$A6,$DC,$A9,$04,$2C,$40,$F0,$D0
+            dc.b    $06,$CA,$D0,$F8,$4C,$5A,$5D,$A6,$DD,$CA,$D0,$FD,$A0,$05,$8C,$40
+            dc.b    $F0,$A9,$E3,$8D,$40,$F0,$A6,$DB,$CA,$D0,$FD,$8C,$40,$F0,$A9,$E1
+            dc.b    $8D,$40,$F0,$9C,$28,$F0,$A9,$10,$8D,$40,$F0,$A9,$0C,$8D,$34,$F0
+            dc.b    $A9,$30,$8D,$40,$F0,$18,$60,$A9,$05,$8D,$40,$F0,$A9,$E1,$8D,$40
+            dc.b    $F0,$9C,$28,$F0,$A9,$10,$8D,$40,$F0,$A9,$0C,$8D,$34,$F0,$A9,$30
+            dc.b    $8D,$40,$F0,$38,$60,$A0,$30,$A2,$01,$8E,$40,$F0,$AD,$40,$F0,$30
+            dc.b    $18,$88,$D0,$F5,$EE,$E5,$60,$D0,$0D,$EE,$E6,$60,$D0,$08,$EE,$E7
+            dc.b    $60,$D0,$03,$EE,$E8,$60,$4C,$B2,$5F,$9C,$28,$F0,$A9,$03,$8D,$40
+            dc.b    $F0,$A9,$D0,$8D,$40,$F0,$64,$B5,$A9,$01,$8D,$40,$F0,$AD,$40,$F0
+            dc.b    $89,$60,$F0,$30,$89,$40,$F0,$12,$EE,$D1,$60,$D0,$0D,$EE,$D2,$60
+            dc.b    $D0,$08,$EE,$D3,$60,$D0,$03,$EE,$D4,$60,$89,$20,$F0,$12,$EE,$D5
+            dc.b    $60,$D0,$0D,$EE,$D6,$60,$D0,$08,$EE,$D7,$60,$D0,$03,$EE,$D8,$60
+            dc.b    $38,$4C,$B2,$5F,$A9,$10,$8D,$40,$F0,$A9,$0C,$8D,$34,$F0,$A9,$30
+            dc.b    $8D,$40,$F0,$A5,$E5,$10,$15,$29,$7F,$C9,$06,$B0,$0F,$0A,$AA,$7C
+            dc.b    $03,$5E,$12,$5E,$21,$5E,$0F
+            dc.b    '^K^)^L'
+            dc.w    $B25F,$A206,$CAD0,$FDA4,$D4A6,$D420,$4A5C,$4CB2
+            dc.w    $5FA9,$4085,$B518,$4CB2,$5FA5,$E0F0,$0864,$E0A9
+            dc.w    $8085,$B518,$60EE,$E960,$D00D,$EEEA,$60D0,$08EE
+            dc.w    $EB60,$D003,$EEEC,$6018,$4CB2,$5FA6,$ACD0,$51A5
+            dc.w    $E3C9,$FFF0,$0CA2,$06CA,$D0FD,$A4E4,$A6D4,$2064
+            dc.w    $5C20,$4B5F,$A5DA,$0AA8,$2081,$5A90,$1D20,$585A
+            dc.w    $9018,$A0A2,$A20B,$A901,$8D40,$F0AD,$40F0,$304C
+            dc.w    $88F0,$0480,$0080,$EFCA,$D0EC,$EEE5,$60D0,$0DEE
+            dc.w    $E660,$D008,$EEE7,$60D0,$03EE,$E860,$384C,$B25F
+            dc.w    $EEF1,$60D0,$0DEE,$F260,$D008,$EEF3,$60D0,$03EE
+            dc.w    $F460,$A5E3,$C9FF,$F004,$184C,$B25F,$20B2,$5FA4
+            dc.w    $DAC8,$2081,$5A20,$715A,$184C,$B25F,$2960,$D04B
+            dc.w    $A6AB,$BDF6,$6085,$E1BD,$0061,$85E2,$A002,$B1E1
+            dc.w    $3039,$38A9,$5DED,$2BF0,$95BF,$A902,$ED2C,$F095
+            dc.w    $C8A9,$8195,$B6E4,$AAD0,$09DA,$A20A,$A902,$20AF
+            dc.w    $60FA,$E8E0,$0990,$02A2,$00E4,$AAF0,$0686,$AB18
+            dc.w    $4CB2,$5FA9,$FF85,$AC18,$4CB2,$5F89,$40F0,$12EE
+            dc.w    $D160,$D00D,$EED2,$60D0,$08EE,$D360,$D003,$EED4
+            dc.w    $6089,$20F0,$12EE,$D560,$D00D,$EED6,$60D0,$08EE
+            dc.w    $D760,$D003,$EED8,$6038,$4CB2,$5FA9,$038D,$40F0
+            dc.w    $A9C0,$8D40,$F0AD,$42F0,$AD42,$F0AD,$42F0,$A5DF
+            dc.w    $1014,$AD30,$F029,$9F09,$408D,$30F0,$A90A,$8D40
+            dc.w    $F0A9,$808D,$40F0,$A930,$8D40,$F0A9,$038D,$40F0
+            dc.w    $A9DD,$8D40,$F0A9,$018D,$40F0,$A9F8,$8D40,$F0A6
+            dc.w    $ABBD,$F660,$8D29,$F0BD,$0061,$8D2A,$F0A9,$028D
+            dc.w    $2CF0,$A95D,$8D2B,$F0A9,$258D,$28F0,$A90C,$8D34
+            dc.w    $F060,$A903,$8D40,$F0A9,$C08D,$40F0,$A910,$8D40
+            dc.w    $F0AD,$42F0,$AD42,$F0AD,$42F0,$A5DF,$1014,$AD30
+            dc.w    $F029,$9F09,$408D,$30F0,$A90A,$8D40,$F0A9,$808D
+            dc.w    $40F0,$A930,$8D40,$F0A9,$038D,$40F0,$A9DD,$8D40
+            dc.w    $F0A9,$018D,$40F0,$A9F8,$8D40,$F0A9,$E38D,$29F0
+            dc.w    $9C2A,$F09C,$2CF0,$A905,$8D2B,$F0A9,$258D,$28F0
+            dc.w    $A90C,$8D34,$F060,$020B
+            dc.b    'LocalTalk++,Version 56.0 '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer Inc. 1988-19918'
+            dc.b    $01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$39
+            dc.b    'IOP LocalTalk v56.0.1  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1988-1991l'
+            dc.b    $00,$00,$6C,$02,$00,$6C,$04,$00,$6C,$06,$00,$6C,$08,$00,$6C,$0A
+            dc.b    $00,$6C,$0C,$00,$6C,$0E,$00,$6C,$10,$00,$6C,$12,$00,$6C,$14,$00
+            dc.b    $6C,$16,$00,$6C,$18,$00,$00,$20,$40,$60,$80,$A0,$C0,$E0,$01,$00
+            dc.b    $00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00
+            dc.b    $00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$01,$00
+            dc.b    $00,$00,$01,$00,$00,$00,$01,$00,$00,$00,$08,$34,$D7,$7A,$1D,$C0
+            dc.b    $63,$06,$A9,$4C,$EF,$7B
+            dc.b    'xvtqomjhe'
+            dc.w    0,$8200,$0084,0,$8500,$0081,$917D,0
+RsrcEntryatlk_1:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'atlk' 1 "ATalk" (372 bytes) - Combo mask
+            dc.l    RsrcEntryiopc_127-BaseOfROM     ; Next entry
+            dc.l    Rsrcatlk_1-BaseOfROM            ; Data
+            dc.b    'atlk'                          ; Type
+            dc.w    1                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    5,'ATalk'                       ; Name
+            dc.b    '>>[(c) '
+            dc.l    $C0A00000,$00000180,$00000254   ; Block header
+Rsrcatlk_1:
+            bra.b   .L1
+            dc.b    $60,$54,$00,$00,$00,$08,$38,$01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$3A
+            dc.b    'LocalTalk atlk v56.0.1  ; '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer, Inc. 1984-1991'
+            dc.b    $00
+.L1:
+            moveq   #-$5F,D0
+            jmp     (A0)
+            movem.l D0-D7/A1-A6,-(SP)
+            cmpi.w  #8,D0
+            bhi.w   .L7
+            lsl.w   #1,D0
+            move.w  .L2(PC,D0.w),D0
+            jmp     .L2(PC,D0.w)
+.L2:
+            dc.w    .L7-.L2
+            dc.w    .L3-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+            dc.w    .L7-.L2
+.L3:
+            tst.w   ROM85
+            bmi.w   .L7
+            move.l  #$72A,D0
+            _NewPtrSysClear
+            bne.w   .L7
+            move.b  D4,($2E4,A0)
+            movea.l ExpandMem,A2
+            move.l  A0,($70,A2)
+            movea.l A0,A2
+            move.w  #$A89F,D0
+            _GetTrapAddress
+            movea.l A0,A1
+            move.w  #$A1AD,D0
+            _GetOSTrapAddress
+            move.l  A1,D0
+            cmp.l   A0,D0
+            beq.b   .L4
+            move.l  #$766D2020,D0
+            _Gestalt
             bne.b   .L4
-            tst.b   D3
-            bpl.b   .L1
-            move.w  (A4),(2,A4)
-            addq.l  #2,A4
-.L1:
-            move.l  (A2),(A0)
-            move.w  #$A,(A2)
-            move.l  A4,D5
-            moveq   #$F,D2
-            moveq   #$3E,D0
-            and.w   D3,D0
-            cmpi.b  #$10,D0
-            beq.b   sub_408EA016.L4
-            tst.b   D3
-            bpl.b   .L3
-.L2:
-            movea.l D4,A0
-            lea     (-$38,A6),A1
-            move.l  A1,D4
-            move.w  (A0),(A1)+
-            move.l  (4,A0),(A1)+
-            move.l  (8,A0),(A1)
-.L3:
-            movea.l D4,A0
-            bsr.b   sub_408EA016
-            move.w  D0,D2
-            bra.b   sub_408EA016.L4
+            move.l  A0,D0
+            beq.b   .L4
+            move.b  D0,($727,A2)
 .L4:
-            addq.l  #4,A0
-            move.l  (A0),D5
-            move.l  (A2),(A0)
-            move.w  #$E,(A2)
-            tst.b   D3
-            bpl.b   .L3
-            addq.w  #2,A4
-            movea.l D5,A0
-            lea     (-$42,A6),A1
-            move.l  A1,D5
-            move.w  (A0),(A1)+
-            move.l  (4,A0),(A1)+
-            move.l  (8,A0),(A1)
-            bra.b   .L2
-sub_408EA016:
-            pea     (A0)
-            pea     (-4,A6)
-            bsr.w   ELCLASSX
-            move.w  (-4,A6),D0
-            bpl.b   .L1
-            neg.w   D0
-            ori.w   #$8000,D0
-.L1:
-            rts
-.L2:
-            moveq   #$F,D2
-            movea.l (A0),A4
-            tst.b   D3
-            bpl.b   .L3
-            move.w  (A4),(2,A4)
-            addq.l  #2,A4
-.L3:
-            move.l  (A2),(A0)
-            move.w  #6,(A2)
-            move.l  A4,D5
-.L4:
-            movea.l D5,A0
-            bsr.b   sub_408EA016
-            move.w  D0,D1
-            move.w  FPState,(-2,A6)
-            clr.w   FPState
-            subq.b  #3,D2
-            bge.b   .L5
-            movea.l D5,A0
-            movea.l A4,A1
-            bsr.b   sub_408EA0AA
-            move.l  D4,-(SP)
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
+            move.w  #$A086,D0
+            _GetOSTrapAddress
+            move.l  A0,D0
+            _StripAddress
+            move.l  D0,-(SP)
+            move.w  #$A89F,D0
+            _GetOSTrapAddress
+            move.l  A0,D0
+            _StripAddress
+            cmp.l   (SP)+,D0
+            beq.b   .L5
+            move.b  ($BFE).w,D0
+            btst    #0,D0
+            bne.b   .L5
+            move.w  #1,D0
+            bsr.b   sub_408DC8B0
             bra.b   .L6
 .L5:
-            subq.b  #3,D1
-            bge.b   .L7
-            move.l  D5,-(SP)
-            pea     (A4)
-            move.w  #$E,-(SP)
-            jsr     (A3)
+            clr.w   D0
+            bsr.b   sub_408DC8B0
 .L6:
-            bra.w   sub_408EA3E6.L15
+            move.l  A0,D0
+            beq.b   .L7
+            move.l  (A0),D0
+            _StripAddress
+            move.l  D0,-(SP)
+            lea     Rsrcatlk_1,A0
+            movea.l LAPMgrPtr,A1
+            moveq   #3,D0
+            jsr     (2,A1)
+            movea.l (SP),A0
+            moveq   #2,D0
+            moveq   #$38,D1
+            clr.w   D2
+            jsr     (2,A1)
+            movea.l (SP)+,A0
+            movem.l (SP)+,D0-D7/A1-A6
+            jmp     (2,A0)
 .L7:
-            move.w  D3,D0
-            andi.w  #$3E,D0
-            move.w  .L8(PC,D0.w),D0
-            jmp     .L7(PC,D0.w)
+            movem.l (SP)+,D0-D7/A1-A6
+            move.w  #$FFFF,D0
+            rts
+sub_408DC8B0:
+            move.w  D0,-(SP)
+            move.w  CurMap,-(SP)
+            move.w  #1,CurMap
+            move.w  #$FFFF,ROMMapInsert
+            subq.w  #4,SP
+            move.l  #'ltlk',-(SP)
+            move.w  D0,-(SP)
+            _GetResource
+            movea.l (SP)+,A0
+            move.w  (SP)+,CurMap
+            move.l  A0,D0
+            bne.b   .L1
+            move.w  (SP)+,D0
+            subq.w  #4,SP
+            move.l  #'ltlk',-(SP)
+            move.w  D0,-(SP)
+            _Get1Resource
+            movea.l (SP)+,A0
+            rts
+.L1:
+            addq.w  #2,SP
+            rts
+            dc.w    $5748
+RsrcEntryltlk_0:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'ltlk' 0 "LTLK" (2996 bytes) - Combo mask
+            dc.l    RsrcEntryatlk_1-BaseOfROM       ; Next entry
+            dc.l    Rsrcltlk_0-BaseOfROM            ; Data
+            dc.b    'ltlk'                          ; Type
+            dc.w    0                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'LTLK'                        ; Name
+            dc.b    'MBPKEBAL'
+            dc.l    $C0A00000,$00000BC0,$0000024C   ; Block header
+Rsrcltlk_0:
+            bra.b   .L1
+            dc.b    $60,$54,$05,$EC,$00,$08,$38,$01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$3E
+            dc.b    'SCC LocalTalk ltlk v56.0.1  ; '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer, Inc. 1984-1991'
+            dc.b    $00,$0C,$40,$00,$08,$62,$1C,$E3,$48,$30,$3B,$00,$06,$4E,$FB,$00
+            dc.b    $02,$00,$12,$00,$92,$00,$C6,$00,$12,$00,$12,$00,$12,$00,$12,$00
+            dc.b    $A8,$00,$B4,$70,$FF,$4E,$75
+.L1:
+            movea.l ExpandMem,A3
+            movea.l ($70,A3),A3
+            movem.l D2/A0-A2,($2C4,A3)
+            exg     A2,A3
+            tst.b   D0
+            beq.b   .L4
+            tst.b   ($2BA,A2)
+            bne.b   .L2
+            move.l  A3,($2BC,A2)
+            move.l  A1,($2E6,A2)
+            bsr.w   sub_408DCAC6
+            st      ($2BA,A2)
+.L2:
+            st      ($5E2,A2)
+            move.b  D2,(A2)
+            movea.l SCCWr,A1
+            move.b  #6,(A1)
+            nop
+            move.b  (A2),(A1)
+            bsr.w   sub_408DCC0A
+            tst.b   ($5E1,A2)
+            beq.b   .L5
+            clr.b   ($5E1,A2)
+            moveq   #$C,D0
+            movea.l LAPMgrPtr,A3
+            move.b  ($2E4,A2),D4
+            move.l  A2,-(SP)
+            movea.l ($2BC,A2),A2
+            jsr     (2,A3)
+            tst.w   D0
+            beq.b   .L3
+            moveq   #5,D0
+            jsr     (2,A3)
+.L3:
+            movea.l (SP)+,A2
+            bra.b   .L5
+.L4:
+            st      ($5DF,A2)
+            bsr.w   sub_408DCC02
+.L5:
+            movem.l ($2C4,A2),D2/A0-A2
+            jmp     (A0)
+            movem.l D1/D4,-(SP)
+            lea     Rsrcltlk_0,A0
+            _RecoverHandle
+            move.l  A0,-(SP)
+            _DetachResource
+            movem.l (SP)+,D1/D4
+            clr.w   D0
+            rts
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            bsr.b   sub_408DCA6E
+            rts
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            move.l  A2,-(SP)
+            bsr.b   sub_408DCA8A
+            movea.l (SP)+,A2
+            bsr.b   sub_408DCA98
+            rts
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            move.l  A2,-(SP)
+            bsr.b   sub_408DCA8A
+            movea.l (SP),A2
+            bsr.b   sub_408DCA98
+            movea.l LAPMgrPtr,A1
+            moveq   #3,D0
+            jsr     (2,A1)
+            movea.l (SP)+,A0
+            _DisposPtr
+            rts
+sub_408DCA6E:
+            movem.l D1/A1,-(SP)
+            movea.l LAPMgrPtr,A1
+            moveq   #$11,D0
+            moveq   #1,D1
+            jsr     (2,A1)
+            movem.l (SP)+,D1/A1
+            bne.b   .L1
+            moveq   #0,D0
+.L1:
+            tst.w   D0
+            rts
+sub_408DCA8A:
+            moveq   #$12,D0
+            moveq   #1,D1
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            rts
+sub_408DCA98:
+            tst.b   ($2BA,A2)
+            beq.b   .L1
+            lea     sub_408DD158.L26,A0
+            bsr.w   sub_408DCBF0
+            lea     ($292,A2),A0
+            _VRemove
+            lea     ($618,A2),A0
+            lea     ($1BA).w,A3
+            move.l  (A0)+,(A3)+
+            move.l  (A0)+,(A3)+
+            move.l  (A0)+,ExtStsDT
+            clr.b   ($5DF,A2)
+            clr.b   ($2BA,A2)
+.L1:
+            rts
+sub_408DCAC6:
+            movem.l D0-D7/A0-A6,-(SP)
+            suba.w  #$10,SP
+            movea.l SP,A0
+            moveq   #1,D0
+            _SysEnvirons
+            move.w  (2,A0),D0
+            addq.w  #2,D0
+            move.w  D0,($6E2,A2)
+            adda.w  #$10,SP
+            movea.l ROMBase,A3
+            movea.l VIA,A1
+            lea     ($1E00,A1),A1
+            cmpi.b  #3,(8,A3)
+            bne.b   .L1
+            suba.w  #$1E00,A1
+            bra.b   .L2
+.L1:
+            cmpi.w  #$D,($6E2,A2)
+            bne.b   .L2
+            movea.l SCCRd,A1
+            lea     (-$1C,A1),A1
+.L2:
+            move.l  A1,($638,A2)
+            lea     sub_408DD158.L23,A0
+            move.l  (A0)+,($63C,A2)
+            move.w  (A0)+,($640,A2)
+            move.w  (A0)+,($1C,A2)
+            cmpi.b  #$75,(9,A3)
+            beq.b   .L3
+            cmpi.b  #$76,(9,A3)
+            beq.b   .L3
+            move.w  #$2300,($1C,A2)
+.L3:
+            cmpi.b  #$75,(9,A3)
+            bhi.b   .L4
+            moveq   #$14,D0
+            lea     sub_408DD158.L24,A0
+            lea     ($5EC,A2),A1
+            _BlockMove
+            bra.b   .L9
+.L4:
+            bsr.w   sub_408DD2EE
+            moveq   #0,D7
+            move.w  D0,D7
+            bsr.w   sub_408DD3D4
+            moveq   #0,D6
+            move.w  D0,D6
+            moveq   #$14,D0
+            lea     ($5EC,A2),A1
+            movea.l ROMBase,A0
+            moveq   #0,D1
+            move.w  D7,D1
+            divu.w  #$64,D1
+            lea     sub_408DD158.L25,A3
+.L5:
+            move.w  (A3)+,D3
+            moveq   #0,D2
+            move.b  (A3)+,D2
+            divu.w  D1,D2
+            sub.w   D2,D3
+            tst.b   (A3)+
+            bmi.b   .L8
+            mulu.w  D7,D3
+.L6:
+            divu.w  #$3E8,D3
+            subq.w  #1,D3
+            bpl.b   .L7
+            moveq   #0,D3
+.L7:
+            move.w  D3,(A1)+
+            subq.w  #2,D0
+            bne.b   .L5
+            bra.b   .L9
 .L8:
-            dc.w    sub_408EA296.L3-.L7
-            dc.w    sub_408EA296.L3-.L7
-            dc.w    sub_408EA296.L3-.L7
-            dc.w    sub_408EA296.L3-.L7
-            dc.w    sub_408EA3E6.L17-.L7
-            dc.w    sub_408EA3E6.L17-.L7
-            dc.w    sub_408EA560.L1-.L7
-            dc.w    sub_408EA560.L1-.L7
-            dc.w    sub_408EA62A.L2-.L7
-            dc.w    sub_408EA792.L1-.L7
-            dc.w    sub_408EA828.L8-.L7
-            dc.w    sub_408EA828.L17-.L7
-            dc.w    sub_408EA828.L33-.L7
-            dc.w    sub_408EA828.L40-.L7
-            dc.w    sub_408EAB6A.L2-.L7
-            dc.w    sub_408EAC48.L3-.L7
-            dc.w    sub_408EAD12.L5-.L7
-sub_408EA0AA:
-            move.l  (A0)+,(A1)+
-            move.l  (A0)+,(A1)+
-            move.w  (A0),(A1)
-            subq.l  #8,A1
+            mulu.w  D6,D3
+            bra.b   .L6
+.L9:
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($1BA).w,A3
+            lea     ($618,A2),A1
+            lea     sub_408DCF72,A0
+            move.l  (A3),(A1)+
+            move.l  A0,(A3)+
+            lea     sub_408DD0C6.L3,A0
+            move.l  (A3),(A1)+
+            move.l  A0,(A3)+
+            lea     sub_408DCDBA,A0
+            move.l  ExtStsDT,(A1)
+            move.l  A0,ExtStsDT
+            lea     ($292,A2),A0
+            move.w  #1,(4,A0)
+            lea     sub_408DCE02,A1
+            move.l  A1,(6,A0)
+            move.w  #$14,($A,A0)
+            _VInstall
+            bsr.b   sub_408DCBE6
+            move    (SP)+,SR
+            movem.l (SP)+,D0-D7/A0-A6
             rts
-sub_408EA0B4:
-            move.w  (A1)+,D0
-            move.l  (A1),(A0)
-            move.l  (4,A1),(4,A0)
-            move.w  (8,A1),(8,A0)
+sub_408DCBE6:
+            lea     sub_408DD158.L21,A0
+            bsr.b   sub_408DCBF0
+            lea     sub_408DD158.L22,A0
+sub_408DCBF0:
+            movea.l SCCWr,A3
 .L1:
-            pea     (A2)
-            pea     (A0)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            addq.l  #8,A1
-            addq.l  #2,A1
-            pea     (A1)
-            pea     (A0)
-            clr.w   -(SP)
-            jsr     (A3)
+            move.w  (A0)+,D0
+            beq.b   .L2
+            move.b  D0,(A3)
+            ror.w   #8,D0
+            move.b  D0,(A3)
+            bra.b   .L1
+.L2:
+            rts
+sub_408DCC02:
+            clr.b   ($5E2,A2)
+            move.l  A1,($5D4,A2)
+sub_408DCC0A:
+            movea.l ROMBase,A3
+            cmpi.b  #3,(8,A3)
+            bne.b   .L1
+            movea.l PmgrBase,A3
+            move.b  #$10,($E,A3)
+            tst.w   ($FE0000).l
+.L1:
+            btst    #0,HWCfgFlags                   ; TestFor hwCbPwrMgr
+            beq.b   .L2
+            _IdleUpdate
+.L2:
+            move.l  (SP)+,($5D8,A2)
+            move.b  D2,($5DE,A2)
+            lea     ($5E5,A2),A3
+            move.b  (A3)+,D3
+            move.b  (A3),D2
+            add.b   D2,(A3)+
+            bsr.b   sub_408DCC54
+            ble.b   sub_408DCC54.L3
+            add.b   D3,D3
+            addq.b  #1,D3
+            andi.w  #$F,D3
+            clr.b   (-1,A3)
+            bra.b   sub_408DCC54.L4
+sub_408DCC54:
+            moveq   #0,D0
+            moveq   #7,D1
+.L1:
+            btst    D1,D2
+            beq.b   .L2
+            addq.w  #1,D0
+.L2:
+            dbra    D1,.L1
+            subq.b  #2,D0
+            rts
+.L3:
+            move.b  (A3),D2
+            bsr.b   sub_408DCC54
+            bge.b   .L4
+            lsr.b   #1,D3
+            st      (A3)
+.L4:
+            move.b  (A3),D2
+            add.b   D2,(A3)+
+            moveq   #$20,D0
+            move.b  D0,(A3)+
+            move.b  D0,(A3)
+            subq.w  #5,A3
+            move.b  D3,(A3)+
+            move.b  D3,(A3)+
+            movem.l SCCRd,A0-A1
+.L5:
+            move    SR,-(SP)
+.L6:
+            move.w  D0,D3
+            btst    #4,(A0)
+            beq.b   .L10
+            bsr.w   sub_408DCE64
+            and.b   ($5E4,A2),D0
+            andi.w  #$F,D0
+            move.w  D0,D3
+            beq.b   .L8
+.L7:
+            bsr.b   sub_408DCD20
+            beq.b   .L10
             subq.w  #1,D0
-            bgt.b   .L1
-            addq.l  #8,A1
-            addq.l  #2,A1
-            rts
-sub_408EA0E4:
-            moveq   #1,D0
-            bra.b   sub_408EA0F0.L1
-sub_408EA0E8:
-            moveq   #2,D0
-            bra.b   sub_408EA0F0.L1
-sub_408EA0EC:
-            moveq   #0,D0
-            bra.b   sub_408EA0F0.L1
-sub_408EA0F0:
-            moveq   #4,D0
-.L1:
-            bclr    D0,FPState
-            rts
-sub_408EA0F8:
-            moveq   #2,D0
-            bra.b   sub_408EA108.L1
-sub_408EA0FC:
-            moveq   #1,D0
-            bra.b   sub_408EA108.L1
-sub_408EA100:
+            bne.b   .L7
+.L8:
+            move    #$2600,SR
             moveq   #3,D0
-            bra.b   sub_408EA108.L1
-sub_408EA104:
-            moveq   #0,D0
-            bra.b   sub_408EA108.L1
-sub_408EA108:
-            moveq   #4,D0
+            addq.w  #3,D3
+.L9:
+            move.b  #$E,(A1)
+            nop
+            move.b  #$41,(A1)
+            bsr.b   sub_408DCD20
+            dbeq    D0,.L9
+.L10:
+            beq.w   sub_408DCD20.L9
+            move.b  #$A,(A1)
+            move.b  ($5DE,A2),D2
+            tst.b   (A0)
+            bmi.w   sub_408DCD20.L9
+            move.b  #5,(A1)
+            moveq   #-$7C,D0
+            move.b  #$62,(A1)
+            tst.b   ($5E2,A2)
+            beq.b   .L11
+            moveq   #-$7F,D0
+.L11:
+            move.b  #5,(A1)
+            nop
+            move.b  ($63D,A2),(A1)
+            move.w  ($5FE,A2),D1
+.L12:
+            dbra    D1,.L12
+            bsr.w   sub_408DCF28
+            addq.b  #1,D2
+            beq.b   sub_408DCD20.L4
+            clr.b   ($5E0,A2)
+            bsr.w   sub_408DCE48
+            tst.b   ($5E2,A2)
+            beq.b   .L13
+            tst.b   ($5E1,A2)
+            beq.b   sub_408DCD20.L8
+            bra.b   sub_408DCD20.L6
+.L13:
+            tst.b   ($5E0,A2)
+            st      ($5E0,A2)
+            beq.b   sub_408DCD20.L8
+            bra.b   sub_408DCD20.L5
+sub_408DCD20:
+            move.w  ($5FA,A2),D1
+            bra.b   .L2
 .L1:
-            bset    D0,FPState
-            rts
-sub_408EA110:
-            moveq   #3,D0
-            bra.b   sub_408EA120.L1
-sub_408EA114:
-            moveq   #1,D0
-            bra.b   sub_408EA120.L1
-sub_408EA118:
-            moveq   #2,D0
-            bra.b   sub_408EA120.L1
-sub_408EA11C:
-            moveq   #0,D0
-            bra.b   sub_408EA120.L1
-sub_408EA120:
-            moveq   #4,D0
-.L1:
-            btst    D0,FPState
-            rts
-sub_408EA128:
-            move.w  #$7FFF,(-6,A6)
-            lea     (-$1A,A6),A2
-            move.l  (6,A1),-(A2)
-            move.l  (2,A1),-(A2)
-            move.w  (A1),-(A2)
-            bclr    #7,(A2)
-            bsr.b   sub_408EA186
-            bge.b   .L2
-            pea     sub_408EAD12.L18
-            pea     (A2)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            tst.b   (A1)
-            bpl.b   .L1
-            neg.w   (-6,A6)
-.L1:
-            bsr.b   sub_408EA178
-            bsr.b   sub_408EA186
-            bge.b   .L2
-            pea     sub_408EAD12.L18
+            dbra    D1,.L1
             bra.b   .L3
 .L2:
-            pea     (A2)
-.L3:
-            pea     (-6,A6)
-            move.w  #$2010,-(SP)
-            jsr     (A3)
-            tst.b   (A1)
-            bpl.b   sub_408EA178
-            neg.w   (-6,A6)
-sub_408EA178:
-            pea     (-6,A6)
-            pea     (A0)
-            move.w  #$18,-(SP)
-            jsr     (A3)
-            rts
-sub_408EA186:
-            pea     (-$24,A6)
-            pea     sub_408EAD12.L18
-            move.w  #8,-(SP)
-            jsr     (A3)
-            rts
-sub_408EA196:
-            movem.l D0-D2/A0,-(SP)
-            moveq   #0,D1
-            movea.l ($14,SP),A0
-            move.w  (A0),D1
-            bclr    #$F,D1
-            move.l  (2,A0),D0
-            bmi.b   .L2
-            bfffo   D0{0:0},D2
-            bne.b   .L1
-            sub.w   D2,D1
-            move.l  (6,A0),D0
-            bfffo   D0{0:0},D2
-.L1:
-            sub.w   D2,D1
-.L2:
-            move.w  #$401E,D0
-            subi.w  #$3FFF,D1
-            bgt.b   .L4
-            blt.b   .L3
-            move.l  D1,D0
-            bra.b   .L5
-.L3:
-            bset    #$F,D0
-            neg.w   D1
-.L4:
-            bfffo   D1{0:0},D2
-            lsl.l   D2,D1
-            sub.w   D2,D0
-.L5:
-            move.w  D0,(A0)+
-            move.l  D1,(A0)+
-            clr.l   (A0)
-            movem.l (SP)+,D0-D2/A0
-            rtd     #4
-ELCLASSX:
-            movem.l D0-D1/A0,-(SP)
-            movea.l ($14,SP),A0
-            move.w  (A0)+,D0
-            add.l   D0,D0
-            lsr.w   #1,D0
-            cmpi.w  #$7FFF,D0
-            beq.b   .L4
-            move.l  (A0)+,D1
-            bpl.b   .L7
-.L1:
-            moveq   #5,D1
-.L2:
-            btst    #$10,D0
-            beq.b   .L3
-            neg.w   D1
-.L3:
-            movea.l ($10,SP),A0
-            move.w  D1,(A0)
-            movem.l (SP)+,D0-D1/A0
-            rtd     #8
-.L4:
-            move.l  (A0)+,D1
-            add.l   D1,D1
-            lsr.l   #1,D1
-            beq.b   .L6
-            btst    #$1E,D1
-            beq.b   .L5
-            moveq   #2,D1
-            bra.b   .L2
-.L5:
-            moveq   #1,D1
-            bra.b   .L2
-.L6:
-            move.l  (A0),D1
-            bne.b   .L5
-            moveq   #3,D1
-            bra.b   .L2
-.L7:
-            beq.b   .L10
-.L8:
-            subq.w  #1,D0
-            add.l   D1,D1
-            bpl.b   .L8
-.L9:
-            tst.w   D0
-            bpl.b   .L1
-            moveq   #6,D1
-            bra.b   .L2
-.L10:
-            subi.w  #$20,D0
-            move.l  (A0),D1
-            beq.b   .L11
-            bpl.b   .L8
-            bra.b   .L9
-.L11:
-            moveq   #4,D1
-            bra.b   .L2
-sub_408EA258:
-            movem.l D0-D1/A0,-(SP)
-            movea.l ($14,SP),A0
-            move.w  #$400E,D0
-            swap    D0
-            move.w  (A0),D0
-            beq.b   .L3
-            bpl.b   .L1
-            bset    #$1F,D0
-            neg.w   D0
-            bmi.b   .L2
-.L1:
-            swap    D0
-            bfffo   D0{0:16},D1
-            sub.w   D1,D0
-            swap    D0
-            lsl.w   D1,D0
-.L2:
-            movea.l ($10,SP),A0
-            move.l  D0,(A0)+
-            clr.l   (A0)+
-            clr.w   (A0)
-            movem.l (SP)+,D0-D1/A0
-            rtd     #8
-.L3:
-            moveq   #0,D0
-            bra.b   .L2
-sub_408EA296:
-            movem.l D0/D6/A0,-(SP)
-            movea.l ($10,SP),A0
-            move.w  #$19,D6
-            swap    D6
-            move.w  #$1F00,D6
-            and.w   FPState,D6
-            move.w  (A0),D0
-            or.w    D6,D0
-            move.w  D0,FPState
-            lsr.w   #8,D6
-            and.w   D6,D0
-            bne.b   .L2
-.L1:
-            move    D0,CCR
-            movem.l (SP)+,D0/D6/A0
-            rtd     #4
-.L2:
-            lea     ($10,SP),A0
-            clr.w   -(SP)
-            move.w  D0,-(SP)
-            pea     (SP)
-            move.l  (8,A0),-(SP)
-            move.l  (4,A0),-(SP)
-            move.l  (A0),-(SP)
-            swap    D6
-            move.w  D6,-(SP)
-            movea.l ($A4C).w,A0
-            jsr     (A0)
-            move.l  (SP)+,D0
             bra.b   .L1
 .L3:
-            subq.b  #1,D1
-            bpl.b   .L5
-            tst.w   D1
-            bpl.w   sub_408EA3E6.L10
+            btst    #4,(A0)
+            rts
 .L4:
-            moveq   #$24,D0
-            bra.w   sub_408EA3E6.L14
+            bsr.b   sub_408DCD20
+            beq.b   .L8
+            cmpi.w  #$72,($5FA,A2)
+            bcs.b   .L5
+            bsr.b   sub_408DCD20
+            beq.b   .L8
 .L5:
-            btst    #2,D3
-            bne.b   .L6
-            tst.b   D1
-            beq.b   .L7
-            tst.w   D1
-            bmi.b   .L4
-            bra.b   .L9
+            bsr.w   sub_408DCEAC
 .L6:
-            tst.b   D1
-            beq.w   sub_408EA3E6.L15
-            pea     (A4)
-            pea     sub_408EAD12.L14
-            move.w  #8,-(SP)
-            jsr     (A3)
-            bhi.b   .L4
-            bcs.b   .L8
+            moveq   #0,D0
+            addq.l  #1,($6F2,A2)
 .L7:
-            bra.w   sub_408EA3E6.L11
+            move    (SP)+,SR
+            movea.l ($5D8,A2),A0
+            jmp     (A0)
 .L8:
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     sub_408EAD12.L13
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            pea     sub_408EAD12.L30
-            pea     (A4)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            ble.b   .L9
-            pea     (A4)
-            pea     sub_408EAD12.L29
-            move.w  #8,-(SP)
-            jsr     (A3)
-            bls.b   .L9
-            movea.l A1,A0
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            bsr.w   sub_408EA3E6
-            bra.b   .L11
+            addq.l  #1,($70E,A2)
+            move    (SP),SR
+            bset    #0,($5E6,A2)
+            move.b  ($5E4,A2),D0
+            add.b   D0,D0
+            addq.b  #1,D0
+            move.b  D0,($5E4,A2)
+            moveq   #-$5F,D0
+            subq.b  #1,($5E9,A2)
+            beq.b   .L7
+            bra.w   sub_408DCC54.L6
 .L9:
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            bsr.w   sub_408EA196
-            bchg    #7,(A1)
-            pea     (A1)
-            pea     (-6,A6)
-            move.w  #$2010,-(SP)
-            jsr     (A3)
-            pea     (-6,A6)
-            pea     (A4)
-            move.w  #$18,-(SP)
-            jsr     (A3)
-            bchg    #7,(A1)
-            pea     sub_408EAD12.L29
-            pea     (A4)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            ble.b   .L10
-            pea     sub_408EAD12.L13
-            pea     (-$10,A6)
-            clr.w   -(SP)
-            jsr     (A3)
-            subq.w  #1,(A4)
+            sub.w   D0,D3
+            subq.w  #4,D3
+            blt.b   .L10
+            addq.l  #1,($712,A2)
+            moveq   #-$5F,D0
+            subq.b  #1,($5E8,A2)
+            beq.b   .L7
+            bset    #0,($5E4,A2)
+            bset    #0,($5E7,A2)
 .L10:
-            pea     sub_408EAD12.L13
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            bsr.b   sub_408EA3E6
-            pea     (-$10,A6)
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
+            clr.b   ($726,A2)
+            move    #$2600,SR
+            move.b  #$F,(A1)
+            moveq   #-$78,D0
+            move.b  D0,(A1)
+            move.b  #2,($5E3,A2)
+            moveq   #0,D0
+            movem.l ($2C4,A2),D2/A0-A2
 .L11:
-            btst    #1,D3
-            bne.b   .L12
-            pea     sub_408EAD12.L31
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            move.l  (2,A4),D0
-            or.l    (6,A4),D0
-            beq.b   .L12
-            bsr.w   sub_408EA108
-.L12:
-            bra.w   sub_408EA3E6.L15
-sub_408EA3E6:
-            pea     (A4)
-            pea     (-6,A6)
-            bsr.w   ELCLASSX
-            move.w  (-6,A6),D0
-            bpl.b   .L1
-            neg.w   D0
+            move    (SP)+,SR
+            rts
+sub_408DCDBA:
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            tst.b   ($5E3,A2)
+            bne.b   .L1
+            btst    #3,D1
+            beq.w   sub_408DCE48.L3
+            movea.l ($2C2).w,A3
+            jmp     (A3)
 .L1:
-            subq.w  #4,D0
-            bne.b   .L2
+            move.b  #$F,(A1)
+            moveq   #8,D0
+            move.b  D0,(A1)
+            clr.b   ($5E3,A2)
+            move    ($1C,A2),SR
+            tst.b   ($727,A2)
+            beq.b   sub_408DCDF6.L1
+            move.l  A2,D0
+            lea     sub_408DCDF6,A0
+            _DeferUserFn
             rts
+sub_408DCDF6:
+            movea.l A0,A2
+            movem.l SCCRd,A0-A1
+.L1:
+            bra.w   sub_408DCC54.L5
+sub_408DCE02:
+            bsr.w   sub_408DD2DE
+            move    SR,-(SP)
+            move    #$2600,SR
+            tst.b   ($5E3,A2)
+            beq.b   sub_408DCD20.L11
+            subq.b  #1,($5E3,A2)
+            bne.b   sub_408DCD20.L11
+            addq.w  #2,SP
+            movem.l SCCRd,A0-A1
+            bsr.w   sub_408DD11C
+            addq.l  #1,($716,A2)
+            move.b  #$F,(A1)
+            moveq   #8,D0
+            move.b  D0,(A1)
+            move    ($1C,A2),SR
+            bra.w   sub_408DCC54.L5
+            move.w  #$3FC,($A,A0)
+            lea     (-$6AE,A0),A2
+            clr.w   ($6AC,A2)
+            rts
+sub_408DCE48:
+            movem.l A0-A2,-(SP)
+            move.w  ($5F4,A2),D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.b   .L2
+            bsr.w   sub_408DCF7E
 .L2:
-            subq.w  #1,D0
-            beq.b   .L3
-            pea     sub_408EAD12.L31
-            bsr.w   sub_408EA0FC
-            bra.b   .L4
+            movem.l (SP)+,A0-A2
 .L3:
-            movea.l A4,A0
-            lea     (-$1A,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     sub_408EAD12.L17
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            pea     (A4)
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            movea.l A1,A0
-            pea     (A1)
-            pea     (A1)
-            lea     (-$24,A6),A1
-            bsr.w   sub_408EA0AA
-            move.w  #4,-(SP)
-            jsr     (A3)
-            movea.l A4,A0
-            lea     sub_408EAD12.L9,A1
-            lea     (-$1A,A6),A2
-            bsr.w   sub_408EA0B4
-            pea     (-$24,A6)
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            lea     (-$24,A6),A0
-            lea     sub_408EAD12.L10,A1
-            lea     (-$1A,A6),A2
-            bsr.w   sub_408EA0B4
-            bsr.w   sub_408EA0E4
-            pea     (-$24,A6)
-.L4:
-            pea     (A4)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            bsr.w   sub_408EA108
             rts
-.L5:
-            lea     sub_408EAD12.L15,A0
-            bra.b   .L13
-.L6:
-            lea     sub_408EAD12.L16,A0
-            bra.b   .L13
-.L7:
-            lea     sub_408EAD12.L13,A0
-            bra.b   .L13
-.L8:
-            lea     sub_408EAD12.L14,A0
-            bra.b   .L13
-.L9:
-            bsr.w   sub_408EA100
-.L10:
-            lea     sub_408EAD12.L19,A0
-            bra.b   .L13
-.L11:
-            bsr.w   sub_408EA100
-.L12:
-            lea     sub_408EAD12.L20,A0
-.L13:
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            bra.b   .L15
-.L14:
-            ori.l   #$7FFF4000,D0
-            move.l  D0,(A4)+
-            clr.l   (A4)+
-            clr.w   (A4)
-            subq.l  #8,A4
-            bsr.w   sub_408EA104
-.L15:
-            tst.b   D3
-            bpl.b   .L16
-            move.w  (A4),(-2,A4)
-.L16:
-            pea     (-2,A6)
-            bsr.w   sub_408EA296
-            movem.l (SP)+,D0-D7/A0-A4
-            unlk    A6
-            adda.w  (SP),SP
+sub_408DCE64:
+            move.w  ($5DC,A2),D0
+            mulu.w  #$305,D0
+            addq.w  #1,D0
+            move.w  D0,-(SP)
+            lsl.w   #8,D0
+            move.b  (SP)+,D0
+            move.w  D0,($5DC,A2)
             rts
-.L17:
-            subq.b  #1,D1
-            beq.b   .L7
-            bgt.b   .L18
+.L1:
+            dc.w    $056B,$03D0
+sub_408DCE7E:
+            move.w  ($5F0,A2),D1
+.L1:
+            btst    #2,(A0)
+            dbne    D1,.L1
+            beq.b   .L2
+            move.b  D3,(4,A1)
+.L2:
             tst.w   D1
-            bmi.b   .L5
-            bra.b   .L15
+            rts
+sub_408DCE94:
+            lea     sub_408DCE64.L1,A3
+            moveq   #4,D3
+            bsr.w   sub_408DCF6A
+            move.w  ($5F6,A2),D3
+.L1:
+            dbra    D3,.L1
+            move.b  #$80,(A1)
+            rts
+sub_408DCEAC:
+            movem.l A0-A1/A4-A6,($624,A2)
+            move.l  DskRtnAdr,-(SP)
+            move.l  PollStack,-(SP)
+            move.l  SP,PollStack
+            movea.l ($638,A2),A5
+            lea     (6,A0),A6
+            movea.l ($5D4,A2),A4
+            bsr.b   sub_408DCE94
+            move.w  (A4)+,D3
+            movea.l (A4)+,A3
+            move.b  (A3)+,(4,A1)
+            subq.w  #1,D3
+            move.b  (A2),(A3)
+.L1:
+            move.w  ($5F0,A2),D0
+.L2:
+            btst    #2,(A0)
+            dbne    D0,.L2
+            bne.b   .L3
+            bsr.b   sub_408DCF64
+            bra.b   .L6
+.L3:
+            move.b  (A3)+,(4,A1)
+            tst.b   (A5)
+            bmi.b   .L4
+            move.b  (A6),-(SP)
+.L4:
+            subq.w  #1,D3
+            bgt.b   .L1
+            move.w  (A4)+,D3
+            beq.b   .L5
+            movea.l (A4)+,A3
+            bra.b   .L1
+.L5:
+            bsr.b   sub_408DCF40
+.L6:
+            move.l  PollProc,D3
+            beq.b   .L7
+            movea.l D3,A4
+            jsr     (A4)
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+.L7:
+            movem.l ($624,A2),A0-A1/A4-A6
+            movea.l PollStack,SP
+            move.l  (SP)+,PollStack
+            move.l  (SP)+,DskRtnAdr
+            rts
+sub_408DCF28:
+            bsr.w   sub_408DCE94
+            move.b  D2,(4,A1)
+            move.b  (A2),D3
+            bsr.w   sub_408DCE7E
+            bmi.b   sub_408DCF64
+            move.b  D0,D3
+            bsr.w   sub_408DCE7E
+            bmi.b   sub_408DCF64
+sub_408DCF40:
+            move.b  #$C0,(A1)
+            lsl.w   #1,D3
+.L1:
+            btst    #6,(A0)
+            beq.b   .L1
+.L2:
+            btst    #2,(A0)
+            beq.b   .L2
+            move.b  #5,(A1)
+            moveq   #0,D3
+            move.b  #$62,(A1)
+            move.w  ($5EC,A2),D3
+.L3:
+            dbra    D3,.L3
+sub_408DCF64:
+            lea     ($63C,A2),A3
+            moveq   #6,D3
+sub_408DCF6A:
+            move.b  (A3)+,(A1)
+            subq.w  #1,D3
+            bne.b   sub_408DCF6A
+            rts
+sub_408DCF72:
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            addq.l  #1,($6EA,A2)
+sub_408DCF7E:
+            move.b  (4,A0),D0
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            movea.l ($2BC,A2),A3
+            lea     (1,A3),A3
+            move.b  D0,(A3)+
+            move.b  D0,(1,A2)
+            move.w  ($5EE,A2),D1
+            add.w   D1,D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.b   .L5
+            move.b  (4,A0),(A3)+
+            move.b  (-1,A3),(2,A2)
+.L2:
+            btst    #0,(A0)
+            dbne    D1,.L2
+            beq.b   .L5
+            move.b  (4,A0),D0
+            move.b  D0,(A3)+
+            bmi.w   .L7
+            move.b  D0,D2
+            move.w  ($5EE,A2),D0
+            add.w   D0,D0
+.L3:
+            btst    #0,(A0)
+            dbne    D0,.L3
+            beq.b   .L5
+            move.b  (4,A0),(A3)
+            moveq   #3,D1
+            and.b   (A3)+,D1
+            lsl.w   #8,D1
+            movem.l A4-A5,($2FE,A2)
+.L4:
+            btst    #0,(A0)
+            dbne    D0,.L4
+.L5:
+            beq.w   sub_408DD0C6.L2
+            move.b  (4,A0),D1
+            move.b  D1,(A3)+
+            subq.w  #2,D1
+            move.l  ($2E6,A2),D0
+            beq.b   .L6
+            movea.l D0,A5
+            move.b  (A5),D0
+            bmi.b   .L6
+            andi.b  #$F,D0
+            subq.b  #1,D0
+            bne.b   .L6
+            movea.l ($2BC,A2),A2
+            movea.l LAPMgrPtr,A5
+            lea     sub_408DD158.L6,A4
+            moveq   #1,D0
+            jsr     (2,A5)
+.L6:
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            movem.l ($2FE,A2),A4-A5
+            move.b  #1,(A1)
+            moveq   #-$60,D0
+            and.b   (A0),D0
+            bne.w   sub_408DD158.L1
+            addq.l  #1,($702,A2)
+            clr.w   D3
+            bra.w   sub_408DD158.L7
+.L7:
+            moveq   #$7F,D2
+            and.b   D0,D2
+            cmpi.b  #5,D2
+            bgt.w   sub_408DD0C6.L1
+            bsr.w   sub_408DD0E2
+            bne.b   .L8
+            move.b  (A2),D0
+            cmpi.b  #$FF,(1,A2)
+            seq     D1
+            beq.b   .L9
+            tst.b   ($5DF,A2)
+            bne.b   .L9
+            cmp.b   (1,A2),D0
+            bne.b   .L8
+            st      ($5E1,A2)
+.L8:
+            rts
+.L9:
+            cmp.b   (1,A2),D0
+            bne.b   .L11
+            subq.b  #1,D2
+            beq.b   .L16
+            subq.b  #3,D2
+            beq.b   .L12
+            tst.b   ($5E0,A2)
+            beq.b   .L10
+            addq.l  #1,($722,A2)
+.L10:
+            subq.b  #1,D2
+            seq     ($5E0,A2)
+.L11:
+            rts
+.L12:
+            tst.b   D1
+            bne.b   .L14
+            move.w  ($5F8,A2),D0
+.L13:
+            dbra    D0,.L13
+            moveq   #-$7B,D0
+            bsr.b   sub_408DD0C6
+.L14:
+            move.w  ($5F2,A2),D1
+.L15:
+            btst    #0,(A0)
+            dbne    D1,.L15
+            bne.w   sub_408DCF7E
+            addq.l  #1,($71E,A2)
+            rts
+.L16:
+            move.w  ($5F8,A2),D0
+.L17:
+            dbra    D0,.L17
+            moveq   #-$7E,D0
+sub_408DD0C6:
+            move.b  (2,A2),D2
+            bra.w   sub_408DCF28
+            addq.l  #1,($702,A2)
+            bra.b   .L3
+.L1:
+            addq.l  #1,($70A,A2)
+            bra.b   .L3
+.L2:
+            addq.l  #1,($6FE,A2)
+.L3:
+            bsr.b   sub_408DD11C
+            bra.b   sub_408DD11C
+sub_408DD0E2:
+            clr.w   D0
+            move.w  ($5EE,A2),D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.w   sub_408DD158.L3
+            bsr.b   sub_408DD158
+            bmi.b   sub_408DD158.L2
+            tst.b   (4,A0)
+            move.w  ($5EE,A2),D1
+.L2:
+            btst    #0,(A0)
+            dbne    D1,.L2
+            beq.b   sub_408DD158.L3
+            bsr.b   sub_408DD158
+            bpl.b   sub_408DD158.L2
+            lsl.b   #1,D1
+            bmi.b   sub_408DD158.L4
+            move.w  ($5FC,A2),D1
+.L3:
+            dbra    D1,.L3
+            bra.b   sub_408DD11C.L3
+sub_408DD11C:
+            bsr.b   sub_408DD158
+            btst    #5,D1
+            beq.b   .L1
+            bclr    #7,($15F).w
+.L1:
+            moveq   #-$30,D1
+            bsr.b   sub_408DD14E
+            moveq   #2,D1
+.L2:
+            tst.b   (4,A0)
+            move.b  #$30,(A1)
+            dbra    D1,.L2
+            moveq   #-$23,D1
+            bsr.b   sub_408DD14E
+.L3:
+            move.b  #$30,(A1)
+            move.w  (SP),(SP)
+            move.b  #$20,(A1)
+            tst.w   D0
+            rts
+sub_408DD14E:
+            move.b  #3,(A1)
+            nop
+            move.b  D1,(A1)
+            rts
+sub_408DD158:
+            move.b  #1,(A1)
+            nop
+            move.b  (A0),D1
+            rts
+.L1:
+            move.b  D0,D1
+            moveq   #0,D0
+.L2:
+            btst    #5,D1
+            bne.b   .L5
+            addq.l  #1,($706,A2)
+            moveq   #-4,D0
+            bra.b   sub_408DD11C
+.L3:
+            addq.l  #1,($6FE,A2)
+            moveq   #-3,D0
+            bra.b   sub_408DD11C
+.L4:
+            addq.l  #1,($6F6,A2)
+            moveq   #-2,D0
+            bra.b   sub_408DD11C
+.L5:
+            addq.l  #1,($6FA,A2)
+            moveq   #-1,D0
+            bra.b   sub_408DD11C
+.L28:
+            bra.w   .L27
+.L6:
+            bra.b   .L28
+.L7:
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            movea.l ($638,A2),A5
+            movea.l SP,A4
+.L8:
+            move.w  ($5EE,A2),D0
+            subq.w  #1,D1
+            bmi.b   .L11
+.L9:
+            btst    #0,(A0)
+            dbne    D0,.L9
+            beq.b   .L11
+            move.b  (4,A0),D0
+            tst.b   (A5)
+            bmi.b   .L10
+            move.b  (6,A0),-(SP)
+.L10:
+            subq.w  #1,D3
+            bmi.b   .L8
+            move.b  D0,(A3)+
+            bra.b   .L8
+.L11:
+            bsr.w   sub_408DD0E2
+            move.l  PollStack,($60C,A2)
+            move.l  A4,PollStack
+            move.l  PollProc,D1
+            beq.b   .L12
+            movem.l D0/D2-D3/A3/A6,($624,A2)
+            lea     (6,A0),A6
+            movea.l D1,A0
+            move.l  DskRtnAdr,($608,A2)
+            jsr     (A0)
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            move.l  ($608,A2),DskRtnAdr
+            movem.l ($624,A2),D0/D2-D3/A3/A6
+.L12:
+            movea.l PollStack,SP
+            move.l  ($60C,A2),PollStack
+.L13:
+            movem.l ($2FE,A2),A4-A5
+            tst.w   D0
+            bne.b   .L14
+            addq.l  #1,($6EE,A2)
+.L14:
+            tst.w   D0
+.L15:
+            movea.l ($2BC,A2),A2
+            rts
+.L27:
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            sub.w   D3,D1
+.L16:
+            move.w  ($5EE,A2),D0
+.L17:
+            btst    #0,(A0)
+            dbne    D0,.L17
+            beq.b   .L18
+            move.b  (4,A0),(A3)+
+            subq.w  #1,D3
+            bne.b   .L16
+            move.b  #1,(A1)
+            moveq   #-$60,D0
+            and.b   (A0),D0
+            beq.b   .L15
+            bmi.b   .L19
+            addq.l  #1,($6FA,A2)
+            moveq   #-1,D0
+            bra.b   .L20
 .L18:
-            btst    #1,D3
-            beq.b   .L19
-            bsr.b   sub_408EA53E
+            addq.l  #1,($6FE,A2)
+            moveq   #-3,D0
             bra.b   .L20
 .L19:
-            bsr.b   sub_408EA560
-            bsr.w   sub_408EA118
-            beq.b   .L20
-            bsr.w   sub_408EA108
-            tst.w   D1
-            bpl.b   .L10
-            bsr.w   sub_408EA0E8
-            bsr.w   sub_408EA0FC
-            bra.w   .L5
+            addq.l  #1,($706,A2)
+            moveq   #-4,D0
 .L20:
-            bsr.w   sub_408EA62A
-            pea     sub_408EAD12.L13
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA128
-            tst.w   (2,A4)
-            bmi.b   .L15
-            bfextu  (A4){1:15},D0
-            bne.b   .L15
-            bsr.w   sub_408EA120
-            beq.b   .L15
-            bsr.w   sub_408EA0FC
-            bra.b   .L15
-sub_408EA53E:
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            move.w  #$14,-(SP)
-            jsr     (A3)
-            bsr.w   sub_408EA0F0
-            pea     (A1)
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            rts
-sub_408EA560:
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     sub_408EAD12.L31
-            move.l  (SP),-(SP)
-            move.l  (SP),-(SP)
-            pea     (A4)
-            move.w  #$C,-(SP)
-            jsr     (A3)
-            pea     (A4)
-            pea     (A1)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            move.w  #$14,-(SP)
-            jsr     (A3)
-            pea     (A4)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            bra.w   sub_408EA0F0
-.L1:
-            subq.b  #1,D1
-            bgt.b   .L3
-            beq.b   .L2
-            tst.w   D1
-            bmi.w   sub_408EA3E6.L8
-.L2:
-            bra.w   sub_408EA3E6.L15
-.L3:
-            subq.b  #1,D1
-            btst    #1,D3
-            beq.b   .L6
-            tst.b   D1
-            beq.b   .L5
-            pea     sub_408EAD12.L31
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-.L4:
-            bsr.w   sub_408EA0FC
-            bsr.w   sub_408EA108
-            bra.b   .L8
-.L5:
-            bsr.w   sub_408EA53E
-            bra.b   .L7
-.L6:
-            tst.b   D1
-            bne.b   .L4
-            bsr.b   sub_408EA560
-            bsr.w   sub_408EA118
-            beq.b   .L7
-            bsr.w   sub_408EA108
-            tst.w   D1
-            bpl.w   sub_408EA3E6.L10
-            bsr.w   sub_408EA0E8
-            bra.w   sub_408EA3E6.L8
-.L7:
-            bsr.b   sub_408EA62A
-            move.l  (-$E,A6),D0
-            or.l    (-$A,A6),D0
-            beq.b   .L8
-            pea     sub_408EAD12.L13
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA128
-            pea     sub_408EAD12.L13
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            bsr.w   sub_408EA0E4
-.L8:
-            bra.w   sub_408EA3E6.L15
-sub_408EA62A:
-            move.l  (2,A4),D0
-            or.l    (6,A4),D0
-            bne.b   .L1
-            rts
-.L1:
-            lea     (-$24,A6),A1
-            movea.l A4,A0
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            lea     (-$1A,A6),A0
-            lea     sub_408EAD12.L11,A1
-            lea     (-$24,A6),A2
-            bsr.w   sub_408EA0B4
-            pea     (-$1A,A6)
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            lea     (-$1A,A6),A0
-            lea     sub_408EAD12.L12,A1
-            lea     (-$24,A6),A2
-            bsr.w   sub_408EA0B4
-            pea     (A4)
-            pea     (-$1A,A6)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            pea     sub_408EAD12.L17
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (-$1A,A6)
-            pea     (A4)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            bsr.w   sub_408EA108
-            bra.w   sub_408EA0E4
-.L2:
-            movea.l D4,A0
-            move.w  (A0),D2
-            beq.w   sub_408EA3E6.L7
-            subq.b  #1,D1
-            bgt.b   .L5
-            asr.w   #1,D2
-            bcs.b   .L3
-            bclr    #7,(A4)
-.L3:
-            addx.w  D2,D2
-            bpl.w   sub_408EA3E6.L15
-            tst.b   D1
-            bpl.b   .L4
-            tst.b   (A4)
-            bpl.w   sub_408EA3E6.L5
-            bra.w   sub_408EA3E6.L6
-.L4:
-            tst.b   (A4)
-            bpl.w   sub_408EA3E6.L9
-            bra.w   sub_408EA3E6.L11
-.L5:
-            move.w  D2,D0
-            bpl.b   .L6
-            neg.w   D0
-.L6:
-            cmpi.w  #$FF,D0
-            bhi.b   .L7
-            bsr.b   sub_408EA70C
-            bra.w   sub_408EA3E6.L15
-.L7:
-            move.w  (A4),-(SP)
-            bclr    #7,(A4)
-            move.l  D4,-(SP)
-            pea     (-$10,A6)
-            move.l  (SP),D4
-            bsr.w   sub_408EA258
-            bsr.w   sub_408EA792
-            move.w  (SP)+,D0
-            bpl.b   .L8
-            asr.w   #1,D2
-            bcc.b   .L8
-            bset    #7,(A4)
-.L8:
-            bra.w   sub_408EA3E6.L15
-sub_408EA70C:
-            movea.l A4,A0
-            lea     (-$1A,A6),A1
-            bsr.w   sub_408EA0AA
-            bsr.b   sub_408EA766
-            tst.w   D2
-            bmi.b   .L2
-.L1:
-            movea.l A1,A0
-            movea.l A4,A1
-            bra.w   sub_408EA0AA
-.L2:
-            lea     sub_408EAD12.L13,A0
-            lea     (A4),A1
-            bsr.w   sub_408EA0AA
-            bsr.w   sub_408EA114
-            bne.b   .L3
-            bsr.w   sub_408EA118
-            bne.b   .L3
-            pea     (-$10,A6)
-            pea     (A4)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            rts
-.L3:
-            bsr.w   sub_408EA0E8
-            bsr.w   sub_408EA0E4
-            pea     (-$1A,A6)
-            pea     (A4)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            move.w  D2,D0
-            bpl.b   .L4
-            neg.w   D0
-.L4:
-            bsr.b   sub_408EA766
-            bra.b   .L1
-sub_408EA766:
-            lea     sub_408EAD12.L13,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            bra.b   .L2
-.L1:
-            pea     (A4)
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-.L2:
-            lsr.w   #1,D0
-            bcc.b   .L3
-            pea     (A4)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-.L3:
-            tst.w   D0
-            bne.b   .L1
-            rts
-sub_408EA792:
-            movea.l A4,A0
-            lea     (-$1A,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            move.w  #2,-(SP)
-            bsr.w   RsrcPACK_5_2
-            move.l  D4,-(SP)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            move.w  #$A,-(SP)
-            bsr.w   RsrcPACK_5_2
-            movea.l A1,A0
-            movea.l A4,A1
-            bra.w   sub_408EA0AA
-.L1:
-            tst.w   D1
-            bmi.b   .L4
-            bsr.b   sub_408EA828
-            bra.w   sub_408EA3E6.L15
-.L2:
-            addq.l  #4,SP
-.L3:
-            bsr.w   sub_408EA0F0
-            moveq   #$25,D0
-            bra.w   sub_408EA3E6.L14
-.L4:
-            tst.b   D2
-            beq.b   .L3
-            movea.l D4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            move.w  #$14,-(SP)
-            jsr     (A3)
-            bsr.w   sub_408EA120
-            bne.b   .L3
-            pea     sub_408EAD12.L17
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            move.w  #$14,-(SP)
-            jsr     (A3)
-            move.w  FPState,(-6,A6)
-            bsr.w   sub_408EA0F0
-            bclr    #7,(A4)
-            bsr.b   sub_408EA828
-            btst    #4,(-6,A6)
-            beq.b   .L5
-            bchg    #7,(A4)
-.L5:
-            bra.w   sub_408EA3E6.L15
-sub_408EA828:
-            subq.b  #1,D1
-            bne.b   .L3
-            subq.b  #1,D2
-            beq.b   sub_408EA792.L2
-            tst.w   D2
-            bpl.b   .L1
-            bsr.w   sub_408EA100
-            lea     sub_408EAD12.L19,A0
-            bra.b   .L2
-.L1:
-            lea     sub_408EAD12.L15,A0
-.L2:
-            movea.l A4,A1
-            bra.w   sub_408EA0AA
-.L3:
-            bpl.b   .L4
-            subq.b  #1,D2
-            bne.b   .L5
-            bra.w   sub_408EA792.L2
-.L4:
-            subq.b  #1,D2
-            bpl.b   .L5
-            pea     sub_408EAD12.L13
-            pea     (A4)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            beq.w   sub_408EA792.L2
-.L5:
-            move.w  D2,D6
-            move.l  D4,-(SP)
-            pea     (-4,A6)
-            move.w  #$2010,-(SP)
-            jsr     (A3)
-            bsr.w   sub_408EA11C
-            sne     D7
-            bsr.w   sub_408EA0EC
-            bsr.w   sub_408EA120
-            sne     D1
-            or.b    D1,D7
-            bne.b   .L7
-            move.w  (-4,A6),D2
-            move.w  D2,D0
-            bpl.b   .L6
-            neg.w   D0
-.L6:
-            cmpi.w  #$FF,D0
-            ble.w   sub_408EA70C
-.L7:
-            bsr.w   sub_408EA0F0
-            bsr.w   sub_408EA792
-            tst.b   D6
-            bmi.w   sub_408EA0F0
-            rts
-.L8:
-            pea     sub_408EAD12.L14
-            move.l  D5,-(SP)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            blt.w   .L16
-            bgt.b   .L12
-            subq.b  #1,D2
-            bne.b   .L10
-.L9:
-            bra.w   sub_408EA3E6.L7
-.L10:
-            movea.l D4,A0
-            tst.b   (A0)
-            bmi.w   sub_408EA3E6.L9
-.L11:
-            bra.w   sub_408EA3E6.L5
-.L12:
-            subq.b  #1,D2
-            beq.b   .L9
-            bgt.b   .L13
-            subq.b  #1,D1
-            beq.b   .L16
-            eor.w   D2,D1
-            bmi.b   .L11
-            bra.w   sub_408EA3E6.L10
-.L13:
-            lea     (-$1A,A6),A1
-            movea.l D5,A0
-            bsr.w   sub_408EA0AA
-            move.w  (A1),D0
-            bclr    #$F,D0
-            cmpi.w  #$3F7F,D0
-            blt.b   .L14
-            pea     (A1)
-            move.w  #6,-(SP)
-            bsr.w   RsrcPACK_5_2
-            move.l  D4,-(SP)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            move.w  #$A,-(SP)
-            bra.b   .L15
-.L14:
-            move.l  D4,-(SP)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            move.w  #8,-(SP)
-.L15:
-            bsr.w   sub_408EA0E4
-            bsr.w   RsrcPACK_5_2
-            movea.l A1,A0
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            bra.w   sub_408EA3E6.L15
-.L16:
-            moveq   #$26,D0
-            bra.w   sub_408EA3E6.L14
-.L17:
-            pea     sub_408EAD12.L14
-            move.l  D5,-(SP)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            blt.b   .L16
-            bne.b   .L19
-            subq.b  #1,D2
-            beq.b   .L20
-            tst.w   D2
-            bpl.w   sub_408EA3E6.L9
-.L18:
-            bra.w   sub_408EA3E6.L8
-.L19:
-            subq.b  #1,D2
-            bne.b   .L21
-.L20:
-            bra.w   sub_408EA3E6.L5
-.L21:
-            subq.b  #1,D1
-            bgt.b   .L24
-            blt.b   .L23
-.L22:
-            movea.l A4,A1
-            movea.l D4,A0
-            bsr.w   sub_408EA0AA
-            bra.w   sub_408EA3E6.L15
-.L23:
-            tst.w   D2
-            bpl.b   .L20
-            pea     sub_408EAD12.L14
-            move.l  D4,-(SP)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            beq.b   .L18
-            bgt.w   sub_408EA3E6.L6
-            bra.w   sub_408EA3E6.L12
-.L24:
-            tst.b   D2
-            bpl.b   .L25
-            eor.w   D2,D1
-            bmi.b   .L22
-            movea.l D5,A0
-            lea     (-$1A,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            movea.l A4,A1
-            lea     sub_408EAD12.L13,A0
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            bra.w   sub_408EA3E6.L15
-.L25:
-            lea     (-$1A,A6),A1
-            movea.l D5,A0
-            bsr.w   sub_408EA0AA
-            move.w  (A1),D0
-            bclr    #$F,D0
-            cmpi.w  #$3F7F,D0
-            blt.b   .L27
-            pea     (A1)
-            move.w  #6,-(SP)
-            bsr.w   RsrcPACK_5_2
-            move.l  D4,-(SP)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            bchg    #7,(A1)
-            cmpi.w  #$4007,(A1)
-            blt.b   .L26
-            movea.l D5,A0
-            cmpi.w  #$407F,(A0)
-            bge.b   .L32
-.L26:
-            pea     (A1)
-            move.w  #$E,-(SP)
-            bra.b   .L28
-.L27:
-            move.l  D4,-(SP)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            bchg    #7,(A1)
-            pea     (A1)
-            move.w  #$C,-(SP)
-.L28:
-            bsr.w   RsrcPACK_5_2
-            bchg    #7,(A1)
-            move.l  D5,-(SP)
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-.L29:
-            bsr.w   sub_408EA0E4
-            bsr.w   sub_408EA0E8
-            movea.l A1,A0
-            bsr.w   sub_408EA016
-            subq.b  #3,D0
-            bne.b   .L30
-            bsr.w   sub_408EA0F8
-            bra.b   .L31
-.L30:
-            subq.b  #2,D0
-            beq.b   .L31
-            bsr.w   sub_408EA0FC
-.L31:
-            lea     (-$1A,A6),A0
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            bra.w   sub_408EA3E6.L15
-.L32:
-            movea.l D5,A0
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            move.w  #2,-(SP)
-            bsr.w   RsrcPACK_5_2
-            lea     (-$24,A6),A1
-            movea.l D4,A0
-            bsr.w   sub_408EA0AA
-            pea     sub_408EAD12.L13
-            pea     (A1)
-            clr.w   -(SP)
-            jsr     (A3)
-            pea     (A1)
-            lea     (-$1A,A6),A1
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            bchg    #7,(A1)
-            pea     (A1)
-            move.w  #$A,-(SP)
-            bsr.w   RsrcPACK_5_2
-            bchg    #7,(A1)
-            bra.b   .L29
-.L33:
-            moveq   #$21,D0
-            moveq   #0,D2
-            subq.b  #1,D1
-            beq.w   sub_408EA3E6.L15
-.L34:
-            bmi.w   sub_408EA3E6.L14
-            bsr.b   sub_408EAAF4
-            btst    #0,D2
-            bne.b   .L35
-            bsr.b   sub_408EAB04
-            bra.b   .L36
-.L35:
-            bsr.w   sub_408EAB6A
-.L36:
-            andi.w  #3,D2
-            subq.w  #2,D2
-            bmi.b   .L37
-            bchg    #7,(A4)
-.L37:
-            bsr.w   sub_408EA0E4
-            bsr.w   sub_408EA108
-            pea     (A4)
-            pea     (-4,A6)
-            bsr.w   ELCLASSX
-            move.w  (-4,A6),D0
-            bpl.b   .L38
-            neg.w   D0
-.L38:
-            subq.w  #6,D0
-            bne.b   .L39
-            bsr.w   sub_408EA0FC
-.L39:
-            bra.w   sub_408EA3E6.L15
-.L40:
-            moveq   #$21,D0
-            moveq   #1,D2
-            subq.b  #1,D1
-            bne.b   .L34
-            bra.w   sub_408EA3E6.L7
-sub_408EAAF4:
-            pea     sub_408EAD12.L26
-            pea     (A4)
-            move.w  #$C,-(SP)
-            jsr     (A3)
-            add.w   D0,D2
-            rts
-sub_408EAB04:
-            lea     sub_408EAD12.L35,A2
-            bsr.b   sub_408EAB38
-            pea     (A4)
-            pea     (A2)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A2)
-            pea     (A0)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A0)
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            rts
-sub_408EAB2A:
-            bsr.b   sub_408EAB38
-            pea     (A2)
-            pea     (A0)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            rts
-sub_408EAB38:
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            exg     A1,A2
-            lea     (-$24,A6),A0
-            bsr.w   sub_408EA0B4
-            pea     (A0)
-            lea     (-$1A,A6),A0
-            bsr.w   sub_408EA0B4
-            pea     (A0)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            rts
-sub_408EAB6A:
-            lea     sub_408EAD12.L36,A2
-            bsr.b   sub_408EAB2A
-            pea     (A2)
-            pea     (A0)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     sub_408EAD12.L22
-            pea     (A2)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            bgt.b   .L1
-            pea     sub_408EAD12.L23
-            pea     (A2)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A2)
-            pea     (A0)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            pea     sub_408EAD12.L13
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            rts
-.L1:
-            bclr    #7,(A4)
-            pea     sub_408EAD12.L23
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            pea     (A0)
-            movea.l A4,A0
-            movea.l A2,A1
-            bsr.w   sub_408EA0AA
-            pea     sub_408EAD12.L23
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            bchg    #7,(A4)
-            pea     sub_408EAD12.L25
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            rts
-.L2:
-            moveq   #$21,D0
-            moveq   #0,D2
-            subq.b  #1,D1
-            bmi.w   sub_408EA3E6.L14
-            beq.w   sub_408EA3E6.L15
-            bsr.w   sub_408EAAF4
-            bsr.b   sub_408EAC48
-            ror.w   #1,D2
-            bcc.b   .L3
-            bchg    #7,(A4)
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            lea     sub_408EAD12.L13,A0
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            pea     (A4)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            bsr.w   sub_408EA110
-            beq.b   .L3
-            bchg    #7,(A4)
-.L3:
-            bra.w   sub_408EA828.L37
-sub_408EAC48:
-            lea     sub_408EAD12.L37,A2
-            bsr.w   sub_408EAB2A
-            movea.l A4,A0
-            lea     (-$2E,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A2)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            lea     (-$1A,A6),A0
-            pea     (A0)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     sub_408EAD12.L22
-            pea     (A2)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            bgt.b   .L1
-            pea     sub_408EAD12.L21
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            pea     (A0)
-            clr.w   -(SP)
-            jsr     (A3)
-            bra.b   .L2
-.L1:
-            pea     (A0)
-            movea.l A4,A0
-            lea     (-$24,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     sub_408EAD12.L24
-            pea     (A1)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            pea     sub_408EAD12.L21
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            pea     (A2)
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            clr.w   -(SP)
-            jsr     (A3)
-            pea     sub_408EAD12.L22
-            pea     (A2)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A2)
-            pea     (A1)
-            clr.w   -(SP)
-            jsr     (A3)
-            movea.l A1,A0
-.L2:
-            pea     (A0)
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            rts
-.L3:
-            subq.b  #1,D1
-            bge.b   .L4
-            lea     sub_408EAD12.L26,A0
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            clr.b   D1
-            or.w    D1,(A4)
-            bra.b   .L5
-.L4:
-            bne.b   .L6
-.L5:
-            bra.w   sub_408EA3E6.L15
-.L6:
-            bclr    #7,(A4)
-            bsr.b   sub_408EAD12
-            clr.b   D1
-            or.w    D1,(A4)
-            bra.w   sub_408EA828.L37
-sub_408EAD12:
-            moveq   #0,D2
-            pea     .L13
-            pea     (A4)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            bls.b   .L1
-            moveq   #-1,D2
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            lea     .L13,A0
-            movea.l A4,A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-.L1:
-            move.l  (A4)+,-(SP)
-            move.l  (A4)+,-(SP)
-            move.w  (A4),-(SP)
-            subq.l  #8,A4
-            pea     .L34
-            pea     (A4)
-            move.w  #8,-(SP)
-            jsr     (A3)
-            bgt.b   .L2
-            lea     .L38,A2
-            bsr.w   sub_408EAB38
-            pea     (A0)
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            bra.w   .L3
-.L2:
-            movea.l A4,A0
-            lea     (-$10,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     .L32
-            pea     (A1)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     (A1)
-            lea     .L13,A0
-            lea     (-$24,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            pea     .L13
-            pea     (A1)
-            clr.w   -(SP)
-            jsr     (A3)
-            pea     .L13
-            pea     (-$10,A6)
-            clr.w   -(SP)
-            jsr     (A3)
-            pea     .L32
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            movea.l A4,A0
-            lea     (-$2E,A6),A1
-            bsr.w   sub_408EA0AA
-            pea     (-$10,A6)
-            pea     (A4)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            pea     (-$24,A6)
-            pea     (A1)
-            move.w  #6,-(SP)
-            jsr     (A3)
-            lea     .L38,A2
-            bsr.w   sub_408EAB38
-            pea     (A0)
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     .L33
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            pea     (-$2E,A6)
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-.L3:
-            lea     (-8,A6),A1
-            move.w  (SP)+,(A1)
-            move.l  (SP)+,-(A1)
-            move.l  (SP)+,-(A1)
-            pea     (A1)
-            pea     (A4)
-            move.w  #2,-(SP)
-            jsr     (A3)
-            tst.w   D2
-            bne.b   .L4
-            bchg    #7,(A4)
-            rts
-.L4:
-            pea     .L26
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-            rts
-.L5:
-            move.w  (A4),D1
-            bmi.b   .L7
-            move.l  (2,A4),D2
-            bpl.b   .L7
-            move.l  (6,A4),D0
-            bne.b   .L7
-            move.l  #$401E,D0
-            sub.w   D1,D0
-            ble.b   .L7
-            cmpi.w  #$1F,D0
-            bgt.b   .L7
-            bfins   D2,D1{0:D0}
-            bne.b   .L7
-            lsr.l   D0,D2
-            mulu.l  #$41A7,D1:D2
-            divu.l  #$7FFFFFFF,D1:D2
-            bfffo   D1{0:0},D2
-            move.w  #$401E,D0
-            lsl.l   D2,D1
-            sub.w   D2,D0
-            tst.b   D3
-            bpl.b   .L6
-            move.w  D0,(-2,A4)
-.L6:
-            move.w  D0,(A4)+
-            move.l  D1,(A4)+
-            clr.l   (A4)
-            move.w  (-2,A6),FPState
-            movem.l (SP)+,D0-D7/A0-A4
-            unlk    A6
-            adda.w  (SP),SP
-            rts
-.L7:
-            pea     .L27
-            pea     (A4)
-            move.w  #4,-(SP)
-            jsr     (A3)
-            pea     .L28
-            pea     (A4)
-            move.w  #$C,-(SP)
-            jsr     (A3)
-            tst.b   (A4)
-            bpl.b   .L8
-            pea     .L28
-            pea     (A4)
-            clr.w   -(SP)
-            jsr     (A3)
-.L8:
-            bra.w   sub_408EA3E6.L15
-.L9:
-            dc.w    $0005,$3FF6,$B946,$46AF,$F6CE,$3BFF,$3FF9,$94F4
-            dc.w    $3221,$4D61,$FBEB,$3FFB,$DC97,$8903,$D944,$7893
-            dc.w    $3FFF,$9F9E,$3946,$57CA,$1D05,$C001,$CD6B,$C53A
-            dc.w    $46EC,$DC9A,$4001,$B483,$97E7,$BAE6,$FCE0
-.L10:
-            dc.b    $00,$02,$3F,$FF,$80
-            ds.b    7
-            dc.w    $C000,$B818,$35C3,$CE0A,$5E1D,$3FFF,$FA3E,$DF0E
-            dc.w    $DDF4,$1A96
-.L11:
-            dc.w    $0003,$BFEE,$FF88,$90C8,$1B20,$9B79,$3FF9,$DA5C
-            dc.w    $84EF,$B813,$272F,$4003,$97D3,$BAEA,$F80F,$FD45
-            dc.w    $4009,$AB86,$71A1,$95BE,$FF0C
-.L12:
-            dc.b    $00,$02,$3F,$FF,$80
-            ds.b    7
-            dc.w    $4006,$D548,$7002,$984B,$5AB4,$400A,$F775,$612E
-            dc.w    $96B7,$0780
-.L13:
-            dc.b    $3F,$FF,$80
-            ds.b    7
-.L14:
-            dc.b    $BF,$FF,$80
-            ds.b    7
-.L15:
-            ds.b    10
-.L16:
-            dc.b    $80
-            ds.b    9
-.L17:
-            dc.b    $40,$00,$80
-            ds.b    7
-.L18:
-            dc.w    $400D,$FFFE
-            ds.b    6
-.L19:
-            dc.w    $7FFF
-            ds.b    8
-.L20:
-            dc.w    $FFFF
-            ds.b    8
-.L21:
-            dc.b    $40,$00,$C0
-            ds.b    7
-.L22:
-            dc.b    $3F,$FD,$80
-            ds.b    7
-.L23:
-            dc.b    $3F,$FE,$80
-            ds.b    7
-.L24:
-            dc.b    $3F,$FE,$C0
-            ds.b    7
-.L25:
-            dc.b    $3F,$FE,$E0
-            ds.b    7
-.L26:
-            dc.w    $3FFF,$C90F,$DAA2,$2168,$C235,$3FFE,$C90F,$DAA2
-            dc.w    $2168,$C235
-.L27:
-            dc.w    $400D,$834E
-            ds.b    6
-.L28:
-            dc.w    $401D,$FFFF,$FFFE
-            ds.b    4
-.L29:
-            dc.w    $3FFF,$B504,$F333,$F9DE,$6484
-.L30:
-            dc.w    $3FFE,$B504,$F333,$F9DE,$6484,$4000,$ADF8,$5458
-            dc.w    $A2BB,$4A9B
-.L31:
-            dc.w    $3FFE,$B172,$17F7,$D1CF,$79AC
-.L32:
-            dc.w    $3FFE,$93CD,$3A2C,$8198,$E26A
-.L33:
-            dc.w    $3FFA,$DC2A,$86B1,$5FDB,$6462
-.L34:
-            dc.w    $3FFD,$8930,$A2F4,$F66A,$B18A
-.L35:
-            dc.b    $00,$03,$3F,$FF,$80
-            ds.b    7
-            dc.w    $4007,$88D8,$B844,$A6A8,$5A30,$400E,$8A15,$8A49
-            dc.w    $0979,$2320,$4013,$FAA9,$FE26,$FE63,$F22B,$0003
-            dc.w    $BFFE,$C250,$86AE,$43F5,$CBF5,$4006,$9E76,$EC66
-            dc.w    $BEE7,$6BA2,$C00C,$AF51,$A1D6,$C4C4,$AA01,$4011
-            dc.w    $A71B,$FEC4,$A997,$F6CE
-.L36:
-            dc.b    $00,$03,$3F,$FF,$80
-            ds.b    7
-            dc.w    $4007,$A6D9,$6A95,$FBDF,$9685,$400E,$C7A7,$EA65
-            dc.w    $E85D,$156B,$4014,$D26E,$871C,$7B17,$52B2,$0003
-            dc.w    $BFFB,$D57E,$18D7,$A6F6,$D758,$4003,$E364,$937E
-            dc.w    $32B3,$D072,$C00A,$A62D,$4056,$586B,$C045,$4010
-            dc.w    $8C49,$AF68,$520F,$8C7A
-.L37:
-            dc.b    $00,$03,$BF,$FF,$80
-            ds.b    7
-            dc.w    $4005,$B513,$0324,$83C0,$0955,$C009,$D1FF,$B242
-            dc.w    $5762,$E0CF,$400A,$E190,$9309,$9376,$66AB,$0003
-            dc.w    $BFE9,$B1FC,$3363,$D79B,$2838,$3FFD,$AA9D,$71D8
-            dc.w    $3EC7,$4CD1,$C003,$E9CD,$8E24,$B965,$7DBB,$4007
-            dc.w    $F09A,$3670,$9D4B,$1836
-.L38:
-            dc.w    $0004,$3FFF,$98D3,$1EAE,$2AFA,$5DAD,$4003,$8F79
-            dc.w    $4CD8,$B3CD,$EFD9,$4005,$8E37,$ED85,$70B8,$B368
-            dc.w    $4005,$CDA4,$BEA1,$AC59,$F3B8,$4004,$C405,$9C55
-            dc.b    $4C,$F0,$C6,$56,$00,$04,$3F,$FF,$80
-            ds.b    7
-            dc.w    $4002,$A23B,$6C13,$1F92,$0E30,$4003,$C3C8,$593D
-            dc.w    $FA3A,$486F,$4003,$82AE,$6838,$DDF5,$D945
-            ds.b    20
-RsrcEntryPACK_4:
-            dc.b    $70,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 4 (14916 bytes) - Combo mask
-            dc.l    RsrcEntryPACK_5_2-BaseOfROM     ; Next entry
-            dc.l    RsrcPACK_4-BaseOfROM            ; Data
-            dc.b    'PACK'                          ; Type
-            dc.w    4                               ; ID
-            dc.b    $58                             ; Attributes
-            dc.b    0                               ; Name
-            dc.b    'SRCSMBPKEBAL'
-            dc.l    $C0A00000,$00003A50,$000001EC   ; Block header
-RsrcPACK_4:
-            bra.b   .L1
-            dc.w    0,$5041,$434B,$0004,$0008
-.L1:
-            subq.w  #2,SP
-            movem.l D0/A0-A1,-(SP)
-            lea     sub_408EC1E4,A0
-            move.l  A0,($B6E).w
-            move.w  ($12,SP),D0
-            bne.b   .L3
-            movea.l ($E,SP),A1
-            subq.l  #2,A1
-            cmpi.w  #$A9EB,(A1)
-            bne.b   .L6
-            subq.l  #2,A1
-            cmpi.w  #$4267,(A1)
-            beq.b   .L2
-            subq.l  #2,A1
-            bra.b   .L4
-.L2:
-            move.w  #$4EB8,(A1)+
-            move.w  #$B6C,(A1)
-            bsr.b   sub_408EB2A2
-            move.w  #$4EF9,($B6C).w
-            movea.w #$B6C,A1
-            bra.b   .L5
-.L3:
-            rol.w   #8,D0
-            lsl.b   #2,D0
-            bfexts  D0{18:10},D0
-            move.w  ($408EB50C.w,PC,D0.w),D0
-            lea     .L1(PC,D0.w),A0
-            movea.l ($E,SP),A1
-            subq.l  #2,A1
-            cmpi.w  #$A9EB,(A1)
-            bne.b   .L6
-            subq.l  #4,A1
-.L4:
-            cmpi.w  #$3F3C,(A1)
-            bne.b   .L6
-            move.w  #$4EB9,(A1)+
-            move.l  A0,(A1)
-.L5:
-            bsr.b   sub_408EB2A2
-.L6:
-            move.l  ($E,SP),($10,SP)
-            move.l  A0,($C,SP)
-            lea     sub_408EDCE6,A0
-            cmpi.b  #4,CPUFlag
-            blt.b   .L7
-            lea     sub_408EDA00,A0
-            move.l  A0,($1FD4).w
-            bra.b   .L8
-.L7:
-            move.l  A0,OPERRVector
-.L8:
-            fmove.l FPCR,D0
-            bset    #$D,D0
-            fmove.l D0,FPCR
-            movem.l (SP)+,D0/A0-A1
-            rts
-sub_408EB2A2:
-            cmpi.b  #4,CPUFlag
-            blt.b   .L2
-            movem.l D0-D4/A1-A2,-(SP)
-            move    SR,D0
-            btst    #$D,D0
-            bne.b   .L1
-            moveq   #8,D0
-            _DebugUtil
-.L1:
-            moveq   #5,D1
-            movec   D1,DFC
-            moveq   #1,D4
-            subq.l  #2,A1
-            movea.l A1,A2
-            ori     #$700,SR
-            move.w  #$D000,D3
-            mc68040
-            movec   TC,D2
-            mc68030
-            lsr.w   #2,D2
-            eor.w   D2,D3
-.L3:
-            mc68040
-            ptestr  (A1)
-            movec   MMUSR,D1
-            mc68030
-            and.w   D3,D1
-            move.w  A1,D2
-            not.w   D3
-            and.w   D3,D2
-            or.w    D2,D1
-            movea.l D1,A1
-            mc68040
-            cpushl  BC,(A1)
-            mc68030
-            not.w   D3
-            movea.l A2,A1
-            lea     ($10,A1),A1
-            dbra    D4,.L3
-            move    D0,SR
-            movem.l (SP)+,D0-D4/A1-A2
-            rts
-.L2:
-            movec   CACR,D0
-            bset    #3,D0
-            movec   D0,CACR
-            rts
-            dc.w    $054A,$059E,$0574,$0510,$05C8,$05F2,$061C,$0510
-            dc.w    $2114,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0646,$069A,$0670,$0510,$06C4,$06EE,$0718,$0510
-            dc.w    $2092,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0742,$0796,$076C,$0510,$07C0,$07EA,$0814,$0510
-            dc.w    $218A,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $083E,$0892,$0868,$0510,$08BC,$08E6,$0910,$0510
-            dc.w    $21EE,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0ABA,$0B2A,$0AF2,$0510,$0B62,$0B9A,$0BD2,$0510
-            dc.w    $2F56,$2F30,$2F1E,$0510,$2EFA,$2EE8,$2F0C,$0510
-            dc.w    $093A,$09BA,$097A,$0510,$09FA,$0A3A,$0A7A,$0510
-            dc.w    $2CEE,$2CE0,$2CD2,$0510,$2CB6,$2CA8,$2CC4,$0510
-            dc.w    $0C0A,$0C66,$0C38,$0510,$0C94,$0CC2,$0CF0,$0510
-            dc.w    $21FA,$21FA,$21FA,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0D1E,$0D6A,$0D44,$0510,$0D90,$0DB6,$0DDC,$0510
-            dc.w    $2206,$2206,$2206,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0D1E,$0E2C,$0E02,$0510,$0E56,$0EAE,$0F06,$0510
-            dc.b    '&d&d&d'
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0F2C,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$227A,$23E4,$24AC
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0F4E,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$2584,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0F70,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$2212,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0F92,$0510,$0510
-            dc.w    $0510,$0F92,$0510,$0510,$0510,$2554,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0FAE,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$222C,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0FC8,$2012,$1FC2
-            dc.w    $0510,$0510,$0510,$2066,$0510,$0510,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0FE8,$106A,$102E
-            dc.w    $0510,$10A6,$10E2,$111E,$0510,$2114,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$115A,$11DC,$11A0
-            dc.w    $0510,$1218,$1254,$1290,$0510,$2092,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$12CC,$134E,$1312
-            dc.w    $0510,$138A,$13C6,$1402,$0510,$218A,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$143E,$14C0,$1484
-            dc.w    $0510,$14FC,$1538,$1574,$0510,$21EE,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1796,$1822,$17E0
-            dc.w    $0510,$1864,$18A6,$18E8,$0510,$2F66,$2F30,$2F1E
-            dc.w    $0510,$2EFA,$2EE8,$2F0C,$0510,$15B0,$164E,$1604
-            dc.w    $0510,$1698,$16E2,$172C,$0510,$2CFA,$2CE0,$2CD2
-            dc.w    $0510,$2CB6,$2CA8,$2CC4,$0510,$192A,$19B4,$1974
-            dc.w    $0510,$19F4,$1A34,$1A74,$0510,$21FA,$21FA,$21FA
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1AC6,$1B2C,$1AFE
-            dc.w    $0510,$1B5A,$1B88,$1BB6,$0510,$2206,$2206,$2206
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1AC6,$1C18,$1BE4
-            dc.w    $0510,$1C4C,$1CAE,$1D10,$0510
-            dc.b    '&d&d&d'
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1DBE,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$22A4,$23E4,$24AC
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1DF2,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$2584,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1E26,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$2212,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1E5A,$0510,$0510
-            dc.w    $0510,$1E5A,$0510,$0510,$0510,$2554,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1EDA,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$222C,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$1F36,$2012,$1FC2
-            dc.w    $0510,$0510,$0510,$2066,$0510,$0510,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$0510,$0510,$0510
-            dc.w    $0510,$0510,$0510,$0510,$0510,$7051,$A9C9
-sub_408EB710:
-            movea.l ($C,A6),A0
-            addq.w  #4,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            move.l  #$403E403E,-(SP)
-            fmove.x (SP)+,FP1
-            tst.b   (A0)
-            bpl.b   .L1
-            fsub.s  #"$5F800000",FP1
-            fcmp.s  #"$DF000000",FP1
-            fbne.w  .L1
-            fmove.s #"$7FC01400",FP1
-.L1:
-            rts
-            link.w  A6,#-$5E
-            move.l  #$100020,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fadd.x  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101020,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fadd.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100820,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fadd.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102020,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fadd.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102820,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fadd.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103020,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fadd.x  FP1,FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100022,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fsub.x  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101022,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fsub.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100822,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fsub.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102022,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fsub.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102822,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fsub.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103022,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fsub.x  FP1,FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100024,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fmul.x  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101024,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fmul.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100824,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fmul.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102024,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fmul.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102824,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fmul.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103024,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fmul.x  FP1,FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100026,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fdiv.x  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101026,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fdiv.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100826,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fdiv.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102026,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fdiv.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102826,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fdiv.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103026,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fdiv.x  FP1,FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10002A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.x  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            fbsf.w  sub_408EC1E4.L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10102A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.s  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            fbsf.w  sub_408EC1E4.L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10082A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.d  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            fbsf.w  sub_408EC1E4.L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10202A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.w  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            fbsf.w  sub_408EC1E4.L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10282A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.l  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            fbsf.w  sub_408EC1E4.L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10302A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.x  FP1,FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            fbsf.w  sub_408EC1E4.L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100028,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.x  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101028,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.s  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100828,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.d  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102028,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.w  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102828,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.l  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103028,(-4,A6)
-            movem.l D0/A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            fcmp.x  FP1,FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (sub_408EC1E4.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10002C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            frem.x  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10102C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            frem.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10082C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            frem.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10202C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            frem.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10282C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            frem.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10302C,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            frem.x  FP1,FP0
-            fmove.x FP0,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10002E,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmove.x ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10102E,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmove.s ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10082E,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmove.d ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10202E,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmove.w ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10282E,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fmove.l ([$C.w,A6]),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10302E,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            fmove.x FP1,FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101030,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            fmovem.x (A0),FP0
-            movea.l (8,A6),A0
-            fmove.s FP0,(A0)
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100830,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            fmovem.x (A0),FP0
-            movea.l (8,A6),A0
-            fmove.d FP0,(A0)
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102030,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            fmovem.x (A0),FP0
-            fmovem.l FPCR/FPSR,-(SP)
-            move.l  (SP),-(SP)
-            clr.b   (2,SP)
-            fmove.l (SP)+,FPCR
-            movea.l (8,A6),A0
-            fmove.w FP0,(A0)
-            fmove.l FPSR,-(SP)
-            btst    #5,(2,SP)
-            addq.w  #4,SP
-            fmovem.l (SP)+,FPCR/FPSR
-            beq.b   .L2
-            fmove.s #"$7FBFFFFF",FP1
-            bra.b   .L3
-.L2:
-            fmove.w FP0,(A0)
-.L3:
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102830,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            fmovem.x (A0),FP0
-            fmovem.l FPCR/FPSR,-(SP)
-            move.l  (SP),-(SP)
-            clr.b   (2,SP)
-            fmove.l (SP)+,FPCR
-            movea.l (8,A6),A0
-            fmove.l FP0,(A0)
-            fmove.l FPSR,-(SP)
-            btst    #5,(2,SP)
-            addq.w  #4,SP
-            fmovem.l (SP)+,FPCR/FPSR
-            beq.b   .L4
-            fmove.s #"$7FBFFFFF",FP1
-            bra.b   .L5
-.L4:
-            fmove.l FP0,(A0)
-.L5:
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103030,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            fmovem.x (A0),FP0
-            fmovem.x FP0,-(SP)
-            bra.w   sub_408ECCB0.L6
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5A
-            move.l  #$C0032,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fsqrt.x (A0),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #4
-            link.w  A6,#-$5A
-            move.l  #$C0034,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fint.x  (A0),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #4
-            link.w  A6,#-$5A
-            move.l  #$C0036,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fintrz.x (A0),FP0
-            fmove.x FP0,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #4
-            link.w  A6,#-$5E
-            move.l  #$102038,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            fmovem.x (A0),FP0
-            bra.w   sub_408ECCB0.L11
-            link.w  A6,#-$5A
-            move.l  #$C003A,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            fabs.x  (A0),FP0
-            bra.w   sub_408ECCB0.L16
-            fmovem.x ([8.w,SP]),FP0
-            fmovem.x FP0,-(SP)
-            move.w  (SP)+,(SP)
-            pea     (SP)
-            move.l  ($12,SP),-(SP)
-            bsr.w   QCLASSX
-            lea     ($A,SP),SP
-            rtd     #8
-sub_408EC1E4:
-            link.w  A6,#-$5E
-            move.l  #$100000,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fadd.x  (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101000,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fadd.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100800,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fadd.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102000,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fadd.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102800,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fadd.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103000,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fadd.x  FP1,FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100002,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fsub.x  (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101002,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fsub.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100802,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fsub.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102002,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fsub.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102802,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fsub.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103002,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fsub.x  FP1,FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100004,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fmul.x  (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101004,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fmul.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100804,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fmul.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102004,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fmul.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102804,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fmul.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103004,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fmul.x  FP1,FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100006,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fdiv.x  (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101006,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fdiv.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100806,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fdiv.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102006,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fdiv.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102806,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fdiv.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103006,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            fdiv.x  FP1,FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10000A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.x  (SP)+,FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            fbsf.w  .L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10100A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.s  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            fbsf.w  .L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10080A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.d  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            fbsf.w  .L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10200A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.w  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            fbsf.w  .L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10280A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.l  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            fbsf.w  .L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10300A,(-4,A6)
-            movem.l D0/A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.x  FP1,FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            fbsf.w  .L1
-            fnop
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-.L1:
-            dc.w    0,$0002,0,$0002,$0004,$0002,$0002,$0002
-            dc.w    $0019,$0002,$0019,$0002,$0004,$0002,$0002,$0002
-            link.w  A6,#-$5E
-            move.l  #$100008,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.x  (SP)+,FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    .L1(PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101008,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.s  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100808,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.d  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102008,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.w  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102808,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.l  ([$C.w,A6]),FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103008,(-4,A6)
-            movem.l D0/A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fcmp.x  FP1,FP0
-            fmove.l FPSR,D0
-            bfextu  D0{4:4},D0
-            move    (.L1.w,PC,D0.w*2),CCR
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10000C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            frem.x  (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10100C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            frem.s  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10080C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            frem.d  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10200C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            frem.w  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10280C,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            frem.l  ([$C.w,A6]),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10300C,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-            frem.x  FP1,FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bsr.w   sub_408ECCB0
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-sub_408ECCB0:
-            fmove.l FPSR,D0
-            swap    D0
-            bclr    #7,D0
-            beq.b   .L1
-            neg.b   D0
-.L1:
-            ext.w   D0
-            rts
-            link.w  A6,#-$5E
-            move.l  #$10000E,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP),FP0
-            movea.l (8,A6),A0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10100E,(-4,A6)
-            move.l  A0,-(SP)
-            fmove.s ([$C.w,A6]),FP0
-            movea.l (8,A6),A0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10080E,(-4,A6)
-            move.l  A0,-(SP)
-            fmove.d ([$C.w,A6]),FP0
-            movea.l (8,A6),A0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10200E,(-4,A6)
-            move.l  A0,-(SP)
-            fmove.w ([$C.w,A6]),FP0
-            movea.l (8,A6),A0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10280E,(-4,A6)
-            move.l  A0,-(SP)
-            fmove.l ([$C.w,A6]),FP0
-            movea.l (8,A6),A0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$10300E,(-4,A6)
-            move.l  A0,-(SP)
-            bsr.w   sub_408EB710
-            fmove.x FP1,FP0
-            movea.l (8,A6),A0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101010,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            movea.l (8,A6),A0
-            fmove.s FP0,(A0)
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100810,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            movea.l (8,A6),A0
-            fmove.d FP0,(A0)
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102010,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fmovem.l FPCR/FPSR,-(SP)
-            move.l  (SP),-(SP)
-            clr.b   (2,SP)
-            fmove.l (SP)+,FPCR
-            movea.l (8,A6),A0
-            fmove.w FP0,(A0)
-            fmove.l FPSR,-(SP)
-            btst    #5,(2,SP)
-            addq.w  #4,SP
-            fmovem.l (SP)+,FPCR/FPSR
-            beq.b   .L2
-            fmove.s #"$7FBFFFFF",FP1
-            bra.b   .L3
-.L2:
-            fmove.w FP0,(A0)
-.L3:
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$102810,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP)+,FP0
-            fmovem.l FPCR/FPSR,-(SP)
-            move.l  (SP),-(SP)
-            clr.b   (2,SP)
-            fmove.l (SP)+,FPCR
-            movea.l (8,A6),A0
-            fmove.l FP0,(A0)
-            fmove.l FPSR,-(SP)
-            btst    #5,(2,SP)
-            addq.w  #4,SP
-            fmovem.l (SP)+,FPCR/FPSR
-            beq.b   .L4
-            fmove.s #"$7FBFFFFF",FP1
-            bra.b   .L5
-.L4:
-            fmove.l FP0,(A0)
-.L5:
-            fnop
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$103010,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-.L6:
-            ftst.x  FP0
-            fbor.w  .L7
-            fmovecr.x #$32,FP0
-            bra.b   .L10
-.L7:
-            fmovem.l FPCR/FPSR,-(SP)
-            move.l  (SP),-(SP)
-            clr.b   (2,SP)
-            fmove.l (SP)+,FPCR
-            fint.x  FP0,FP0
-            fgetexp.x FP0,FP1
-            fsub.w  #$3F,FP1
-            fbolt.w .L8
-            fmovem.l (SP)+,FPCR/FPSR
-            fmovecr.x #$32,FP0
-            fmove.s #"$7FBFFFFF",FP1
-            fnop
-            bra.b   .L10
-.L8:
-            fmovem.l (SP)+,FPCR/FPSR
-            fint.x  (SP),FP0
-            fbuge.w .L9
-            fadd.s  #"$5F800000",FP0
-            bra.b   .L10
-.L9:
-            fmove.x FP0,(SP)
-            clr.w   (SP)
-            fmove.x (SP),FP0
-            fmove.l FPCR,-(SP)
-            fmove.l #0,FPCR
-            fscale.x FP1,FP0
-            fmove.l (SP)+,FPCR
-.L10:
-            fmovem.x FP0,(SP)
-            addq.w  #4,SP
-            movea.l (8,A6),A0
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5A
-            move.l  #$C0012,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fsqrt.x (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #4
-            link.w  A6,#-$5A
-            move.l  #$C0014,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fint.x  (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #4
-            link.w  A6,#-$5A
-            move.l  #$C0016,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fintrz.x (SP),FP0
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #4
-            link.w  A6,#-$5E
-            move.l  #$102018,(-4,A6)
-            movem.l D0/A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmovem.x (SP),FP0
-.L11:
-            move.w  ([$C.w,A6]),D0
-            bpl.b   .L12
-            cmpi.w  #$C000,D0
-            bgt.b   .L13
-            addi.w  #$4000,D0
-            fscale.w #$E000,FP0
-            fscale.w #$E000,FP0
+            bsr.w   sub_408DD11C
             bra.b   .L13
-.L12:
-            cmpi.w  #$4000,D0
-            blt.b   .L13
-            subi.w  #$4000,D0
-            fscale.w #$2000,FP0
-            fscale.w #$2000,FP0
-.L13:
-            fscale.w D0,FP0
-            btst    #5,(-1,A6)
-            beq.b   .L14
-            fmove.x FP0,(A0)
-            bra.b   .L15
-.L14:
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-.L15:
-            movem.l (SP)+,D0/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5A
-            move.l  #$C001A,(-4,A6)
-            move.l  A0,-(SP)
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fabs.x  (SP),FP0
-.L16:
-            fbeq.w  .L17
-            fcmp.s  #"$7F800000",FP0
-            fbne.w  .L18
-.L17:
-            flog2.x FP0,FP0
-            bra.b   .L19
-.L18:
-            fgetexp.x FP0,FP0
-.L19:
-            btst    #5,(-1,A6)
-            beq.b   .L20
-            fmove.x FP0,(A0)
-            bra.b   .L21
-.L20:
-            fmove.x FP0,(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
 .L21:
-            movea.l (SP)+,A0
-            unlk    A6
-            rtd     #4
-QCLASSX:
-            movem.l D0/A0,-(SP)
-            movea.l ($10,SP),A0
-            move.l  (A0)+,D0
-            swap    D0
-            bpl.b   .L4
-            lsl.w   #1,D0
-            ror.w   #1,D0
-            beq.b   .L1
-            cmpi.w  #$7FFF,D0
-            beq.b   .L11
-.L1:
-            moveq   #5,D0
-.L2:
-            movea.l ($C,SP),A0
-            move.w  D0,(A0)
-            roxr.w  #1,D0
-            bpl.b   .L3
-            neg.w   (A0)
-.L3:
-            movem.l (SP)+,D0/A0
-            rtd     #8
-.L4:
-            lsl.w   #1,D0
-            ror.w   #1,D0
-            beq.b   .L5
-            cmpi.w  #$7FFF,D0
-            beq.b   .L11
-            bra.b   .L8
-.L5:
-            move.w  (A0)+,D0
-            or.l    (A0),D0
-            bne.b   .L7
-.L6:
-            moveq   #4,D0
-            bra.b   .L2
-.L7:
-            moveq   #6,D0
-            bra.b   .L2
-.L8:
-            move.l  A1,-(SP)
-            movea.w D0,A1
-            subq.w  #2,A0
-            bfffo   (A0){0:0},D0
-            bne.b   .L9
-            suba.w  D0,A1
-            bfffo   (4,A0){0:0},D0
-            beq.b   .L10
-.L9:
-            suba.w  D0,A1
-            tst.w   A1
-            movea.l (SP)+,A1
-            bpl.b   .L1
-            bmi.b   .L7
-.L10:
-            movea.l (SP)+,A1
-            bra.b   .L6
-.L11:
-            btst    #$1E,D0
-            beq.b   .L12
-            moveq   #2,D0
-            bra.b   .L2
-.L12:
-            bclr    #$1F,D0
-            move.w  (A0)+,D0
-            or.l    (A0),D0
-            bne.b   .L13
-            moveq   #3,D0
-            bra.b   .L2
-.L13:
-            moveq   #1,D0
-            bra.b   .L2
-            movem.l D0/A0,-(SP)
-            movea.l ($10,SP),A0
-            move.l  (A0),D0
-            add.l   D0,D0
-            beq.b   .L16
-            bfchg   D0{0:8}
-            beq.b   .L17
-            bftst   D0{0:8}
-            beq.b   .L18
-            moveq   #5,D0
-.L14:
-            movea.l ($C,SP),A0
-            move.w  D0,(A0)
-            roxr.w  #1,D0
-            bpl.b   .L15
-            neg.w   (A0)
-.L15:
-            movem.l (SP)+,D0/A0
-            rtd     #8
-.L16:
-            moveq   #4,D0
-            bra.b   .L14
-.L17:
-            moveq   #6,D0
-            bra.b   .L14
-.L18:
-            bftst   D0{8:23}
-            bne.b   .L19
-            moveq   #3,D0
-            bra.b   .L14
-.L19:
-            btst    #$17,D0
-            beq.b   .L20
-            moveq   #2,D0
-            bra.b   .L14
-.L20:
-            moveq   #1,D0
-            bra.b   .L14
-            movem.l D0/A0,-(SP)
-            movea.l ($10,SP),A0
-            move.l  (A0)+,D0
-            or.w    (A0)+,D0
-            or.w    (A0),D0
-            add.l   D0,D0
-            beq.b   .L23
-            bfchg   D0{0:11}
-            beq.b   .L24
-            bftst   D0{0:11}
-            beq.b   .L25
-            moveq   #5,D0
-.L21:
-            movea.l ($C,SP),A0
-            move.w  D0,(A0)
-            roxr.w  #1,D0
-            bpl.b   .L22
-            neg.w   (A0)
+            dc.w    $4009,$2004,$E00A,$0006,$7E07,$060C,$000D,$C00E
+            dc.w    $DD03,$0002,$080F,$0901,$0A09,0
 .L22:
-            movem.l (SP)+,D0/A0
-            rtd     #8
+            dc.w    $700B,$210E,$6005,0
 .L23:
-            moveq   #4,D0
-            bra.b   .L21
+            dc.w    $0560,$0E41,$03DD,$2100
 .L24:
-            moveq   #6,D0
-            bra.b   .L21
+            dc.w    $0035,$0014,$001E,$0082,$0066,$0010,0,$0039
+            ds.b    4
 .L25:
-            bftst   D0{11:20}
-            bne.b   .L26
-            moveq   #3,D0
-            bra.b   .L21
+            dc.w    $006E,$3A00,$0064,$00FF,$00C8,$00FF,$01F4,$00FF
+            dc.w    $0190,$72FF,$0046,$2C00,$001E,0,$0064,$5A00
+            dc.w    $003C,$FF00,$000A,$4000
 .L26:
-            btst    #$14,D0
-            beq.b   .L27
-            moveq   #2,D0
-            bra.b   .L21
-.L27:
-            moveq   #1,D0
-            bra.b   .L21
-            movem.l D0/A0,-(SP)
-            movea.l ($10,SP),A0
-            move.l  (A0)+,D0
-            add.l   D0,D0
-            or.l    (A0),D0
-            sne     D0
-            roxl.b  #1,D0
-            movea.l ($C,SP),A0
-            ext.w   D0
-            move.w  .L28(PC,D0.w*2),(A0)
-            movem.l (SP)+,D0/A0
-            rtd     #8
-            dc.w    $0005,$FFFB
-.L28:
-            dc.w    $0004,$0002
-sub_408ED28E:
-            movem.l D0-D2/A0,-(SP)
-            fmove.l FPSR,D0
-            movea.l ($14,SP),A0
-            moveq   #0,D2
-            fmove.l FPCR,D1
-            bfextu  D0{24:5},D0
-            move.b  .L2(PC,D0.w),D0
-            bfins   D0,D2{19:5}
-            bclr    #$D,D1
-            bftst   D1{16:2}
-            beq.b   .L1
-            bset    #$D,D1
+            dc.w    $4A09,$000A,$1000,$080F,$0101,0
+sub_408DD2DE:
+            move.w  #$14,($A,A0)
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            rts
+sub_408DD2EE:
+            movem.l D1-D7/A1,-(SP)
+            lea     sub_408DD2EE,A1
+            movea.l ROMBase,A0
+            cmpi.b  #$75,(9,A0)
+            bcs.b   .L2
+            move.l  A0,D0
+            _StripAddress
+            cmpa.l  D0,A1
+            bcs.b   .L1
+            movea.l D0,A0
+            add.l   ($40,A0),D0
+            cmpa.l  D0,A1
+            bcs.b   .L2
 .L1:
-            bfextu  D1{18:5},D0
-            move.b  .L2(PC,D0.w),D0
-            bfins   D0,D2{27:5}
-            bfextu  D1{24:2},D0
-            move.b  .L3(PC,D0.w),D0
-            bfins   D0,D2{25:2}
-            bfextu  D1{26:2},D0
-            move.b  .L4(PC,D0.w),D0
-            bfins   D0,D2{17:2}
-            move.w  D2,(A0)
-            movem.l (SP)+,D0-D2/A0
-            rtd     #4
+            suba.w  #$E,SP
+            movea.l SP,A0
+            clr.l   ($A,A0)
+            move.w  #$FFFF,(4,A0)
+            _InsTime
+            move.b  (4,A0),D0
+            bpl.b   .L3
+            _RmvTime
+            adda.w  #$E,SP
 .L2:
-            dc.w    $0010,$0818,$0212,$0A1A,$0414,$0C1C,$0616,$0E1E
-            dc.w    $0111,$0919,$0313,$0B1B,$0515,$0D1D,$0717,$0F1F
+            move.w  TimeDBRA,D0
+            movem.l (SP)+,D1-D7/A1
+            rts
 .L3:
-            dc.w    $0002,$0103
+            _RmvTime
+            adda.w  #$E,SP
+            movem.l D4-D7,-(SP)
+            moveq   #6,D0
 .L4:
-            dc.w    $0003,$0201
-sub_408ED310:
-            movem.l D0-D2/A0,-(SP)
-            movea.l ($14,SP),A0
-            move.w  (A0),D2
-            fmove.l FPSR,D1
-            bfextu  D2{19:5},D0
-            move.b  .L1(PC,D0.w),D0
-            bfins   D0,D1{24:5}
-            fmove.l D1,FPSR
-            fmove.l FPCR,D1
-            bfextu  D2{27:5},D0
-            move.b  .L1(PC,D0.w),D0
-            bset    #4,D0
-            bfins   D0,D1{16:7}
-            bfextu  D2{25:2},D0
-            move.b  sub_408ED28E.L3(PC,D0.w),D0
-            bfins   D0,D1{24:2}
-            bfextu  D2{17:2},D0
-            move.b  sub_408ED28E.L4(PC,D0.w),D0
-            bfins   D0,D1{26:2}
-            fmove.l D1,FPCR
-            movem.l (SP)+,D0-D2/A0
-            rtd     #4
+            clr.w   -(SP)
+            dbra    D0,.L4
+            moveq   #9,D4
+            move.l  #$FFFF,D5
+.L5:
+            move.l  #$3938700,D7
+            movea.l SP,A0
+            move    SR,-(SP)
+            move    #$2700,SR
+            _InsTime
+            move.l  D7,D6
+            move.l  D7,D0
+            neg.l   D0
+            _PrimeTime
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D7
+            movea.l SP,A0
+            _InsTime
+            move    SR,-(SP)
+            move    #$2700,SR
+            move.l  D6,D0
+            neg.l   D0
+            _PrimeTime
+            move.w  TimeDBRA,D0
+.L6:
+            dbra    D0,.L6
+            move.w  TimeDBRA,D0
+.L7:
+            dbra    D0,.L7
+            move.w  TimeDBRA,D0
+.L8:
+            dbra    D0,.L8
+            move.w  TimeDBRA,D0
+.L9:
+            dbra    D0,.L9
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D6
+            sub.l   D7,D6
+            cmp.l   D6,D5
+            bcs.b   .L10
+            move.l  D6,D5
+.L10:
+            dbra    D4,.L5
+            move.w  TimeDBRA,D1
+            mulu.w  #$FA0,D1
+            divu.w  D5,D1
+            move.w  D1,D0
+            movem.l (SP)+,D4-D7
+            adda.w  #$E,SP
+            movem.l (SP)+,D1-D7/A1
+            rts
+sub_408DD3D4:
+            movem.l D1-D7/A1,-(SP)
+            lea     sub_408DD3D4,A1
+            movea.l ROMBase,A0
+            cmpi.b  #$75,(9,A0)
+            bcs.b   .L2
+            move.l  A0,D0
+            _StripAddress
+            cmpa.l  D0,A1
+            bcs.b   .L1
+            movea.l D0,A0
+            add.l   ($40,A0),D0
+            cmpa.l  D0,A1
+            bcs.b   .L2
 .L1:
-            dc.w    $0070,$0474,$0878,$0C7C,$0272,$0676,$0A7A,$0E7E
-            dc.w    $0171,$0575,$0979,$0D7D,$0373,$0777,$0B7B,$0F7F
-            movem.l D0/A0-A1,-(SP)
-            movea.l ($10,SP),A0
-            move.l  (A0),($A4C).w
-            cmpi.b  #4,CPUFlag
-            blt.b   .L2
-            pea     STDHANDLER040
-            pea     sub_408EDA10.L5
-            pea     sub_408EDA00
-            pea     sub_408EDA10.L5
-            pea     DZHANDLER040
-            pea     sub_408EDA10.L5
-            pea     sub_408EDA10.L5
+            suba.w  #$E,SP
+            movea.l SP,A0
+            clr.l   ($A,A0)
+            move.w  #$FFFF,(4,A0)
+            _InsTime
+            move.b  (4,A0),D0
+            bpl.b   .L3
+            _RmvTime
+            adda.w  #$E,SP
+.L2:
+            move.w  TimeSCCDB,D0
+            movem.l (SP)+,D1-D7/A1
+            rts
+.L3:
+            _RmvTime
+            adda.w  #$E,SP
+            movem.l D4-D7,-(SP)
+            moveq   #6,D0
+.L4:
+            clr.w   -(SP)
+            dbra    D0,.L4
+            moveq   #9,D4
+            move.l  #$FFFF,D5
+.L5:
+            move.l  #$3938700,D7
+            movea.l SP,A0
+            move    SR,-(SP)
+            move    #$2700,SR
+            _InsTime
+            move.l  D7,D6
+            move.l  D7,D0
+            neg.l   D0
+            _PrimeTime
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D7
+            movea.l SP,A0
+            _InsTime
+            move    SR,-(SP)
+            move    #$2700,SR
+            move.l  D6,D0
+            neg.l   D0
+            _PrimeTime
+            move.w  TimeSCCDB,D0
+            movea.l SCCRd,A1
+.L6:
+            btst    #0,(A1)
+            dbra    D0,.L6
+            move.w  TimeSCCDB,D0
+.L7:
+            btst    #0,(A1)
+            dbra    D0,.L7
+            move.w  TimeSCCDB,D0
+.L8:
+            btst    #0,(A1)
+            dbra    D0,.L8
+            move.w  TimeSCCDB,D0
+.L9:
+            btst    #0,(A1)
+            dbra    D0,.L9
+            _RmvTime
+            move    (SP)+,SR
+            add.l   ($A,A0),D6
+            sub.l   D7,D6
+            cmp.l   D6,D5
+            bcs.b   .L10
+            move.l  D6,D5
+.L10:
+            dbra    D4,.L5
+            move.w  TimeSCCDB,D1
+            mulu.w  #$FA0,D1
+            divu.w  D5,D1
+            move.w  D1,D0
+            movem.l (SP)+,D4-D7
+            adda.w  #$E,SP
+            movem.l (SP)+,D1-D7/A1
+            rts
+            dc.w    $4D50
+RsrcEntryltlk_1:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'ltlk' 1 "LTLK" (1732 bytes) - Combo mask
+            dc.l    RsrcEntryltlk_0-BaseOfROM       ; Next entry
+            dc.l    Rsrcltlk_1-BaseOfROM            ; Data
+            dc.b    'ltlk'                          ; Type
+            dc.w    1                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'LTLK'                        ; Name
+            dc.b    'ter, Inc'
+            dc.l    $C0A00000,$000006D0,$00000244   ; Block header
+Rsrcltlk_1:
+            bra.b   .L1
+            dc.b    $60,$00,$01,$1A,$00,$08,$38,$01,$80,$00,$00,$00,$08
+            dc.b    '56.0.1  '
+            dc.b    $00,$3E
+            dc.b    'IOP LocalTalk ltlk v56.0.1  ; '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer, Inc. 1984-1991'
+            dc.b    $00
+.L1:
+            movea.l ExpandMem,A3
+            movea.l ($70,A3),A3
+            tst.b   D0
+            bne.b   sub_408DD5B2.L2
+            movem.l D2/A0-A2,($2EE,A3)
+            move.w  ($308,A3),($58C,A3)
+            moveq   #0,D1
+.L2:
+            move.w  (A1)+,D2
+            beq.b   .L3
+            add.w   D2,D1
+            move.w  D2,($586,A3)
+            move.l  (A1)+,($588,A3)
+            lea     ($584,A3),A0
+            _IOPMoveData
+            add.w   D2,($58C,A3)
+            bra.b   .L2
+.L3:
+            move.b  #3,($590,A3)
+            move.w  D1,($591,A3)
+            move.w  #$310,($575,A3)
+            lea     sub_408DD5B2,A0
+            move.l  A0,($580,A3)
+            lea     ($56C,A3),A0
+            _IOPMsgRequest
+            movem.l ($2EE,A3),D2/A0-A2
+            rts
+sub_408DD5B2:
+            movea.l ExpandMem,A3
+            movea.l ($70,A3),A3
+            tst.b   ($590,A3)
+            bne.b   .L1
+            moveq   #0,D0
+            movem.l ($2EE,A3),D2/A0-A2
+            jmp     (A0)
+.L1:
+            moveq   #-1,D0
+            movem.l ($2EE,A3),D2/A0-A2
+            jmp     (A0)
+.L2:
+            movem.l D2/A0-A2,($2EE,A3)
+            move.b  #2,($590,A3)
+            move.b  D2,($591,A3)
+            move.w  #$210,($575,A3)
+            clr.l   ($580,A3)
+            lea     ($56C,A3),A0
+            _IOPMsgRequest
+.L3:
+            tst.b   ($577,A3)
+            bne.b   .L3
+            tst.b   ($590,A3)
+            bne.b   .L4
+            movem.l ($2EE,A3),D2/A0-A2
+            move.l  A2,($2EA,A3)
+            jmp     (A0)
+.L4:
+            moveq   #5,D0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            movem.l ($2EE,A3),D2/A0-A2
+            jmp     (A0)
+            cmpi.w  #8,D0
+            bhi.b   .L6
+            lsl.w   #1,D0
+            move.w  .L5(PC,D0.w),D0
+            jmp     .L5(PC,D0.w)
+.L5:
+            dc.w    .L6-.L5
+            dc.w    .L7-.L5
+            dc.w    sub_408DD784.L3-.L5
+            dc.w    .L6-.L5
+            dc.w    .L6-.L5
+            dc.w    .L6-.L5
+            dc.w    .L6-.L5
+            dc.w    .L8-.L5
+            dc.w    sub_408DD784.L2-.L5
+.L6:
+            moveq   #-1,D0
+            rts
+.L7:
+            movem.l D1/D4,-(SP)
+            lea     Rsrcltlk_1,A0
+            _RecoverHandle
+            move.l  A0,-(SP)
+            _DetachResource
+            movem.l (SP)+,D1/D4
+            clr.w   D0
+            rts
+.L8:
+            movem.l D1-D3/A0-A3,-(SP)
+            bsr.w   sub_408DD946
+            bne.w   .L17
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            move.w  #$100,($584,A2)
+            clr.w   ($5B8,A2)
+            move.l  #$103,($572,A2)
+            move.l  #$1010200,($590,A2)
+            move.b  #$10,($576,A2)
+            lea     ($590,A2),A0
+            move.l  A0,($57C,A2)
+            move.l  A0,($578,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L9:
+            tst.b   ($577,A2)
+            bne.b   .L9
+            tst.b   ($590,A2)
+            bne.w   .L16
+            move.w  #$7F,D0
+            bsr.w   sub_408DD784
+            tst.l   A0
+            beq.w   .L14
+            move.w  D1,($586,A2)
+            move.l  (A0),($588,A2)
+            move.w  #$56AA,($58C,A2)
+            lea     ($584,A2),A0
+            _IOPMoveData
+            move.w  #$301,($590,A2)
+            move.w  #$210,($575,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L10:
+            tst.b   ($577,A2)
+            bne.b   .L10
+            tst.b   ($590,A2)
+            bne.b   .L14
+            move.b  #5,($574,A2)
+            move.w  #$210,($575,A2)
+            move.b  ($BFE).w,D0
+            btst    #1,D0
+            beq.b   .L11
+            move.w  #$180,($590,A2)
+            bra.b   .L12
+.L11:
+            move.w  #$100,($590,A2)
+.L12:
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L13:
+            tst.b   ($577,A2)
+            bne.b   .L13
+            tst.b   ($590,A2)
+            bne.b   .L14
+            move.w  ($591,A2),($308,A2)
+            move.l  #$20510,($5A6,A2)
+            move.b  #4,($5AA,A2)
+            lea     ($5C4,A2),A0
+            move.l  A0,($5AC,A2)
+            move.l  A0,($5B0,A2)
+            lea     sub_408DD7F8,A0
+            move.l  A0,($5B4,A2)
+            lea     ($5A0,A2),A0
+            _IOPMsgRequest
+            movem.l (SP)+,D1-D3/A0-A3
+            clr.w   D0
+            rts
+.L14:
+            move.l  #$1021000,($574,A2)
+            move.w  #$201,($590,A2)
+            clr.l   ($580,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L15:
+            tst.b   ($577,A2)
+            bne.b   .L15
+.L16:
+            bsr.w   sub_408DD938
+.L17:
+            movem.l (SP)+,D1-D3/A0-A3
+            moveq   #-1,D0
+            rts
+sub_408DD784:
+            subq.w  #4,SP
+            move.l  #'iopc',-(SP)
+            move.w  D0,-(SP)
+            bsr.w   sub_408DD962
+            movea.l (SP),A0
+            move.l  A0,D0
+            beq.b   .L1
+            _GetHandleSize
+            move.l  D0,D1
+.L1:
+            movea.l (SP)+,A0
+            rts
+.L2:
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            bsr.b   sub_408DD7C8
+            rts
+.L3:
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            bsr.b   sub_408DD7C8
+            moveq   #3,D0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            movea.l A2,A0
+            _DisposPtr
+            moveq   #0,D0
+            rts
+sub_408DD7C8:
+            bsr.w   sub_408DD938
+            move.b  #3,($5A7,A2)
+            lea     ($5A0,A2),A0
+            _IOPMsgRequest
+            move.l  #$1021000,($574,A2)
+            move.w  #$201,($590,A2)
+            clr.l   ($580,A2)
+            lea     ($56C,A2),A0
+            _IOPMsgRequest
+.L1:
+            tst.b   ($577,A2)
+            bne.b   .L1
+            rts
+sub_408DD7F8:
+            movea.l ExpandMem,A3
+            movea.l ($70,A3),A3
+            move    SR,($2C0,A3)
+            move    #$2600,SR
+            movem.l A4-A5,($2FE,A3)
+            move.w  ($5C7,A3),D0
+            subq.w  #2,D0
+            move.w  D0,($5BA,A3)
+            lea     ($30E,A3),A0
+            move.l  A0,($5BC,A3)
+            move.w  ($5C5,A3),($5C0,A3)
+            lea     ($5B8,A3),A0
+            _IOPMoveData
+            movea.l ($2EA,A3),A2
+            lea     (1,A2),A0
+            lea     ($30E,A3),A1
+            move.l  (A1)+,(A0)+
+            move.b  (A1)+,(A0)+
+            move.l  A1,($30A,A3)
+            move.w  ($5C7,A3),D1
+            subq.w  #5,D1
+            move.w  (4,A2),D2
+            andi.w  #$3FF,D2
+            cmp.w   D2,D1
+            beq.b   .L1
+            addq.l  #1,($706,A3)
+            bra.b   .L2
+.L1:
+            subq.w  #2,D1
+            move.w  D1,($306,A3)
+            movea.l A0,A3
+            lea     .L3,A4
+            move.b  (3,A2),D2
+            moveq   #1,D0
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            movea.l ExpandMem,A3
+            movea.l ($70,A3),A3
+            addq.l  #1,($702,A3)
+.L2:
+            move    ($2C0,A3),SR
+            move.b  #1,($5A7,A3)
+            clr.b   ($5C4,A2)
+            lea     ($5A0,A3),A0
+            _IOPMsgRequest
+            movem.l ($2FE,A3),A4-A5
+            rts
+.L3:
+            bra.b   .L10
+            bra.b   .L11
+.L10:
+            movem.l A0-A1,-(SP)
+            movea.l ExpandMem,A0
+            movea.l ($70,A0),A0
+            cmp.w   ($306,A0),D3
+            bgt.b   .L6
+            sub.w   D3,($306,A0)
+            movea.l ($30A,A0),A1
+            bra.b   .L5
+.L4:
+            move.b  (A1)+,(A3)+
+.L5:
+            dbra    D3,.L4
+            move.l  A1,($30A,A0)
+            move.w  ($306,A0),D1
+            moveq   #0,D0
+            moveq   #0,D3
+            movem.l (SP)+,A0-A1
+            rts
+.L6:
+            move    ($2C0,A0),SR
+            movem.l ($2FE,A0),A4-A5
+            movem.l (SP)+,A0-A1
+            move.b  #$FF,D0
+            rts
+.L11:
+            movem.l A0-A2,-(SP)
+            movea.l ExpandMem,A2
+            movea.l ($70,A2),A2
+            tst.w   D3
+            beq.b   .L9
+            tst.w   ($306,A2)
+            beq.b   .L9
+            movea.l ($30A,A2),A1
+            move.w  ($306,A2),D0
+            cmp.w   D0,D3
+            bge.b   .L8
+            move.w  D3,D0
+            bra.b   .L8
+.L7:
+            move.b  (A1)+,(A3)+
+.L8:
+            dbra    D0,.L7
+.L9:
+            move    ($2C0,A2),SR
+            move.b  #1,($5A7,A2)
+            clr.b   ($5C4,A2)
+            lea     ($5A0,A2),A0
+            _IOPMsgRequest
+            sub.w   ($306,A2),D3
+            movem.l ($2FE,A2),A4-A5
+            movem.l (SP)+,A0-A2
+            moveq   #0,D0
+            rts
+sub_408DD938:
+            moveq   #$12,D0
+            moveq   #1,D1
+            movea.l LAPMgrPtr,A1
+            jsr     (2,A1)
+            rts
+sub_408DD946:
+            movem.l D1/A1,-(SP)
+            movea.l LAPMgrPtr,A1
+            moveq   #$11,D0
+            moveq   #1,D1
+            jsr     (2,A1)
+            movem.l (SP)+,D1/A1
+            bne.b   .L1
+            moveq   #0,D0
+.L1:
+            tst.w   D0
+            rts
+sub_408DD962:
+            link.w  A6,#-2
+            movem.l D1-D4/A1-A3,-(SP)
+            move.w  CurMap,(-2,A6)
+            moveq   #0,D3
+            moveq   #0,D4
+            move.w  #1,CurMap
+            move.w  #$FFFF,ROMMapInsert
+            clr.l   -(SP)
+            move.l  ($A,A6),-(SP)
+            move.w  (8,A6),-(SP)
+            _Get1Resource
+            movea.l (SP)+,A2
+            tst.w   ResErr
+            beq.b   .L1
+            suba.l  A2,A2
+.L1:
+            move.w  SysMap,CurMap
+            clr.l   -(SP)
+            move.l  ($A,A6),-(SP)
+            move.w  (8,A6),-(SP)
+            _Get1Resource
+            movea.l (SP)+,A3
+            tst.w   ResErr
+            beq.b   .L2
+            suba.l  A3,A3
+.L2:
+            subq.w  #4,SP
+            move.l  A2,-(SP)
+            move.l  A3,-(SP)
+            move.l  ($A,A6),-(SP)
+            bsr.w   sub_408DDA16
+            movea.l (SP)+,A2
+            move.l  D0,D3
+            move.w  (-2,A6),CurMap
+            clr.l   -(SP)
+            move.l  ($A,A6),-(SP)
+            move.w  (8,A6),-(SP)
+            _GetResource
+            movea.l (SP)+,A3
+            tst.w   ResErr
+            beq.b   .L3
+            suba.l  A3,A3
+.L3:
+            subq.w  #4,SP
+            movem.l A2-A3,-(SP)
+            move.l  ($A,A6),-(SP)
+            bsr.w   sub_408DDA16
+            movea.l (SP)+,A2
+            move.l  D0,D3
+            clr.w   ResErr
+            move.l  A2,($E,A6)
+            bne.b   .L4
+            move.w  #$FF40,ResErr
+.L4:
+            movea.l A2,A0
+            move.l  D3,D0
+            movem.l (SP)+,D1-D4/A1-A3
+            move.l  (4,A6),($A,A6)
+            unlk    A6
+            addq.w  #6,SP
+            rts
+sub_408DDA16:
+            link.w  A6,#0
+            movem.l D1-D4/A1-A3,-(SP)
+            movea.l ($10,A6),A2
+            movea.l ($C,A6),A3
+            subq.w  #4,SP
+            move.l  A2,-(SP)
+            move.l  (8,A6),-(SP)
+            bsr.w   sub_408DDA8E
+            move.l  (SP)+,D3
+            cmpi.w  #$8000,D3
+            bne.b   .L1
+            move.b  #$FF,D3
+.L1:
+            subq.w  #4,SP
+            move.l  A3,-(SP)
+            move.l  (8,A6),-(SP)
+            bsr.w   sub_408DDA8E
+            move.l  (SP)+,D4
+            cmpi.w  #$8000,D4
+            bne.b   .L2
+            move.b  #$FF,D4
+.L2:
+            cmp.l   D3,D4
+            bcs.b   .L3
+            exg     A2,A3
+            exg     D3,D4
+.L3:
+            cmpa.l  A2,A3
+            beq.b   .L4
+            cmpa.w  #0,A3
+            beq.b   .L4
+            move.l  A3,-(SP)
+            _ReleaseResource
+.L4:
+            move.l  A2,($14,A6)
+            movea.l A2,A0
+            cmpi.w  #$80FF,D3
+            bne.b   .L5
+            clr.b   D3
+.L5:
+            move.l  D3,D0
+            movem.l (SP)+,D1-D4/A1-A3
+            move.l  (4,A6),($10,A6)
+            unlk    A6
+            lea     ($C,SP),SP
+            rts
+sub_408DDA8E:
+            link.w  A6,#0
+            movem.l D1-D5/A1-A2,-(SP)
+            tst.l   ($C,A6)
+            beq.w   .L4
+            movea.l ($C,A6),A0
+            move.l  (A0),D5
+            beq.w   .L4
+            movea.l ($C,A6),A0
+            _GetHandleSize
+            move.l  D0,D2
+            bmi.b   .L4
+            movea.l D5,A2
+            cmpi.l  #'DRVR',(8,A6)
+            beq.b   .L1
+            cmpi.l  #8,D2
+            bls.b   .L4
+            move.w  (6,A2),D4
+            adda.w  D4,A2
+            addi.l  #$B,D4
+            cmp.l   D4,D2
+            bls.b   .L4
+            move.l  (A2),D3
+            clr.w   -(SP)
+            move.l  A2,-(SP)
+            bsr.w   sub_408DDB3E
+            tst.w   (SP)+
+            bne.b   .L5
+            bra.b   .L4
+.L1:
+            move.w  #$12,D4
+            cmp.l   D4,D2
+            bls.b   .L4
+            moveq   #0,D0
+            move.b  (0,A2,D4.w),D0
+            addq.w  #1,D0
+            btst    #0,D0
+            beq.b   .L2
+            addq.w  #1,D0
+            add.w   D0,D4
+.L2:
+            adda.w  D4,A2
+            addi.l  #$B,D4
+            cmp.l   D4,D2
+            bls.b   .L4
+            move.l  (A2),D3
+            clr.w   -(SP)
+            move.l  A2,-(SP)
+            bsr.w   sub_408DDB3E
+            tst.w   (SP)+
+            bne.b   .L3
+            move.w  (A2),D3
+            clr.b   D3
+            swap    D3
+            move.w  #$8000,D3
+.L3:
+            bra.b   .L5
+.L4:
+            moveq   #0,D3
+.L5:
+            move.l  D3,($10,A6)
+            move.l  D3,D0
+            movem.l (SP)+,D1-D5/A1-A2
+            move.l  (4,A6),($C,A6)
+            unlk    A6
+            addq.w  #8,SP
+            rts
+sub_408DDB3E:
+            link.w  A6,#-$10
+            movem.l D1-D4/A1-A2,-(SP)
+            tst.l   (8,A6)
+            beq.b   .L1
+            movea.l (8,A6),A2
+            move.l  (A2),D3
+            lea     (-$10,A6),A0
+            move.l  D3,D0
+            swap    D0
+            lsr.w   #8,D0
+            andi.l  #$FF,D0
+            clr.w   -(SP)
+            _DECSTR68K
+            moveq   #0,D0
+            move.b  (A0)+,D0
+            adda.w  D0,A0
+            move.l  D3,D0
+            swap    D0
+            lsr.w   #4,D0
+            andi.l  #$F,D0
+            clr.w   -(SP)
+            _DECSTR68K
+            lea     (-$10,A6),A0
+            moveq   #0,D0
+            move.b  (A0),D0
+            addq.w  #1,D0
+            move.b  #$2E,(0,A0,D0.w)
+            move.l  (A0),D0
+            andi.l  #$FFFFFF,D0
+            lea     (6,A2),A0
+            move.l  (A0),D1
+            andi.l  #$FFFFFF,D1
+            cmp.l   D0,D1
+            beq.b   .L2
+.L1:
+            moveq   #0,D0
             bra.b   .L3
 .L2:
-            pea     sub_408EDC6E
-            pea     sub_408EDCF0.L4
-            pea     sub_408EDCE6
-            pea     sub_408EDCF0.L4
-            pea     DZHANDLER
-            pea     sub_408EDCF0.L4
-            pea     sub_408EDCF0.L4
+            moveq   #1,D0
 .L3:
-            movea.l SP,A0
-            move.w  #2,D0
-            bsr.w   sub_408EDCF0.L8
-            lea     ($1C,SP),SP
-            movem.l (SP)+,D0/A0-A1
-            rtd     #4
-sub_408ED3EA:
-            move.l  ($A4C).w,([4.w,SP])
-            rtd     #4
-            bchg    #7,([4.w,SP])
-            rtd     #4
-            bclr    #7,([4.w,SP])
-            rtd     #4
-sub_408ED40E:
-            move.l  (4,SP),-(SP)
-            bsr.w   sub_408ED28E
-            fmovem.l .L1(PC),FPCR/FPSR
-            rtd     #4
-.L1:
-            dc.b    $00,$00,$20
+            move.w  D0,($C,A6)
+            movem.l (SP)+,D1-D4/A1-A2
+            move.l  (4,A6),(8,A6)
+            unlk    A6
+            addq.w  #4,SP
+            rts
+            dc.w    $544F
+RsrcEntrylmgr_0:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'lmgr' 0 "Main" (2868 bytes) - Combo mask
+            dc.l    RsrcEntryltlk_1-BaseOfROM       ; Next entry
+            dc.l    Rsrclmgr_0-BaseOfROM            ; Data
+            dc.b    'lmgr'                          ; Type
+            dc.w    0                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'Main'                        ; Name
+            dc.b    ' Apple C'
+            dc.l    $C0A00000,$00000B40,$0000023C   ; Block header
+Rsrclmgr_0:
+            bra.b   .L1
             ds.b    5
-            movem.l D0-D1/A0,-(SP)
-            moveq   #0,D0
-            movea.l ($10,SP),A0
-            fmove.l FPSR,D1
-            move.w  (A0),D0
-            move.w  .L2(PC,D0.w*2),D0
-            bfextu  D1{D0:1},D1
-            move.b  D1,(A0)
-            movem.l (SP)+,D0-D1/A0
-            rtd     #4
-.L2:
-            dc.w    $0018,$001A,$0019,$001B,$001C
-preFMOVE:
-            fmove.l FPCR,D2
-            move.l  #$8C0,D3
-            and.l   D2,D3
-            beq.b   .L1
-            eor.l   D3,D2
-            fmove.l D2,FPCR
+            dc.b    $08,$38,$02,$80,$00,$00,$00,$08
+            dc.b    '56.0.2  '
+            dc.b    $00,$30
+            dc.b    'lmgr v56.0.2  ; '
+            dc.b    $A9,$20
+            dc.b    'Apple Computer, Inc. 1984-1991'
+            dc.b    $00
 .L1:
-            rts
-sub_408ED46A:
-            tst.l   D3
-            beq.b   .L1
-            eor.l   D3,D2
-            fmove.l D2,FPCR
-.L1:
-            rts
-            link.w  A6,#-$5E
-            move.l  #$100033,(-4,A6)
-            movem.l D0-D3/A0,-(SP)
-            bsr.b   preFMOVE
-            movea.l (8,A6),A0
-            fmove.x (A0),FP1
-            movea.l ($C,A6),A0
-            fmove.x (A0),FP0
-            fmove.x FP0,(A0)
-            move.w  (A0)+,(A0)
-            bra.b   .L2
-            link.w  A6,#-$5E
-            move.l  #$100013,(-4,A6)
-            movem.l D0-D3/A0,-(SP)
-            bsr.b   preFMOVE
-            movea.l (8,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP1
-            movea.l ($C,A6),A0
-            addq.w  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.w  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.w  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            subq.w  #6,A0
-.L2:
-            fcmp.x  FP0,FP1
-            fbogl.w .L4
-            fbeq.w  .L3
-            fcmp.x  FP0,FP0
-            fbun.w  .L3
-            fmove.x FP1,FP0
-.L3:
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.w  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            subq.w  #6,A0
-            bsr.w   sub_408ED46A
-            bra.w   .L14
-.L4:
-            fsolt   D1
-            ftst.x  FP0
-            fbne.w  .L6
-            fmove.x #"$000000000000000000000001",FP0
-            ftst.x  FP1
-            fbogt.w .L5
-            fneg.x  FP0,FP0
-.L5:
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.w  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            subq.w  #6,A0
-            bra.b   .L11
-.L6:
-            fsolt   D0
-            eor.b   D1,D0
-            bpl.b   .L8
-            bftst   (A0){1:15}
-            beq.b   .L7
-            bclr    #7,(2,A0)
-.L7:
-            subq.l  #1,(6,A0)
-            bcc.b   .L10
-            subq.l  #1,(2,A0)
-            bcc.b   .L10
-            subq.w  #1,(A0)
-            bra.b   .L10
-.L8:
-            bftst   (A0){1:15}
-            beq.b   .L9
-            bset    #7,(2,A0)
-.L9:
-            addq.l  #1,(6,A0)
-            bcc.b   .L10
-            addq.l  #1,(2,A0)
-            bcc.b   .L10
-            addq.w  #1,(A0)
-.L10:
-            move.l  (A0),D0
-            bfchg   D0{1:15}
-            bne.b   .L12
-.L11:
-            bsr.w   sub_408ED46A
-            btst    #7,(2,A0)
-            bne.b   .L14
-            fmovecr.x #$32,FP1
-            fscale.w #$8000,FP1
-            fnop
-            bra.b   .L14
-.L12:
-            bsr.w   sub_408ED46A
-            bfchg   D0{1:15}
-            beq.b   .L13
-            bset    #7,(2,A0)
-            bra.b   .L14
-.L13:
-            fmovecr.x #$32,FP1
-            fscale.w #$7FFF,FP1
-            fnop
-.L14:
-            btst    #5,(-1,A6)
-            beq.b   .L15
-            move.w  (A0),-(A0)
-.L15:
-            movem.l (SP)+,D0-D3/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$100813,(-4,A6)
-            movem.l D0-D3/A0,-(SP)
-            bsr.w   preFMOVE
-            movea.l (8,A6),A0
-            fmove.d (A0),FP1
-            movea.l ($C,A6),A0
-            fmove.d (A0),FP0
-            fcmp.x  FP0,FP1
-            fbogl.w .L17
-            fbeq.w  .L16
-            fcmp.x  FP0,FP0
-            fbun.w  .L16
-            fmove.x FP1,FP0
-.L16:
-            fmove.d FP0,(A0)
-            bsr.w   sub_408ED46A
-            bra.b   .L24
-.L17:
-            fsolt   D1
-            ftst.x  FP0
-            fbne.w  .L19
-            fmove.d #"$0000000000000001",FP0
-            ftst.x  FP1
-            fbogt.w .L18
-            fneg.x  FP0,FP0
-.L18:
-            fmove.d FP0,(A0)
-            bra.b   .L22
-.L19:
-            fsolt   D0
-            eor.b   D1,D0
-            bpl.b   .L20
-            subq.l  #1,(4,A0)
-            bcc.b   .L21
-            subq.l  #1,(A0)
-            bra.b   .L21
-.L20:
-            addq.l  #1,(4,A0)
-            bcc.b   .L21
-            addq.l  #1,(A0)
-.L21:
-            move.l  (A0),D0
-            bfchg   D0{1:11}
-            bne.b   .L23
-.L22:
-            bsr.w   sub_408ED46A
-            fmovecr.x #$32,FP1
-            fscale.w #$8000,FP1
-            fnop
-            bra.b   .L24
-.L23:
-            bsr.w   sub_408ED46A
-            bfchg   D0{1:11}
-            bne.b   .L24
-            fmovecr.x #$32,FP1
-            fscale.w #$7FFF,FP1
-            fnop
-.L24:
-            movem.l (SP)+,D0-D3/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5E
-            move.l  #$101013,(-4,A6)
-            movem.l D0-D3/A0,-(SP)
-            movea.l (8,A6),A0
-            move.l  (A0),D1
-            movea.l ($C,A6),A0
-            move.l  (A0),D0
-            bsr.w   preFMOVE
-            fmove.s D1,FP1
-            fmove.s D0,FP0
-            fcmp.x  FP0,FP1
-            fbogl.w .L26
-            fbeq.w  .L25
-            fcmp.x  FP0,FP0
-            fbun.w  .L25
-            fmove.x FP1,FP0
-.L25:
-            fmove.s FP0,(A0)
-            bsr.w   sub_408ED46A
-            bra.b   .L30
-.L26:
-            bsr.w   sub_408ED46A
-            bftst   D0{1:31}
-            bne.b   .L27
-            moveq   #2,D0
-            add.l   D1,D1
-            roxr.l  #1,D0
-            move.l  D0,(A0)
-            bra.b   .L28
-.L27:
-            btst    #$1F,D0
-            sne     D0
-            fsolt   D1
-            eor.b   D1,D0
-            extb.l  D0
-            add.l   D0,D0
-            addq.l  #1,D0
-            add.l   D0,(A0)
-            move.l  (A0),D0
-            bfchg   D0{1:8}
-            bne.b   .L29
-.L28:
-            fmovecr.x #$32,FP1
-            fscale.w #$8000,FP1
-            fnop
-            bra.b   .L30
-.L29:
-            bfchg   D0{1:8}
-            bne.b   .L30
-            fmovecr.x #$32,FP1
-            fscale.w #$7FFF,FP1
-            fnop
-.L30:
-            movem.l (SP)+,D0-D3/A0
-            unlk    A6
-            rtd     #8
-            link.w  A6,#-$5A
-            move.l  #$C0019,(-4,A6)
-            movem.l D0-D1/A0,-(SP)
-            fmove.l FPSR,D1
-            bfexts  D1{24:5},D0
-            bfins   D0,D1{16:7}
-            move.l  (8,A6),-(SP)
-            bsr.w   sub_408ED310
-            bra.b   sub_408ED780.L1
-.L31:
-            dc.w    $E080,$0820,$1040,$0410,$0208
-sub_408ED780:
-            link.w  A6,#-$5A
-            move.l  #$C0015,(-4,A6)
-            movem.l D0-D1/A0,-(SP)
-            movea.l (8,A6),A0
-            moveq   #0,D1
-            move.w  (A0),D1
-            move.w  sub_408ED46A.L31(PC,D1.w*2),D1
-.L1:
-            fmove.l FPCR,D0
-            and.w   D1,D0
-            andi.w  #$DF00,D0
-            beq.w   .L9
-            cmpi.b  #4,CPUFlag
-            blt.w   .L8
-            movea.l D0,A0
-            fmove.l FPSR,D0
-            or.w    D1,D0
-            fmove.l D0,FPSR
-            move.l  A0,D0
-            btst    #$F,D0
-            beq.b   .L2
-            fmove.s #"$7FFFFFFF",FP1
-            fbgt.w  .L7
-            fnop
-            bra.b   .L10
-.L2:
-            btst    #$E,D0
-            beq.b   .L3
-            fcmp.s  #"$7FBFFFFF",FP1
-            bra.b   .L7
-.L3:
-            btst    #$C,D0
-            beq.b   .L4
-            fmove.s #"$7F000000",FP1
-            dc.w    $F200,$04E3,$6036
-.L4:
-            btst    #$B,D0
-            beq.b   .L5
-            fmove.s #"$1F000000",FP1
-            dc.w    $F200,$04E3,$6022
-.L5:
-            btst    #$A,D0
-            beq.b   .L6
-            fmove.b #1,FP1
-            fdiv.b  #0,FP1
-            bra.b   .L7
-.L6:
-            fmove.b #1,FP1
-            fadd.s  #"$01000000",FP1
-.L7:
-            fnop
-            bra.b   .L10
-.L8:
-            movea.l D1,A0
-            moveq   #0,D0
-            bsr.w   sub_408EDCF0.L8
-            fnop
-            bra.b   .L10
-.L9:
-            fmove.l FPSR,D0
-            and.w   ($FF).w,D0
-            or.w    D1,D0
-            fmove.l D0,FPSR
-.L10:
-            movem.l (SP)+,D0-D1/A0
-            unlk    A6
-            rtd     #4
-            move.l  A0,-(SP)
-            movea.l ($C,SP),A0
-            bclr    #7,(A0)
-            tst.w   ([8.w,SP])
-            bpl.b   .L11
-            bset    #7,(A0)
-.L11:
-            movea.l (SP)+,A0
-            rtd     #8
-WRITEFPU:
-            movea.l (SP)+,A0
-            jmp     CASEFP0(PC,D0.w*8)
-CASEFP0:
-            fmovem.x (SP)+,FP0
-            bra.w   .L1
-            fmovem.x (SP)+,FP1
-            bra.w   .L1
-            fmovem.x (SP)+,FP2
-            bra.w   .L1
-            fmovem.x (SP)+,FP3
-            bra.w   .L1
-            fmovem.x (SP)+,FP4
-            bra.w   .L1
-            fmovem.x (SP)+,FP5
-            bra.w   .L1
-            fmovem.x (SP)+,FP6
-            bra.w   .L1
-            dc.w    $F21F,$D001
-.L1:
-            jmp     (A0)
-NAN2FPU:
-            clr.l   -(SP)
-            move.l  #$40000000,-(SP)
-            move.b  D1,(1,SP)
-            move.l  #$7FFF0000,-(SP)
-            bsr.b   WRITEFPU
-            rts
-DZHANDLER040:
-            fsave   -(SP)
-            tst.b   (SP)
-            beq.b   .L1
-            tst.b   (1,SP)
+            link.w  A6,#-$A
+            clr.w   (-2,A6)
+            clr.l   (-6,A6)
+            movea.l ($358).w,A0
+            cmpi.w  #$FFD6,($4A,A0)
             bne.b   .L2
-.L1:
-            frestore (SP)+
-            rte
+            move.w  #1,(-2,A6)
 .L2:
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
+            tst.w   ROM85
+            bmi.w   sub_408DDD56.L6
+            suba.w  #$10,SP
+            movea.l SP,A0
+            move.w  #1,D0
+            _SysEnvirons
+            cmpi.w  #$604,(4,A0)
+            lea     ($10,SP),SP
+            bcs.w   sub_408DDD56.L6
+            tst.w   (-2,A6)
+            beq.w   sub_408DDD56.L1
+            bsr.w   sub_408DE250
+            bne.w   sub_408DDD56.L6
+            bsr.w   sub_408DE358
+            bsr.w   sub_408DDF3E
+            clr.l   -(SP)
+            move.l  #'STR#',-(SP)
+            move.w  #$BFE8,-(SP)
+            _GetResource
+            suba.w  #$20,SP
+            pea     (SP)
+            move.w  #$BFEC,-(SP)
+            move.w  #1,-(SP)
+            jsr     sub_408DE62E
+            suba.w  #$32,SP
+            movea.l SP,A0
+            move.w  #$F7,($1A,A0)
+            move.w  #$FFD7,($18,A0)
+            _Control
+            movea.l ($D1C).w,A1
+            movea.l (A1),A2
+            movea.l (A2),A1
+            _Close
+            clr.l   (4,A2)
+            exg     A1,A0
+            _DisposPtr
+            exg     A1,A0
+            move.w  #$FFF6,($18,A0)
+            _Close
+            movea.l A0,A2
             moveq   #4,D0
-            add.b   ($21,SP),D0
-            lea     ($20,SP),A1
-            adda.l  D0,A1
-            movea.l (8,SP),A0
-            move.l  (A0),D2
-            moveq   #$7F,D1
-            bftst   D2{7:3}
-            bne.w   sub_408EDA10.L6
-            and.w   D2,D1
-            bclr    #6,D1
-            beq.b   .L3
-            bclr    #2,D1
+            movea.l LAPMgrPtr,A0
+            jsr     (2,A0)
+            move.l  A0,-(SP)
+            moveq   #2,D0
+            jsr     (2,A0)
+            movea.l (SP)+,A0
+            _RecoverHandle
+            tst.w   MemErr
+            bne.b   .L3
+            _DisposHandle
 .L3:
-            bfextu  D2{22:3},D0
+            move.w  SysVersion,D0
+            cmpi.w  #$700,D0
+            bcc.b   .L4
             clr.l   -(SP)
-            clr.l   -(SP)
-            move.l  #$7FFF0000,-(SP)
-            cmpi.b  #$20,D1
-            beq.b   .L4
-            cmpi.b  #$24,D1
-            beq.b   .L4
-            cmpi.b  #6,D1
-            beq.b   .L6
-            cmpi.b  #$14,D1
-            beq.b   .L6
-            cmpi.b  #$15,D1
-            beq.b   .L6
-            cmpi.b  #$16,D1
-            beq.b   .L6
-            cmpi.b  #$D,D1
-            beq.b   .L7
-            lea     ($C,SP),SP
-            bra.w   sub_408EDA10.L6
+            move.l  #'INIT',-(SP)
+            move.w  #$16,-(SP)
+            _GetResource
 .L4:
-            move.l  (-$18,A1),D1
-            move.l  (-$C,A1),D2
-            eor.l   D1,D2
-            bpl.b   .L5
-            bset    #7,(SP)
-.L5:
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
-.L6:
-            bset    #7,(SP)
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
-.L7:
-            btst    #7,(-$C,A1)
-            beq.b   .L8
-            bset    #7,(SP)
-.L8:
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
-STDHANDLER040:
-            fsave   -(SP)
-            tst.b   (SP)
-            beq.b   .L1
-            tst.b   (1,SP)
-            bne.b   sub_408ED99E
-.L1:
-            frestore (SP)+
-            rte
-sub_408ED99E:
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
-            moveq   #4,D0
-            add.b   ($21,SP),D0
-            lea     ($20,SP),A1
-            adda.l  D0,A1
-            movea.l (8,SP),A0
-            move.l  (A0),D2
-            bftst   D2{7:3}
-            bne.w   sub_408EDA10.L6
-            bfextu  D2{16:3},D0
-            beq.b   .L1
-            subq.w  #2,D0
-            beq.b   .L1
-            bra.w   sub_408EDA10.L6
-.L1:
-            bfextu  D2{22:3},D0
-            lea     (-$C,A1),A0
-            bfextu  (-$28,A1){0:3},D1
-            cmpi.b  #3,D1
-            beq.b   .L2
-            lea     (-$C,A0),A0
-.L2:
-            move.l  (8,A0),D1
-            move.l  D1,-(SP)
-            move.l  (4,A0),D1
-            bset    #$1E,D1
-            move.l  D1,-(SP)
-            move.l  (A0),-(SP)
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
-sub_408EDA00:
-            fsave   -(SP)
-            tst.b   (SP)
-            beq.b   .L1
-            tst.b   (1,SP)
-            bne.b   sub_408EDA10
-.L1:
-            frestore (SP)+
-            rte
-sub_408EDA10:
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
-            moveq   #4,D0
-            add.b   ($21,SP),D0
-            lea     ($20,SP),A1
-            adda.l  D0,A1
-            movea.l (8,SP),A0
-            move.l  (A0),D2
-            bftst   D2{7:3}
-            bne.w   .L6
-            bfextu  D2{16:3},D0
-            beq.b   .L1
-            subq.w  #2,D0
-            beq.b   .L1
+            st      PortBUse
+            moveq   #-$B,D0
+            _DrvrRemove
+            moveq   #-$A,D0
+            _DrvrRemove
+            moveq   #-$29,D0
+            _DrvrRemove
+            movea.l ExpandMem,A1
+            movea.l ($74,A1),A0
+            _DisposPtr
+            move.l  MinusOne,LAPMgrPtr
+            move.l  (-6,A6),D0
+            move.l  A2,(-$A,A6)
+            pea     sub_408DDD56
+            link.w  A6,#-$A
+            move.w  #2,(-2,A6)
+            move.l  D0,(-6,A6)
+            bra.b   sub_408DDD56.L1
+sub_408DDD56:
+            move.w  #$A090,D0
+            _GetOSTrapAddress
+            move.l  A0,-(SP)
+            move.w  #$A090,D0
+            lea     sub_408DE34E,A0
+            _SetOSTrapAddress
+            movea.l (-$A,A6),A0
+            pea     sub_408DE398.L5
+            move.l  (SP)+,($12,A0)
+            clr.b   ($1B,A0)
+            _Open
+            movea.l (SP)+,A0
+            move.w  #$A090,D0
+            _SetOSTrapAddress
+            bsr.w   sub_408DDE36
             bra.w   .L6
 .L1:
-            bfextu  D2{25:7},D1
-            bpl.b   .L2
-            bclr    #6,D1
-            bclr    #2,D1
-            cmpi.b  #1,D1
+            bsr.w   sub_408DE250
+            bne.w   .L6
+            bsr.w   sub_408DE358
+            moveq   #1,D2
+            moveq   #$10,D0
+            cmpi.b  #$7F,D1
             bne.b   .L2
-            moveq   #4,D1
+            moveq   #8,D2
+            mulu.w  D2,D0
 .L2:
-            move.b  .L4(PC,D1.w),D1
-            beq.b   .L3
-            bfextu  D2{22:3},D0
-            bsr.w   NAN2FPU
-            bra.b   .L6
-.L3:
-            move.b  #$21,D1
-            bfextu  D2{22:3},D0
-            bsr.w   NAN2FPU
-            bfextu  D2{29:3},D0
-            bsr.w   NAN2FPU
-            bra.b   .L6
-.L4:
-            dc.w    $FFFF,$FFFF,$01FF,$24FF,$FFFF,$FFFF,$2224,$2121
-            dc.w    $FFFF,$FFFF,$2424,$24FF,$FFFF,$FFFF,$2221,$FFFF
-            dc.w    $0409,$0208,$0409,$FF08,$02FF,$FFFF,$FFFF,$FFFF
-            ds.b    8
-            dc.w    $FFFF,$FFFF,$FFFF,$FFFF,$F018,$2A4A
-.L5:
-            dc.w    $F327,$4A17,$6706,$4A2F,$0001,$6604,$F35F,$4E73
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
-            moveq   #4,D0
-            add.b   ($21,SP),D0
-            lea     ($20,SP),A1
-            adda.l  D0,A1
-.L6:
-            movem.l (SP),D1-D2
-            bclr    #1,(-$1C,A1)
-            bne.b   .L7
-            bclr    #2,(-$1C,A1)
-.L7:
-            movea.l (8,SP),A0
-            suba.l  ($B6E).w,A0
-            dc.w    $02FA,$8000,$FFBA,$6500,$033C,$9CFC,$0018,$F226
-            dc.w    $BC00,$9CFC,$000C,$2001,$ECC0,$0408,$F200,$9000
-            dc.w    $2001,$ECC0,$0403,$E8C1,$0402,$6704,$EEC0,$0403
-            dc.w    $C042,$E8C0,$0402,$6704,$08C0,$000D,$E9C0,$0485
-            dc.w    $103B,$0120,$F7A8,$41EE,$0030,$514E,$3C80,$2D0E
-            dc.w    $2D28,$0010,$2D28,$000C,$2D28,$0008,$3D28,$FFFE
-            dc.w    $3028,$FFFC,$E448,$5940,$6706,$6B08,$2D28,$0010
-            dc.w    $2D28,$000C,$2D28,$0008,$43FA,$02D6,$2D09,$2D10
-            dc.w    $2D28,$FFFC,$584E,$6000,$02BC
-sub_408EDB88:
-            movea.l (SP)+,A0
-            jmp     .L1(PC,D0.w*8)
-.L1:
-            fmovem.x FP0,-(SP)
-            bra.w   .L2
-            fmovem.x FP1,-(SP)
-            bra.w   .L2
-            fmovem.x FP2,-(SP)
-            bra.w   .L2
-            fmovem.x FP3,-(SP)
-            bra.w   .L2
-            fmovem.x FP4,-(SP)
-            bra.w   .L2
-            fmovem.x FP5,-(SP)
-            bra.w   .L2
-            fmovem.x FP6,-(SP)
-            bra.w   .L2
-            dc.w    $F227,$E080
-.L2:
-            jmp     (A0)
-DZHANDLER:
-            fsave   -(SP)
-            tst.b   (SP)
-            bne.b   .L1
-            frestore (SP)+
-            rte
-.L1:
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
-            movea.l (8,SP),A0
-            move.l  (A0),D2
-            moveq   #$3F,D1
-            bftst   D2{7:3}
-            bne.w   sub_408EDCF0.L5
-            and.w   D2,D1
-            bfextu  D2{22:3},D0
-            clr.w   D2
-            move.b  ($21,SP),D2
-            move.l  ($10,SP,D2.w),D2
-            clr.l   -(SP)
-            clr.l   -(SP)
-            move.l  #$7FFF0000,-(SP)
-            cmpi.b  #$20,D1
-            beq.b   .L2
-            cmpi.b  #$24,D1
-            beq.b   .L2
-            cmpi.b  #6,D1
-            beq.b   .L4
-            cmpi.b  #$14,D1
-            beq.b   .L4
-            cmpi.b  #$15,D1
-            beq.b   .L4
-            cmpi.b  #$16,D1
-            beq.b   .L4
-            cmpi.b  #$D,D1
-            beq.b   .L5
-            lea     ($C,SP),SP
-            bra.w   sub_408EDCF0.L5
-.L2:
-            bsr.w   sub_408EDB88
-            move.l  (SP)+,D1
-            addq.w  #8,SP
-            eor.l   D1,D2
-            bpl.b   .L3
-            bset    #7,(SP)
-.L3:
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
-.L4:
-            bset    #7,(SP)
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
-.L5:
-            tst.l   D2
-            bpl.b   .L6
-            bset    #7,(SP)
-.L6:
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
-sub_408EDC6E:
-            fsave   -(SP)
-            tst.b   (SP)
-            bne.b   sub_408EDC78
-            frestore (SP)+
-            rte
-sub_408EDC78:
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
-            movea.l (8,SP),A0
-            move.l  (A0),D2
-            bftst   D2{7:3}
-            bne.w   sub_408EDCF0.L5
-            bfextu  D2{16:3},D0
-            beq.b   .L1
-            subq.w  #2,D0
-            beq.b   .L1
-            bra.w   sub_408EDCF0.L5
-.L1:
-            bfextu  D2{22:3},D0
-            bsr.w   sub_408EDB88
-            lea     (SP),A1
-            move.l  (A1)+,D1
-            not.l   D1
-            bftst   D1{1:15}
-            bne.b   .L2
-            move.l  (A1)+,D1
-            bclr    #$1F,D1
-            or.l    (A1),D1
-            beq.b   .L2
-            bset    #6,-(A1)
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
-.L2:
-            lea     ($C,SP),SP
-            clr.w   D1
-            move.b  ($21,SP),D1
-            lea     ($18,SP,D1.w),A1
-            move.l  (A1),-(SP)
-            move.l  -(A1),-(SP)
-            bset    #6,(SP)
-            move.l  -(A1),-(SP)
-            bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
-sub_408EDCE6:
-            fsave   -(SP)
-            tst.b   (SP)
-            bne.b   sub_408EDCF0
-            frestore (SP)+
-            rte
-sub_408EDCF0:
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
-            movea.l (8,SP),A0
-            move.l  (A0),D2
-            bftst   D2{7:3}
-            bne.w   .L5
-            bfextu  D2{16:3},D0
-            beq.b   .L1
-            subq.w  #2,D0
-            beq.b   .L1
-            bra.w   .L5
-.L1:
-            move.w  D2,D1
-            andi.w  #$3F,D1
-            move.b  .L3(PC,D1.w),D1
-            beq.b   .L2
-            bfextu  D2{22:3},D0
-            bsr.w   NAN2FPU
-            bra.b   .L5
-.L2:
-            move.b  #$21,D1
-            bfextu  D2{22:3},D0
-            bsr.w   NAN2FPU
-            bfextu  D2{29:3},D0
-            bsr.w   NAN2FPU
-            bra.b   .L5
-.L3:
-            dc.w    $FFFF,$FFFF,$01FF,$24FF,$FFFF,$FFFF,$2224,$2121
-            dc.w    $FFFF,$FFFF,$2424,$24FF,$FFFF,$FFFF,$2221,$FFFF
-            dc.w    $0409,$0208,$0409,$FF08,$02FF,$FFFF,$FFFF,$FFFF
-            ds.b    8
-            dc.w    $FFFF,$FFFF,$FFFF,$FFFF,0,$0080
-.L4:
-            dc.w    $F327,$4A17,$6604,$F35F,$4E73
-            movem.l D0-D2/A0-A1,-(SP)
-            fmovem.l FPCR/FPSR/FPIAR,-(SP)
-.L5:
-            movem.l (SP),D1-D2
-            clr.w   D0
-            move.b  ($21,SP),D0
-            bset    #3,($20,SP,D0.w)
-            movea.l (8,SP),A0
-            suba.l  ($B6E).w,A0
-            dc.w    $02FA,$8000,$FD0A,$6410,$206F,$0008,$91F8,$065C
-            dc.w    $02FA,$8000,$FFBE,$657C,$9CFC,$0018,$F226,$BC00
-            dc.w    $9CFC,$000C,$2001,$ECC0,$0408,$F200,$9000,$2001
-            dc.w    $ECC0,$0403,$E8C1,$0402,$6704,$EEC0,$0403,$C042
-            dc.w    $E8C0,$0402,$6704,$08C0,$000D,$E9C0,$0485,$103B
-            dc.w    $0120,$F4EA,$41EE,$0030,$514E,$3C80,$2D0E,$2D28
-            dc.w    $0010,$2D28,$000C,$2D28,$0008,$3D28,$FFFE,$3028
-            dc.w    $FFFC,$E448,$5940,$6706,$6B08,$2D28,$0010,$2D28
-            dc.w    $000C,$2D28,$0008,$43FA,$0018,$2D09,$2D10,$2D28
-            dc.w    $FFFC,$584E,$4FEF,$000C,$4CDF,$0307,$F35F,$4E73
-            fmovem.x FP3,($1A,SP)
-            movem.l D0-D2/A0-A1,($32,SP)
-            lea     ($14,SP),A0
-            move    CCR,(A0)+
-            move.l  D0,(A0)
-            tst.w   (-4,A0)
-            beq.b   .L6
-            movea.l ($A4C).w,A0
-            jsr     (A0)
-            bra.b   .L7
-.L6:
-            lea     ($12,SP),SP
-.L7:
-            lea     ($34,SP),A6
-            move.w  (A6),D1
-            move.l  (8,A6),(0,A6,D1.w)
-            addq.w  #2,SP
-            move.l  (2,SP),($1E,SP)
-            move    (SP),CCR
-            addq.w  #6,SP
-            fmovem.x (SP)+,FP3
-            fmovem.l (SP)+,FPCR/FPSR/FPIAR
-            movem.l (SP)+,D0-D2/A0-A1
-            movea.l (4,A6),A6
-            adda.w  (SP),SP
-            rts
-.L8:
-            dc.w    $A097
-            rts
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$2800,D7
-            bra.b   .L9
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$2000,D7
-            bra.b   .L9
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$3000,D7
-            bra.b   .L9
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$1000,D7
-            bra.b   .L9
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$800,D7
-            bra.b   .L9
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            moveq   #$20,D7
-            bra.b   .L9
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            clr.w   D7
-.L9:
-            pea     (-2,A6)
-            bsr.w   sub_408ED40E
-            bclr    #7,($A4B).w
-            move.w  (-2,A6),D3
-            andi.w  #$6000,D3
-            beq.b   .L10
-            move.w  D3,(-4,A6)
-            pea     (-4,A6)
-            bsr.w   sub_408ED310
-.L10:
-            movea.l ($40,A6),A3
-            lea     (-$10,A6),A0
-            move.l  A0,($40,A6)
-            move.l  A3,-(SP)
-            move.l  A0,-(SP)
-            move.w  D7,-(SP)
-            addi.w  #$E,(SP)
-            bsr.w   RsrcPACK_4
-            tst.b   D7
-            beq.b   .L11
-            move.l  (-$C,A6),(-$E,A6)
-            move.l  (-8,A6),(-$A,A6)
-.L11:
-            movea.l ($44,A6),A1
-            move.l  (A1),D2
-            movea.l ($3C,A6),A1
-            move.w  (A0)+,D0
-            clr.w   (A1)
-            bclr    #$F,D0
-            beq.b   .L12
-            move.b  #1,(A1)
-.L12:
-            move.l  (A0)+,D4
-            move.l  (A0),D5
-            move.b  #1,(4,A1)
-            cmpi.w  #$7FFF,D0
-            bne.b   .L14
-            move.l  D4,D0
-            andi.l  #$7FFFFFFF,D0
-            bne.b   .L15
-            tst.l   D5
-            bne.b   .L15
-            moveq   #$49,D0
-.L13:
-            move.b  D0,(5,A1)
-            bra.w   sub_408EDFC4.L13
-.L14:
-            tst.l   D4
-            bne.b   sub_408EDFC4.L3
-            tst.l   D5
-            bne.b   sub_408EDFC4.L3
-            moveq   #$30,D0
-            bra.b   .L13
-.L15:
-            bset    #$1E,D4
-            bne.b   .L16
-            clr.w   -(SP)
-            pea     (SP)
-            bsr.w   sub_408ED780
-            lea     (2,SP),SP
-.L16:
-            addq.l  #4,A1
-            move.b  #$11,(A1)+
-            move.b  #$4E,(A1)+
-            bsr.b   sub_408EDFC4
-            move.l  D5,D4
-            bsr.b   sub_408EDFC4
-            suba.w  #$16,A1
-            bra.w   sub_408EDFC4.L13
-sub_408EDFC4:
-            moveq   #8,D0
-.L1:
-            rol.l   #4,D4
-            moveq   #$F,D1
-            and.b   D4,D1
-            ori.b   #$30,D1
-            cmpi.b  #$39,D1
-            ble.b   .L2
-            addq.b  #7,D1
-.L2:
-            move.b  D1,(A1)+
-            subq.w  #1,D0
-            bne.b   .L1
-            rts
-.L3:
-            tst.l   D4
-            bmi.b   .L5
-.L4:
-            subq.w  #1,D0
-            add.l   D5,D5
-            addx.l  D4,D4
-            bpl.b   .L4
-.L5:
-            move.l  D4,D1
-            move.w  D0,D1
-            subi.w  #$3FFF,D1
-            swap    D1
-            add.w   D1,D1
-            move.l  #$4D104D42,D0
-            tst.l   D1
-            bpl.b   .L6
-            addq.w  #1,D0
-.L6:
-            move.l  D0,D4
-            swap    D4
-            mulu.w  D1,D4
-            clr.w   D4
-            swap    D4
-            swap    D1
-            move.w  D1,D5
-            muls.w  D0,D5
-            swap    D5
-            ext.l   D5
-            add.l   D5,D4
-            swap    D0
-            muls.w  D1,D0
-            add.l   D0,D4
-            swap    D4
-            move.w  D2,D1
-            bmi.b   .L7
-            cmpi.w  #$2000,D1
-            blt.b   .L8
-            move.w  #$2000,D1
-            bra.b   .L8
-.L7:
-            cmpi.w  #$E000,D1
-            bgt.b   .L8
-            move.w  #$E000,D1
-.L8:
-            swap    D2
-            ror.w   #8,D2
-            tst.b   D2
-            bne.b   .L9
-            tst.w   D1
-            bgt.b   .L9
-            moveq   #1,D1
-.L9:
-            addq.w  #1,D4
-            move.w  D1,D5
-            tst.b   D2
-            beq.b   .L10
-            add.w   D4,D5
-.L10:
-            cmpi.w  #$13,D5
-            ble.b   .L11
-            move.w  #$13,D5
-.L11:
-            move.w  D5,(2,A1)
-            sub.w   D4,(2,A1)
-            tst.w   D5
-            bgt.b   .L12
-            moveq   #1,D5
-.L12:
-            move.l  ($40,A6),-(SP)
-            move.l  A1,-(SP)
-            move.b  D5,(4,A1)
-            jsr     sub_408EE5AA
-            cmp.b   (4,A1),D5
-            bcs.b   .L9
-            neg.w   (2,A1)
-.L13:
-            pea     (-4,A6)
-            bsr.w   sub_408ED28E
-            move.w  (-4,A6),D0
-            andi.w  #$1F00,D0
-            or.w    D0,(-2,A6)
-            pea     (-2,A6)
-            bsr.w   sub_408ED310
-            ror.w   #8,D0
-            and.w   (-2,A6),D0
-            beq.b   .L14
-            move.l  (4,A6),(-6,A6)
-            move.w  D0,(-$A,A6)
-            pea     (-$A,A6)
-            move.l  ($44,A6),-(SP)
-            move.l  A3,-(SP)
-            move.l  ($3C,A6),-(SP)
-            move.w  D7,-(SP)
-            addi.w  #$B,(SP)
-            pea     (-4,A6)
-            bsr.w   sub_408ED3EA
-            movea.l (-4,A6),A0
-            jsr     (A0)
-.L14:
-            unlk    A6
-            movem.l (SP)+,D0-D7/A0-A4
-            move.l  (SP),($C,SP)
-            lea     ($C,SP),SP
-            rts
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$2800,D7
-            move.w  #$6000,D0
-            bra.b   .L15
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$2000,D7
-            move.w  #$6000,D0
-            bra.b   .L15
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$3000,D7
-            move.w  #$6000,D0
-            bra.b   .L15
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$1000,D7
-            move.w  #$6040,D0
-            bra.b   .L15
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            move.w  #$800,D7
-            move.w  #$6060,D0
-.L15:
-            pea     (-2,A6)
-            bsr.w   sub_408ED40E
-            move.w  (-2,A6),D3
-            and.w   D0,D3
-            ori.w   #$80,FPState
-            bra.b   .L17
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            moveq   #$20,D7
-            move.w  #$6060,D0
-            bra.b   .L16
-            movem.l D0-D7/A0-A4,-(SP)
-            link.w  A6,#-$10
-            clr.w   D7
-            move.w  #$6060,D0
-.L16:
-            pea     (-2,A6)
-            bsr.w   sub_408ED40E
-            bclr    #7,($A4B).w
-            move.w  (-2,A6),D3
-            and.w   D0,D3
-            beq.b   .L18
-.L17:
-            move.w  D3,(-4,A6)
-            pea     (-4,A6)
-            bsr.w   sub_408ED310
-.L18:
-            movea.l ($3C,A6),A3
-            cmpi.w  #$20,D7
-            ble.b   .L19
-            lea     (-$10,A6),A0
-            move.l  A0,($3C,A6)
-.L19:
-            movea.l ($40,A6),A2
-            lea     (4,A2),A4
-            moveq   #0,D4
-            move.l  D4,D5
-            move.b  (A4)+,D6
-            beq.b   sub_408EE1E2.L6
-            move.b  (A4),D0
-            cmpi.b  #$49,D0
-            beq.b   sub_408EE1E2.L4
-            cmpi.b  #$4E,D0
-            bne.b   sub_408EE1E2.L5
-            move.b  (-1,A4),D2
-            addq.l  #1,A4
-            subq.b  #1,D2
-            moveq   #8,D0
-            cmpi.b  #4,D2
-            bge.b   .L20
-            subq.b  #4,D0
-            add.b   D2,D0
-.L20:
-            bsr.b   sub_408EE1E2
-            move.l  D5,D4
-            moveq   #0,D5
-            moveq   #8,D0
-            bsr.b   sub_408EE1E2
-            bra.b   sub_408EE1E2.L3
-sub_408EE1E2:
-            rol.l   #4,D5
-            subq.b  #1,D2
-            bmi.b   .L2
-            move.b  (A4)+,D1
-            cmpi.b  #$39,D1
-            ble.b   .L1
-            addi.b  #9,D1
-.L1:
-            andi.b  #$F,D1
-            or.b    D1,D5
-.L2:
-            subq.w  #1,D0
-            bne.b   sub_408EE1E2
-            rts
-.L3:
-            bset    #$1E,D4
-            move.l  D4,D0
-            swap    D0
-            andi.b  #$FF,D0
-            bne.b   .L4
-            ori.w   #$15,D0
-            swap    D0
-            move.l  D0,D4
-.L4:
-            move.w  #$7FFF,D0
-            bra.b   .L7
-.L5:
-            cmpi.b  #$30,D0
-            bne.b   .L10
-.L6:
-            moveq   #0,D0
-.L7:
-            tst.b   (A2)
-            beq.b   .L8
-            bset    #$F,D0
-.L8:
-            movea.l ($3C,A6),A0
-            move.w  D0,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            bra.b   .L11
-.L9:
-            move.w  (2,A2),-(SP)
-            moveq   #0,D0
-            move.b  D6,D0
-            subi.w  #$13,D0
-            sub.w   D0,(2,A2)
-            move.l  ($3C,A6),-(SP)
-            move.l  ($40,A6),-(SP)
-            jsr     sub_408EE314
-            move.w  (SP)+,(2,A2)
-            bra.b   .L11
-.L10:
-            cmpi.b  #$13,D6
-            bhi.b   .L9
-            move.l  ($3C,A6),-(SP)
-            move.l  ($40,A6),-(SP)
-            jsr     sub_408EE314
-.L11:
-            cmpi.w  #$20,D7
-            blt.b   .L14
-            bgt.b   .L12
-            move.l  (6,A3),(8,A3)
-            move.l  (2,A3),(4,A3)
-            bra.b   .L14
-.L12:
-            pea     (-$10,A6)
-            move.l  A3,-(SP)
-            move.w  D7,-(SP)
-            addi.w  #$10,(SP)
-            bsr.w   RsrcPACK_4
-            pea     (-4,A6)
-            bsr.w   sub_408ED28E
-            move.w  (-4,A6),D0
-            btst    #8,D0
-            beq.b   .L13
-            andi.w  #$E1FF,D0
-            bra.b   .L15
-.L13:
-            cmpi.w  #$1000,D7
-            ble.b   .L15
-            andi.w  #$FDFF,D0
-            bra.b   .L15
-.L14:
-            pea     (-4,A6)
-            bsr.w   sub_408ED28E
-            move.w  (-4,A6),D0
-.L15:
-            andi.w  #$1F00,D0
-            or.w    D0,(-2,A6)
-            pea     (-2,A6)
-            bsr.w   sub_408ED310
-            ror.w   #8,D0
-            and.w   (-2,A6),D0
-            beq.b   .L16
-            move.l  (4,A6),(-6,A6)
-            move.w  D0,(-$A,A6)
-            pea     (-$A,A6)
-            subq.w  #4,SP
-            move.l  ($40,A6),-(SP)
-            move.l  A3,-(SP)
-            move.w  D7,-(SP)
-            addi.w  #9,(SP)
-            pea     (-4,A6)
-            bsr.w   sub_408ED3EA
-            movea.l (-4,A6),A0
-            jsr     (A0)
-.L16:
-            unlk    A6
-            movem.l (SP)+,D0-D7/A0-A4
-            move.l  (SP),(8,SP)
-            lea     (8,SP),SP
-            rts
-sub_408EE314:
-            movem.l D0-D7/A1-A4,-(SP)
-            link.w  A6,#-$A0
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            move.w  (A0),D0
-            blt.w   StuffIt_PACK_4.L9
-            bsr.w   sub_408EEA06
-            bsr.w   sub_408EEBC6
-            bsr.w   StoD_PACK_4
-            move.l  (-$10,A6),(-$C,A6)
-            bsr.w   cXb2a_PACK_4
-            movea.l A1,A3
-            move.w  #$4F,D6
-            move.w  D1,D2
-            movea.l A3,A2
-.L1:
-            subi.w  #$10,D6
-            move.w  (A2)+,D0
-            bne.b   .L3
-            dbra    D2,.L1
-.L2:
-            addq.w  #1,D6
-            lsl.w   #1,D0
-.L3:
-            bpl.b   .L2
-            moveq   #-1,D5
-            bsr.w   Roundit_FPHWB2DC
-            move.w  D1,D7
-            asl.w   #4,D7
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            add.w   (A0),D7
-            addi.w  #$400E,D7
-            bsr.w   StuffIt_PACK_4
-            tst.l   D4
-            bmi.b   .L5
-.L4:
-            subq.w  #1,D7
-            asl.l   #1,D6
-            roxl.l  #1,D5
-            roxl.l  #1,D4
-            bpl.b   .L4
-.L5:
-            movea.l ($3C,A6),A0
-            cmpi.w  #$7FFF,D7
-            bcc.b   .L7
-            asl.w   #1,D7
-.L6:
-            asl     (A0)
-            roxr.w  #1,D7
-            move.w  D7,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            bra.w   sub_408EE5AA.L4
-.L7:
-            move.w  #2,-(SP)
-            pea     (SP)
-            bsr.w   sub_408ED780
-            move.w  #4,(SP)
-            pea     (SP)
-            bsr.w   sub_408ED780
-            lea     (2,SP),SP
-            pea     (-$14,A6)
-            bsr.w   sub_408ED28E
-            lea     (-$14,A6),A4
-            move.w  (A4),D2
-            btst    #$E,D2
-            bne.b   .L8
-            btst    #$D,D2
-            beq.b   .L10
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
-            bpl.b   .L10
-            bra.b   .L9
-.L8:
-            btst    #$D,D2
-            bne.b   .L9
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
-            bmi.b   .L10
-.L9:
-            move.w  #$FFFC,D7
-            moveq   #-1,D4
-            moveq   #-1,D5
-            bra.b   .L6
-.L10:
-            move.w  #$FFFE,D7
-            moveq   #0,D4
-            moveq   #0,D5
-            bra.b   .L6
-StuffIt_PACK_4:
-            moveq   #0,D4
-            moveq   #0,D5
-            moveq   #0,D6
-            tst.w   D1
-            bgt.b   .L1
-            move.w  (A3)+,D4
-            swap    D4
-            rts
-.L1:
-            move.l  (A3)+,D4
-            subq.w  #2,D1
-            bgt.b   .L2
-            blt.w   .L14
-            move.w  (A3)+,D5
-            swap    D5
-            rts
-.L2:
-            move.l  (A3)+,D5
-            subq.w  #2,D1
-            bgt.b   .L3
-            blt.w   .L14
-            move.w  (A3)+,D6
-            swap    D6
-            rts
-.L3:
-            move.l  (A3)+,D6
-            rts
-.L4:
-            move.w  D1,D4
-            cmp.w   D3,D1
-            bge.b   .L5
-            move.w  D3,D4
-.L5:
-            tst.w   D4
-            beq.b   .L10
-            lea     (2,A1),A2
-            lea     (2,A3),A4
-            moveq   #0,D2
-.L6:
-            addq.w  #1,D2
-            cmp.w   D2,D1
-            bge.b   .L7
-            clr.w   (A2)
-.L7:
-            cmp.w   D2,D3
-            bge.b   .L8
-            clr.w   (A4)
-.L8:
-            cmpm.w  (A4)+,(A2)+
-            bne.b   .L10
-            cmp.w   D2,D4
-            bgt.b   .L6
-            bra.b   .L10
-.L9:
-            bsr.w   sub_408EE9F2
-            bsr.w   StoD_PACK_4
-            bsr.w   Nrmlz10_PACK_4
-            movea.l A4,A3
-            moveq   #4,D6
-            cmp.w   (A3),D0
-            beq.b   .L4
-.L10:
-            bhi.b   .L11
-            addq.w  #1,D3
-            clr.w   -(A3)
-            moveq   #5,D6
-.L11:
-            move.w  D3,D2
-            asl.w   #4,D2
-            sub.w   D7,D2
-            addi.w  #$3FFE,D2
-            move.w  D2,-(SP)
-            bsr.w   BgnDiv_PACK_4
-            moveq   #0,D6
-            move.w  (A3),D0
-            bra.b   .L13
-.L12:
-            addq.w  #1,D6
-            lsl.w   #1,D0
-.L13:
-            bpl.b   .L12
-            move.w  (SP)+,D7
-            movea.l D7,A1
-            sub.w   D6,D7
-            bmi.b   sub_408EE4CE.L2
-            addi.w  #$3F,D6
-            moveq   #-1,D5
-            bsr.w   Roundit_FPHWB2DC
-            move.l  A1,D7
-            bsr.w   StuffIt_PACK_4
-.L14:
-            tst.l   D4
-            bmi.b   .L16
-.L15:
-            subq.w  #1,D7
-            asl.l   #1,D6
-            roxl.l  #1,D5
-            roxl.l  #1,D4
-            bpl.b   .L15
-.L16:
-            movea.l ($3C,A6),A0
-            asl.w   #1,D7
-            asl     (A0)
-            roxr.w  #1,D7
-            move.w  D7,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            bra.w   sub_408EE5AA.L4
-sub_408EE4CE:
-            tst.w   D0
-            bge.b   .L1
-            clr.w   -(A3)
-            addq.w  #1,D1
-            addi.w  #$10,D6
-            subi.w  #$10,D7
-            addi.w  #$10,D0
-.L1:
-            rts
-.L2:
-            move.l  A1,D0
-            cmpi.w  #$FFBE,D0
-            bpl.b   .L3
-            move.w  #$FFBE,D7
-            move.w  D7,D0
-            sub.w   D6,D7
-.L3:
-            add.w   D7,D6
-            bsr.b   sub_408EE4CE
-            bsr.b   sub_408EE4CE
-            bsr.b   sub_408EE4CE
-            bsr.b   sub_408EE4CE
-            bsr.b   sub_408EE4CE
-            addi.w  #$3F,D6
-            move.w  D0,-(SP)
-            moveq   #-1,D5
-            movea.l A3,A1
-            bsr.w   Roundit_FPHWB2DC
-            movea.l A1,A3
-            move.w  (SP)+,D7
-            bsr.w   StuffIt_PACK_4
-            tst.l   D4
-            bmi.b   .L5
-.L4:
-            tst.w   D7
-            ble.b   .L5
-            subq.w  #1,D7
-            asl.l   #1,D6
-            roxl.l  #1,D5
-            roxl.l  #1,D4
-            bpl.b   .L4
-.L5:
-            movea.l ($3C,A6),A0
-            asl.w   #1,D7
-            asl     (A0)
-            roxr.w  #1,D7
-            move.w  D7,(A0)+
-            move.l  D4,(A0)+
-            move.l  D5,(A0)
-            tst.l   D4
-            bmi.b   .L6
+            addi.w  #$30A,D0
+            _NewPtrSysClear
+            bne.w   .L6
+            move.w  D2,(A0)
+            movea.l ExpandMem,A1
+            lea     ($74,A1),A1
+            move.l  A0,(A1)
+            move.l  D1,-(SP)
+            bsr.w   sub_408DE312
+            movea.l ExpandMem,A0
+            movea.l ($74,A0),A0
+            lea     LAPMgrPtr,A1
+            movea.l UTableBase,A2
+            moveq   #$24,D1
+            movea.l (0,A2,D1.w),A2
+            movea.l (A2),A2
+            movea.l (A2),A2
+            move.w  (8,A2),D1
+            move.w  (-2,A2,D1.w),D1
+            lea     (0,A2,D1.w),A3
+            move.l  A3,D0
+            _StripAddress
+            move.l  D0,(A1)
+            moveq   #$10,D0
+            jsr     (2,A3)
+            movea.l ExpandMem,A3
+            movea.l ($74,A3),A3
+            pea     (6,A3)
+            move.w  #$BFEC,-(SP)
             move.w  #1,-(SP)
-            pea     (SP)
-            move.w  #$15,-(SP)
-            _FP68K
-            move.w  #4,(SP)
-            pea     (SP)
-            move.w  #$15,-(SP)
-            _FP68K
-            lea     (2,SP),SP
-.L6:
-            bra.w   sub_408EE5AA.L4
-StoD_PACK_4:
-            moveq   #0,D3
-            movea.l (-$10,A6),A3
-            subq.l  #2,A3
-            clr.w   (A3)+
-            movea.l ($38,A6),A0
-            movea.l ($3C,A6),A4
-            tst.b   (A0)
-            beq.b   .L1
-            bset    #7,(A4)
-            bra.b   .L2
-.L1:
-            bclr    #7,(A4)
-.L2:
-            addq.l  #4,A0
-            moveq   #0,D0
-            move.b  (A0)+,D0
-            bra.b   .L5
-.L3:
-            moveq   #$F,D7
-            and.b   (A0)+,D7
-            movea.l A3,A4
-            move.w  D3,D4
-.L4:
-            move.w  -(A4),D6
-            mulu.w  #$A,D6
-            add.l   D6,D7
-            move.w  D7,(A4)
-            clr.w   D7
-            swap    D7
-            dbra    D4,.L4
-            beq.b   .L5
-            move.w  D7,-(A4)
-            addq.w  #1,D3
-.L5:
-            dbra    D0,.L3
-            rts
-sub_408EE5AA:
-            movem.l D0-D7/A1-A4,-(SP)
-            link.w  A6,#-$A0
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            move.w  (A0),D0
-            ble.b   .L1
-            bsr.w   sub_408EEA06
-            bsr.w   XbyA_PACK_4
-            bra.b   .L2
-.L1:
-            bsr.w   sub_408EE9F2
-            bsr.w   sub_408EE890
-            bsr.w   DivX_PACK_4
-            moveq   #0,D5
-            bsr.w   Roundit_FPHWB2DC
-.L2:
-            bsr.w   sub_408EE63C
-.L3:
-            unlk    A6
-            movem.l (SP)+,D0-D7/A1-A4
-            movea.l (SP)+,A0
-            lea     (8,SP),SP
-            jmp     (A0)
-.L4:
-            pea     (-$14,A6)
-            bsr.w   sub_408ED28E
-            lea     (-$14,A6),A0
-            move.w  (A0),D4
-            andi.w  #$60,D4
-            beq.b   .L3
-            pea     sub_408EEBC6.L2
-            move.l  ($3C,A6),-(SP)
-            move.w  #$2004,-(SP)
-            bsr.w   RsrcPACK_4
-            pea     (-$14,A6)
-            bsr.w   sub_408ED28E
-            lea     (-$14,A6),A0
-            move.w  (A0),D4
-            andi.w  #$FF9F,D4
-            move.w  D4,(A0)
-            pea     (-$14,A6)
-            bsr.w   sub_408ED310
-            pea     sub_408EEBC6.L2
-            move.l  ($3C,A6),-(SP)
-            move.w  #$2004,-(SP)
-            bsr.w   RsrcPACK_4
-            bra.b   .L3
-sub_408EE63C:
-            movea.l (-$C,A6),A1
-            clr.l   (A1)
-            moveq   #0,D3
-            tst.w   D6
-            movea.l A1,A2
-            bmi.b   .L3
-            addq.w  #1,D1
-            moveq   #$F,D5
-            cmp.w   D5,D6
-            bge.b   .L1
-            move.w  D6,D5
-.L1:
-            subq.w  #1,D1
-            blt.b   .L2
-            move.w  (A3)+,D2
-.L2:
-            movea.l A1,A2
-            add.w   D2,D2
-            move.l  D3,D7
-            lea     (4,A2),A2
-            move.l  -(A2),D0
-            dc.w    $C100,$E098,$C100,$E098,$C100,$E098,$C100,$E098
-            dc.w    $2480,$51CF,$FFEA,$7000,$C100,$6704,$5283,$2500
-            dc.w    $51CD,$FFD2,$0446,$0010,$6CBC,$206E,$0038,$5848
-            dc.w    $43E8,$0001,$7A00,$1A10,$6122,$6120,$611E,$611C
-            dc.w    $51CB,$FFF6,$3009,$9048,$5300,$6704,$1080,$4E75
-.L3:
-            movea.l ($38,A6),A0
-            addq.w  #4,A0
-            move.w  #$130,(A0)
-            rts
-            moveq   #0,D1
-            move.b  (A2)+,D1
-            ror.w   #4,D1
-            bsr.b   BD1DIGOUT_PACK_4
-            rol.w   #4,D1
-BD1DIGOUT_PACK_4:
-            tst.w   D6
-            bpl.b   .L1
+            jsr     sub_408DE62E
+            move.l  (SP)+,D1
             tst.b   D1
-            beq.b   .L3
-            moveq   #0,D6
-.L1:
-            subq.l  #1,D5
-            bmi.b   .L2
-            ori.b   #$30,D1
-            move.b  D1,(A1)
-.L2:
-            addq.l  #1,A1
-            sub.b   D1,D1
-.L3:
-            rts
-XbyA_PACK_4:
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            move.w  (A0),D6
-            movea.l ($3C,A6),A0
-            move.w  (A0)+,D7
-            bclr    #$F,D7
-            subi.w  #$403F,D7
-            add.w   D6,D7
-            move.w  (A0)+,D3
-            move.w  (A0)+,D4
-            move.w  (A0)+,D5
-            move.w  (A0)+,D6
-            movea.l (-4,A6),A3
-            adda.w  #$10,A3
-            movea.l (-4,A6),A1
-            subq.l  #2,A1
-            movea.l (-$C,A6),A4
-            subq.l  #2,A4
-            move.w  (A1),D0
-            move.w  D0,D2
-            mulu.w  D6,D2
-            move.l  D2,(A3)
-            move.w  D0,D2
-            mulu.w  D4,D2
-            move.l  D2,-(A3)
-            clr.w   -(A3)
-            lea     (4,A3),A3
-            move.w  D0,D2
-            mulu.w  D5,D2
-            add.l   D2,(A3)
-            mulu.w  D3,D0
-            move.l  D0,(A4)+
-            addx.l  -(A4),-(A3)
-            movea.l D1,A2
-            subq.w  #1,D1
-            bmi.b   .L4
-.L1:
-            lea     (4,A3),A3
-            move.w  -(A1),D0
-            move.w  D0,D2
-            mulu.w  D6,D2
-            add.l   D2,(A3)
-            move.w  D0,D2
-            mulu.w  D4,D2
-            move.l  D2,(A4)+
-            addx.l  -(A4),-(A3)
-            bcc.b   .L2
-            move.w  #1,-(A3)
-            bra.b   .L3
-.L2:
-            clr.w   -(A3)
-.L3:
-            lea     (4,A3),A3
-            move.w  D0,D2
-            mulu.w  D5,D2
-            add.l   D2,(A3)
-            mulu.w  D3,D0
-            move.l  D0,(A4)+
-            addx.l  -(A4),-(A3)
-            dbra    D1,.L1
-.L4:
-            move.l  A2,D1
-            addq.w  #4,D1
-            move.w  D1,D6
-            addq.w  #1,D6
-            asl.w   #4,D6
-            add.w   D7,D6
-            moveq   #0,D5
-Roundit_FPHWB2DC:
-            tst.w   D6
-            bge.b   .L2
-            cmpi.w  #$FFBE,D6
-            bpl.b   .L1
-            move.w  #$FFBE,D6
-.L1:
-            clr.w   -(A3)
-            addq.w  #1,D1
-            addi.w  #$10,D6
-            blt.b   .L1
-.L2:
-            bsr.w   RndStk_PACK_4
-            tst.w   D5
-            beq.w   .L9
-            move.w  D6,D2
-            lsr.w   #4,D2
-            lsl.w   #1,D2
-            lea     (0,A3,D2.w),A2
-            move.w  (A2),D4
-            move.w  D6,D3
-            andi.w  #$F,D3
-            move.w  #$8000,D0
-            ror.w   D3,D0
-            and.w   D0,D4
-            beq.b   .L3
-            addq.w  #1,D5
-.L3:
-            move.w  #4,-(SP)
-            pea     (SP)
-            bsr.w   sub_408ED780
-            lea     (2,SP),SP
-            pea     (-$14,A6)
-            bsr.w   sub_408ED28E
-            lea     (-$14,A6),A0
-            move.w  (A0),D2
-            bclr    #7,D2
-            tst.b   ($A4B).w
-            bpl.b   .L4
-            bset    #7,D2
-.L4:
-            move.w  D2,D4
-            andi.w  #$E0,D4
-            beq.b   .L5
-            or.w    D0,(A2)
-            bra.b   .L9
-.L5:
-            btst    #$E,D2
-            bne.b   .L11
-            btst    #$D,D2
-            bne.b   .L12
-            cmpi.w  #5,D5
-            blt.b   .L9
-.L6:
-            add.w   D0,(A2)
-            bcc.b   .L9
-.L7:
-            cmpa.l  A2,A3
-            beq.b   .L8
-            addq.w  #1,-(A2)
-            bcs.b   .L7
-            bra.b   .L9
-.L8:
-            move.w  #1,-(A3)
-            addq.w  #1,D1
-            addi.w  #$10,D6
-            lea     ($10,A1),A1
-.L9:
-            tst.w   (A3)
-            bne.b   .L10
-            lea     (2,A3),A3
-            subq.w  #1,D1
-            subi.w  #$10,D6
-.L10:
-            rts
-.L11:
-            btst    #$D,D2
-            bne.b   .L9
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
-            bmi.b   .L6
-            bra.b   .L9
-.L12:
-            movea.l ($3C,A6),A4
-            move.w  (A4),D2
-            bpl.b   .L6
-            bra.b   .L9
-RndStk_PACK_4:
-            clr.w   D5
-            move.w  D6,D3
-            addq.w  #1,D3
-            move.l  D3,D4
-            lsr.w   #4,D4
-            cmp.w   D1,D4
-            ble.b   .L1
-            rts
-.L1:
-            andi.w  #$F,D3
-            move.w  #$8000,D0
-            ror.w   D3,D0
-            move.w  D4,D2
-            lsl.w   #1,D2
-            lea     (0,A3,D2.w),A2
-            and.w   (A2),D0
-            beq.b   .L2
-            moveq   #4,D5
-.L2:
-            move.w  #$7FFF,D0
-            lsr.w   D3,D0
-            and.w   (A2)+,D0
-            beq.b   .L5
-.L3:
-            addq.w  #2,D5
-            rts
-.L4:
-            tst.w   (A2)+
             bne.b   .L3
-.L5:
-            addq.w  #1,D4
-            cmp.w   D1,D4
-            ble.b   .L4
-            rts
-sub_408EE890:
-            movea.l ($3C,A6),A0
-            move.w  (A0)+,D6
-            bclr    #$F,D6
-            subi.w  #$400C,D6
-            movea.l (-$10,A6),A3
-            suba.w  #$34,A3
-            move.l  (A0)+,(A3)
-            move.l  (A0)+,(4,A3)
-            moveq   #3,D3
-Nrmlz10_PACK_4:
-            move.w  D1,D7
-            asl.w   #4,D7
-            movea.l ($38,A6),A0
-            addq.w  #2,A0
-            sub.w   (A0),D7
-            move.w  D1,D5
-            asl.w   #1,D5
-            move.w  (A1),D0
-            bmi.b   .L3
-.L1:
-            subq.w  #1,D7
-            move.w  D1,D4
-            lea     (2,A1,D5.w),A0
-            move    #0,CCR
-.L2:
-            roxl    -(A0)
-            dbra    D4,.L2
-            bpl.b   .L1
-            move.w  (A1),D0
-.L3:
-            rts
-DivX_PACK_4:
-            sub.w   D7,D6
-            ble.w   BgnDiv_PACK_4.L6
-            move.w  D6,D4
-            asr.w   #4,D6
-            andi.w  #$F,D4
-            beq.b   .L2
-            addq.w  #1,D3
-            clr.w   -(A3)
-            subq.w  #1,D4
-.L1:
-            asl     (8,A3)
-            roxl    (6,A3)
-            roxl    (4,A3)
-            roxl    (2,A3)
-            roxl    (A3)
-            dbra    D4,.L1
-            bra.b   BgnDiv_PACK_4
-.L2:
-            cmp.w   (A3),D0
-            bhi.b   .L3
-            addq.w  #1,D3
-            clr.w   -(A3)
-            bra.b   BgnDiv_PACK_4
-.L3:
-            subq.w  #1,D6
-BgnDiv_PACK_4:
-            bsr.b   PadIt_PACK_4
-            movea.l A3,A0
-.L1:
-            move.l  (A0),D2
-            divu.w  D0,D2
-            bvs.w   DecrIt_PACK_4.L2
-            swap    D2
-            move.l  D2,(A0)
-            swap    D2
-            lea     (2,A0),A0
-            cmpi.w  #2,D5
-            blt.b   .L4
-            beq.b   .L2
-            move.w  D5,D7
-            bclr    #1,D7
-            bsr.b   MandS_PACK_4
-            moveq   #0,D4
-            move.w  -(A4),D1
-            subx.w  D4,D1
-            move.w  D1,(A4)
-            negx.w  D7
-            tst.w   D7
-            bne.b   .L2
-            bsr.b   DecrIt_PACK_4
-.L2:
-            move.w  D5,D7
-            btst    #1,D7
-            bne.b   .L3
-            subq.w  #2,D7
-.L3:
-            bsr.b   MandS_PACK_4
-            negx.w  D7
-            tst.w   D7
-            bne.b   .L4
-            bsr.b   DecrIt_PACK_4
-.L4:
-            dbra    D6,.L1
-.L5:
-            suba.l  A3,A0
-            move.w  A0,D6
-            move.w  D3,D1
-            asl.w   #3,D6
-            subq.w  #3,D6
-            rts
-.L6:
-            movea.l A3,A0
-            clr.w   -(A3)
-            bra.b   .L5
-PadIt_PACK_4:
-            move.w  D1,D7
-            add.w   D6,D7
-            addq.w  #1,D7
-            sub.w   D3,D7
-            ble.b   .L2
-            move.w  D3,D2
-            asl.w   #1,D2
-            lea     (2,A3,D2.w),A2
-            add.w   D7,D3
-            asr.w   #1,D7
-.L1:
-            clr.l   (A2)+
-            dbra    D7,.L1
-.L2:
-            rts
-MandS_PACK_4:
-            lea     (2,A1,D7.w),A2
-            lea     (2,A0,D7.w),A4
-            subq.w  #2,D7
-            asr.w   #2,D7
-            move    #0,CCR
-.L1:
-            move.l  -(A2),D4
-            mulu.w  D2,D4
-            move.l  -(A4),D1
-            subx.l  D4,D1
-            move.l  D1,(A4)
-            dbra    D7,.L1
-            rts
-DecrIt_PACK_4:
-            subq.w  #1,(-2,A0)
-            move.l  D5,D1
-            lea     (2,A1,D1.w),A2
-            lea     (2,A0,D1.w),A4
-            asr.w   #1,D1
-            move    #0,CCR
-.L1:
-            addx.w  -(A2),-(A4)
-            dbra    D1,.L1
-            bcc.b   DecrIt_PACK_4
-            rts
-.L2:
-            clr.w   (A0)+
-            move.w  D5,D7
-            beq.b   DecrIt_PACK_4
-            lea     (2,A1,D7.w),A2
-            lea     (0,A0,D7.w),A4
-            asr.w   #1,D7
-            subq.w  #1,D7
-            move    #0,CCR
-.L3:
-            subx.w  -(A2),-(A4)
-            dbra    D7,.L3
-            bsr.b   DecrIt_PACK_4
-            bra.w   BgnDiv_PACK_4.L4
-sub_408EE9F2:
-            neg.w   D0
-            cmpi.w  #$1458,D0
-            bcs.b   sub_408EEA06.L1
-            move.w  #$1457,D0
-            move.w  D0,D1
-            neg.w   D1
-            move.w  D1,(A0)
-            bra.b   sub_408EEA06.L1
-sub_408EEA06:
-            cmpi.w  #$1390,D0
-            bcs.b   .L1
-            move.w  #$138F,D0
-            move.w  D0,(A0)
-.L1:
-            moveq   #0,D4
-            move.w  D0,D4
-            addi.w  #$20F,D4
-            andi.b  #$F8,D4
-            cmpi.w  #$C40,D4
-            bcs.b   .L2
-            move.w  #$C40,D4
-.L2:
-            move.w  D4,D5
-            asr.w   #2,D5
-            move.l  D0,D1
-            _StackSpace
-            cmp.l   D4,D0
-            bpl.b   .L3
-            moveq   #$1C,D0
-            _SysError
-.L3:
-            move.l  D1,D0
-            movea.l (SP)+,A1
-            suba.w  D4,SP
-            move.l  A1,-(SP)
-            lea     (-$28,A6),A1
-            move.l  A1,(-4,A6)
-            suba.w  D4,A1
-            move.l  A1,(-$10,A6)
-            adda.w  D5,A1
-            move.l  A1,(-$C,A6)
-            adda.w  D5,A1
-            move.l  A1,(-8,A6)
-            movea.l (-4,A6),A1
-            moveq   #0,D2
-            move.w  D0,D2
-            divu.w  #$15,D2
-            move.w  D2,D0
-            swap    D2
-            cmpi.w  #7,D2
-            blt.b   .L5
-            cmpi.w  #$E,D2
-            bge.b   .L4
-            moveq   #1,D1
-            lea     sub_408EEBC6.L3,A2
-            subq.w  #7,D2
-            asl.w   #2,D2
-            move.l  (0,A2,D2.w),-(A1)
-            bra.b   .L7
-.L4:
-            moveq   #2,D1
-            lea     sub_408EEBC6.L4,A2
-            subi.w  #$E,D2
-            mulu.w  #6,D2
-            move.l  (2,A2,D2.w),-(A1)
-            bra.b   .L6
-.L5:
-            moveq   #0,D1
-            lea     sub_408EEBC6.L2,A2
-            asl.w   #1,D2
-.L6:
-            move.w  (0,A2,D2.w),-(A1)
-.L7:
-            tst.w   D0
-            bne.b   .L8
-            rts
-.L8:
-            bsr.b   sub_408EEB2C
-            moveq   #3,D2
-            movea.l (-8,A6),A2
-            subq.l  #4,A2
-            move.l  #$4D6E2EF5,(A2)
-            move.l  #$1B1AE,-(A2)
-            bra.b   .L11
-.L9:
-            bsr.b   sub_408EEB2C
-.L10:
-            bsr.b   sub_408EEB40
-.L11:
-            asr.w   #1,D0
-            bcc.b   .L10
-            bsr.b   cXb2a_PACK_4
-            tst.w   D0
-            bgt.b   .L9
-            rts
-cXb2a_PACK_4:
-            move.w  D2,D1
-            add.w   D3,D1
-            addq.w  #1,D1
-            move.w  D3,D7
-            addq.w  #1,D7
-            lsr.w   #1,D7
-            movea.l (-4,A6),A1
-.L1:
-            clr.l   -(A1)
-            dbra    D7,.L1
-            movea.l (-4,A6),A4
-            subq.l  #2,A4
-            movea.l (-8,A6),A2
-            subq.l  #2,A2
-            move.w  D2,D5
-            bra.b   .L3
-.L2:
-            clr.w   -(A1)
-            subq.l  #2,A2
-            subq.l  #2,A4
-.L3:
-            movea.l A4,A1
-            movea.l (-$C,A6),A3
-            move.w  D3,D6
-.L4:
-            move.w  -(A3),D7
-            mulu.w  (A2),D7
-            subq.w  #2,A1
-            add.l   D7,(A1)
-            bcc.b   .L6
-            movea.l A1,A0
-.L5:
-            addq.l  #1,-(A0)
-            bcs.b   .L5
-.L6:
-            dbra    D6,.L4
-            dbra    D5,.L2
-            tst.w   (A1)
-            bne.b   .L7
-            lea     (2,A1),A1
-            subq.w  #1,D1
-.L7:
-            rts
-sub_408EEB2C:
-            move.w  D1,D3
-            movea.l (-4,A6),A1
-            movea.l (-$C,A6),A3
-            lsr.w   #1,D1
-.L1:
-            move.l  -(A1),-(A3)
-            dbra    D1,.L1
-            rts
-sub_408EEB40:
-            move.w  D2,D1
-            move.w  D1,D7
-            asl.w   #1,D1
-            addq.w  #1,D1
-            movea.l (-4,A6),A1
-.L1:
-            clr.l   -(A1)
-            dbra    D7,.L1
-            move.w  D2,D5
-            subq.w  #1,D5
-            bmi.b   .L8
-            movea.l (-4,A6),A4
-            subq.l  #4,A4
-            movea.l (-8,A6),A2
-            subq.l  #2,A2
-            bra.b   .L3
-.L2:
-            subq.w  #2,A2
-            subq.w  #4,A4
-.L3:
-            movea.l A4,A1
-            movea.l A2,A3
-            move.w  D5,D6
-.L4:
-            move.w  -(A3),D7
-            mulu.w  (A2),D7
-            subq.w  #2,A1
-            add.l   D7,(A1)
-            bcc.b   .L6
-            movea.l A1,A0
-.L5:
-            addq.l  #1,-(A1)
-            bcs.b   .L5
-            movea.l A0,A1
-.L6:
-            dbra    D6,.L4
-            dbra    D5,.L2
-            movea.l (-4,A6),A1
-            move    #0,CCR
-            move.w  D1,D7
-.L7:
-            roxl    -(A1)
-            dbra    D7,.L7
-.L8:
-            movea.l (-4,A6),A1
-            movea.l (-8,A6),A2
-.L9:
-            move.w  -(A2),D7
-            mulu.w  D7,D7
-            add.l   D7,-(A1)
-            bcc.b   .L11
-            movea.l A1,A0
-.L10:
-            addq.l  #1,-(A1)
-            bcs.b   .L10
-            movea.l A0,A1
-.L11:
-            dbra    D2,.L9
-            tst.w   (A1)
-            bne.b   .L12
-            lea     (2,A1),A1
-            subq.w  #1,D1
-.L12:
-            tst.w   D0
-            bne.b   sub_408EEBC6
-            rts
-sub_408EEBC6:
-            move.w  D1,D2
-            movea.l (-4,A6),A1
-            movea.l (-8,A6),A2
-            lsr.w   #1,D1
-.L1:
-            move.l  -(A1),-(A2)
-            dbra    D1,.L1
-            rts
-.L2:
-            dc.w    $0001,$0005,$0019,$007D,$0271,$0C35,$3D09
-.L3:
-            dc.w    $0001,$312D,$0005,$F5E1,$001D,$CD65,$0095,$02F9
-            dc.w    $02E9,$0EDD,$0E8D,$4A51,$48C2,$7395
-.L4:
-            dc.w    $0001,$6BCC,$41E9,$0007,$1AFD,$498D,$0023,$86F2
-            dc.w    $6FC1,$00B1,$A2BC,$2EC5,$0378,$2DAC,$E9D9,$1158
-            dc.w    $E460,$913D,$56BC,$75E2,$D631,0
-RsrcEntryPACK_5:
-            dc.b    $70,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 5 (5028 bytes) - Combo mask
-            dc.l    RsrcEntryPACK_4-BaseOfROM       ; Next entry
-            dc.l    RsrcPACK_5-BaseOfROM            ; Data
-            dc.b    'PACK'                          ; Type
-            dc.w    5                               ; ID
-            dc.b    $58                             ; Attributes
-            dc.b    0                               ; Name
-            dc.b    'omputer, Inc'
-            dc.l    $C0A00000,$000013B0,$000001E4   ; Block header
-RsrcPACK_5:
-            bra.b   .L1
-            dc.w    0,$5041,$434B,$0005,$0008
-.L1:
-            movem.l D0-D1/A0/A4,-(SP)
-            fmovem.x FP2-FP3,-(SP)
-            fmove.l FPSR,-(SP)
-            fmove.l FPCR,-(SP)
-            moveq   #0,D1
-            fmove.l D1,FPCR
-            fmove.l D1,FPSR
-            movea.l ($36,SP),A0
-            move.w  ($34,SP),D0
-            btst    #$E,D0
-            beq.b   .L3
-            btst    #7,D0
-            beq.b   .L2
-            lea     sub_408EED10,A4
-            bra.b   .L5
-.L2:
-            lea     sub_408EECFE,A4
-            bra.b   .L5
-.L3:
-            btst    #7,D0
-            beq.b   .L4
-            move.w  (4,A0),(2,A0)
-            lea     sub_408EED10,A4
-            fmove.x (A0),FP0
-            bra.b   .L5
-.L4:
-            lea     sub_408EECFE,A4
-            addq.l  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.l  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP0
-.L5:
-            move.w  #$3E,D1
-            and.b   D0,D1
-            move.w  .L6(PC,D1.w),D1
-            jmp     .L5(PC,D1.w)
-.L6:
-            dc.w    sub_408EF67C.L16-.L5
-            dc.w    sub_408EF67C.L2-.L5
-            dc.w    sub_408EF67C.L11-.L5
-            dc.w    sub_408EF67C.L4-.L5
-            dc.w    sub_408EEEEA.L8-.L5
-            dc.w    sub_408EEEEA.L1-.L5
-            dc.w    sub_408EED10.L11-.L5
-            dc.w    sub_408EED10.L7-.L5
-            dc.w    sub_408EF2E2.L1-.L5
-            dc.w    sub_408EF470.L1-.L5
-            dc.w    sub_408EEEEA.L10-.L5
-            dc.w    sub_408EEEEA.L18-.L5
-            dc.w    sub_408EF7F4.L26-.L5
-            dc.w    sub_408EF7F4.L35-.L5
-            dc.w    sub_408EF7F4.L5-.L5
-            dc.w    sub_408EF7F4.L12-.L5
-            dc.w    sub_408EED10.L5-.L5
-sub_408EECFE:
-            movea.l ($36,SP),A0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bra.b   sub_408EED10.L1
-sub_408EED10:
-            movea.l ($36,SP),A0
-            fmove.x FP0,(A0)
-.L1:
-            moveq   #-1,D1
-            eor.b   D1,D0
-            fmove.l FPSR,D1
-            and.b   D0,D1
-            swap    D0
-            or.b    D1,D0
-            or.b    D0,(7,SP)
-            move.b  (2,SP),D1
-            fmovem.l (SP)+,FPCR/FPSR
-            bclr    #5,D1
-            bftst   D1{24:2}
-            beq.b   .L2
-            bset    #5,D1
-.L2:
-            andi.w  #$3E,D1
-            beq.b   .L3
-            lsl.b   #2,D1
-            and.w   D1,D0
-            beq.b   .L3
-            lsr.b   #3,D0
-            clr.l   -(SP)
-            clr.w   -(SP)
-            move.b  .L4(PC,D0.w),D0
-            move.w  D0,-(SP)
-            move.l  SP,-(SP)
-            move.l  ($42,SP),-(SP)
-            move.l  ($42,SP),-(SP)
-            move.l  ($42,SP),-(SP)
-            move.w  ($44,SP),-(SP)
-            bset    #7,(SP)
-            movea.w #$A4C,A0
-            movea.l (A0),A0
-            jsr     (A0)
-            addq.w  #8,SP
-.L3:
-            fmovem.x (SP)+,FP2-FP3
-            movem.l (SP)+,D0-D1/A0/A4
-            rtd     #6
-.L4:
-            dc.w    $0010,$0818,$0212,$0A1A,$0414,$0C1C,$0616,$0E1E
-            dc.w    $0111,$0919,$0313,$0B1B,$0515,$0D1D,$0717,$0F1F
-.L5:
-            fmul.w  #$41A7,FP0
-            moveq   #0,D0
-            fmove.l #$7FFFFFFF,FP1
-            frem.x  FP1,FP0
-            fbge.w  .L6
-            fadd.x  FP1,FP0
-.L6:
-            jmp     (A4)
-.L7:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   .L15
-            bfextu  (A0){1:16},D0
-            beq.w   .L13
-            fint.x  FP0,FP3
-            fsne    D1
-            fmove.l FPSR,D0
-            bclr    #3,D0
-            fmove.l D0,FPSR
-            fsub.x  FP3,FP0
-.L8:
-            bsr.w   sub_408EEEAA
-            tst.b   D1
-            beq.b   .L10
-            moveq   #1,D1
-            fadd.l  D1,FP0
-            fmove.l #$4000,FP1
-            fcmp.x  FP3,FP1
-            fbne.w  .L9
-            fmove.l #$2000,FP3
-            fscale.x FP3,FP0
-.L9:
-            fscale.x FP3,FP0
-            fsub.l  D1,FP0
-            moveq   #$20,D0
-.L10:
-            jmp     (A4)
-.L11:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.b   .L15
-            bfextu  (A0){1:16},D0
-            beq.b   .L14
-            bsr.w   sub_408EEEEA
-            btst    #6,D0
-            beq.b   .L8
-            move.l  #$80000,D0
-            move.w  (A0),D1
-            bmi.b   .L12
-            move.l  #$7F800000,D1
-            fmove.s D1,FP0
-            bra.b   .L10
-.L12:
-            move.b  #$40,D0
-            fmove.l #$FFFFFFFF,FP0
-            jmp     (A4)
-.L13:
-            fmovecr.x #$30,FP1
-            fmul.x  FP1,FP0
-.L14:
-            move.l  #$280000,D0
-            jmp     (A4)
-.L15:
-            bmi.b   .L16
-            btst    #$1E,D0
-            beq.b   .L16
-            bcc.b   .L16
-            moveq   #-1,D0
-            fmove.l D0,FP0
-.L16:
-            moveq   #0,D0
-            jmp     (A4)
-.L17:
-            bpl.b   .L18
-            fmovecr.x #$32,FP0
-            bra.b   .L19
-.L18:
-            btst    #$1E,D0
-            beq.b   .L19
-            bcc.b   .L19
-            fmovecr.x #$F,FP0
-.L19:
-            moveq   #0,D0
-            jmp     (A4)
-sub_408EEEAA:
-            fbeq.w  .L1
-            fmove.x FP0,FP2
-            fmul.x  FP2,FP0
-            lea     sub_408EFCAA.L3,A0
-            bsr.w   sub_408EF67C
-            fmul.x  FP1,FP2
-            lea     sub_408EFCAA.L4,A0
-            bsr.w   sub_408EF67C
-            fsub.x  FP2,FP1
-            fscale.b #1,FP2
-            fdiv.x  FP1,FP2
-            fmove.x FP2,FP0
-            move.l  #$80000,D0
-            ori.l   #$20,D0
-.L1:
-            rts
-sub_408EEEEA:
-            fmovecr.x #$30,FP1
-            fmove.x FP0,FP3
-            frem.x  FP1,FP0
-            fsub.x  FP0,FP3
-            fdiv.x  FP1,FP3
-            fint.x  FP3,FP3
-            fsne    D1
-            fdiv.x  FP1,FP0
-            fmove.l FPSR,D0
-            bclr    #3,D0
-            fmove.l D0,FPSR
-            rts
-.L1:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   sub_408EED10.L17
-            fint.x  FP0,FP3
-            fmove.l FPSR,D0
-            bclr    #3,D0
-            fmove.l D0,FPSR
-            fsub.x  FP3,FP0
-.L2:
-            bsr.w   sub_408EEEAA
-            moveq   #1,D1
-            fadd.l  D1,FP0
-            fmove.l #$FFFFC001,FP1
-            fsub.x  FP3,FP1
-            fbgt.w  .L6
-            fbeq.w  .L3
+            bsr.w   InstallPrintAtlk_lmgr_0
             bra.b   .L4
 .L3:
-            fmove.l #1,FP1
-            fcmp.x  FP1,FP0
-            fbge.w  .L4
-            ori.l   #$200000,D0
+            bsr.w   sub_408DDF3E
 .L4:
-            fmove.l #$4000,FP1
-            fcmp.x  FP3,FP1
-            fbne.w  .L5
-            fmove.l #$2000,FP3
-            fscale.x FP3,FP0
+            lea     ($30A,A3),A3
+            tst.l   (8,A3)
+            bne.b   .L5
+            bset    #5,(6,A3)
 .L5:
-            fscale.x FP3,FP0
-            jmp     (A4)
+            tst.w   (-2,A6)
+            bne.b   .L6
+            bsr.b   sub_408DDE36
 .L6:
-            fmove.l #$FFFFC001,FP3
-            fscale.x FP3,FP0
-            fneg.x  FP1,FP1
-            fscale.x FP1,FP0
-            btst    #$13,D0
-            beq.b   .L7
-            ori.l   #$200000,D0
-.L7:
-            jmp     (A4)
-.L8:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   sub_408EED10.L17
-            bsr.w   sub_408EEEEA
-            btst    #6,D0
-            beq.w   .L2
-            move.l  #$80000,D0
-            move.w  (A0),D1
-            bmi.b   .L9
-            move.l  #$7F800000,D1
-            fmove.s D1,FP0
-            jmp     (A4)
-.L9:
-            move.l  #$280040,D0
-            fmovecr.x #$F,FP0
-            jmp     (A4)
-.L10:
-            bsr.w   sub_408EF1E8
-            fbne.w  .L11
-            btst    #$1A,D0
-            bne.w   sub_408EF1E8.L8
-            btst    #$1B,D0
-            bne.w   sub_408EF1E8.L12
-            bra.w   sub_408EF1E8.L9
-.L11:
-            btst    #$1A,D0
-            bne.w   sub_408EF1E8.L8
-            btst    #$19,D0
-            beq.b   .L12
-            btst    #$1A,D1
-            bne.w   sub_408EF1E8.L7
-            eor.l   D1,D0
-            btst    #$1B,D0
-            beq.w   sub_408EF1E8.L13
-            bra.w   sub_408EF1E8.L9
-.L12:
-            movem.l A1/A4,-(SP)
-            btst    #$19,D1
-            beq.b   .L13
-            suba.l  A0,A0
-            bra.b   .L14
-.L13:
-            fgetexp.x FP0,FP3
-            fmove.w #$FFC0,FP1
-            fcmp.x  FP1,FP3
-            fbolt.w .L14
-            lea     sub_408EF67C.L4,A1
-            bsr.w   sub_408EF2CA
-            fmove.l FPSR,D0
-            movea.l D1,A0
-            fmul.x  FP2,FP0
-            lea     .L1,A1
-            bsr.w   sub_408EF2CA
-            bra.b   .L15
-.L14:
-            fmul.x  FP2,FP0
-            lea     .L8,A1
-            bsr.w   sub_408EF2CA
-.L15:
-            move.l  A0,D1
-            btst    #3,D1
-            beq.b   .L16
-            move.l  #$80000,D0
-            bra.b   .L17
-.L16:
-            moveq   #0,D0
-.L17:
-            movem.l (SP)+,A1/A4
-            bra.w   sub_408EF1E8.L16
-.L18:
-            bsr.w   sub_408EF1E8
-            fbne.w  .L19
-            btst    #$1A,D0
-            bne.w   sub_408EF1E8.L9
-            btst    #$1B,D0
-            bne.w   sub_408EF1E8.L10
-            bra.w   sub_408EF1E8.L12
-.L19:
-            btst    #$1A,D0
-            bne.w   sub_408EF1E8.L9
-            btst    #$19,D1
-            bne.b   .L21
-            btst    #$1A,D1
-            beq.b   .L22
-.L20:
-            fmove.x FP2,FP0
-            bra.w   sub_408EF1E8.L16
-.L21:
-            btst    #$1B,D0
-            beq.w   sub_408EF1E8.L9
-            fcmp.x  FP1,FP2
-            fbeq.w  sub_408EF1E8.L10
-            fbogt.w sub_408EF1E8.L11
-            bra.w   sub_408EF1E8.L14
-.L22:
-            fmove.x FP0,FP3
-            btst    #$19,D0
-            beq.b   .L23
-            eor.l   D1,D0
-            btst    #$1B,D0
-            bne.b   .L20
-            fmovecr.x #$32,FP0
-            fdiv.x  FP3,FP0
-            bra.w   sub_408EF1E8.L16
-.L23:
-            movem.l A1/A4,-(SP)
-            fgetexp.x FP3,FP0
-            fmove.w #$FFC0,FP1
-            fcmp.x  FP0,FP1
-            fbogt.w .L24
-            lea     sub_408EF67C.L4,A1
-            fmove.x FP3,FP0
-            bsr.w   sub_408EF2CA
-            fmul.x  FP2,FP0
-            fneg.x  FP0,FP0
-            fcmp.w  #$100,FP0
-            fbolt.w .L25
-            fmove.s #"$7F7FFFFF",FP1
-            fcmp.x  FP1,FP3
-            fbogt.w .L31
-            bra.b   .L25
-.L24:
-            fmove.x FP3,FP1
-            fmul.x  FP2,FP3
-            fneg.x  FP3,FP0
-            fmove.x FP1,FP3
-            lea     sub_408EED10.L11,A1
-            bsr.w   sub_408EF2CA
-            bra.b   .L26
-.L25:
-            lea     sub_408EED10.L7,A1
-            bsr.w   sub_408EF2CA
-.L26:
-            fneg.x  FP0,FP0
-            fdiv.x  FP3,FP0
-.L27:
-            moveq   #$60,D0
-            fmove.l FPSR,D1
-            btst    #$B,D1
-            beq.b   .L28
-            btst    #9,D1
-            beq.b   .L28
-            ori.l   #$280000,D0
-            bra.b   .L30
-.L28:
-            btst    #$19,D1
-            bne.b   .L29
-            btst    #$1A,D1
-            beq.b   .L30
-            ori.l   #$200000,D0
-            bra.b   .L30
-.L29:
-            ori.l   #$400000,D0
-.L30:
-            movem.l (SP)+,A1/A4
-            bra.w   sub_408EF1E8.L16
-.L31:
-            lea     sub_408EF67C.L2,A1
-            fmove.x FP3,FP0
-            bsr.w   sub_408EF2CA
-            fadd.w  #1,FP2
-            fmul.x  FP2,FP0
-            fneg.x  FP0,FP0
-            lea     .L1,A1
-            bsr.w   sub_408EF2CA
-            fneg.x  FP0,FP0
-            fmove.l FPSR,D1
-            bset    #3,D1
-            fmove.l D1,FPSR
-            bra.b   .L27
-sub_408EF1E8:
-            movea.l ($3E,SP),A0
-            tst.b   ($39,SP)
-            bpl.b   .L1
-            fmove.x (A0),FP2
-            fmove.l FPSR,D0
-            movea.l ($42,SP),A0
-            fmove.x (A0),FP0
-            fmove.l FPSR,D1
-            bra.b   .L2
-.L1:
-            addq.l  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.l  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP2
-            fmove.l FPSR,D0
-            movea.l ($42,SP),A0
-            addq.l  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.l  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP0
-            fmove.l FPSR,D1
-.L2:
-            btst    #$18,D0
-            beq.b   .L3
-            fmove.x FP2,FP0
-            btst    #$E,D0
-            beq.b   .L6
-            move.l  #$800000,D0
-            bra.b   .L6
-.L3:
-            fmove.w #$FFFF,FP1
-            fcmp.x  FP1,FP0
-            fbolt.w .L4
-            fbun.w  .L5
+            unlk    A6
             rts
-.L4:
-            addq.l  #4,SP
-            bra.b   .L7
-.L5:
-            btst    #$E,D1
-            beq.b   .L6
-            move.l  #$800000,D0
-.L6:
-            addq.l  #4,SP
-            bra.b   .L16
-.L7:
-            moveq   #$26,D1
-            lsl.l   #8,D1
-            ori.l   #$7FC00000,D1
-            move.l  #$800000,D0
-            bra.b   .L15
-.L8:
-            move.l  #$3F800000,D1
-            bra.b   .L15
-.L9:
-            moveq   #0,D1
-            bra.b   .L15
-.L10:
-            move.l  #$BF800000,D1
-            bra.b   .L15
-.L11:
-            move.l  #$80000000,D1
-            bra.b   .L15
-.L12:
-            ori.l   #$100000,D0
-.L13:
-            move.l  #$7F800000,D1
-            bra.b   .L15
-.L14:
-            move.l  #$FF800000,D1
-.L15:
-            fmove.s D1,FP0
-.L16:
-            move.l  ($30,SP),($3A,SP)
-            lea     .L17,A0
-            move.l  A0,($30,SP)
-            jmp     (A4)
-.L17:
-            rtd     #4
-sub_408EF2CA:
-            fmovem.x FP1-FP3,-(SP)
-            movem.l A0/A4,-(SP)
-            ftst.x  FP0
-            lea     sub_408EF2E2,A4
-            fmove.x FP0,-(SP)
-            lea     (SP),A0
-            jmp     (A1)
-sub_408EF2E2:
-            adda.w  #$C,SP
-            movem.l (SP)+,A0/A4
-            fmovem.x (SP)+,FP1-FP3
-            moveq   #-1,D1
-            eor.b   D1,D0
-            fmove.l FPSR,D1
-            and.b   D0,D1
-            swap    D0
-            or.b    D0,D1
-            fmove.l D1,FPSR
-            rts
+sub_408DDE36:
+            move.w  ResLoad,-(SP)
+            clr.w   ResLoad
+            subq.w  #4,SP
+            move.l  #'DRVR',-(SP)
+            pea     sub_408DE398.L4
+            _GetNamedResource
+            move.l  (SP)+,D0
+            beq.b   .L1
+            move.l  D0,-(SP)
+            subq.w  #2,SP
+            move.l  D0,-(SP)
+            _GetResAttrs
+            bset    #4,(1,SP)
+            _SetResAttrs
 .L1:
-            movem.l D2-D4/A1,-(SP)
-            movea.l ($4A,SP),A1
-            move.w  (A1),D2
+            move.w  (SP)+,ResLoad
+            bsr.b   sub_408DDE68
+            rts
+sub_408DDE68:
+            link.w  A6,#-$16E
+            movem.l D1-D4/A1-A2,-(SP)
+            move.w  ResLoad,(-2,A6)
+            clr.w   -(SP)
+            move.l  #'AINI',-(SP)
+            _CountResources
+            move.w  (SP)+,D3
+            beq.w   .L9
             moveq   #0,D4
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            move.l  D0,D1
-            lsl.l   #5,D0
-            beq.b   .L5
-            btst    #$1D,D0
-            bne.w   sub_408EF414.L8
-            tst.w   D2
-            beq.w   sub_408EF414.L1
-            btst    #0,D2
-            bne.b   .L3
-            tst.w   D2
-            bmi.b   .L2
-            fabs.x  FP0,FP0
-            bra.w   sub_408EF414.L8
-.L2:
-            tst.l   D0
-            bmi.w   sub_408EF414.L4
-            bra.w   sub_408EF414.L2
-.L3:
-            tst.w   D2
-            bpl.w   sub_408EF414.L8
-            tst.l   D0
-            bmi.b   .L4
-            lsl.l   #5,D1
-            bcc.w   sub_408EF414.L2
-            bra.w   sub_408EF414.L3
-.L4:
-            lsl.l   #5,D1
-            bcc.w   sub_408EF414.L4
-            bra.w   sub_408EF414.L5
-.L5:
-            move.w  D2,D0
-            bpl.b   .L6
-            neg.w   D0
-.L6:
-            cmpi.w  #$FF,D0
-            bhi.b   .L7
-            bsr.b   sub_408EF3A0
-            moveq   #0,D0
-            bra.w   sub_408EF414.L8
-.L7:
-            fabs.x  FP0,FP0
-            fmove.w D2,FP3
-            bsr.w   sub_408EF470
-            moveq   #0,D0
-            tst.l   (A0)
-            bpl.w   sub_408EF414.L8
-            btst    #0,D2
-            beq.w   sub_408EF414.L8
-            fneg.x  FP0,FP0
-            bra.w   sub_408EF414.L8
-sub_408EF3A0:
-            fmove.x FP0,FP1
-            bsr.b   sub_408EF3EA
-            tst.w   D2
-            bmi.b   .L2
+            clr.w   ResLoad
+            clr.w   (-4,A6)
 .L1:
-            fmove.x FP2,FP0
-            rts
+            clr.l   -(SP)
+            move.l  #'AINI',-(SP)
+            move.w  D3,-(SP)
+            _GetIndResource
+            move.l  (SP)+,D0
+            beq.b   .L2
+            move.l  D0,-(SP)
+            pea     (-$68,A6,D4.w)
+            pea     (-$6E,A6)
+            pea     (-$16E,A6)
+            _GetResInfo
+            addq.w  #2,D4
+            addq.w  #1,(-4,A6)
+            cmpi.w  #$32,(-4,A6)
+            bge.b   .L3
 .L2:
-            move.w  D2,D0
-            bpl.b   .L3
-            neg.w   D0
-.L3:
-            fmove.l FPSR,D1
-            andi.l  #$60,D1
-            bne.b   .L4
-            fmovecr.x #$32,FP0
-            fdiv.x  FP2,FP0
-            rts
-.L4:
-            fmove.l FPSR,D1
-            moveq   #$60,D0
-            eori.l  #$FFFFFFFF,D0
-            and.l   D0,D1
-            fmove.l D1,FPSR
-            fmovecr.x #$32,FP0
-            fdiv.x  FP1,FP0
-            bsr.b   sub_408EF3EA
-            bra.b   .L1
-sub_408EF3EA:
-            fmovecr.x #$32,FP2
-            bra.b   .L2
-.L1:
-            fmul.x  FP0,FP0
-.L2:
-            lsr.w   #1,D0
-            bcc.b   .L3
-            fmul.x  FP0,FP2
-.L3:
+            subq.w  #1,D3
             bne.b   .L1
-            rts
-sub_408EF400:
-            fmove.l FPSR,D1
-            moveq   #8,D0
-            eori.l  #$FFFFFFFF,D0
-            and.l   D0,D1
-            fmove.l D1,FPSR
-            rts
-sub_408EF414:
-            fmove.l FPSR,D0
-            ori.l   #$100000,D0
-            fmove.l D0,FPSR
-            rts
-.L1:
-            move.l  #$3F800000,D1
-            bra.b   .L6
-.L2:
-            moveq   #0,D1
-            bra.b   .L6
+            move.w  (-2,A6),ResLoad
 .L3:
-            move.l  #$80000000,D1
-            bra.b   .L6
-.L4:
-            bsr.b   sub_408EF414
-            move.l  #$7F800000,D1
-            bra.b   .L7
-.L5:
-            bsr.b   sub_408EF414
-            move.l  #$FF800000,D1
-            bra.b   .L7
-.L6:
-            moveq   #0,D0
-.L7:
-            fmove.s D1,FP0
-.L8:
-            tst.b   D4
+            move.w  (-4,A6),D4
             beq.b   .L9
-            fneg.x  FP0,FP0
+            subq.w  #1,D4
+            moveq   #0,D2
+.L4:
+            move.w  D4,D2
+            add.w   D2,D2
+            move.w  D4,D3
+            move.w  (-$68,A6,D2.w),D0
+.L5:
+            move.w  D3,D1
+            add.w   D1,D1
+            cmp.w   (-$68,A6,D1.w),D0
+            bge.b   .L6
+            move.w  (-$68,A6,D1.w),(-$68,A6,D2.w)
+            move.w  D0,(-$68,A6,D1.w)
+            move.w  (-$68,A6,D2.w),D0
+.L6:
+            subq.w  #1,D3
+            bge.b   .L5
+            subq.w  #1,D4
+            bge.b   .L4
+            move.w  (-4,A6),D4
+            add.w   D4,D4
+            moveq   #0,D3
+.L7:
+            clr.l   -(SP)
+            move.l  #'AINI',-(SP)
+            move.w  (-$68,A6,D3.w),-(SP)
+            _GetResource
+            move.l  (SP)+,D0
+            beq.b   .L8
+            movea.l D0,A0
+            _HLock
+            movem.l D1-D7/A0-A4,-(SP)
+            movea.l (A0),A0
+            jsr     (A0)
+            movem.l (SP)+,D1-D7/A0-A4
+.L8:
+            addq.w  #2,D3
+            cmp.w   D3,D4
+            bgt.b   .L7
 .L9:
-            movem.l (SP)+,D2-D4/A1
-            move.l  ($30,SP),($3A,SP)
-            lea     .L10,A0
-            move.l  A0,($30,SP)
-            jmp     (A4)
-.L10:
+            movem.l (SP)+,D1-D4/A1-A2
+            move.l  (4,A6),(4,A6)
+            unlk    A6
+            lea     0.w(SP),SP
             rts
-sub_408EF470:
-            lea     sub_408EF67C.L2,A1
-            bsr.w   sub_408EF2CA
-            fmul.x  FP3,FP0
-            lea     sub_408EEEEA.L1,A1
-            bsr.w   sub_408EF2CA
+sub_408DDF3E:
+            move.l  D4,-(SP)
+            cmpi.b  #$7F,D1
+            beq.b   sub_408DDF8E.L1
+            moveq   #-1,D4
+            bsr.w   sub_408DE18A
+            move.l  D1,($312,A3)
+            tst.w   D0
+            beq.b   .L3
+            move.w  #$BFEA,D3
+            tst.w   D2
+            bne.b   .L1
+            move.w  #$BFE9,D3
+.L1:
+            bsr.b   sub_408DDF8E
+.L2:
+            bsr.b   sub_408DDF72
+            subq.w  #2,SP
+            move.w  D3,-(SP)
+            clr.l   -(SP)
+            _CautionAlert
+            addq.w  #2,SP
+.L3:
+            move.l  (SP)+,D4
+            rts
+sub_408DDF72:
+            moveq   #0,D1
+            bsr.w   WritePRAM_lmgr_0
+            bsr.w   InstallPrintAtlk_lmgr_0
+            movea.l ExpandMem,A3
+            movea.l ($74,A3),A3
+            clr.l   ($312,A3)
+            move.w  #1,(A3)
+            rts
+sub_408DDF8E:
+            _InitFonts
+            _InitWindows
+            _TEInit
+            clr.l   -(SP)
+            _InitDialogs
+            clr.l   DeskHook
             rts
 .L1:
-            fmove.l FPSR,D0
-            movem.l D2-D4/A1,-(SP)
-            movea.l ($4A,SP),A1
-            move.b  ($45,SP),D1
-            bpl.b   .L2
-            fmove.x (A1),FP3
-            bra.b   .L3
+            moveq   #-1,D4
 .L2:
-            addq.l  #6,A1
-            move.l  (A1),-(SP)
-            move.l  -(A1),-(SP)
-            subq.l  #2,A1
-            move.l  (A1),-(SP)
-            fmove.x (SP)+,FP3
+            subq.w  #2,SP
+            pea     (6,A3)
+            _OpenResFile
+            move.w  (SP)+,D2
+            moveq   #4,D3
+            tst.w   ResErr
+            bne.w   .L8
+            addq.w  #1,D4
+            cmpi.w  #8,D4
+            beq.b   .L4
+            subq.w  #4,SP
+            move.l  #'port',-(SP)
+            move.w  D4,-(SP)
+            _GetResource
+            move.l  (SP)+,D0
+            beq.b   .L4
+            movea.l D0,A0
+            movea.l (A0),A0
+            move.l  (A0),D1
+            move.w  D2,-(SP)
+            _CloseResFile
+            bsr.w   sub_408DE18A
+            tst.w   D0
+            beq.b   .L3
+            bsr.w   sub_408DE0BA
+            bra.w   .L7
 .L3:
-            moveq   #0,D4
-            fmove.l FPSR,D1
-            move.l  #$F000000,D2
-            move.l  D1,D3
-            and.l   D2,D3
-            lsl.l   #5,D3
-            and.l   D2,D0
-            lsl.l   #5,D0
-            bne.b   .L11
-            bcs.b   .L11
-            tst.l   D3
-            bne.b   .L11
+            bsr.w   sub_408DE384
+            move.l  D1,(8,A3,D0.w)
+            bra.b   .L2
 .L4:
-            fmove.w FP3,D2
-            fmove.l FPSR,D1
-            bclr    #7,D1
-            sne     D2
-            fmove.l D1,FPSR
-            btst    #3,D1
-            sne     D0
-            or.b    D2,D0
-            bne.b   .L7
-            fmove.w FP3,D2
-            move.w  D2,D0
-            bpl.b   .L5
-            neg.w   D0
+            move.w  D4,(A3)
+            lea     (6,A3),A1
+            subq.w  #4,SP
+            move.l  #'brdg',-(SP)
+            clr.w   -(SP)
+            _GetResource
+            move.l  (SP)+,D0
+            bne.b   .L5
+            move.w  D2,-(SP)
+            _CloseResFile
+            bsr.w   sub_408DE0BA
+            moveq   #5,D3
+            bra.b   .L8
 .L5:
-            cmpi.w  #$FF,D0
-            ble.b   .L6
-            bra.b   .L7
+            move.w  D2,-(SP)
+            movea.l D0,A2
+            bsr.w   sub_408DDF8E
+            movea.l (A2),A0
+            movem.l D4-D7/A3-A6,-(SP)
+            jsr     (A0)
+            movem.l (SP)+,D4-D7/A3-A6
+            move.w  D0,D2
+            _CloseResFile
+            tst.w   D2
+            beq.b   .L6
+            bsr.w   sub_408DE0BA
+            bsr.w   sub_408DDF72
+            bra.w   sub_408DDF3E.L3
 .L6:
-            bsr.w   sub_408EF3A0
+            suba.w  #$7A,SP
+            movea.l SP,A0
+            move.w  BootDrive,($16,A0)
+            clr.w   ($1C,A0)
+            clr.l   ($12,A0)
+            _HGetVInfo
+            move.l  ($5A,A0),($30,A0)
+            move.l  #'brdg',($1C,A0)
+            moveq   #1,D0
+            _HFSDispatch
+            move.w  ($16,A0),(2,A3)
+            lea     (6,A3),A1
+            move.l  A1,($12,A0)
+            clr.b   ($1B,A0)
+            clr.l   ($1C,A0)
+            _Open
+            move.w  ($18,A0),(4,A3)
+            lea     ($7A,SP),SP
+            bra.w   sub_408DDF3E.L3
+.L7:
+            moveq   #3,D3
+            tst.w   D2
+            bne.b   .L8
+            moveq   #2,D3
+.L8:
+            bsr.w   sub_408DDF8E
+            suba.w  #$100,SP
+            move.l  SP,-(SP)
+            move.w  #$BFEC,-(SP)
+            move.w  D3,-(SP)
+            jsr     sub_408DE62E
+            move.l  SP,-(SP)
+            clr.l   -(SP)
+            clr.l   -(SP)
+            clr.l   -(SP)
+            _ParamText
+            lea     ($100,SP),SP
+            move.w  #$BFEB,D3
+            bra.w   sub_408DDF3E.L2
+sub_408DE0BA:
+            st      PortBUse
+            move.l  D1,-(SP)
+            move.w  D4,D3
+            moveq   #-1,D4
+.L1:
+            addq.w  #1,D4
+            cmp.w   D4,D3
+            beq.b   .L3
+            bsr.w   sub_408DE384
+            tst.l   (0,A3,D0.w)
+            beq.b   .L1
+            movea.l (0,A3,D0.w),A0
+            bsr.b   sub_408DE108
+            move.l  A0,-(SP)
+            move.l  #'rom ',D0
+            _Gestalt
+            move.l  A0,D1
+            movea.l (SP)+,A0
+            move.l  A0,D0
+            _StripAddress
+            movea.l D0,A0
+            move.l  ROMBase,D0
+            _StripAddress
+            cmpa.l  D0,A0
+            bcs.b   .L2
+            add.l   D0,D1
+            cmpa.l  D1,A0
+            bcs.b   .L3
+.L2:
+            _RecoverHandle sys
+            _DisposHandle
+            bra.b   .L1
+.L3:
+            move.l  (SP)+,D1
+            rts
+sub_408DE108:
+            movem.l D0-D3/A0-A3,-(SP)
+            moveq   #2,D0
+            jsr     (2,A0)
+            movem.l (SP)+,D0-D3/A0-A3
+            rts
+InstallPrintAtlk_lmgr_0:
+            move.w  #1,D0
+            bsr.b   sub_408DE134
+            move.l  A0,D0
+            beq.b   .L1
+            move.l  #$53432020,D1
+            move.w  #$101,D1
+            move.w  #$FFFF,D4
+            bsr.b   sub_408DE15C
+.L1:
+            rts
+sub_408DE134:
+            move.l  D2,-(SP)
+            move.w  CurMap,-(SP)
+            move.w  #1,CurMap
+            move.w  #$FFFF,ROMMapInsert
+            subq.w  #4,SP
+            move.l  #'atlk',-(SP)
+            move.w  D0,-(SP)
+            _GetResource
+            movea.l (SP)+,A0
+            move.w  (SP)+,CurMap
+            move.l  (SP)+,D2
+            rts
+sub_408DE15C:
+            tst.w   (-2,A6)
+            beq.b   .L1
+            cmpi.w  #2,(-2,A6)
+            beq.b   .L1
+            moveq   #0,D0
+            rts
+.L1:
+            movem.l D2-D4/A0/A2-A3,-(SP)
+            movea.l A0,A3
+            movea.l (A0),A0
+            tst.w   D4
+            bpl.b   .L2
+            moveq   #0,D4
+.L2:
+            moveq   #1,D0
+            jsr     (2,A0)
+            movem.l (SP)+,D2-D4/A0/A2-A3
+            tst.w   D0
+            rts
+sub_408DE18A:
+            moveq   #0,D2
+            clr.w   D0
+            move.b  D1,D0
+            bsr.b   sub_408DE134
+            move.l  A0,D0
+            beq.b   .L4
+            move.l  D1,D3
+            bsr.b   sub_408DE15C
+            beq.b   .L2
+.L1:
+            move.w  D0,D2
+            bra.b   .L7
+.L2:
+            bsr.w   CheckPramVal_lmgr_0
+            bne.b   .L1
+            cmp.l   D1,D3
+            beq.b   .L3
+            bsr.w   WritePRAM_lmgr_0
+.L3:
+            moveq   #0,D0
+            bra.b   .L7
+.L4:
+            move.l  (-6,A6),D0
+            beq.b   .L5
+            move.l  D0,-(SP)
+            bra.b   .L9
+.L5:
+            suba.w  #$20,SP
+            movea.l SP,A1
+            bsr.w   sub_408DE398
+            tst.w   D0
+            beq.b   .L8
+            moveq   #0,D2
+.L6:
+            lea     ($20,SP),SP
+.L7:
+            tst.w   D0
+            rts
+.L8:
+            subq.w  #4,SP
+            move.l  #'atlk',-(SP)
+            move.w  D1,-(SP)
+            clr.b   (SP)
+            _GetResource
+            tst.l   (SP)
+            bne.b   .L9
+            addq.w  #4,SP
+            move.w  D2,-(SP)
+            move.w  ResErr,D2
+            _CloseResFile
+            move.w  D2,D0
+            moveq   #0,D2
+            bra.b   .L6
+.L9:
+            movea.l (SP)+,A0
+            move.l  D1,D3
+            bsr.w   sub_408DE15C
+            bne.b   .L12
+            bsr.b   CheckPramVal_lmgr_0
+            bne.b   .L12
+            move.l  A0,-(SP)
+            cmp.l   D1,D3
+            beq.b   .L10
+            bsr.w   WritePRAM_lmgr_0
+.L10:
+            tst.w   (-2,A6)
+            beq.b   .L11
+            cmpi.w  #2,(-2,A6)
+            beq.b   .L11
+            move.l  (SP)+,(-6,A6)
+            moveq   #0,D0
+            bra.b   .L6
+.L11:
+            _DetachResource
+            moveq   #0,D0
+.L12:
+            tst.l   (-6,A6)
+            bne.b   .L6
+            move.w  D2,-(SP)
+            move.w  D0,D2
+            _CloseResFile
+            move.w  D2,D0
+            bra.b   .L6
+CheckPramVal_lmgr_0:
+            moveq   #0,D0
+            move.b  D3,D1
+            tst.w   D4
+            bmi.b   .L1
+            cmp.l   D1,D3
+            beq.b   .L1
+            movea.l (A0),A0
+            bsr.w   sub_408DE108
+            moveq   #-1,D0
+.L1:
+            tst.w   D0
+            rts
+sub_408DE250:
+            move.b  #$38,D2
+            moveq   #-$B,D3
+            bsr.b   sub_408DE26E
+            bne.b   .L1
+            moveq   #-$A,D3
+            bsr.b   sub_408DE26E
+            bne.b   .L1
+            moveq   #0,D2
+            moveq   #-$29,D3
+            bsr.b   sub_408DE26E
+            moveq   #0,D0
+            rts
+.L1:
+            moveq   #-1,D0
+            rts
+sub_408DE26E:
+            clr.l   -(SP)
+            move.l  #'DRVR',-(SP)
+            move.w  D3,-(SP)
+            not.w   (SP)
+            _Get1Resource
+            move.w  CurMap,-(SP)
+            move.w  #1,CurMap
+            move.w  #$FFFF,ROMMapInsert
+            subq.w  #4,SP
+            move.l  #'DRVR',-(SP)
+            move.w  D3,-(SP)
+            not.w   (SP)
+            _Get1Resource
+            movea.l (SP)+,A0
+            move.w  (SP)+,CurMap
+            move.l  A0,-(SP)
+            move.l  A0,D0
+            beq.b   .L1
+            movea.l (A0),A1
+            cmp.b   ($18,A1),D2
+            bls.b   .L4
+.L1:
+            tst.l   (4,SP)
+            beq.b   .L2
+            movea.l (4,SP),A1
+            movea.l (A1),A1
+            cmp.b   ($18,A1),D2
+            bls.b   .L3
+.L2:
+            addq.w  #8,SP
+            moveq   #-1,D0
+            rts
+.L3:
+            addq.w  #4,SP
+            bra.b   .L6
+.L4:
+            move.l  (4,SP),D0
+            beq.b   .L5
+            move.l  D0,-(SP)
+            _ReleaseResource
+.L5:
+            move.l  (SP)+,(SP)
+.L6:
+            tst.w   (-2,A6)
+            beq.b   .L7
+            cmpi.w  #2,(-2,A6)
+            beq.b   .L7
+            addq.w  #4,SP
             bra.b   .L8
 .L7:
-            bclr    #3,D1
-            fmove.l D1,FPSR
-            bsr.w   sub_408EF470
+            move.l  (SP),-(SP)
+            _DetachResource
+            move.w  D3,D0
+            _DrvrInstall async
+            movea.l UTableBase,A0
+            not.w   D3
+            lsl.w   #2,D3
+            movea.l (0,A0,D3.w),A0
+            movea.l (A0),A0
+            movea.l (SP)+,A1
+            move.l  (A1),(A0)
+            movea.l (A0),A1
+            move.b  (A1),(4,A0)
+            bclr    #6,(5,A0)
 .L8:
             moveq   #0,D0
-            btst    #$1F,D3
-            bne.b   .L9
-            btst    #$1E,D3
-            beq.b   .L10
-.L9:
-            move.b  #8,D0
-.L10:
-            bra.w   sub_408EF414.L8
-.L11:
-            bpl.b   .L16
-            bcc.b   .L16
-            btst    #$1D,D3
-            bne.b   .L16
-            lsl.l   #5,D1
-            bne.b   .L15
-            fint.x  FP3,FP3
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   .L20
-            bcs.b   .L13
-            fscale.w #$FFFF,FP3
-            fint.x  FP3,FP3
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   .L12
-            fabs.x  FP0,FP0
-.L12:
-            moveq   #8,D0
-            bra.w   sub_408EF414.L8
-.L13:
-            bsr.w   sub_408EF414
-            fscale.w #$FFFF,FP3
-            fint.x  FP3,FP3
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   .L14
-            bra.w   sub_408EF414.L4
-.L14:
-            bra.w   sub_408EF414.L5
-.L15:
-            bra.b   .L20
-.L16:
-            btst    #$1D,D0
-            beq.b   .L17
-            bra.w   sub_408EF414.L8
-.L17:
-            btst    #$1D,D3
-            beq.b   .L18
-            fmove.x FP3,FP0
-            bra.w   sub_408EF414.L8
-.L18:
-            ftst.x  FP0
-            fblt.w  .L21
-            bsr.b   sub_408EF60A
-            bra.w   sub_408EF414.L8
-.L19:
-            addq.l  #4,SP
-.L20:
-            bsr.w   sub_408EF400
-            moveq   #$25,D1
-            lsl.l   #8,D1
-            ori.l   #$7FC00000,D1
-            move.l  #$800000,D0
-            bra.w   sub_408EF414.L7
-.L21:
-            btst    #$1E,D3
-            bne.b   .L20
-            btst    #$1E,D0
-            beq.b   .L22
-            btst    #$1F,D3
-            bne.b   .L20
-.L22:
-            fint.x  FP3,FP2
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   .L20
-            fscale.w #$FFFF,FP2
-            fint.x  FP2,FP2
-            fmove.l FPSR,D2
-            btst    #3,D2
-            sne     D4
-            bsr.w   sub_408EF400
-            fabs.x  FP0,FP0
-            bsr.b   sub_408EF60A
-            tst.b   D4
-            beq.w   sub_408EF414.L8
-            fneg.x  FP0,FP0
-            bra.w   sub_408EF414.L8
-sub_408EF60A:
-            fbne.w  .L4
-            btst    #$1E,D3
+            rts
+sub_408DE312:
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            clr.l   -(SP)
+            move.l  #'STR#',-(SP)
+            move.w  #$BFE8,-(SP)
+            _GetResource
+            move.l  (SP),-(SP)
+            _DetachResource
+            movea.l (SP)+,A0
+            move.l  A0,($1F2,A2)
+            movea.l (A0),A0
+            moveq   #1,D0
+            add.b   (2,A0),D0
+            lea     (2,A0,D0.w),A0
+            add.b   (A0),D0
+            addi.b  #$20,D0
+            _NewPtrSysClear
             bne.b   .L1
-            tst.l   D3
-            bne.b   sub_408EF470.L19
-            ftst.x  FP3
-            fblt.w  .L2
+            move.l  A0,($278,A2)
 .L1:
-            lsl.l   #5,D1
-            bcs.b   .L2
-            moveq   #0,D1
+            rts
+sub_408DE34E:
+            move.w  #$605,(4,A0)
             moveq   #0,D0
-            bra.b   .L3
+            rts
+sub_408DE358:
+            clr.l   -(SP)
+            btst    #$E,HWCfgFlags
+            beq.b   .L1
+            movea.l SP,A0
+            move.l  #$400E0,D0
+            _ReadXPRam
+.L1:
+            move.l  (SP)+,D1
+            rts
+WritePRAM_lmgr_0:
+            move.l  A0,-(SP)
+            move.l  D1,-(SP)
+            movea.l SP,A0
+            move.l  #$400E0,D0
+            _WriteXPRam
+            addq.w  #4,SP
+            movea.l (SP)+,A0
+            rts
+sub_408DE384:
+            moveq   #0,D0
+            cmp.b   (1,A3),D4
+            bcc.b   .L1
+            move.b  D4,D0
+.L1:
+            mulu.w  #$10,D0
+            addi.w  #$30A,D0
+            rts
+sub_408DE398:
+            move.w  ResLoad,-(SP)
+            clr.w   ResLoad
+            movem.l D1/A1,-(SP)
+            subq.w  #2,SP
+            move.l  #'extn',-(SP)
+            bsr.w   sub_408DE672
+            move.w  (SP)+,D0
+            movem.l (SP)+,D1/A1
+            move.w  D0,-(SP)
+            suba.w  #$7A,SP
+            movea.l SP,A2
+            move.w  D0,($16,A2)
+            move.l  A1,($12,A2)
+            clr.w   ($1C,A2)
+            tst.b   D1
+            bne.b   .L1
+            move.w  D3,($1C,A2)
+.L1:
+            movea.l A2,A0
+            clr.w   ($1A,A0)
+            addq.w  #1,($1C,A0)
+            _GetFileInfo
+            bne.b   .L3
+            move.l  ($20,A0),D0
+            cmpi.l  #'adev',D0
+            bne.b   .L1
+            clr.w   -(SP)
+            move.l  A1,-(SP)
+            move.w  ($16,A0),-(SP)
+            clr.b   -(SP)
+            _OpenRFPerm
+            move.w  (SP)+,D2
+            move.w  ResErr,D0
+            bne.b   .L1
+            tst.b   D1
+            beq.b   .L2
+            subq.w  #4,SP
+            move.l  #'atlk',-(SP)
+            move.w  D1,-(SP)
+            clr.b   (SP)
+            _Get1Resource
+            moveq   #0,D0
+            tst.l   (SP)+
+            bne.b   .L3
+            move.w  D2,-(SP)
+            _CloseResFile
+            bra.b   .L1
 .L2:
-            bsr.w   sub_408EF414
-            move.l  #$7F800000,D1
+            move.w  ($1C,A2),D3
 .L3:
-            fmove.s D1,FP0
+            lea     ($7A,SP),SP
+            movem.l D0-D2,-(SP)
+            subq.w  #2,SP
+            move.w  ($E,SP),-(SP)
+            bsr.w   sub_408DE6E6
+            move.w  (SP)+,D0
+            movem.l (SP)+,D0-D2
+            addq.w  #2,SP
+            move.w  (SP)+,ResLoad
             rts
 .L4:
-            btst    #$1E,D0
+            dc.b    14,'.AFPTranslator'
+            dc.b    $00,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9,$FF,$A9
+            dc.b    $FF,$A9,$FF,$A9,$FF,$A9,$FF
+.L5:
+            dc.b    4,'.MPP'
+            dc.b    $00
+sub_408DE62E:
+            link.w  A6,#0
+            subq.w  #4,SP
+            move.l  #'STR#',-(SP)
+            move.w  ($A,A6),-(SP)
+            _GetResource
+            movea.l ($C,A6),A1
+            clr.b   (A1)
+            move.l  (SP)+,D0
+            beq.b   .L3
+            movea.l D0,A0
+            movea.l (A0),A0
+            move.w  (A0)+,D0
+            move.w  (8,A6),D1
+            cmp.w   D0,D1
+            bgt.b   .L3
+            moveq   #0,D0
+.L1:
+            subq.w  #1,D1
+            beq.b   .L2
+            move.b  (A0)+,D0
+            adda.l  D0,A0
+            bra.b   .L1
+.L2:
+            move.b  (A0),D0
+            addq.w  #1,D0
+            _BlockMove
+.L3:
+            unlk    A6
+            movea.l (SP)+,A0
+            addq.l  #8,SP
+            jmp     (A0)
+sub_408DE672:
+            link.w  A6,#-$4A
+            lea     (-$44,A6),A0
+            move.w  #1,D0
+            _SysEnvirons
+            move.w  (-$40,A6),D1
+            cmpi.w  #$700,D1
+            bcs.b   .L1
+            subq.w  #2,SP
+            move.w  #$8000,-(SP)
+            move.l  (8,A6),-(SP)
+            move.w  #1,-(SP)
+            pea     (-$46,A6)
+            pea     (-$4A,A6)
+            moveq   #0,D0
+            _AliasDispatch
+            move.w  (SP)+,D0
+            moveq   #0,D0
+            bne.b   .L2
+            lea     (-$34,A6),A0
+            move.w  (-$46,A6),($16,A0)
+            move.l  (-$4A,A6),($30,A0)
+            clr.l   ($12,A0)
+            move.l  #'atlk',($1C,A0)
+            moveq   #1,D0
+            _HFSDispatch
+            move.w  ($10,A0),D0
+            moveq   #0,D0
+            bne.b   .L2
+            move.w  ($16,A0),D0
+            bra.b   .L2
+.L1:
+            move.w  (-$36,A6),D0
+.L2:
+            unlk    A6
+            movea.l (SP)+,A0
+            addq.w  #4,SP
+            move.w  D0,(SP)
+            jmp     (A0)
+sub_408DE6E6:
+            link.w  A6,#-$44
+            moveq   #0,D0
+            lea     (-$44,A6),A0
+            move.w  #1,D0
+            _SysEnvirons
+            move.w  (8,A6),D1
+            cmp.w   (-$36,A6),D1
+            beq.b   .L1
+            lea     (-$34,A6),A0
+            move.w  D1,($16,A0)
+            moveq   #2,D0
+            _HFSDispatch
+            move.w  ($10,A0),D0
+.L1:
+            unlk    A6
+            movea.l (SP)+,A0
+            addq.w  #2,SP
+            move.w  D0,(SP)
+            jmp     (A0)
+            dc.b    '1989]<'
+RsrcEntryINIT_18:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'INIT' 18 "INIT 18" (340 bytes) - Combo mask
+            dc.l    RsrcEntrylmgr_0-BaseOfROM       ; Next entry
+            dc.l    RsrcINIT_18-BaseOfROM           ; Data
+            dc.b    'INIT'                          ; Type
+            dc.w    18                              ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    7,'INIT 18'                     ; Name
+            dc.b    $46,$44,$4A,$57,$47
+            dc.l    $C0A00000,$00000160,$00000234   ; Block header
+RsrcINIT_18:
+            bra.b   .L1
+            ds.b    5
+            dc.b    $08,$38,$02,$80,$00,$00,$00,$08
+            dc.b    '56.0.2  '
+            dc.b    $00,$33
+            dc.b    'INIT 18 v56.0.2  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1984-1991'
+.L1:
+            link.w  A6,#-8
+            clr.l   (-4,A6)
+            move.l  TheZone,D0
+            cmp.l   SysZone,D0
+            bne.b   .L2
+            move.l  D0,(-4,A6)
+.L2:
+            movea.l SysZone,A0
+            move.l  A0,TheZone
+            move.l  A0,ApplZone
+            move.l  (A0),HeapEnd
+            move.l  ($10,A0),(-8,A6)
+            pea     sub_408DE846
+            move.l  (SP)+,($10,A0)
+            bsr.b   sub_408DE83A
+            clr.l   -(SP)
+            move.l  #'lmgr',-(SP)
+            clr.w   -(SP)
+            _Get1Resource
+            move.l  (SP)+,D0
+            beq.b   .L3
+            move.l  D0,-(SP)
+            move.l  (SP),-(SP)
+            _DetachResource
+            movea.l (SP),A0
+            movea.l (A0),A1
+            jsr     (A1)
+            movea.l (SP)+,A0
+            _DisposHandle
+.L3:
+            bsr.b   sub_408DE83A
+            cmpi.w  #$FFFF,D0
+            beq.b   .L4
+            move.w  D0,-(SP)
+            _CloseResFile
+.L4:
+            movea.l SysZone,A0
+            move.l  (-8,A6),($10,A0)
+            move.l  (A0),D0
+            _StripAddress
+            movea.l D0,A1
+            move.l  (A1),D1
+            andi.l  #$FFFFFF,D1
+            pea     (0,A1,D1.l)
+            movea.l (SP)+,A0
+            _SetAppBase
+            _InitApplZone
+            move.l  ApplZone,D0
+            tst.l   (-4,A6)
+            bne.b   .L5
+            move.l  D0,TheZone
+.L5:
+            unlk    A6
+            lea     RsrcINIT_18,A0
+            _RecoverHandle
+            _DisposHandle
+            rts
+sub_408DE83A:
+            clr.w   -(SP)
+            pea     sub_408DE846.L2
+            _OpenResFile
+            move.w  (SP)+,D0
+            rts
+sub_408DE846:
+            move.l  (4,SP),D0
+            move.l  A2,-(SP)
+            movea.l SysZone,A1
+            movea.l (A1),A0
+            movea.l A0,A2
+            addi.l  #$4000,D0
+            lea     (0,A0,D0.l),A0
+            move.l  D0,D1
+            movea.l BufPtr,A1
+            suba.w  #$2000,A1
+            cmpa.l  A1,A0
+            bls.b   .L1
+            move.l  A1,D1
+            sub.l   A2,D1
+            movea.l A1,A0
+.L1:
+            _SetAppBase
+            _InitApplZone
+            movea.l SysZone,A1
+            move.l  A1,TheZone
+            move.l  A1,ApplZone
+            move.l  (A1),HeapEnd
+            movea.l (SP)+,A2
+            movea.l (SP)+,A0
+            move.l  (SP)+,D0
+            move.l  D1,(SP)
+            jmp     (A0)
+.L2:
+            dc.b    9,'AppleTalk'
+            dc.b    '>>[(c)'
+RsrcEntryDRVR_40:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'DRVR' 40 ".XPP" (3364 bytes) - Combo mask
+            dc.l    RsrcEntryINIT_18-BaseOfROM      ; Next entry
+            dc.l    RsrcDRVR_40-BaseOfROM           ; Data
+            dc.b    'DRVR'                          ; Type
+            dc.w    40                              ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'.XPP'                        ; Name
+            dc.b    'nc. 1989'
+            dc.l    $C0A00000,$00000D30,$0000022C   ; Block header
+RsrcDRVR_40:
+            dc.w    $4400                           ; drvrFlags
+            dc.w    0                               ; drvrDelay
+            dc.w    $0000                           ; drvrEMask
+            dc.w    0                               ; drvrMenu
+            dc.w    XPPOpen-RsrcDRVR_40             ; drvrOpen
+            dc.w    XPPPrime-RsrcDRVR_40            ; drvrPrime
+            dc.w    XPPCtl-RsrcDRVR_40              ; drvrCtl
+            dc.w    XPPPrime-RsrcDRVR_40            ; drvrStatus
+            dc.w    XPPClose-RsrcDRVR_40            ; drvrClose
+            dc.b    4,'.XPP'
+            dc.b    $00
+.L1:
+            dc.b    $38,$02,$80,$00,$00,$00,$08
+            dc.b    '56.0.2  '
+            dc.b    $00,$35
+            dc.b    '.XPP DRVR v56.0.2  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1984-1991'
+XPPOpen:
+            movea.l ROMBase,A0
+            move.w  (8,A0),D2
+            cmpi.w  #$75,D2
+            beq.b   .L2
+            movea.l ($D1C).w,A0
+            move.l  A0,D1
+            addq.l  #1,D1
+            bne.b   .L1
+            moveq   #$10,D0
+            _NewHandleClear async
+            bne.w   .L9
+            move.l  A0,($D1C).w
+.L1:
+            movea.l (A0),A2
+            tst.l   (A2)
+            bra.b   .L3
+.L2:
+            move.l  sub_408DF580.L9,D0
+.L3:
+            bne.b   .L8
+            moveq   #-$61,D0
+            move.b  PortBUse,D1
+            bmi.b   .L9
+            andi.b  #$F,D1
+            subq.b  #1,D1
+            bne.b   .L9
+            bset    #5,PortBUse
+            movea.l A0,A2
+            move.l  #$E2,D0
+            _NewPtrSysClear
+            bne.b   .L9
+            cmpi.w  #$75,D2
+            beq.b   .L4
+            movea.l (A2),A2
+            move.l  A0,(A2)
+            bra.b   .L5
+.L4:
+            lea     sub_408DF580.L9,A2
+            move.l  A0,(A2)
+.L5:
+            move.b  RsrcDRVR_40.L1,(7,A1)
+            move.b  #$14,D0
+            cmpi.w  #$75,D2
+            beq.b   .L6
+            cmpi.w  #$276,D2
+            bne.b   .L7
+.L6:
+            moveq   #5,D0
+.L7:
+            move.b  D0,(6,A0)
+            move.l  A1,(A0)
+            lea     sub_408DEA82,A2
+            move.l  A2,($E,A0)
+            movea.l LAPMgrPtr,A2
+            cmpa.w  #$FFFF,A2
             beq.b   .L8
-            tst.l   D3
+            lea     (8,A0),A0
+            moveq   #$17,D0
+            jsr     (2,A2)
+.L8:
+            moveq   #0,D0
+.L9:
+            rts
+XPPCtl:
+            move.w  ($1A,A0),D2
+            subq.w  #1,D2
+            bne.b   .L1
+            rts
+.L1:
+            moveq   #-$11,D0
+            subi.w  #$F5,D2
+            blt.w   sub_408DEB6A.L8
+            cmpi.w  #9,D2
+            bgt.w   sub_408DEB6A.L8
+            add.w   D2,D2
+            lea     .L2,A3
+            adda.w  D2,A3
+            movea.w (A3),A3
+            lea     RsrcDRVR_40,A2
+            adda.l  A2,A3
+            jmp     (A3)
+.L2:
+            dc.w    $0C60,$01A0,$023C,$02CC,$0896,$0802,$061C,$061C
+            dc.w    $04D0,$032E
+XPPClose:
+            bsr.w   sub_408DF51A
+            bne.b   .L1
+            moveq   #-$18,D0
+            rts
+.L1:
+            movea.l LAPMgrPtr,A2
+            cmpa.w  #$FFFF,A2
+            beq.b   .L4
+            movea.l ROMBase,A1
+            cmpi.w  #$75,(8,A1)
+            bne.b   .L2
+            movea.l sub_408DF580.L9,A1
+            bra.b   .L3
+.L2:
+            movea.l ($D1C).w,A1
+            movea.l (A1),A1
+            movea.l (A1),A1
+.L3:
+            lea     (8,A1),A0
+            moveq   #$18,D0
+            jsr     (2,A2)
+.L4:
+            bclr    #5,PortBUse
+            movea.l ROMBase,A2
+            cmpi.w  #$75,(8,A2)
+            beq.b   .L5
+            movea.l ($D1C).w,A2
+            movea.l (A2),A2
+            clr.l   (A2)
+            bra.b   .L6
+.L5:
+            lea     sub_408DF580.L9,A2
+            clr.l   (A2)
+.L6:
+            moveq   #0,D0
+            rts
+sub_408DEA70:
+            bsr.w   sub_408DF51A
+            bne.w   sub_408DEB6A.L7
+            move.b  #5,(2,A2)
+            bra.w   sub_408DEDBA
+sub_408DEA82:
+            move.l  (4,SP),D0
+            cmpi.l  #5,D0
+            bne.b   sub_408DEAEC
+            movea.l ($C,SP),A0
+            movem.l D4/A2-A4,-(SP)
+            movea.l A0,A4
+            bsr.w   sub_408DF4CC
+            move.l  D0,D4
+            movea.l A1,A3
+.L1:
+            movea.l ($12,A3,D4.w),A2
+            cmpa.w  #0,A2
+            beq.b   .L2
+            move    SR,-(SP)
+            move    #$2600,SR
+            cmpi.b  #2,(2,A2)
+            bne.b   sub_408DEAEC.L1
+            moveq   #0,D0
+            move.w  (8,A2),D0
+            move.l  D0,-(SP)
+            move.l  A4,-(SP)
+            movea.l (4,A4),A0
+            jsr     (A0)
+            addq.w  #8,SP
+            tst.w   D0
+            bne.b   sub_408DEAEC.L1
+            move.b  #6,(2,A2)
+            move    (SP)+,SR
+            movem.l D3/A3,-(SP)
+            bsr.w   sub_408DEDBA
+            movem.l (SP)+,D3/A3
+.L2:
+            subq.w  #4,D4
+            bpl.b   .L1
+            movem.l (SP)+,D4/A2-A4
+            rts
+sub_408DEAEC:
+            moveq   #0,D0
+            rts
+.L1:
+            move    (SP)+,SR
+            bra.b   sub_408DEA82.L2
+sub_408DEAF4:
+            move.l  A3,-(SP)
+            movea.l ABusDCE,A3
+            cmpi.b  #4,(7,A3)
+            beq.b   .L1
+            cmpi.b  #$2D,(7,A3)
+.L1:
+            movea.l (SP)+,A3
+            rts
+            movea.l ($1C,A0),A2
+            move    SR,-(SP)
+            move    #$2600,SR
+            movea.l ($82,A2),A1
+            move.l  A1,D0
+            beq.b   sub_408DEB6A.L4
+            cmpi.b  #$FF,($1B,A1)
+            bne.b   sub_408DEB6A.L4
+            lea     ($42,A2),A1
+            cmpi.w  #$FE,($1A,A1)
+            beq.b   sub_408DEB6A.L4
+            bsr.b   sub_408DEAF4
+            bcc.b   .L2
+            btst    #1,($1D,A1)
+            beq.b   sub_408DEB6A.L4
+.L2:
+            move.b  #3,(2,A2)
+            move    (SP)+,SR
+            lea     ($10,A2),A0
+            lea     sub_408DEB6A.L7,A3
+sub_408DEB4E:
+            move.w  ($16,A1),($2E,A0)
+            move.l  ($1E,A1),($1E,A0)
+            move.w  #$100,D0
+            bsr.b   sub_408DEAF4
+            bcs.b   sub_408DEB6A
+            move.l  A1,($2C,A0)
+            move.w  #$102,D0
+sub_408DEB6A:
+            move.w  D0,($1A,A0)
+.L1:
+            move.l  A3,($C,A0)
+            move.w  #$FFF5,($18,A0)
+            _Control async
+            beq.b   .L2
+            cmpi.w  #$FFE4,D0
+            beq.b   .L3
+            cmpi.w  #$FFEB,D0
+            beq.b   .L3
+.L2:
+            rts
+.L3:
+            tst.l   ($C,A0)
+            beq.b   .L2
+            tst.w   D0
+            jmp     (A3)
+.L4:
+            move    (SP)+,SR
+            move.w  #$FBB2,D0
+            bra.b   .L8
+            move.w  #$242,($1C,A0)
+            move.w  #$1210,($1E,A0)
+            movea.l ROMBase,A1
+            cmpi.w  #$75,(8,A1)
+            bne.b   .L5
+            movea.l sub_408DF580.L9,A1
+            bra.b   .L6
+.L5:
+            movea.l ($D1C).w,A1
+            movea.l (A1),A1
+            movea.l (A1),A1
+.L6:
+            moveq   #0,D0
+            move.b  (6,A1),D0
+            move.w  D0,($20,A0)
+.L7:
+            moveq   #0,D0
+.L8:
+            movea.l ROMBase,A1
+            cmpi.w  #$75,(8,A1)
+            bne.b   .L9
+            movea.l sub_408DF580.L9,A1
+            bra.b   .L10
+.L9:
+            movea.l ($D1C).w,A1
+            movea.l (A1),A1
+            movea.l (A1),A1
+.L10:
+            movea.l (A1),A1
+            movea.l JIODone,A0
+            jmp     (A0)
+sub_408DEBF0:
+            tst.b   ($1A,A0)
+            bpl.b   sub_408DEB6A.L8
+            move.w  #$FA,($1A,A0)
+            bra.b   sub_408DEB6A.L8
+            movea.l ($24,A0),A2
+            move.l  ($20,A0),D3
+            move.l  ($28,A0),D2
+.L1:
+            bsr.w   sub_408DF494
+            bne.b   sub_408DEBF0
+            move.b  #1,(2,A2)
+            move.l  D2,($B8,A2)
+            move.w  D1,($1C,A0)
+            move.l  D3,(8,A2)
+            move.b  D3,(7,A2)
+            move.l  A0,($82,A2)
+            bsr.w   sub_408DF078
+            lea     ($42,A2),A0
+            move.w  #$FE,D0
+            lea     sub_408DEC3E,A3
+            bra.w   sub_408DEB6A
+sub_408DEC3E:
+            lea     (-$42,A0),A2
+            bmi.w   sub_408DECD0.L1
+            move.b  ($1C,A0),(6,A2)
+            lea     ($1C,A0),A3
+            move.w  #$20,(A3)+
+            move.l  (8,A2),(A3)+
+            clr.w   (A3)+
+            clr.l   (A3)+
+            lea     ($86,A2),A1
+            move.l  A1,(A3)+
+            move.b  #1,(A3)+
+            movea.l ($82,A2),A1
+            move.b  ($1E,A1),(A3)
+            addq.w  #2,A3
+            move.b  ($1F,A1),(A3)+
+            lea     ($12,A0),A1
+            move.b  #4,(A1)+
+            move.b  (6,A2),(A1)+
+            move.w  #$100,(A1)+
+            lea     sub_408DEC90,A3
+            move.w  #$FF,D0
+            bra.w   sub_408DEB6A
+sub_408DEC90:
+            lea     (-$42,A0),A2
+            bmi.b   .L1
+            move.w  #$FBAF,D0
+            cmpi.b  #3,(2,A2)
+            beq.b   .L1
+            lea     ($92,A2),A1
+            move.w  -(A1),D0
+            beq.b   sub_408DECD0.L2
+            bmi.b   .L1
+            move.w  #$FBD2,D0
+.L1:
+            cmpi.w  #$FBB8,D0
+            bne.b   .L2
+            move.w  #$FBD3,D0
+.L2:
+            move.b  (6,A2),($1C,A0)
+            move.w  D0,($86,A2)
+            move.w  #$FA,D0
+            lea     sub_408DECD0,A3
+            bra.w   sub_408DEB6A
+sub_408DECD0:
+            lea     (-$42,A0),A2
+            move.w  ($86,A2),D0
+.L1:
+            move.w  D0,D1
+            bsr.w   sub_408DF4F2
+            move.w  D1,D0
+            bra.b   .L4
+.L2:
+            move.b  -(A1),(3,A2)
+            move.l  (8,A2),D3
+            move.b  -(A1),($B,A2)
+            move.b  (6,A2),($1C,A0)
+            lea     ($E,A2),A3
+            move.l  A3,($24,A0)
+            bsr.w   sub_408DF388
+            lea     ($10,A2),A0
+            lea     ($1C,A0),A3
+            move.b  (6,A2),(A3)+
+            clr.b   (A3)+
+            move.l  D3,(A3)+
+            clr.w   (A3)+
+            clr.l   (A3)+
+            clr.l   (A3)+
+            move.w  #$1E,(A3)+
+            move.w  #$FFFF,(A3)+
+            lea     ($12,A0),A3
+            move.b  #5,(A3)+
+            move.b  (3,A2),(A3)+
+            clr.w   (A3)+
+            move.w  #$FF,D0
+            bsr.w   sub_408DEAF4
+            bcs.b   .L3
+            move.w  #$F8,D0
+.L3:
+            suba.l  A3,A3
+            bsr.w   sub_408DEB6A
+            lea     ($78,A2),A0
+            move.w  #1,(A0)+
+            lea     sub_408DF33E.L1,A3
+            move.l  A3,(A0)+
+            move.w  #$1C20,(A0)
+            lea     ($74,A2),A0
+            _VInstall
+            moveq   #0,D0
+            move.b  #2,(2,A2)
+.L4:
+            movea.l ($82,A2),A0
+sub_408DED64:
+            move.l  A1,-(SP)
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($82,A2),A1
+.L1:
+            cmpa.l  (A1),A0
+            beq.b   .L2
+            movea.l (A1),A1
+            bra.b   .L1
+.L2:
+            move.l  (A0),(A1)
+            move    (SP)+,SR
+            movea.l (SP)+,A1
+.L3:
+            tst.w   ($1A,A0)
+            bmi.w   sub_408DF124.L10
+sub_408DED86:
+            movem.l D1-D3/A0-A3,-(SP)
+            move.w  D0,($10,A0)
+            move.l  ($C,A0),D1
+            beq.b   .L1
+            movea.l D1,A1
+            tst.w   D0
+            jsr     (A1)
+.L1:
+            movem.l (SP)+,D1-D3/A0-A3
+            rts
+sub_408DEDA0:
+            move.w  ($1C,A0),D1
+            bsr.w   sub_408DF458
+            bne.w   sub_408DEBF0
+            move.b  #5,(2,A2)
+            bsr.w   sub_408DF078
+            bsr.w   sub_408DF508
+sub_408DEDBA:
+            lea     ($74,A2),A0
+            _VRemove
+.L1:
+            lea     sub_408DEDD0,A3
+            lea     ($86,A2),A0
+            lea     ($10,A2),A1
+            bra.w   sub_408DEB4E
+sub_408DEDD0:
+            lea     (-$86,A0),A2
+            movea.l A0,A1
+            lea     ($10,A2),A0
+            cmpi.b  #6,(2,A2)
+            beq.b   .L1
+            lea     ($1C,A0),A3
+            clr.w   (A3)+
+            move.l  (8,A2),(A3)+
+            clr.w   (A3)+
+            clr.l   (A3)+
+            move.l  A1,(A3)+
+            clr.w   (A1)+
+            clr.l   (A1)+
+            move.b  #1,(A3)+
+            move.b  #1,(A3)+
+            move.w  #1,(A3)+
+            lea     ($12,A0),A3
+            move.b  #1,(A3)+
+            move.b  (3,A2),(A3)+
+            clr.w   (A3)+
+            move.w  #$FF,D0
+            lea     .L1,A3
+            bra.w   sub_408DEB6A
+.L1:
+            lea     (-$10,A0),A2
+            lea     ($82,A2),A1
+.L2:
+            move.l  (A1),D1
+            beq.b   .L4
+            movea.l D1,A1
+            cmpi.b  #$FE,($1B,A1)
+            beq.b   .L2
+            cmpi.b  #$FC,($1B,A1)
+            bne.b   .L3
+            move.l  A0,D2
+            movea.l A1,A0
+            movea.l A1,A3
+            bsr.w   sub_408DF448
+            exg     A1,A3
+            movea.l D2,A0
+            tst.w   ($10,A3)
+            ble.b   .L3
+            move.b  ($1C,A3),($1C,A0)
+            move.l  ($1E,A3),($1E,A0)
+            move.w  ($2E,A3),($2E,A0)
+            move.w  #$F9,D0
+            lea     .L1,A3
+            bra.w   sub_408DEB6A
+.L3:
+            lea     ($32,A1),A1
+            lea     sub_408DEECA,A3
+            bra.w   sub_408DEB4E
+.L4:
+            move.b  (6,A2),($1C,A0)
+            move.w  #$FA,D0
+            lea     sub_408DEE8A,A3
+            bra.w   sub_408DEB6A
+sub_408DEE8A:
+            lea     (-$10,A0),A2
+            movea.l ($82,A2),A0
+            move.b  (2,A2),D2
+            move.w  (4,A2),D1
+            movea.l ($B8,A2),A3
+            bsr.w   sub_408DF4F2
+            move.l  A3,D3
+            beq.b   .L1
+            exg     D0,D1
+            movem.l D2/A0/A2,-(SP)
+            jsr     (A3)
+            movem.l (SP)+,D2/A0/A2
+            clr.w   D0
+.L1:
+            subq.b  #6,D2
+            beq.b   XPPPrime.L1
+            move.l  A0,D1
+            beq.w   sub_408DEA70
+            bra.w   sub_408DED64.L3
+XPPPrime:
+            bclr    #7,(5,A1)
+.L1:
+            rts
+sub_408DEECA:
+            bpl.w   sub_408DEDD0.L1
+            lea     (-$10,A0),A2
+            lea     ($82,A2),A1
+            move.l  (A1),D1
+            beq.b   sub_408DEDD0.L4
+            move.l  A0,-(SP)
+            movea.l D1,A0
+            move.w  #$FBD0,D0
+            bsr.w   sub_408DED64
+            movea.l (SP)+,A0
+            bra.w   sub_408DEDD0.L1
+.L1:
+            clr.b   ($1F,A0)
+            lea     ($1C,A0),A3
+            move.w  (A3),D1
+            bsr.w   sub_408DF458
+            bne.w   sub_408DEBF0
+            addq.w  #4,A3
+            move.w  #$FBCF,D0
+            cmpi.w  #$242,(A3)
+            bhi.w   sub_408DEBF0
+            move.w  ($C,A2),D1
+            addq.w  #1,($C,A2)
+            bsr.w   sub_408DF078
+            move.w  D1,D0
+            lea     ($4E,A0),A1
+            move.b  (6,A2),(A1)+
+            move.b  #$20,(A1)+
+            move.l  (8,A2),(A1)+
+            move.w  (A3)+,(A1)+
+            move.l  (A3)+,(A1)+
+            move.l  A4,-(SP)
+            lea     ($64,A0),A4
+            move.l  A4,(A1)+
+            move.w  (A3)+,D3
+            move.l  (A3)+,D2
+            bsr.w   sub_408DF03C
+            moveq   #2,D2
+            cmpi.b  #$FC,($1B,A0)
+            bne.b   .L2
+            move.w  (A3),D3
+            move.w  D3,($22,A4)
+            clr.w   (A3)+
+            move.l  (A3)+,D2
+            clr.w   ($10,A4)
+            move.l  A0,($24,A4)
+            lea     ($32,A4),A4
+            swap    D1
+            bsr.w   sub_408DF03C
+            swap    D1
+            moveq   #6,D2
+.L2:
+            movea.l (SP)+,A4
+            move.b  D1,(A1)+
+            move.b  ($1E,A0),(A1)+
+            move.w  #$FFFF,(A1)+
+            bsr.w   sub_408DF508
+            lea     ($32,A0),A0
+            lea     ($12,A0),A1
+            move.b  D2,(A1)+
+            move.b  (3,A2),(A1)+
+            move.w  D0,(A1)+
+            lea     .L4,A3
+            move.w  #$FF,D0
+            bsr.w   sub_408DEAF4
+            bcs.b   .L3
+            move.w  #$F8,D0
+.L3:
+            bra.w   sub_408DEB6A
+.L4:
+            bsr.w   sub_408DF124
+            move.l  (8,A1),($12,A0)
+            move.w  ($1C,A0),D1
+            move.w  D0,D2
+            bsr.w   sub_408DF458
+            cmpi.w  #$FBD2,D0
+            beq.b   .L7
+            move.w  D2,D0
+            cmpi.w  #$FBAF,D0
+            bne.b   .L6
+            move.w  #$FBD0,D0
+.L5:
+            bra.w   sub_408DED64
+.L6:
+            cmpi.w  #$FFA5,D0
+            beq.b   sub_408DEFF6
+            move.w  #$1C20,($7E,A2)
+            cmpi.b  #$FC,($1B,A0)
+            bne.b   .L5
+            bsr.w   sub_408DF448
+            move    SR,-(SP)
+            move    #$2600,SR
+            st      ($1F,A0)
+            tst.w   ($10,A1)
+            ble.w   sub_408DF428.L1
+            move    (SP)+,SR
+.L7:
+            rts
+sub_408DEFF6:
+            suba.l  A3,A3
+            move.l  A0,D1
+            lea     ($86,A2),A0
+            lea     ($10,A2),A1
+            bsr.w   sub_408DEB4E
+            movea.l D1,A0
+            lea     ($32,A0),A0
+            lea     sub_408DF014,A3
+            bra.w   sub_408DEB6A.L1
+sub_408DF014:
+            movem.l D0/A0,-(SP)
+            cmpi.w  #$FBAF,D0
+            beq.b   .L1
+            move.w  (-$16,A0),D1
+            bsr.w   sub_408DF458
+            bne.b   .L1
+            lea     ($10,A2),A0
+            tst.w   ($10,A0)
+            bgt.b   .L1
+            _Control async
+.L1:
+            movem.l (SP)+,D0/A0
+            bra.w   sub_408DEECA.L4
+sub_408DF03C:
+            cmpi.w  #$1210,D3
+            bls.b   .L1
+            move.w  #$1210,D3
+.L1:
+            ext.l   D3
+            divs.w  #$242,D3
+            move.w  D3,D1
+            beq.b   .L3
+.L2:
+            move.w  #$242,(A4)+
+            move.l  D2,(A4)+
+            addq.w  #2,A4
+            clr.l   (A4)+
+            addi.l  #$242,D2
+            subq.w  #1,D3
+            bne.b   .L2
+.L3:
+            cmpi.w  #8,D1
+            beq.b   .L4
+            addq.w  #1,D1
+            swap    D3
+            move.w  D3,(A4)+
+            move.l  D2,(A4)+
+            addq.w  #2,A4
+            clr.l   (A4)+
+.L4:
+            rts
+sub_408DF078:
+            movea.l ROMBase,A1
+            cmpi.w  #$75,(8,A1)
+            bne.b   .L1
+            movea.l sub_408DF580.L9,A1
+            bra.b   .L2
+.L1:
+            movea.l ($D1C).w,A1
+            movea.l (A1),A1
+            movea.l (A1),A1
+.L2:
+            movea.l (A1),A1
+            move    SR,-(SP)
+            move    #$2600,SR
+            bclr    #7,(5,A1)
+            move.l  (A0),(8,A1)
+            bne.b   .L3
+            clr.l   ($C,A1)
+.L3:
+            clr.l   (A0)
+            move.l  (8,A1),D0
+            beq.b   .L4
+            bset    #7,(5,A1)
+            move    (SP)+,SR
+            movem.l D1-D3/A0/A2-A3,-(SP)
+            movea.l D0,A0
+            moveq   #0,D0
+            bsr.w   XPPCtl
+            movem.l (SP)+,D1-D3/A0/A2-A3
+            moveq   #0,D0
+            rts
+.L4:
+            move    (SP)+,SR
+            rts
+            lea     ($26,A0),A3
+            bsr.b   sub_408DF078
+            lea     ($4E,A0),A1
+            clr.w   (A1)+
+            move.l  ($20,A0),(A1)+
+            clr.w   (A1)+
+            clr.l   (A1)+
+            move.l  A4,-(SP)
+            lea     ($64,A0),A4
+            move.l  A4,(A1)+
+            move.w  (A3)+,D3
+            move.l  (A3)+,D2
+            bsr.w   sub_408DF03C
+            movea.l (SP)+,A4
+            move.b  D1,(A1)+
+            move.b  ($1E,A0),(A1)
+            addq.w  #2,A1
+            move.b  ($1F,A0),(A1)+
+            lea     ($32,A0),A0
+            lea     ($12,A0),A1
+            clr.l   (A1)
+            move.b  #3,(A1)+
+            move.w  #$FF,D0
+            lea     sub_408DF11E,A3
+            bra.w   sub_408DEB6A
+sub_408DF11E:
+            bsr.b   sub_408DF124
+            bra.w   sub_408DED86
+sub_408DF124:
+            movea.l ($28,A0),A1
+            move.b  ($2E,A0),D3
+            lea     (-$32,A0),A0
+            tst.w   D0
+            bne.b   .L2
+            ext.w   D3
+            subq.w  #1,D3
+            move.w  D3,D2
+            mulu.w  #$C,D3
+            move.w  (6,A1,D3.w),D1
+            cmp.w   (0,A1,D3.w),D1
+            bls.b   .L1
+            move.w  #$FBD5,D0
+            move.w  (0,A1,D3.w),D1
+.L1:
+            mulu.w  #$242,D2
+            add.w   D2,D1
+            move.w  D1,($26,A0)
+.L2:
+            cmpi.w  #$FBB8,D0
+            bne.b   .L3
+            move.w  #$FBD3,D0
+.L3:
+            rts
+            tst.w   ($20,A0)
+            bne.b   .L5
+.L4:
+            move.w  #$EC65,D0
+            bra.w   sub_408DEB6A.L8
+.L5:
+            st      ($1A,A0)
+            clr.l   (8,A0)
+.L6:
+            movea.l ($22,A0),A1
+            move.b  (A1),D1
+            beq.b   .L4
+            cmpi.b  #$F,D1
+            beq.b   .L4
+            cmpi.b  #$FF,D1
+            beq.b   .L4
+            cmpi.b  #$12,D1
+            beq.b   .L13
+            cmpi.b  #$14,D1
+            beq.b   .L12
+            move.b  #$FC,($1B,A0)
+            lea     ($2C,A0),A3
+            cmpi.b  #$21,D1
+            beq.b   .L7
+            cmpi.b  #$C0,D1
+            bcc.b   .L9
+            move.b  #$FD,($1B,A0)
+            cmpi.b  #$1B,D1
+            bne.b   .L9
+            subq.w  #6,A3
+.L7:
+            move.l  (8,A1),D2
+            cmpi.l  #$1210,D2
+            bls.b   .L8
+            move.w  #$1210,D2
+.L8:
+            move.w  D2,(A3)
+.L9:
+            bra.w   sub_408DEECA.L1
+.L10:
+            movea.l ($22,A0),A1
+            move.b  (A1),D1
+            cmpi.b  #$12,D1
+            beq.b   .L14
+            cmpi.b  #$13,D1
+            beq.b   .L14
+            lea     ($2C,A0),A3
+            cmpi.b  #$21,D1
+            beq.b   .L16
+            subq.w  #6,A3
+            cmpi.b  #$1B,D1
+            beq.b   .L16
+.L11:
+            move.w  #$FA,($1A,A0)
+            bra.w   sub_408DED86
+.L12:
+            move.b  #$FE,($1B,A0)
+            bra.w   sub_408DEDA0
+.L13:
+            cmpi.w  #$242,($20,A0)
+            bhi.w   sub_408DEBF0
+            move.b  #$FF,($1B,A0)
+            movea.l ($30,A0),A2
+            move.l  ($2C,A0),D3
+            move.l  ($34,A0),D2
+            bra.w   sub_408DEBF0.L1
+.L14:
+            tst.w   D0
+            bne.b   .L11
+            lea     ($1B,A0),A1
+            cmpi.b  #$FD,(A1)
+            beq.b   .L15
+            cmpi.b  #$FE,(A1)
+            beq.b   .L11
+            move.b  #$FD,(A1)
+            bra.w   sub_408DEECA.L1
+.L15:
+            move.l  ($12,A0),D1
+            beq.b   .L11
+            cmpi.w  #$EC77,D1
+            beq.b   .L11
+            move.b  #$FE,(A1)
+            bra.w   sub_408DEDA0
+.L16:
+            tst.w   D0
+            bne.b   .L20
+            moveq   #0,D3
+            move.w  (A3)+,D3
+            add.l   D3,(8,A0)
+            tst.l   ($12,A0)
+            bne.b   .L20
+            cmp.l   (8,A1),D3
+            bcc.b   .L20
+            cmpi.b  #$1B,D1
+            bne.b   .L19
+            tst.b   ($C,A1)
+            bpl.b   .L17
+            movea.l (A3),A2
+            move.b  (-1,A2,D3.w),D1
+            cmp.b   ($D,A1),D1
+            beq.b   .L20
+.L17:
+            add.l   D3,(4,A1)
+.L18:
+            sub.l   D3,(8,A1)
+            add.l   D3,(A3)
+            bra.w   .L6
+.L19:
+            bclr    #7,(1,A1)
+            beq.b   .L17
+            movea.l ($28,A0),A2
+            move.l  (A2),D1
+            move.l  D1,(4,A1)
+            bra.b   .L18
+.L20:
+            move.l  (8,A0),(8,A1)
+            bra.w   .L11
+sub_408DF2BA:
+            move.w  ($10,A0),D0
+            bne.b   .L3
+            move.w  #2,($22,A0)
+            lea     (-$42,A0),A2
+            move.b  ($13,A0),D1
+            cmp.b   (3,A2),D1
+            bne.b   .L2
+            move.w  ($1E,A0),D2
+            beq.b   .L1
+            move.w  (8,A2),D3
+            beq.b   .L1
+            cmp.w   D2,D3
+            bne.b   .L2
+.L1:
+            move.b  ($20,A0),D2
+            cmp.b   ($A,A2),D2
+            bne.b   .L2
+            move.w  #$1C20,($7E,A2)
+            move.b  ($12,A0),D1
+            subq.b  #1,D1
+            beq.b   sub_408DF30A
+            subq.b  #6,D1
+            beq.w   sub_408DF388.L1
+            subq.b  #1,D1
+            beq.b   sub_408DF33E.L2
+.L2:
+            _Control async
+.L3:
+            rts
+sub_408DF30A:
+            lea     (2,A2),A1
+            cmpi.b  #5,(A1)
+            beq.b   sub_408DF2BA.L3
+            cmpi.b  #6,(A1)
+            beq.b   sub_408DF2BA.L3
+            move.b  #5,(A1)
+            lea     ($86,A2),A1
+            move.l  A1,($28,A0)
+            clr.l   (A1)+
+            clr.l   (A1)+
+            clr.l   (A1)+
+            move.w  #$101,($2C,A0)
+            move.w  #$FC,D0
+            lea     sub_408DF33E,A3
+            bra.w   sub_408DEB6A
+sub_408DF33E:
+            lea     ($32,A0),A0
+            _VRemove
+.L1:
+            lea     (-$74,A0),A2
+            move.b  #6,(2,A2)
+            bra.w   sub_408DEDBA.L1
+.L2:
+            move.w  ($14,A0),D1
+            move.w  D1,(A2)
+            movea.l ($B8,A2),A1
+            clr.l   ($12,A0)
+            clr.w   ($22,A0)
+            clr.b   ($1D,A0)
+            clr.b   ($2C,A0)
+            move.w  #$FB,D0
+            lea     sub_408DF388,A3
+            bsr.w   sub_408DEB6A
+            move.l  A1,D0
+            beq.b   .L3
+            tst.w   D1
+            beq.b   .L3
+            move.w  (4,A2),D0
+            jmp     (A1)
+.L3:
+            rts
+sub_408DF388:
+            move.w  #2,($22,A0)
+            move.w  #$FD,D0
+            lea     sub_408DF2BA,A3
+            bra.w   sub_408DEB6A
+.L1:
+            move.w  ($14,A0),D1
+            move.w  ($E,A2),D2
+            movea.l A0,A3
+            lea     ($82,A2),A0
+.L2:
+            move.l  (A0),D0
+            beq.b   .L4
+            movea.l D0,A0
+            cmpi.b  #$FC,($1B,A0)
+            bne.b   .L2
+            cmp.w   ($46,A0),D1
+            bne.b   .L2
+            bsr.w   sub_408DF448
+            move.w  ($22,A1),D1
+            cmp.w   D1,D2
+            bcc.b   .L3
+            move.w  D2,D1
+.L3:
+            move.w  D1,($2C,A0)
+            movea.l A1,A0
+            move.l  ($1E,A3),($1E,A0)
+            move.w  ($2E,A3),($2E,A0)
+            move.b  (6,A2),($1C,A0)
+            lea     ($32,A0),A1
+            subq.w  #1,D1
+            ext.l   D1
+            divs.w  #$242,D1
+            move.w  D1,D2
+            mulu.w  #$C,D2
+            swap    D1
+            addq.w  #1,D1
+            move.w  D1,(0,A1,D2.w)
+            move.l  A1,($28,A0)
+            swap    D1
+            addq.w  #1,D1
+            move.b  D1,($2C,A0)
+            move.b  D1,($2D,A0)
+            move.b  #$10,($1D,A0)
+            movea.l A3,A1
+            move.w  #$FC,D0
+            lea     sub_408DF428,A3
+            bsr.w   sub_408DEB6A
+            movea.l A1,A3
+.L4:
+            movea.l A3,A0
+            _Control async
+            rts
+sub_408DF428:
+            movea.l ($24,A0),A0
+            move    SR,-(SP)
+            move    #$2600,SR
+            tst.b   ($1F,A0)
+            beq.b   .L2
+            move.w  ($1C,A0),D1
+            bsr.b   sub_408DF458
+.L1:
+            move    (SP)+,SR
+            bra.w   sub_408DED64
+.L2:
+            move    (SP)+,SR
+            rts
+sub_408DF448:
+            moveq   #0,D3
+            move.b  ($5E,A0),D3
+            mulu.w  #$C,D3
+            lea     ($64,A0,D3.w),A1
+            rts
+sub_408DF458:
+            move.l  A1,-(SP)
+            bsr.b   sub_408DF4CC
+            cmp.b   D0,D1
+            bhi.b   .L2
+            move.b  D1,D0
+            andi.w  #$FC,D0
+            movea.l ($12,A1,D0.w),A2
+            move.l  A2,D0
+            beq.b   .L2
+            cmp.w   (4,A2),D1
+            bne.b   .L2
+            cmpi.b  #1,(2,A2)
+            beq.b   .L2
+            move.w  #$FBD0,D0
+            cmpi.b  #2,(2,A2)
+            bne.b   .L1
+            clr.w   D0
+.L1:
+            movea.l (SP)+,A1
+            rts
+.L2:
+            move.w  #$FBD2,D0
+            bra.b   .L1
+sub_408DF494:
+            move.l  A1,-(SP)
+            bsr.b   sub_408DF4CC
+            move.b  (4,A1),D1
+            addq.b  #1,(4,A1)
+            asl.w   #8,D1
+.L1:
+            tst.l   ($12,A1,D0.w)
+            beq.b   .L2
+            subq.w  #4,D0
+            bpl.b   .L1
+            move.w  #$FBD4,D0
+            bra.b   .L4
+.L2:
+            move.l  A2,($12,A1,D0.w)
+            move.b  D0,D1
+            movea.l A2,A1
+            moveq   #$5D,D0
+.L3:
+            clr.w   (A1)+
+            subq.w  #1,D0
+            bne.b   .L3
+            move.w  D1,(4,A2)
+.L4:
+            movea.l (SP)+,A1
+            tst.w   D0
+            rts
+sub_408DF4CC:
+            movea.l ROMBase,A1
+            cmpi.w  #$75,(8,A1)
+            bne.b   .L1
+            movea.l sub_408DF580.L9,A1
+            bra.b   .L2
+.L1:
+            movea.l ($D1C).w,A1
+            movea.l (A1),A1
+            movea.l (A1),A1
+.L2:
+            moveq   #0,D0
+            move.b  (6,A1),D0
+            subq.w  #1,D0
+            asl.w   #2,D0
+            rts
+sub_408DF4F2:
+            bsr.b   sub_408DF4CC
+.L1:
+            cmpa.l  ($12,A1,D0.w),A2
+            beq.b   .L2
+            subq.w  #4,D0
+            bpl.b   .L1
+            rts
+.L2:
+            clr.l   ($12,A1,D0.w)
+            moveq   #0,D0
+            rts
+sub_408DF508:
+            move    SR,-(SP)
+            move    #$2600,SR
+            move.l  ($82,A2),(A0)
+            move.l  A0,($82,A2)
+            move    (SP)+,SR
+            rts
+sub_408DF51A:
+            bsr.b   sub_408DF4CC
+.L1:
+            tst.l   ($12,A1,D0.w)
+            bne.b   .L2
+            subq.w  #4,D0
+            bpl.b   .L1
+            rts
+.L2:
+            movea.l ($12,A1,D0.w),A2
+            moveq   #0,D0
+            rts
+            movea.l ROMBase,A2
+            cmpi.w  #$75,(8,A2)
+            bne.b   .L3
+            movea.l sub_408DF580.L9,A2
+            bra.b   .L4
+.L3:
+            movea.l ($D1C).w,A2
+            movea.l (A2),A2
+            movea.l (A2),A2
+.L4:
+            lea     ($62,A2),A2
+            move.w  ($1C,A0),D3
             bmi.b   .L5
+            cmpi.w  #$1F,D3
+            ble.b   .L6
+.L5:
+            moveq   #-$11,D0
+            bra.w   sub_408DEB6A.L8
+.L6:
+            tst.l   (A2)
+            bne.b   .L7
+            move.l  A0,-(SP)
+            lea     sub_408DF580,A0
+            move.l  A0,(A2)
+            move.l  A0,(4,A2)
+            movea.l (SP)+,A0
+.L7:
+            lsl.w   #2,D3
+            move.l  (0,A2,D3.w),D3
+            beq.b   .L5
+            move.l  D3,-(SP)
+            bra.w   sub_408DF078
+sub_408DF580:
+            move.w  ($1E,A0),D3
+            cmpi.w  #5,D3
+            bcs.b   .L4
+            cmpi.w  #$1F,D3
+            bhi.b   .L4
+            movea.l ROMBase,A2
+            cmpi.w  #$75,(8,A2)
+            bne.b   .L1
+            movea.l .L9,A2
+            bra.b   .L2
+.L1:
+            movea.l ($D1C).w,A2
+            movea.l (A2),A2
+            movea.l (A2),A2
+.L2:
+            lea     ($62,A2),A2
+            lsl.w   #2,D3
+            cmpi.w  #0,($1C,A0)
+            beq.b   .L3
+            clr.l   (0,A2,D3.w)
+            bra.b   .L6
+.L3:
+            move.l  (0,A2,D3.w),D0
+            bne.b   .L4
+            move.l  ($20,A0),D0
+            bne.b   .L5
+.L4:
+            moveq   #-1,D0
             bra.b   .L7
 .L5:
-            tst.l   D0
-            bpl.b   .L6
-            fmovecr.x #$32,FP0
-            moveq   #0,D0
-            addq.l  #4,SP
-            bra.w   sub_408EF414.L8
+            move.l  D0,(0,A2,D3.w)
 .L6:
-            bra.w   sub_408EF470.L19
+            moveq   #0,D0
 .L7:
-            addq.l  #4,SP
-            bra.w   sub_408EF470.L4
+            move.w  D0,($10,A0)
+            move.l  ($C,A0),D1
+            beq.b   .L8
+            movea.l D1,A1
+            tst.w   D0
+            jsr     (A1)
 .L8:
-            btst    #$1E,D3
-            beq.b   .L9
-            fmovecr.x #$32,FP1
-            fcmp.x  FP0,FP1
-            fbne.w  .L9
-            bra.w   sub_408EF470.L19
+            rts
 .L9:
-            addq.l  #4,SP
-            bra.w   sub_408EF470.L4
-sub_408EF67C:
-            move.w  (A0)+,D0
-            fmove.x (A0)+,FP1
+            ds.b    4
+            dc.b    'LPATWT'
+RsrcEntryDRVR_10:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'DRVR' 10 ".ATP" (5812 bytes) - Combo mask
+            dc.l    RsrcEntryDRVR_40-BaseOfROM      ; Next entry
+            dc.l    RsrcDRVR_10-BaseOfROM           ; Data
+            dc.b    'DRVR'                          ; Type
+            dc.w    10                              ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'.ATP'                        ; Name
+            dc.b    't Apple '
+            dc.l    $C0A00000,$000016C0,$00000224   ; Block header
+RsrcDRVR_10:
+            dc.w    $4400                           ; drvrFlags
+            dc.w    0                               ; drvrDelay
+            dc.w    $0000                           ; drvrEMask
+            dc.w    0                               ; drvrMenu
+            dc.w    ATPOpen-RsrcDRVR_10             ; drvrOpen
+            dc.w    ATPPrime-RsrcDRVR_10            ; drvrPrime
+            dc.w    ATPCtl-RsrcDRVR_10              ; drvrCtl
+            dc.w    ATPPrime-RsrcDRVR_10            ; drvrStatus
+            dc.w    ATPClose-RsrcDRVR_10            ; drvrClose
+            dc.b    4,'.ATP'
+            dc.b    $20
 .L1:
-            fmul.x  FP0,FP1
-            fadd.x  (A0)+,FP1
+            dc.b    $38,$02,$80,$00,$00,$00,$08
+            dc.b    '56.0.2  '
+            dc.b    $00,$35
+            dc.b    '.ATP DRVR v56.0.2  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1984-1991'
+ATPOpen:
+            move.l  ($2D8).w,D1
+            bgt.b   .L1
+            cmpi.l  #$FFFFFFFF,D1
+            bne.b   .L1
+            moveq   #-$17,D0
+            bra.b   .L3
+.L1:
+            movea.l D1,A3
+            moveq   #0,D0
+            tst.l   ($1E,A3)
+            bne.b   .L3
+            move.w  #$BD2,D0
+            _NewPtrSysClear
+            bne.b   .L3
+            bset    #4,PortBUse
+            move.l  A0,($1E,A3)
+            move.b  RsrcDRVR_10.L1,(7,A1)
+            move.w  #$C7E,(A0)
+            move.w  #$2008,(2,A0)
+            lea     ($872,A0),A2
+            move.l  A1,(A2)+
+            move.w  ($16C).w,(A2)+
+            moveq   #5,D0
+            movea.l ROMBase,A3
+            cmpi.b  #$76,(9,A3)
+            bcs.b   .L2
+            move.w  TimeDBRA,D0
+            divu.w  #$64,D0
+.L2:
+            move.b  D0,($BCB,A0)
+            mulu.w  #$78,D0
+            subi.w  #$8E,D0
+            divu.w  #$30,D0
+            move.w  D0,($BCC,A0)
+            move.l  TimeLM,($886,A0)
+            movea.l A2,A0
+            addq.w  #4,A2
+            move.w  #1,(A2)+
+            lea     sub_408DFE2C,A1
+            move.l  A1,(A2)+
+            move.w  #6,(A2)+
+            _VInstall
+.L3:
+            rts
+ATPCtl:
+            movea.l ROMBase,A2
+            cmpi.b  #$76,(9,A2)
+            bcs.b   .L1
+            movea.l ($D1C).w,A2
+            move.l  A2,D3
+            addq.l  #1,D3
+            beq.b   .L1
+            movea.l (A2),A2
+            move.l  (8,A2),D3
+            beq.b   .L1
+            movea.l D3,A2
+            jsr     (A2)
+.L1:
+            tst.l   ($2D8).w
+            bne.b   .L3
+            moveq   #-$11,D0
+.L2:
+            bra.w   sub_408DF804.L7
+.L3:
+            move.w  ($1A,A0),D2
+            subq.w  #1,D2
+            bne.b   .L4
+            rts
+.L4:
+            moveq   #-$11,D0
+            subi.w  #$F7,D2
+            blt.b   .L2
+            cmpi.w  #$B,D2
+            bgt.b   .L2
+            add.w   D2,D2
+            lea     .L7,A3
+            adda.w  D2,A3
+            movea.w (A3),A3
+            lea     RsrcDRVR_10,A2
+            adda.l  A2,A3
+            movea.l ($2D8).w,A2
+            movea.l ($1E,A2),A2
+            move.b  ($1C,A0),D1
+            subi.w  #$C,D2
+            bpl.b   .L6
+            move.w  #$FBB5,D0
+            tst.b   D1
+            beq.w   sub_408DF804.L6
+            moveq   #$7D,D2
+.L5:
+            cmp.b   ($4C,A2,D2.w),D1
+            dbeq    D2,.L5
+            bne.w   sub_408DF804.L6
+.L6:
+            move.l  ($1E,A0),D3
+            andi.b  #$3F,($1D,A0)
+            jmp     (A3)
+.L7:
+            dc.w    $056A,$09F4,$0252,$0450,$037A,$0294,$01FA,$04EA
+            dc.w    $099C,$02E8,$0958,$0338
+ATPClose:
+            movea.l ($2D8).w,A1
+            move.l  A1,D0
+            beq.b   .L5
+            movea.l ($1E,A1),A2
+            move.l  ($33E,A1),D0
+            btst    #$A,D0
+            bne.b   .L4
+.L1:
+            bsr.w   sub_408E0514
+            bne.b   .L1
+            moveq   #$C,D2
+            lea     (4,A2),A0
+            bsr.b   sub_408DF804
+.L2:
+            tst.w   ($10,A3)
+            bgt.b   .L2
+            moveq   #$7E,D2
+            lea     ($4C,A2),A0
+            bsr.b   sub_408DF804
+.L3:
+            tst.w   ($10,A3)
+            bgt.b   .L3
+.L4:
+            pea     ($878,A2)
+            move.l  (SP)+,D0
+            _StripAddress
+            movea.l D0,A0
+            _VRemove
+            movea.l A2,A0
+            _DisposPtr
+            clr.l   ($1E,A1)
+            bclr    #4,PortBUse
+.L5:
+            rts
+sub_408DF804:
+            clr.w   ($10,A3)
+.L1:
+            subq.w  #1,D2
+            bmi.b   ATPClose.L5
+            move.b  (A0)+,D1
+            beq.b   .L1
+            move.w  #$F7,D0
+            bsr.w   sub_408DFD70
+            bra.b   .L1
+            move.w  #$FBB6,D0
+            moveq   #$7D,D2
+.L2:
+            tst.b   ($4C,A2,D2.w)
+            dbeq    D2,.L2
+            bne.b   .L6
+            bsr.w   sub_408E0514
+            bne.b   .L6
+            lea     sub_408E0092,A1
+            add.w   D2,D2
+            adda.w  D2,A1
+            add.w   D2,D2
+            move.l  A1,($1E,A3)
+            move.w  #$F8,D0
+            bsr.w   sub_408DFD70
+            move.b  ($1C,A3),D1
+            bsr.w   sub_408E054C
+            tst.w   D0
+            bne.b   .L6
+            adda.w  D2,A2
+            clr.l   ($CA,A2)
+            clr.l   ($2C2,A2)
+            move.l  D3,($4BA,A2)
+            suba.w  D2,A2
+            lsr.w   #2,D2
+            adda.w  D2,A2
+            move.b  D1,($4C,A2)
+            suba.w  D2,A2
+            move.b  D1,($1C,A0)
+            bra.b   .L5
+            bsr.w   sub_408E0514
+            bne.b   .L6
+            move.w  #$F7,D0
+            bsr.w   sub_408DFD70
+            bsr.w   sub_408E054C
+            tst.w   D0
+            bne.b   .L6
+            clr.b   ($4C,A2,D2.w)
+            lea     ($6B2,A2),A1
+            moveq   #$1F,D2
+.L3:
+            cmp.b   (A1),D1
+            bne.b   .L4
+            clr.b   (A1)
+.L4:
+            lea     ($E,A1),A1
+            dbra    D2,.L3
+.L5:
+            moveq   #0,D0
+.L6:
+            movea.l ($872,A2),A1
+.L7:
+            movea.l JIODone,A0
+            jmp     (A0)
+ATPPrime:
+            bclr    #7,(5,A1)
+            rts
+            lsl.w   #2,D2
+            lea     ($CA,A2),A1
+            adda.w  D2,A1
+sub_408DF8BC:
+            move    SR,-(SP)
+            move    #$2600,SR
+.L1:
+            tst.l   (A1)
+            beq.b   .L2
+            movea.l (A1),A1
+            bra.b   .L1
+.L2:
+            move.l  A0,(A1)
+.L3:
+            movea.l ($872,A2),A1
+            bclr    #7,(5,A1)
+            move.l  (A0),(8,A1)
+            bne.b   .L4
+            clr.l   ($C,A1)
+.L4:
+            clr.l   (A0)
+            move.l  (8,A1),D0
+            beq.b   .L5
+            bset    #7,(5,A1)
+            move    (SP)+,SR
+            movem.l D1-D3/A0/A2-A3,-(SP)
+            movea.l D0,A0
+            moveq   #0,D0
+            bsr.w   ATPCtl
+            movem.l (SP)+,D1-D3/A0/A2-A3
+            moveq   #0,D0
+            rts
+.L5:
+            move    (SP)+,SR
+            rts
+            movea.l ($2C,A0),A1
+            move.b  ($1C,A1),D1
+            beq.b   .L10
+            moveq   #$7D,D2
+.L6:
+            cmp.b   ($4C,A2,D2.w),D1
+            dbeq    D2,.L6
+            bne.b   .L10
+            asl.w   #2,D2
+            lea     ($CA,A2),A3
+            adda.w  D2,A3
+            move    SR,-(SP)
+            move    #$2600,SR
+.L7:
+            move.l  (A3),D0
+            beq.b   .L9
+            sub.l   A1,D0
+            _StripAddress
+            tst.l   D0
+            beq.b   .L8
+            movea.l (A3),A3
+            bra.b   .L7
+.L8:
+            move.l  (A1),(A3)
+            move    (SP)+,SR
+            movea.l A1,A0
+            move.w  #$FBAF,D0
+            bsr.w   sub_408DFF5E
+            bra.w   sub_408DF804.L5
+.L9:
+            move    (SP)+,SR
+.L10:
+            move.w  #$FBB2,D0
+            bra.w   sub_408DF804.L6
+            move.b  ($1C,A0),D1
+            beq.b   .L14
+            moveq   #$7D,D2
+.L11:
+            cmp.b   ($4C,A2,D2.w),D1
+            dbeq    D2,.L11
+            bne.b   .L14
+            asl.w   #2,D2
+.L12:
+            lea     ($CA,A2),A3
+            adda.w  D2,A3
+            move    SR,-(SP)
+            move    #$2600,SR
+            move.l  (A3),D0
+            beq.b   .L13
+            movea.l D0,A0
+            move.l  (A0),(A3)
+            move    (SP)+,SR
+            move.w  #$FBAF,D0
+            bsr.w   sub_408DFF5E
+            bra.b   .L12
+.L13:
+            move    (SP)+,SR
+            bra.w   sub_408DF804.L5
+.L14:
+            move.w  #$FBB2,D0
+            bra.w   sub_408DF804.L6
+            movea.l ($28,A0),A1
+            swap    D1
+            move.w  #$FBB4,D0
+            move.b  ($2C,A0),D1
+            beq.b   .L17
+            cmpi.b  #8,D1
+            bhi.w   .L21
+            bsr.w   sub_408E0514
+            bne.b   .L21
+            st      ($61,A3)
+.L15:
+            lea     ($60,A3),A3
+            moveq   #-$80,D0
+            subq.b  #1,D1
+            bne.b   .L16
+            or.b    ($1D,A0),D0
+.L16:
+            move.b  D0,(A3)+
+            addq.b  #1,(A3)+
+            move.w  ($2E,A0),(A3)+
+            move.w  (A1)+,D0
+            move.l  (A1)+,D2
+            move.w  #$FFFF,(A1)+
+            move.l  (A1)+,(A3)+
+            lea     (-$68,A3),A3
+            swap    D1
+            bsr.w   sub_408DFD04
+            cmpi.w  #$FFA4,D0
+            beq.b   .L20
+            swap    D1
+            tst.b   D1
+            bne.b   .L15
+            bsr.w   sub_408E054C
+.L17:
+            swap    D1
+            move.b  ($2D,A0),D2
+            sub.b   ($2C,A0),D2
+            beq.b   .L19
+.L18:
+            clr.w   (6,A1)
+            lea     ($C,A1),A1
+            subq.b  #1,D2
+            bne.b   .L18
+.L19:
+            move.w  ($2E,A0),D0
+            move    SR,-(SP)
+            move    #$2600,SR
+            bsr.b   sub_408DFA38
+            bne.w   sub_408DFA5A.L3
+            move.l  A0,(8,A1)
+            clr.b   (1,A1)
+            move.b  ($C,A1),($D,A1)
+            bra.w   .L3
+.L20:
+            bsr.w   sub_408E054C
+.L21:
+            bra.w   sub_408DF804.L6
+sub_408DFA38:
+            lea     ($6B2,A2),A1
+            moveq   #$1F,D2
+.L1:
+            cmp.b   (A1),D1
+            bne.b   .L2
+            addq.w  #2,A1
+            bsr.b   sub_408DFA5A
+            subq.w  #2,A1
+            bne.b   .L2
+            cmp.w   (6,A1),D0
+            beq.b   .L3
+.L2:
+            lea     ($E,A1),A1
+            dbra    D2,.L1
+.L3:
+            rts
+sub_408DFA5A:
+            cmp.l   (A1),D3
+            beq.b   .L1
+            cmp.w   (2,A1),D3
+            bne.b   .L1
+            tst.w   (A1)
+            beq.b   .L1
+            move.l  D3,-(SP)
+            tst.w   (SP)+
+            addq.w  #2,SP
+.L1:
+            rts
+            move.w  #$FBB4,D0
+            move.b  ($2C,A0),D2
+            cmpi.b  #8,D2
+            bcc.b   sub_408DF8BC.L21
+            bsr.w   sub_408E0514
+            bne.b   sub_408DF8BC.L21
+            moveq   #-$5C,D0
+            cmpi.w  #$242,($22,A0)
+            bhi.b   sub_408DF8BC.L21
+            lea     ($60,A3),A3
+            moveq   #-$80,D0
+            or.b    ($1D,A0),D0
+            move.b  D0,(A3)+
+            move.b  D2,(A3)+
+            move.w  ($2E,A0),(A3)+
+            bsr.w   sub_408DFDC6
+            bsr.w   sub_408DFD04
+            bsr.w   sub_408E054C
+            move.w  ($2E,A0),D0
+            move    SR,-(SP)
+            move    #$2600,SR
+            bsr.b   sub_408DFA38
+            bne.b   .L3
+            movea.l (8,A1),A3
+            move.w  #$FBB1,D0
+            move.l  A3,D2
+            beq.b   .L4
+            move.b  ($1D,A0),D2
+            or.b    D2,($1D,A3)
+            clr.w   D2
+            move.b  ($2C,A0),D2
+            lea     ($2C,A3),A3
+            cmp.b   (A3),D2
+            blt.b   .L2
+            move.b  D2,(A3)
+            addq.b  #1,(A3)
+.L2:
+            movea.l -(A3),A3
+            mulu.w  #$C,D2
+            adda.w  D2,A3
+            move.w  ($22,A0),(A3)+
+            move.l  ($24,A0),(A3)+
+            move.w  #$FFFF,(A3)+
+            move.l  ($12,A0),(A3)
+            clr.b   (1,A1)
+            move.b  ($C,A1),($D,A1)
+.L3:
+            clr.w   D0
+.L4:
+            move    (SP)+,SR
+.L5:
+            bra.w   sub_408DF804.L6
+            bsr.w   sub_408DFC68
+            move.w  #$FBB7,D0
+            moveq   #$B,D2
+.L6:
+            tst.b   (4,A2,D2.w)
+            dbeq    D2,.L6
+            bne.b   .L5
+            bsr.w   sub_408DFBFE
+            bne.b   .L5
+            clr.b   D1
+            lea     sub_408E0214,A1
+            move.l  A1,($1E,A3)
+            move.w  #$F8,D0
+            bsr.w   sub_408DFD70
+            beq.b   .L7
+            bsr.w   sub_408E054C
+            bra.b   .L5
+.L7:
+            move.b  ($1C,A3),D1
+            bsr.w   sub_408DFC48
+            move.l  A0,($10,A2,D2.w)
+            lea     ($876,A2),A1
+            move.w  (A1),($16,A0)
+            bset    #1,($1D,A0)
+            addq.w  #1,(A1)
+            lsr.w   #2,D2
+            move.b  D1,(4,A2,D2.w)
+            lea     ($40,A2,D2.w),A1
+            clr.b   (A1)
+            move.l  A1,-(SP)
+            bsr.b   sub_408DFB80
+            movea.l (SP)+,A1
+            bsr.w   sub_408DFDAA
+            bsr.w   sub_408DFD04
+            bsr.w   sub_408E054C
+            move.b  ($2D,A0),(A1)
+            moveq   #0,D0
+            rts
+sub_408DFB80:
+            move    SR,-(SP)
+            move    #$2600,SR
+            bra.w   sub_408DF8BC.L3
+            bsr.w   sub_408DFC68
+            bsr.b   sub_408DFBFE
+            bne.w   sub_408DF804.L6
+            bsr.w   sub_408DFC48
+            move    SR,-(SP)
+            move    #$2600,SR
+.L1:
+            lea     ($2C2,A2),A1
+            adda.w  D2,A1
+            move.w  ($876,A2),D3
+            moveq   #0,D0
+.L2:
+            tst.l   (A1)
+            beq.b   .L3
+            addq.w  #1,D0
+            movea.l (A1),A1
+            cmp.w   ($16,A1),D3
+            bne.b   .L2
+            addq.w  #1,($876,A2)
+            bra.b   .L1
+.L3:
+            move    (SP)+,SR
+            cmp.w   ($BCC,A2),D0
+            bcs.b   .L4
+            bsr.w   sub_408E054C
+            move.w  #$FBB7,D0
+            bra.w   sub_408DF804.L6
+.L4:
+            move.w  D3,($16,A0)
+            bset    #1,($1D,A0)
+            addq.w  #1,($876,A2)
+            move.b  ($2D,A0),($30,A0)
+            lea     ($2C2,A2),A1
+            adda.w  D2,A1
+            bsr.w   sub_408DF8BC
+            bsr.w   sub_408DFDAA
+            bsr.w   sub_408DFD04
+            moveq   #0,D0
+            bra.w   sub_408E054C
+sub_408DFBFE:
+            movea.l ($2D8).w,A1
+            tst.w   ($340,A1)
+            bpl.b   .L3
+            cmpi.b  #6,($21,A0)
+            bne.b   .L3
+            cmpi.b  #$FE,($20,A0)
+            bne.b   .L3
+            cmpi.w  #1,($14,A0)
+            bne.b   .L2
+.L1:
+            move.l  ($33A,A1),D0
+            lsl.l   #8,D0
+            move.b  #6,D0
+            move.l  D0,($BCE,A2)
+.L2:
+            move.l  ($BCE,A2),($1E,A0)
+            beq.b   .L1
+.L3:
+            moveq   #-$5C,D0
+            cmpi.w  #$242,($22,A0)
+            bhi.b   .L4
+            bsr.w   sub_408E0514
+.L4:
+            tst.w   D0
+            rts
+sub_408DFC48:
+            lea     ($1D,A0),A1
+            bclr    #4,(A1)
+            clr.b   -(A1)
+            move.b  ($2C,A0),D0
+            beq.b   .L2
+            subq.b  #1,D0
+.L1:
+            bset    D0,(A1)
+            subq.b  #1,D0
+            bpl.b   .L1
+.L2:
+            clr.b   ($2E,A0)
+            lsl.w   #2,D2
+            rts
+sub_408DFC68:
+            movem.l A0-A2,-(SP)
+            movea.l ($2D8).w,A2
+            tst.w   ($340,A2)
+            bpl.w   .L5
+            move.l  ($410,A2),D0
+            beq.b   .L1
+            movea.l D0,A1
+            move.w  #6,D0
+            jsr     (A1)
+            bne.b   .L5
+.L1:
+            cmpi.b  #6,($21,A0)
+            bne.b   .L5
+            cmpi.b  #7,($12,A0)
+            bne.b   .L5
+            move.w  ($1E,A0),D0
+            beq.b   .L2
+            cmp.w   ($344,A2),D0
+            bcs.b   .L5
+            cmp.w   ($346,A2),D0
+            bhi.b   .L5
+.L2:
+            clr.b   ($1C,A0)
+            move.b  #$10,($1D,A0)
+            move.b  #1,($2E,A0)
+            movea.l ($28,A0),A1
+            lea     ($356,A2),A0
+            moveq   #1,D0
+            add.b   (A0),D0
+            tst.b   ($352,A2)
+            beq.b   .L3
+            cmp.w   (A1),D0
+            bgt.b   .L3
+            move.l  #1,(8,A1)
+            move.w  D0,(6,A1)
+            movea.l (2,A1),A1
+            _BlockMove
+            moveq   #0,D0
+            bra.b   .L4
+.L3:
+            clr.w   ($2E,A0)
+            move.b  #1,($1C,A0)
+            move.w  #$FBB8,D0
+.L4:
+            movem.l (SP)+,A0-A2
+            addq.w  #4,SP
+            bra.w   sub_408DF804.L7
+.L5:
+            movem.l (SP)+,A0-A2
+            rts
+sub_408DFD04:
+            movem.l A0-A1,-(SP)
+            btst    #0,($1D,A0)
+            sne     ($1D,A3)
+            andi.b  #$F8,($60,A3)
+            bmi.b   .L1
+            btst    #5,($1D,A0)
+            beq.b   .L1
+            btst    #2,($1D,A0)
+            beq.b   .L1
+            move.w  D0,-(SP)
+            move.b  ($32,A0),D0
+            andi.b  #7,D0
+            or.b    D0,($60,A3)
+            move.w  (SP)+,D0
+.L1:
+            lea     ($3A,A3),A1
+            move.l  A1,($1E,A3)
+            addq.w  #2,A1
+            lea     ($4F,A3),A0
+            move.l  A0,(A1)+
+            move.b  #3,($F,A0)
+            addq.w  #7,A0
+            move.l  D3,(A0)+
+            move.w  D3,(A0)+
+            move.b  D3,(A0)
+            move.w  #8,(A1)+
+            lea     ($60,A3),A0
+            move.l  A0,(A1)+
+            move.w  D0,(A1)+
+            move.l  D2,(A1)+
+            clr.w   (A1)+
+            movem.l (SP)+,A0-A1
+            move.w  #$F6,D0
+sub_408DFD70:
+            movem.l D1-D3/A0-A1,($22,A3)
+            move.l  (SP)+,($36,A3)
+            lea     sub_408DFD92,A0
+            move.l  A0,($C,A3)
+            movea.l A3,A0
+            move.b  D1,($1C,A0)
+            move.w  D0,($1A,A0)
+            _Control async
+            moveq   #0,D0
+            rts
+sub_408DFD92:
+            movea.l A0,A3
+            move.l  ($36,A0),-(SP)
+            movem.l ($22,A0),D1-D3/A0-A1
+            movea.l ($2D8).w,A2
+            movea.l ($1E,A2),A2
+            tst.w   D0
+            rts
+sub_408DFDAA:
+            lea     ($60,A3),A3
+            moveq   #$40,D0
+            or.b    ($1D,A0),D0
+            bclr    #4,D0
+            move.b  D0,(A3)+
+            move.b  ($1C,A0),(A3)+
+            move.w  ($16,A0),(A3)+
+            move.l  ($1E,A0),D3
+sub_408DFDC6:
+            move.l  ($12,A0),(A3)
+            move.w  ($22,A0),D0
+            move.l  ($24,A0),D2
+            suba.w  #$64,A3
+.L1:
+            rts
+sub_408DFDD8:
+            move.w  D2,D0
+            lsl.w   #2,D0
+            adda.w  D0,A2
+            movea.l ($2C2,A2),A0
+            suba.w  D0,A2
+            move.l  A0,D0
+            rts
+sub_408DFDE8:
+            move.w  #$FBB8,D0
+            bra.w   sub_408DFF5E
+sub_408DFDF0:
+            cmpi.b  #$FF,($2F,A0)
+            beq.b   .L1
+            subq.b  #1,($2F,A0)
+.L1:
+            rts
+sub_408DFDFE:
+            move.w  D2,D0
+            lsl.w   #2,D0
+            lea     ($2C2,A2),A1
+            adda.w  D0,A1
+            move    SR,-(SP)
+            move    #$2600,SR
+.L1:
+            move.l  (A1),D0
+            beq.b   .L4
+            sub.l   A0,D0
+            _StripAddress
+            tst.l   D0
+            beq.b   .L2
+            movea.l (A1),A1
+            bra.b   .L1
+.L2:
+            move.l  (A0),(A1)
+.L3:
+            move    (SP)+,SR
+            tst.w   D0
+            rts
+.L4:
+            move.w  #$FBB2,D0
+            bra.b   .L3
+sub_408DFE2C:
+            lea     (-$878,A0),A2
+            move.w  #6,($A,A0)
+            move.l  TimeLM,D0
+            cmp.l   ($886,A2),D0
+            beq.b   sub_408DFDC6.L1
+            bset    #7,($BCA,A2)
+            beq.b   sub_408DFE50
+            move.w  #1,($A,A0)
+            rts
+sub_408DFE50:
+            move.l  D0,($886,A2)
+            bsr.w   sub_408E0514
+            bne.w   .L13
+            moveq   #$C,D2
+.L1:
+            move    SR,-(SP)
+            move    #$2600,SR
+.L2:
+            subq.w  #1,D2
+            bmi.b   .L4
+            move.b  (4,A2,D2.w),D1
+            beq.b   .L2
+            lea     ($40,A2,D2.w),A1
+            tst.b   (A1)
+            beq.b   .L2
+            subq.b  #1,(A1)
+            bne.b   .L2
+            move.w  D2,D3
+            lsl.w   #2,D3
+            movea.l ($10,A2,D3.w),A0
+            bsr.w   sub_408DFDF0
+            bcs.b   .L3
+            move.b  ($2D,A0),(A1)
+            movea.w D2,A1
+            bsr.w   sub_408DFDAA
+            move    (SP)+,SR
+            bsr.w   sub_408DFD04
+            move.w  A1,D2
+            bra.b   .L1
+.L3:
+            move    (SP)+,SR
+            clr.b   (4,A2,D2.w)
+            move.w  #$F7,D0
+            bsr.w   sub_408DFD70
+            bsr.w   sub_408DFDE8
+            bra.b   .L1
+.L4:
+            moveq   #$7E,D2
+.L5:
+            subq.w  #1,D2
+            bmi.b   .L12
+            move.b  ($4C,A2,D2.w),D1
+            beq.b   .L5
+            bsr.w   sub_408DFDD8
+            beq.b   .L5
+.L6:
+            subq.b  #1,($30,A0)
+            movea.l (A0),A0
+            move.l  A0,D0
+            bne.b   .L6
+.L7:
+            bsr.w   sub_408DFDD8
+            beq.b   .L5
+.L8:
+            tst.b   ($30,A0)
+            beq.b   .L9
+            movea.l (A0),A0
+            move.l  A0,D0
+            bne.b   .L8
+            bra.b   .L5
+.L9:
+            bsr.w   sub_408DFDF0
+            bcs.b   .L11
+            move.b  ($2D,A0),($30,A0)
+            movea.w D2,A1
+            bsr.w   sub_408DFDAA
+            move    (SP)+,SR
+            bsr.w   sub_408DFD04
+            move.w  A1,D2
+.L10:
+            move    SR,-(SP)
+            move    #$2600,SR
+            bra.b   .L7
+.L11:
+            bsr.w   sub_408DFDFE
+            move    (SP)+,SR
+            bsr.w   sub_408DFDE8
+            bra.b   .L10
+.L12:
+            move    (SP)+,SR
+            bsr.w   sub_408E054C
+.L13:
+            move    SR,-(SP)
+            move    #$2600,SR
+            moveq   #$20,D2
+            lea     ($6B2,A2),A3
+.L14:
+            subq.w  #1,D2
+            bmi.b   .L17
+            tst.b   (A3)+
+            beq.b   .L16
+            subq.b  #1,($C,A3)
+            bpl.b   .L15
+            addq.b  #1,(A3)
+            move.b  ($B,A3),($C,A3)
+.L15:
+            cmpi.b  #$1E,(A3)
+            bne.b   .L16
+            movea.l (7,A3),A0
+            clr.b   (-1,A3)
+            move.l  A0,D0
+            beq.b   .L16
+            move.w  #$FBB3,D0
+            bsr.b   sub_408DFF5E
+.L16:
+            lea     ($D,A3),A3
+            bra.b   .L14
+.L17:
+            move    (SP)+,SR
+            bclr    #7,($BCA,A2)
+            rts
+sub_408DFF5E:
+            move.w  D0,($10,A0)
+            movem.l D1-D3/A0-A3,-(SP)
+            move.l  ($C,A0),D1
+            beq.b   .L1
+            movea.l D1,A1
+            tst.w   D0
+            jsr     (A1)
+.L1:
+            movem.l (SP)+,D1-D3/A0-A3
+            rts
+            movea.l ($2C,A0),A0
+            cmpi.w  #$F8,($1A,A0)
+            bne.b   .L5
+            moveq   #$7D,D2
+.L2:
+            tst.b   ($4C,A2,D2.w)
+            beq.b   .L3
+            bsr.w   sub_408DFDFE
+            beq.b   .L12
+.L3:
+            dbra    D2,.L2
+.L4:
+            move.w  #$FBB2,D0
+            bra.w   sub_408DF804.L6
+.L5:
+            moveq   #$B,D2
+.L6:
+            tst.b   (4,A2,D2.w)
+            beq.b   .L7
+            move.w  D2,D0
+            lsl.w   #2,D0
+            move.l  ($10,A2,D0.w),D0
+            sub.l   A0,D0
+            _StripAddress
+            tst.l   D0
+            beq.b   .L11
+.L7:
+            dbra    D2,.L6
+            bra.b   .L4
+            move.w  ($2E,A0),D1
+            moveq   #$B,D2
+.L8:
+            tst.b   (4,A2,D2.w)
+            beq.b   .L9
+            move.w  D2,D0
+            lsl.w   #2,D0
+            movea.l ($10,A2,D0.w),A0
+            cmp.w   ($16,A0),D1
+            bne.b   .L9
+            lea     ($1E,A0),A1
+            bsr.w   sub_408DFA5A
+            beq.b   .L11
+.L9:
+            dbra    D2,.L8
+.L10:
+            move.w  #$FBB2,D0
+            bra.w   sub_408DF804.L6
+.L11:
+            bsr.w   sub_408E0514
+            bne.w   sub_408DF804.L6
+            move.b  (4,A2,D2.w),D1
+            clr.b   (4,A2,D2.w)
+            move.w  #$F7,D0
+            bsr.w   sub_408DFD70
+            bsr.w   sub_408E054C
+.L12:
+            move.w  #$FBAF,D0
+            bsr.w   sub_408DFF5E
+.L13:
+            bra.w   sub_408DF804.L5
+            move.w  ($2E,A0),D0
+            bsr.w   sub_408DFA38
+            bne.b   .L10
+            movea.l (8,A1),A0
+            clr.b   (A1)
+            move.l  A0,D0
+            beq.b   .L14
+            clr.w   D0
+            bsr.w   sub_408DFF5E
+.L14:
+            bra.b   .L13
+.L15:
+            moveq   #5,D3
+            jsr     (2,A4)
+            bsr.w   sub_408E04A0
+            bne.b   .L18
+            move.l  D1,D3
+            move.w  (-6,A3),D0
+            move.b  (-$A,A3),D1
+            movea.l ($1E,A2),A2
+            bsr.w   sub_408DFA38
+            bne.b   .L18
+            clr.b   (A1)
+            move.l  (8,A1),D0
+            beq.b   .L18
+            movea.l D0,A0
+            move.l  -(A3),($12,A0)
+            clr.w   D0
+            bra.w   sub_408DFF5E
+.L16:
+            add.b   D3,D3
+            bpl.w   sub_408E0092.L2
+            move.w  #5,D3
+            jsr     (A4)
+            bne.b   .L18
+            adda.w  D2,A5
+            movea.l ($CA,A5),A5
+            move.l  A5,D3
+            beq.b   .L17
+            move.w  ($22,A5),D3
+            movea.l ($24,A5),A3
+.L17:
+            jsr     (2,A4)
+            bsr.w   sub_408E04A0
+            beq.w   sub_408E0344.L2
+.L18:
+            rts
+sub_408E0092:
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            subq.w  #4,A2
+            move.l  A2,D2
+            movea.l ($2D8).w,A2
+            sub.l   A2,D2
+            addi.w  #$1F8,D2
+            moveq   #3,D3
+            cmpi.b  #3,-(A3)
+            bne.b   .L2
+            jsr     (A4)
+            bne.b   .L7
+            movea.l ($1E,A2),A5
+            move.b  (-3,A3),D3
+            bpl.b   .L3
+            add.b   D3,D3
+            bmi.b   .L4
+            adda.w  D2,A5
+            movea.l ($2C2,A5),A5
+            move.l  A5,D0
+            beq.b   .L2
+            moveq   #3,D3
+            jsr     (A4)
+            bne.b   .L7
+            move.w  (-4,A3),D0
+.L1:
+            cmp.w   ($16,A5),D0
+            beq.b   .L5
+            movea.l (A5),A5
+            move.l  A5,D3
+            bne.b   .L1
+.L2:
+            clr.w   D3
+            jmp     (2,A4)
+.L3:
+            bra.w   sub_408DFF5E.L16
+.L4:
+            bra.w   sub_408DFF5E.L15
+.L5:
+            moveq   #2,D3
+            jsr     (A4)
+            bne.b   .L7
+.L6:
+            move.b  (-7,A3),D3
+            cmp.b   ($2C,A5),D3
+            bcc.b   .L2
+            asl.w   #2,D3
+            move.w  D3,D0
+            add.w   D0,D3
+            add.w   D0,D3
+            movea.l ($28,A5),A3
+            adda.w  D3,A3
+            move.w  (A3)+,D3
+            movea.l (A3)+,A3
+            move.l  A5,-(SP)
+            jsr     (2,A4)
+            bsr.w   sub_408E04A0
+            movea.l (SP)+,A0
+            beq.b   sub_408E0214.L2
+.L7:
+            rts
+sub_408E0214:
+            moveq   #8,D3
+            cmpi.b  #3,-(A3)
+            bne.b   sub_408E0092.L2
+            jsr     (A4)
+            bne.b   sub_408E0092.L7
+            movea.l ($1E,A2),A5
+            move.b  (-$A,A3),D0
+            move.b  (-8,A3),D2
+            bpl.b   sub_408E0092.L2
+            add.b   D2,D2
+            bmi.b   sub_408E0092.L2
+            moveq   #$B,D2
+            lea     ($10,A5),A5
+.L1:
+            cmp.b   -(A5),D0
+            dbeq    D2,.L1
+            bne.b   sub_408E0092.L2
+            suba.w  D2,A5
+            lsl.w   #2,D2
+            adda.w  D2,A5
+            movea.l ($C,A5),A5
+            move.w  (-6,A3),D0
+            cmp.w   ($16,A5),D0
+            beq.b   sub_408E0092.L6
+            bra.w   sub_408E0092.L2
+.L2:
+            movea.l ($1E,A2),A2
+            lea     ($1E,A0),A1
+            exg     D1,D3
+            bsr.w   sub_408DFA5A
+            exg     D1,D3
+            bne.b   sub_408E0092.L7
+            move.l  -(A3),D1
+            move.w  -(A3),D0
+            cmp.w   ($16,A0),D0
+            bne.b   sub_408E0092.L7
+            move.b  -(A3),D0
+            cmpi.b  #7,D0
+            bhi.b   sub_408E0092.L7
+            ext.w   D0
+            mulu.w  #$C,D0
+            movea.l ($28,A0),A1
+            adda.w  D0,A1
+            move.w  (A1),D0
+            addq.w  #6,A1
+            sub.w   D3,D0
+            move.w  D0,(A1)+
+            move.l  D1,(A1)+
+            lea     ($1C,A0),A1
+            move.b  (A3),D3
+            swap    D2
+            move.b  D3,D2
+            swap    D2
+            subq.w  #1,A3
+            bclr    D3,(A1)
+            beq.b   .L4
+            addq.b  #1,($2E,A0)
+            moveq   #4,D1
+            btst    D1,(A3)
+            beq.b   .L4
+.L3:
+            bclr    D3,(A1)
+            addq.b  #1,D3
+            cmpi.b  #8,D3
+            bne.b   .L3
+            bset    D1,($1D,A0)
+.L4:
+            move.b  (-2,A3),D1
+            btst    #3,(A3)
+            beq.b   .L5
+            bsr.w   sub_408E0514
+            bne.b   .L5
+            movea.l D2,A1
+            bsr.w   sub_408DFDAA
+            bsr.b   sub_408E0344
+            bsr.w   sub_408DFD04
+            bsr.w   sub_408E054C
+            move.l  A1,D2
+.L5:
+            tst.b   ($1C,A0)
+            bne.b   sub_408E0344.L1
+            bsr.w   sub_408E0514
+            beq.b   .L6
+            swap    D2
+            bset    D2,($1C,A0)
+            bra.b   sub_408E0344.L1
+.L6:
+            move.w  ($16,A0),($62,A3)
+            lsr.w   #2,D2
+            cmpi.w  #$F8,($1A,A0)
+            bne.b   .L7
+            bsr.w   sub_408DFDFE
+            bra.b   .L8
+.L7:
+            clr.b   (4,A2,D2.w)
+.L8:
+            bsr.b   sub_408E0344
+            btst    #5,($1D,A0)
+            beq.b   .L9
+            move.l  ($1E,A0),D3
+            move.b  #$C0,($60,A3)
+            clr.l   ($64,A3)
+            clr.w   D0
+            bsr.w   sub_408DFD04
+.L9:
+            cmpi.w  #$F8,($1A,A0)
+            beq.b   .L10
+            move.w  #$F7,D0
+            bsr.w   sub_408DFD70
+.L10:
+            bsr.w   sub_408E054C
+            clr.w   D0
+            bra.w   sub_408DFF5E
+sub_408E0344:
+            move.l  A1,-(SP)
+            movea.l ($2D8).w,A1
+            move    ($1C,A1),SR
+            movea.l (SP)+,A1
+.L1:
+            rts
+.L2:
+            movea.l ($1E,A2),A2
+            movea.l -(A3),A1
+            move.w  -(A3),D0
+            btst    #5,(-2,A3)
+            beq.b   .L6
+            movem.l D0-D4/A1/A3,-(SP)
+            move.l  D1,D3
+            move.b  (-4,A3),D1
+            move.w  D2,D4
+            bsr.w   sub_408DFA38
+            beq.b   .L7
+            adda.w  D4,A2
+            tst.l   ($CA,A2)
+            suba.w  D4,A2
+            beq.b   .L5
+            lea     ($6B2,A2),A1
+            moveq   #$1F,D2
+.L3:
+            tst.b   (A1)
+            beq.b   .L4
+            lea     ($E,A1),A1
+            dbra    D2,.L3
+            movem.l (SP)+,D0-D4/A1/A3
+            rts
+.L4:
+            move.b  D1,(A1)+
+            clr.b   (A1)+
+            move.l  D3,(A1)+
+            move.w  D0,(A1)+
+            clr.l   (A1)+
+            clr.w   (A1)
+            move.b  (-2,A3),D0
+            andi.b  #7,D0
+            cmpi.b  #4,D0
+            bhi.b   .L5
+            moveq   #1,D1
+            lsl.b   D0,D1
+            subq.b  #1,D1
+            move.b  D1,(A1)+
+            move.b  D1,(A1)
+.L5:
+            movem.l (SP)+,D0-D4/A1/A3
+.L6:
+            bra.w   .L11
+.L7:
+            movea.l A1,A0
+            movem.l (SP)+,D0-D4/A1/A3
+            move.l  D1,D3
+            move.b  (-4,A3),D1
+            clr.b   (1,A0)
+            move.b  ($C,A0),($D,A0)
+            move.l  (8,A0),D2
+            beq.b   .L10
+            swap    D1
+            move.b  -(A3),D1
+            movea.l D2,A0
+            movea.l ($28,A0),A1
+            move.w  D0,D2
+            bsr.w   sub_408E0514
+            bne.b   .L10
+            move.b  #$80,($60,A3)
+            st      ($61,A3)
+            move.w  D2,($62,A3)
+            bsr.w   sub_408E0344
+.L8:
+            addq.b  #1,($61,A3)
+            move.b  ($61,A3),D0
+            sub.b   ($2C,A0),D0
+            bge.w   sub_408E054C
+            addq.b  #1,D0
+            bne.b   .L9
+            move.b  ($1D,A0),D0
+            or.b    D0,($60,A3)
+.L9:
+            move.w  (A1)+,D0
+            move.l  (A1)+,D2
+            addq.w  #2,A1
+            move.l  (A1)+,($64,A3)
+            lsr.w   #1,D1
+            bcc.b   .L8
+            tst.w   (-6,A1)
+            beq.b   .L8
+            swap    D1
+            movem.l D0/D2/A1,-(SP)
+            move.w  ($62,A3),D0
+            bsr.w   sub_408DFA38
+            movem.l (SP)+,D0/D2/A1
+            bne.w   sub_408E054C
+            bsr.w   sub_408DFD04
+            swap    D1
+            bra.b   .L8
+.L10:
+            rts
+.L11:
+            adda.w  D2,A2
+            move.l  ($CA,A2),-(SP)
+            suba.w  D2,A2
+            movea.l (SP)+,A0
+            beq.b   .L10
+            move.l  A1,($12,A0)
+            move.b  -(A3),($2C,A0)
+            move.w  D0,($2E,A0)
+            lea     ($1D,A0),A1
+            move.b  -(A3),(A1)+
+            move.l  D1,(A1)
+            lea     ($4BA,A2),A3
+            adda.w  D2,A3
+            cmpm.w  (A1)+,(A3)+
+            beq.b   .L12
+            tst.w   (-2,A3)
+            bne.b   .L10
+.L12:
+            moveq   #2,D0
+.L13:
+            cmpm.b  (A1)+,(A3)+
+            beq.b   .L14
+            tst.b   (-1,A3)
+            bne.b   .L10
+.L14:
+            subq.w  #1,D0
+            bne.b   .L13
+            sub.w   D3,(A1)
+            adda.w  D2,A2
+            move.l  (A0),($CA,A2)
+            suba.w  D2,A2
+            bra.w   sub_408DFF5E
+sub_408E04A0:
+            bne.b   .L6
+            moveq   #0,D1
+            lea     (2,A2),A0
+            move.b  (7,A2),D0
+            move.b  (A0)+,D1
+            subq.b  #1,(A0)+
+            beq.b   .L4
+            movem.l D2-D4,-(SP)
+            move.w  (A0)+,D1
+            move.w  (A0)+,D4
+            beq.b   .L3
+            moveq   #8,D2
+            clr.w   D3
+            bsr.b   sub_408E0508
+            addq.w  #3,D3
+            rol.w   #1,D3
+            moveq   #8,D2
+            bsr.b   sub_408E0508
+            andi.w  #$3FF,D1
+            subi.w  #$15,D1
+            beq.b   .L1
+            movea.l A3,A0
+            suba.w  D1,A0
+            move.w  D1,D2
+            bsr.b   sub_408E0508
+.L1:
+            tst.w   D3
+            bne.b   .L2
+            subq.w  #1,D3
+.L2:
+            cmp.w   D4,D3
+.L3:
+            movem.l (SP)+,D2-D4
+            bne.b   .L6
+            move.l  ($A,A2),D1
+            move.b  ($D,A2),D1
+            move.b  ($F,A2),D0
+            lea     ($18,A2),A3
+            bra.b   .L5
+.L4:
+            lea     ($10,A2),A3
+.L5:
+            lsl.w   #8,D1
+            move.b  D0,D1
+            clr.w   D0
+.L6:
+            rts
+sub_408E0508:
+            move.b  (A0)+,D0
+            add.w   D0,D3
+            rol.w   #1,D3
+            subq.w  #1,D2
+            bne.b   sub_408E0508
+            rts
+sub_408E0514:
+            movea.l ABusDCE,A3
+            move.w  ($18,A3),D0
+            lea     ($88A,A2),A3
+            move.l  D1,-(SP)
+            moveq   #8,D1
+            move    SR,-(SP)
+            move    #$2600,SR
+.L1:
+            tst.w   ($18,A3)
+            beq.b   .L3
+            lea     ($68,A3),A3
+            subq.w  #1,D1
+            bne.b   .L1
+            move.w  #$FBB0,D0
+.L2:
+            move    (SP)+,SR
+            move.l  (SP)+,D1
+            tst.w   D0
+            rts
+.L3:
+            move.w  D0,($18,A3)
+            clr.w   D0
+            bra.b   .L2
+sub_408E054C:
+            clr.w   ($18,A3)
+            rts
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF
+            dc.b    '. 1989-1990]'
+RsrcEntryDRVR_9:
+            dc.b    $38,$00,$00,$00,$00,$00,$00,$00 ; Resource 'DRVR' 9 ".MPP" (19636 bytes) - Combo mask
+            dc.l    RsrcEntryDRVR_10-BaseOfROM      ; Next entry
+            dc.l    RsrcDRVR_9-BaseOfROM            ; Data
+            dc.b    'DRVR'                          ; Type
+            dc.w    9                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    4,'.MPP'                        ; Name
+            dc.b    'SHJMAAGC'
+            dc.l    $C0A00000,$00004CC0,$0000021C   ; Block header
+RsrcDRVR_9:
+            dc.w    $5C00                           ; drvrFlags
+            dc.w    0                               ; drvrDelay
+            dc.w    $0000                           ; drvrEMask
+            dc.w    0                               ; drvrMenu
+            dc.w    MPPOpen-RsrcDRVR_9              ; drvrOpen
+            dc.w    MPPPrime-RsrcDRVR_9             ; drvrPrime
+            dc.w    MPPCtl-RsrcDRVR_9               ; drvrCtl
+            dc.w    MPPStatus-RsrcDRVR_9            ; drvrStatus
+            dc.w    MPPClose-RsrcDRVR_9             ; drvrClose
+            dc.b    4,'.MPP'
+            dc.b    $20
+.L1:
+            dc.b    $38,$02,$80,$00,$00,$00,$08
+            dc.b    '56.0.2  '
+            dc.b    $00,$35
+            dc.b    '.MPP DRVR v56.0.2  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1984-1991'
+.L2:
+            dc.w    $317C,$7FFF,$000A,$A065,$4A80,$6B08,$0C80,0
+            dc.w    $0200,$6408,$317C,$0001,$000A
+.L3:
+            rts
+            lea     (-$292,A0),A2
+            move.b  ($2CE,A2),D0
+            clr.b   ($2CE,A2)
+            tst.b   D0
+            beq.b   .L3
+            movea.l ($330,A2),A1
+            movea.l (8,A1),A0
+MPPCtl:
+            movea.l ($14,A1),A2
+            btst    #$1E,($33E,A2)
+            beq.b   .L2
+            move.w  (6,A0),D0
+            btst    #9,D0
+            bne.b   .L2
+            btst    #$A,D0
+            beq.b   .L2
+            movea.l ($328,A2),A2
+            cmpa.w  #0,A2
+            beq.b   .L2
+            tst.b   ($32F,A2)
+            bne.b   .L2
+            _StackSpace
+            tst.l   D0
+            bmi.b   .L1
+            cmpi.l  #$200,D0
+            bcc.b   .L2
+.L1:
+            movea.l ($14,A1),A2
+            st      ($2CE,A2)
+            move.w  #1,($29C,A2)
+            rts
+.L2:
+            move.l  AtalkHk1,D3
+            ble.b   .L3
+            movea.l D3,A2
+            jsr     (A2)
+.L3:
+            movea.l ($14,A1),A2
+            move.w  ($1A,A0),D3
+            bmi.w   sub_408E14B4.L7
+            cmpi.w  #2,D3
+            beq.b   .L5
+            cmpi.w  #1,D3
+            bne.b   .L4
+            rts
+.L4:
+            moveq   #-$11,D0
+            subi.w  #$F2,D3
+            bcs.w   MPPStatus.L4
+            cmpi.w  #$16,D3
+            bgt.w   MPPStatus.L4
+            move.b  ($1C,A0),D1
+            movea.l ($1E,A0),A1
+            cmpi.w  #7,D3
+            bgt.w   sub_408E151E.L1
+            lea     .L6,A3
+            adda.w  D3,A3
+            adda.w  D3,A3
+            movea.w (A3),A3
+            pea     RsrcDRVR_9
+            adda.l  (SP)+,A3
+            jmp     (A3)
+.L5:
+            moveq   #0,D0
+            rts
+.L6:
+            dc.w    $07FC,$15B8,$15A4,$1566,$0204,$01A2,$0148,$0808
+            bsr.b   .L14
+            move.b  D1,($1C,A0)
+            bra.b   .L12
+.L14:
+            moveq   #-$5B,D0
+            move    SR,-(SP)
+            move    #$2600,SR
+            tst.b   D1
+            beq.b   .L15
+            bmi.b   .L8
+            bsr.b   sub_408E0ED8
+            beq.b   .L8
+            moveq   #$D,D2
+.L16:
+            tst.b   ($4C,A2,D2.w)
+            dbeq    D2,.L16
+            bne.b   .L8
+            move.b  D1,($4C,A2,D2.w)
+            lsl.w   #2,D2
+            move.l  A1,($5A,A2,D2.w)
+.L7:
+            clr.w   D0
+.L8:
+            move    (SP)+,SR
+            rts
+.L15:
+            move.w  #$1F8,D2
+            move.l  A3,D1
+            lea     ($292,A2),A3
+.L9:
+            tst.l   -(A3)
+            beq.b   .L10
+            subq.w  #4,D2
+            bpl.b   .L9
+            movea.l D1,A3
+            bra.b   .L8
+.L10:
+            move.l  A1,(A3)
+            movea.l D1,A3
+            lsr.w   #2,D2
+            addi.b  #$80,D2
+            move.b  D2,D1
+            bra.b   .L7
+            moveq   #-$5B,D0
+            tst.b   D1
+            beq.b   .L12
+            bmi.b   .L13
+            bsr.b   sub_408E0ED8
+            bne.b   .L12
+            clr.b   ($4C,A2,D2.w)
+.L11:
+            clr.w   D0
+.L12:
+            bra.w   sub_408E14B4.L9
+.L13:
+            bsr.b   sub_408E0EE4
+            tst.w   D2
+            bmi.b   .L12
+            adda.w  D2,A2
+            clr.l   ($96,A2)
+            suba.w  D2,A2
+            bra.b   .L11
+sub_408E0ED8:
+            moveq   #$D,D2
+.L1:
+            cmp.b   ($4C,A2,D2.w),D1
+            dbeq    D2,.L1
+            rts
+sub_408E0EE4:
+            moveq   #0,D2
+            move.b  D1,D2
+            cmpi.w  #$FE,D2
+            bhi.b   .L1
+            subi.w  #$80,D2
+            lsl.w   #2,D2
+            adda.w  D2,A2
+            tst.l   ($96,A2)
+            suba.w  D2,A2
+            bne.b   .L2
+.L1:
+            moveq   #-1,D2
+.L2:
+            rts
+            move.b  ($1D,A0),D3
+            swap    D3
+            st      D3
+            movea.l (2,A1),A3
+            move.b  ($E,A3),D1
+            bra.b   .L3
+            sub.l   D3,D3
+            move.b  ($1D,A0),D3
+            swap    D3
+.L3:
+            movea.l ($2AC,A2),A3
+            jsr     (A3)
+            bra.b   MPPCtl.L12
+sub_408E0F24:
+            subq.w  #1,D0
+.L1:
+            move.b  (A0)+,D1
+            add.w   D1,D3
+            rol.w   #1,D3
+            dbra    D0,.L1
+.L2:
+            rts
+sub_408E0F32:
+            bra.b   .L1
+            bra.w   MPPCtl.L14
+.L1:
+            tst.b   D3
+            bne.b   .L2
+            moveq   #-$5B,D0
+            tst.b   D1
+            beq.b   sub_408E0F24.L2
+            bsr.b   sub_408E0EE4
+            tst.w   D2
+            bpl.b   .L2
+            bsr.b   sub_408E0ED8
+            bne.b   sub_408E0F24.L2
+.L2:
+            move.l  ($410,A2),D0
+            beq.b   .L3
+            movea.l D0,A0
+            moveq   #3,D0
+            jsr     (A0)
+.L3:
+            move.l  A1,-(SP)
+            addq.w  #2,A1
+            movea.l (A1)+,A3
+            addq.w  #7,A3
+            move.b  D1,(7,A3)
+            clr.b   ($2C8,A2)
+            moveq   #0,D2
+            move.w  ($1A,A2),D2
+            tst.w   ($340,A2)
+            bmi.b   .L5
+            tst.b   D3
+            bne.b   .L5
+            move.w  (A3),D0
+            beq.b   .L4
+            cmp.w   D2,D0
+            bne.b   .L5
+.L4:
+            movea.l A3,A0
+            addq.w  #8,A0
+            move.b  (A0),(A3)
+            move.w  -(A0),-(A3)
+            subq.w  #2,A0
+            lsl.l   #8,D2
+            move.b  (A0),D2
+            moveq   #1,D3
+            moveq   #8,D0
+            bra.w   sub_408E105A.L2
+.L5:
+            tst.b   D3
+            bne.b   .L6
+            move.w  D2,(2,A3)
+            move.b  (A2),(5,A3)
+.L6:
+            move.b  D3,D0
+            swap    D3
+            tst.b   D0
+            beq.b   .L7
+            tst.b   D3
+            bne.b   .L7
+            subq.w  #2,A3
+            bra.b   .L10
+.L7:
+            movea.l A3,A0
+            clr.w   -(A3)
+            tst.b   D3
+            beq.b   .L10
+            moveq   #9,D0
+            clr.w   D3
+            clr.w   D1
+.L8:
+            bsr.w   sub_408E0F24
+            move.w  (A1)+,D0
+            beq.b   .L9
+            movea.l (A1)+,A0
+            bra.b   .L8
+.L9:
+            move.w  D3,(A3)
+            bne.b   .L10
+            subq.w  #1,(A3)
+.L10:
+            move.b  (6,A3),D1
+            moveq   #2,D3
+            moveq   #$10,D0
+            tst.w   ($340,A2)
+            bmi.b   .L12
+            move.w  (2,A3),D2
+            beq.b   .L11
+            cmp.w   (4,A3),D2
+            beq.b   .L11
+            tst.w   (4,A3)
+            bne.b   .L14
+            move.w  ($1A,A2),D2
+            beq.b   .L11
+            cmp.w   (2,A3),D2
+            bne.b   .L14
+.L11:
+            lsl.l   #8,D2
+            move.b  D1,D2
+            bra.b   sub_408E105A.L2
+.L12:
+            move.w  (2,A3),D2
+            lsl.l   #8,D2
+            move.b  D1,D2
+            move.w  (2,A3),D1
+            bne.b   .L13
+            cmpi.b  #$FF,D2
+            beq.b   sub_408E105A.L2
+            cmpi.b  #$FE,D2
+            beq.b   .L14
+            clr.w   (A3)
+            moveq   #0,D1
+            move.w  ($1A,A2),D1
+            move.w  D1,(2,A3)
+            lsl.l   #8,D1
+            add.l   D1,D2
+            bra.b   sub_408E105A.L2
+.L13:
+            cmpi.w  #$FF00,D1
+            bcc.b   sub_408E105A.L2
+            cmp.w   ($344,A2),D1
+            bcs.b   sub_408E105A
+            cmp.w   ($346,A2),D1
+            bhi.b   sub_408E105A
+            cmpi.b  #$FE,D2
+            bne.b   sub_408E105A.L2
+.L14:
+            tst.b   ($19,A2)
+            beq.b   .L15
+            move.l  ($33A,A2),D2
+            bra.b   sub_408E105A.L2
+.L15:
+            moveq   #-$5D,D0
+            addq.w  #4,SP
+            rts
+sub_408E105A:
+            btst    #$1E,($33E,A2)
+            bne.b   sub_408E0F32.L14
+            lea     ($38C,A2),A1
+            move.l  A1,D2
+            cmp.w   ($392,A2),D1
+            beq.b   .L1
+            bsr.w   sub_408E13C4
+            bmi.b   sub_408E0F32.L14
+.L1:
+            move.b  #1,($2C8,A2)
+.L2:
+            movea.l (SP)+,A1
+            move.w  D0,(A1)
+            clr.w   D1
+            movea.l A1,A0
+.L3:
+            tst.w   (A0)
+            beq.b   .L4
+            bmi.b   .L5
+            add.w   (A0),D1
+            addq.w  #6,A0
+            bra.b   .L3
+.L4:
+            move.w  D1,-(A3)
+            subq.w  #3,(A3)
+            sub.w   D0,D1
+            cmpi.w  #$24A,D1
+            bhi.b   .L5
+            move.b  D3,-(A3)
+            subq.w  #2,A3
+            move.b  D2,(A3)
+            move.l  A1,($2BA,A2)
+            bra.w   sub_408E2378
+.L5:
+            moveq   #-$5C,D0
+.L6:
+            bra.w   sub_408E0F24.L2
+sub_408E10AE:
+            moveq   #6,D3
+            jsr     (A4)
+            bne.b   sub_408E105A.L6
+            move.l  ($410,A2),D0
+            beq.b   .L1
+            movea.l D0,A5
+            moveq   #1,D0
+            jsr     (A5)
+            bne.b   .L9
+.L1:
+            moveq   #5,D3
+            jsr     (A4)
+            bne.b   sub_408E105A.L6
+            tst.b   ($335,A2)
+            beq.b   .L9
+            bra.b   .L3
+.L2:
+            tst.b   ($335,A2)
+            beq.b   .L9
+            move.l  ($410,A2),D0
+            beq.b   .L3
+            movea.l D0,A5
+            moveq   #1,D0
+            jsr     (A5)
+            bne.b   .L9
+.L3:
+            move.w  (8,A2),D2
+            bne.b   .L4
+            tst.w   ($340,A2)
+            bmi.b   .L6
+            bra.b   .L5
+.L4:
+            move.w  ($1A,A2),D0
+            beq.b   .L5
+            cmp.w   D2,D0
+            bne.b   .L7
+.L5:
+            move.b  ($C,A2),D0
+            cmp.b   (A2),D0
+            beq.b   .L8
+.L6:
+            cmpi.b  #$FF,($C,A2)
+            beq.b   sub_408E1134.L1
+.L7:
+            move.l  ($32C,A2),D0
+            beq.b   .L9
+            movea.l D0,A5
+            RTS5
+.L8:
+            tst.l   D3
+            beq.b   sub_408E1134.L1
+            move.w  (4,A2),D2
+            andi.w  #$3C00,D2
+            beq.b   sub_408E1134.L1
+            move.w  ($A,A2),D2
+            bsr.w   sub_408E1290
+            bra.b   sub_408E1134.L1
+.L9:
+            moveq   #0,D3
+            jmp     (2,A4)
+sub_408E1134:
+            moveq   #3,D3
+            jsr     (A4)
+            bne.w   sub_408E105A.L6
+            tst.b   ($335,A2)
+            beq.b   sub_408E10AE.L9
+.L1:
+            moveq   #$D,D2
+            move.b  (-3,A3),D0
+            beq.b   sub_408E10AE.L9
+            bpl.b   .L2
+            cmpi.b  #$FE,D0
+            bhi.b   sub_408E10AE.L9
+            moveq   #0,D2
+            move.b  D0,D2
+            subi.w  #$80,D2
+            lsl.w   #2,D2
+            lea     ($96,A2),A5
+            move.l  (0,A5,D2.w),D2
+            beq.b   sub_408E10AE.L9
+            movea.l D2,A5
+            RTS5
+.L2:
+            cmp.b   ($4C,A2,D2.w),D0
+            dbeq    D2,.L2
+            bne.b   sub_408E10AE.L9
+            lsl.w   #2,D2
+            movea.l ($5A,A2,D2.w),A5
+            RTS5
+sub_408E117C:
+            bsr.w   sub_408E2B44
+            movem.l D0-D2/A0-A2,-(SP)
+            moveq   #$28,D0
+            move.w  #$1F,D1
+            swap    D1
+            move.w  #$1E,D1
+            move.w  #2,D2
+            swap    D2
+            move.w  #6,D2
+            bsr.b   sub_408E11A2
+            movem.l (SP)+,D0-D2/A0-A2
+            rts
+sub_408E11A2:
+            move.l  D0,-(SP)
+            moveq   #$2A,D0
+            _NewPtrSysClear
+            movem.l (SP)+,D0
+            bne.w   .L6
+            movea.l ($2D8).w,A2
+            move.l  A0,($3AC,A2)
+            movea.l A0,A2
+            move.l  #'xBRT',(A2)
+            move.w  D0,($A,A2)
+            move.w  D1,($C,A2)
+            swap    D1
+            move.w  D1,(4,A2)
+            move.w  D2,(8,A2)
+            swap    D2
+            move.w  D2,(6,A2)
+            moveq   #0,D0
+            move.w  (4,A2),D0
+            lsl.l   #2,D0
+            _NewPtrSysClear
+            bne.b   .L5
+            move.l  A0,($14,A2)
+            moveq   #0,D0
+            move.w  (6,A2),D0
+            add.w   (8,A2),D0
+            addq.w  #6,D0
+            move.w  D0,($E,A2)
+            mulu.w  ($C,A2),D0
+            _NewPtrSysClear
+            bne.b   .L4
+            move.l  A0,($18,A2)
+            moveq   #0,D1
+            move.w  ($C,A2),D1
+            subq.w  #1,D1
+.L1:
+            move.l  ($10,A2),(A0)
+            move.l  A0,($10,A2)
+            adda.w  ($E,A2),A0
+            dbra    D1,.L1
+            lea     ($1C,A2),A0
+            move.w  #1,(4,A0)
+            lea     sub_408E1422,A1
+            move.l  A1,(6,A0)
+            move.w  ($A,A2),D0
+            beq.b   .L2
+            mulu.w  #$3C,D0
+            move.w  D0,($A,A0)
+            _VInstall
+            tst.w   D0
+            bne.b   .L3
+.L2:
+            rts
+.L3:
+            movea.l ($18,A2),A0
+            _DisposPtr
+.L4:
+            movea.l ($14,A2),A0
+            _DisposPtr
+.L5:
+            movea.l A2,A0
+            _DisposPtr
+.L6:
+            move.w  #$FFFF,D0
+            rts
+sub_408E125A:
+            bsr.w   sub_408E2B44
+            movem.l A0-A1,-(SP)
+            movea.l ($2D8).w,A1
+            move.l  ($3AC,A1),D0
+            beq.b   .L2
+            movea.l D0,A1
+            move.w  ($A,A1),D0
+            beq.b   .L1
+            lea     ($1C,A1),A0
+            _VRemove
+.L1:
+            movea.l ($14,A1),A0
+            _DisposPtr
+            movea.l ($18,A1),A0
+            _DisposPtr
+            movea.l A1,A0
+            _DisposPtr
+.L2:
+            movem.l (SP)+,A0-A1
+            rts
+sub_408E1290:
+            bsr.w   sub_408E2B44
+            movem.l D1-D3/A0-A3,-(SP)
+            move.w  D2,-(SP)
+            movea.l SP,A0
+            movea.l D3,A1
+            bsr.b   sub_408E12A8
+            addq.w  #2,SP
+            movem.l (SP)+,D1-D3/A0-A3
+            rts
+sub_408E12A8:
+            movea.l ($2D8).w,A3
+            movea.l ($3AC,A3),A3
+            move    SR,-(SP)
+            move    #$2600,SR
+            jsr     sub_408E1474
+            bne.b   .L2
+            bset    #7,(4,A2)
+            move.w  (8,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+            addq.w  #6,A2
+            adda.w  (6,A3),A2
+.L1:
+            move.w  (A1)+,(A2)+
+            dbra    D1,.L1
+            suba.w  (8,A3),A1
+            move    (SP)+,SR
+            clr.w   D0
+            rts
+.L2:
+            move.l  A1,D1
+            lea     ($10,A3),A1
+            move.l  (A1),D0
+            beq.b   .L6
+            movea.l D0,A2
+            move.l  (A2),(A1)
+            movea.l D1,A1
+.L3:
+            bset    #7,(4,A2)
+            addq.w  #6,A2
+            move.w  (6,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+.L4:
+            move.w  (A0)+,(A2)+
+            dbra    D1,.L4
+            move.w  (8,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+.L5:
+            move.w  (A1)+,(A2)+
+            dbra    D1,.L5
+            suba.w  (8,A3),A1
+            suba.w  (8,A3),A2
+            suba.w  (6,A3),A2
+            suba.w  (6,A3),A0
+            subq.w  #6,A2
+            movea.l D2,A3
+            move.l  (A3),(A2)
+            move.l  A2,(A3)
+            move    (SP)+,SR
+            clr.w   D0
+            rts
+.L6:
+            movea.l D1,A1
+            move.w  ($A,A3),D0
+            bne.b   .L7
+            move    (SP)+,SR
+            move.w  #$FFFF,D0
+            rts
+.L7:
+            movem.l D2/A0-A1,-(SP)
+            move.w  ($20E).w,-(SP)
+            move.w  ($20E).w,-(SP)
+            move.w  ($20E).w,-(SP)
+            movea.l SP,A0
+            jsr     sub_408E14B4
+            addq.l  #6,SP
+.L8:
+            movea.l A2,A0
+.L9:
+            movea.l A2,A1
+            movea.l (A2),A2
+            move.l  A2,D1
+            beq.b   .L11
+            btst    #7,(4,A2)
+            bne.b   .L9
+            move.l  (A2),(A1)
+.L10:
+            movem.l (SP)+,D2/A0-A1
+            bra.w   .L3
+.L11:
+            movea.l A0,A2
+            addq.l  #4,A2
+            cmpa.l  D2,A2
+            bne.b   .L14
+.L12:
+            movea.l A2,A0
+            movea.l A2,A1
+            movea.l (A2),A2
+            move.l  A2,D1
+            beq.b   .L13
+            move.l  (A2),(A1)
+            bra.b   .L10
+.L13:
+            movea.l A0,A2
+            addq.l  #4,A2
+            moveq   #0,D1
+            move.w  (4,A3),D1
+            lsl.l   #2,D1
+            movea.l ($14,A3),A0
+            adda.l  D1,A0
+            cmpa.l  A2,A0
+            bne.b   .L12
+            movea.l ($14,A3),A2
+            bra.b   .L12
+.L14:
+            moveq   #0,D1
+            move.w  (4,A3),D1
+            lsl.l   #2,D1
+            movea.l ($14,A3),A0
+            adda.l  D1,A0
+            cmpa.l  A2,A0
+            bne.b   .L8
+            movea.l ($14,A3),A2
+            cmpa.l  D2,A2
+            beq.b   .L12
+            bra.b   .L8
+sub_408E13C4:
+            bsr.w   sub_408E2B44
+            movem.l D0/D2/A0-A3,-(SP)
+            move.w  D1,-(SP)
+            movea.l SP,A0
+            bsr.b   sub_408E13F0
+            tst.w   D0
+            beq.b   .L1
+            addq.w  #2,SP
+            clr.w   D1
+            move    #8,CCR
+            bra.b   .L2
+.L1:
+            movem.w (SP)+,D1
+.L2:
+            movem.l (SP)+,D0/D2/A0-A3
+            movem.w D1,($392,A2)
+            rts
+sub_408E13F0:
+            movea.l ($2D8).w,A3
+            movea.l ($3AC,A3),A3
+            jsr     sub_408E1474
+            bne.b   .L2
+            move    SR,D0
+            move    #$2600,SR
+            addq.w  #6,A2
+            adda.w  (6,A3),A2
+            move.w  (8,A3),D1
+            asr.w   #1,D1
+            subq.w  #1,D1
+.L1:
+            move.w  (A2)+,(A1)+
+            dbra    D1,.L1
+            move    D0,SR
+            suba.w  (8,A3),A1
+            clr.w   D0
+.L2:
+            rts
+sub_408E1422:
+            movea.l ($2D8).w,A3
+            movea.l ($3AC,A3),A3
+            move.w  ($A,A3),D0
+            mulu.w  #$3C,D0
+            move.w  D0,($A,A0)
+            movea.l ($14,A3),A2
+            move.w  (4,A3),D0
+            subq.w  #1,D0
+.L1:
+            movea.l A2,A0
+            move    SR,-(SP)
+            move    #$2600,SR
+.L2:
+            movea.l A2,A1
+            movea.l (A2),A2
+            move.l  A2,D1
+            beq.b   .L3
+            bclr    #7,(4,A2)
+            bne.b   .L2
+            move.l  A1,D2
+            move.l  (A2),(A1)
+            lea     ($10,A3),A1
+            move.l  (A1),(A2)
+            move.l  A2,(A1)
+            movea.l D2,A2
+            bra.b   .L2
+.L3:
+            move    (SP)+,SR
+            movea.l A0,A2
+            addq.l  #4,A2
+            dbra    D0,.L1
+            rts
+sub_408E1474:
+            jsr     sub_408E14B4
+.L1:
+            movea.l (A2),A2
+            move.l  A2,D0
+            beq.b   .L4
+            move.w  (6,A3),D0
+            asr.w   #1,D0
+            subq.w  #1,D0
+            addq.w  #6,A2
+.L2:
+            cmpm.w  (A0)+,(A2)+
+            dbne    D0,.L2
+            bne.b   .L3
+            move.w  (6,A3),D0
+            suba.w  D0,A2
+            suba.w  D0,A0
+            subq.w  #6,A2
+            clr.w   D0
+            rts
+.L3:
+            move.w  (6,A3),D1
+            asl.w   #1,D0
+            sub.w   D0,D1
+            suba.w  D1,A0
+            suba.w  D1,A2
+            subq.w  #6,A2
+            bra.b   .L1
+.L4:
+            move.w  #$FFFF,D0
+            rts
+sub_408E14B4:
+            cmpi.w  #2,(6,A3)
+            bne.b   .L1
+            moveq   #0,D0
+            move.w  (A0),D0
+            bra.b   .L5
+.L1:
+            adda.w  (6,A3),A0
+            move.l  -(A0),D0
+            bpl.b   .L2
+            neg.l   D0
+.L2:
+            cmpi.w  #4,(6,A3)
+            beq.b   .L3
+            subq.w  #2,A0
+.L3:
+            moveq   #0,D2
+            move.w  (4,A3),D2
+            swap    D2
+.L4:
+            sub.l   D2,D0
+            bge.b   .L4
+            divu.w  (4,A3),D0
+            bvc.b   .L6
+            add.l   D2,D0
+.L5:
+            divu.w  (4,A3),D0
+.L6:
+            swap    D0
+            asl.w   #2,D0
+            movea.l ($14,A3),A2
+            adda.w  D0,A2
+            move.l  A2,D2
+            rts
+.L7:
+            move.l  ($2B4,A2),D1
+            beq.b   .L8
+            movea.l ($2A4,A2),A3
+            jsr     (2,A3)
+.L8:
+            bra.b   .L9
+            move.l  ($2B4,A2),D2
+            beq.b   .L9
+            movea.l ($2A4,A2),A3
+            jmp     (A3)
+            moveq   #0,D0
+.L9:
+            bra.w   MPPStatus.L3
+sub_408E151E:
+            lea     .L1,A3
+            move.l  A3,($2A0,A2)
+            jmp     (A3)
+.L1:
+            subq.w  #7,D3
+            bmi.b   .L3
+            add.w   D3,D3
+            lea     .L2,A3
+            adda.w  D3,A3
+            move.w  (A3),D3
+            lea     .L1,A3
+            adda.w  D3,A3
+            move.l  A3,-(SP)
+            movea.l ($2A8,A2),A3
+            rts
+.L2:
+            dc.w    $0062,$00B0,$01EE,$0162,$00B4,$0094,$011C,$00A2
+            dc.w    $0BD4,$1684,$164C,$1672,$F9DA,$1576,$003C,$15E0
+            dc.w    $303C,$FFEF,$6000,$00DC
+.L3:
+            movea.l ($2A8,A2),A3
+            moveq   #9,D2
+.L4:
+            tst.b   (2,A3,D2.w)
+            beq.b   .L5
+            move.w  D2,D3
+            mulu.w  #$12,D3
+            lea     ($10,A3,D3.w),A0
+            _VRemove
+.L5:
+            subq.w  #1,D2
+            bpl.b   .L4
+            rts
+            move.l  #$151,D0
+            _NewPtrSysClear
+            bne.b   .L6
+            lea     sub_408E1A72,A1
+            movea.l ($2AC,A2),A3
+            clr.w   D1
+            jsr     (2,A3)
+            tst.w   D0
+            bne.b   .L7
+            move.b  D1,($124,A0)
+            move.b  #$A,(A0)
+            move.l  A0,($2A8,A2)
+.L6:
+            rts
+.L7:
+            move.w  D0,D1
+            _DisposPtr
+            move.w  D1,D0
+            rts
+            movea.l ($1C,A0),A0
+            move.w  #$FBAF,D0
+            bsr.w   sub_408E19C2
+            bra.b   .L13
+            move.b  ($2B8,A2),($1D,A0)
+            move.b  ($1C,A0),($2B8,A2)
+            bra.b   .L12
+            bra.w   sub_408E16D0.L4
+            move.l  A0,D3
+            tst.l   ($2B4,A2)
+            bne.b   .L14
+            move.l  #$98,D0
+            _NewPtrSysClear
+            bne.b   .L10
+            lea     ($1A,A0),A0
+            move.l  A0,($2B4,A2)
+            btst    #$1E,($33E,A2)
+            bne.b   .L8
+            movem.l D1/A1/A3,-(SP)
+            moveq   #2,D1
+            movea.l ($2A4,A2),A1
+            addq.w  #4,A1
+            movea.l ($2AC,A2),A3
+            jsr     (2,A3)
+            movem.l (SP)+,D1/A1/A3
+            tst.w   D0
+            beq.b   .L8
+            clr.l   ($2B4,A2)
+            move.w  #$FBFB,D0
+            bra.b   .L10
+.L8:
+            movea.l D3,A0
+.L14:
+            tst.b   ($22,A0)
+            beq.b   .L11
+            lea     (9,A1),A1
+            bsr.w   sub_408E16D0
+            bne.b   .L9
+            bsr.b   sub_408E16AC
+            beq.w   sub_408E16D0.L4
+.L9:
+            move.w  #$FBFD,D0
+.L10:
+            bra.b   .L13
+.L11:
+            bsr.b   sub_408E1650
+.L12:
+            moveq   #0,D0
+.L13:
+            movea.l ABusDCE,A1
+            movea.l JIODone,A0
+            jmp     (A0)
+sub_408E1650:
+            clr.w   D2
+            move.b  (7,A1),D1
+            move    SR,-(SP)
+            move    #$2600,SR
+.L1:
+            addq.w  #1,D2
+            lea     ($2B0,A2),A3
+.L2:
+            tst.l   (A3)
+            beq.b   .L3
+            movea.l (A3),A3
+            cmp.b   (7,A3),D1
+            bne.b   .L2
+            tst.b   D2
+            beq.b   .L2
+            cmp.b   (8,A3),D2
+            beq.b   .L1
+            bra.b   .L2
+.L3:
+            move.b  (A2),(6,A1)
+            move.b  D2,(8,A1)
+            clr.l   (A1)
+            move.l  A1,(A3)
+            move    (SP)+,SR
+            rts
+            move.w  #$FBFC,D0
+            bsr.b   sub_408E16AC
+            beq.b   sub_408E151E.L13
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($2B0,A2),A0
+.L4:
+            cmp.l   (A0),D3
+            beq.b   .L5
+            movea.l (A0),A0
+            bra.b   .L4
+.L5:
+            movea.l D3,A1
+            move.l  (A1),(A0)
+            move    (SP)+,SR
+            bra.b   sub_408E151E.L12
+sub_408E16AC:
+            movem.l D0-D1/A0-A4,-(SP)
+            movea.l A1,A3
+            lea     ($2B0,A2),A4
+            moveq   #0,D3
+.L1:
+            tst.l   (A4)
+            beq.b   .L2
+            movea.l (A4),A4
+            movea.l A4,A0
+            movea.l A3,A1
+            bsr.w   sub_408E1E46
+            bne.b   .L1
+            move.l  A4,D3
+.L2:
+            movem.l (SP)+,D0-D1/A0-A4
+            rts
+sub_408E16D0:
+            movem.l D0-D2/A0-A1,-(SP)
+            moveq   #0,D3
+            moveq   #9,D2
+.L1:
+            tst.b   (2,A3,D2.w)
+            dbne    D2,.L1
+            beq.b   .L2
+            move.w  D2,D1
+            mulu.w  #$12,D1
+            movea.l ($C,A3,D1.w),A0
+            cmpi.w  #$FD,($1A,A0)
+            bne.b   .L3
+            movea.l ($1E,A0),A0
+            movem.l D2/A1,-(SP)
+            bsr.w   sub_408E1E46
+            movem.l (SP)+,D2/A1
+            bne.b   .L3
+            moveq   #-1,D3
+.L2:
+            movem.l (SP)+,D0-D2/A0-A1
+            tst.w   D3
+            rts
+.L3:
+            subq.w  #1,D2
+            bmi.b   .L2
+            bra.b   .L1
+            clr.w   ($2A,A0)
+.L4:
+            move.w  #$FBB7,D0
+            moveq   #9,D2
+.L5:
+            tst.b   (2,A3,D2.w)
+            dbeq    D2,.L5
+            bne.w   sub_408E151E.L13
+.L6:
+            addq.b  #1,($125,A3)
+            beq.b   .L6
+            move    SR,-(SP)
+            move    #$2600,SR
+            cmpi.w  #$101,($1A,A0)
+            bne.b   .L8
+            tst.l   ($3A2,A2)
+            beq.b   .L7
+            move    (SP)+,SR
+            bra.w   sub_408E151E.L13
+.L7:
+            move.l  A0,($3A2,A2)
+.L8:
+            move.b  ($125,A3),(2,A3,D2.w)
+            mulu.w  #$12,D2
+            lea     ($C,A3,D2.w),A2
+            move.l  A0,(A2)+
+            movea.l A2,A0
+            move.w  #1,(4,A0)
+            lea     sub_408E18E6,A2
+            move.l  A2,(6,A0)
+            lsl.w   #3,D1
+            andi.w  #$3FF,D1
+            move.w  D1,($A,A0)
+            lea     ($162).w,A2
+.L9:
+            tst.l   (A2)
+            beq.b   .L10
+            movea.l (A2),A2
+            cmpa.l  A2,A0
+            bne.b   .L9
+            move    (SP)+,SR
+            bra.b   .L11
+.L10:
+            move    (SP)+,SR
+            _VInstall
+.L11:
+            movea.l (-4,A0),A2
+            cmpi.w  #$FB,($1A,A2)
+            bne.b   .L12
+            move.w  #1,($A,A0)
+            tst.b   ($1D,A2)
+            beq.b   .L15
+            addq.b  #1,($1D,A2)
+            bra.b   .L15
+.L12:
+            cmpi.w  #$101,($1A,A2)
+            movea.l ($2D8).w,A2
+            bne.b   .L13
+            bsr.w   sub_408E2116
+            bra.b   .L14
+.L13:
+            bsr.b   sub_408E181C
+.L14:
+            lea     ($126,A3),A1
+            movea.l ($2AC,A2),A0
+            moveq   #0,D3
+            jsr     (A0)
+.L15:
+            move    SR,-(SP)
+            move    #$2600,SR
+            movea.l ABusDCE,A1
+            bclr    #7,(5,A1)
+            movea.l (8,A1),A0
+            move.l  (A0),(8,A1)
+            bne.b   .L16
+            clr.l   ($C,A1)
+.L16:
+            cmpi.w  #$FB,($1A,A0)
+            bne.b   .L17
+            move.l  ($22,A0),(A0)
+            move.w  ($26,A0),($12,A0)
+.L17:
+            move.l  (8,A1),D0
+            beq.b   .L18
+            movea.l D0,A0
+            moveq   #0,D0
+            bset    #7,(5,A1)
+            move    (SP)+,SR
+            jsr     MPPCtl
+            moveq   #0,D0
+            rts
+.L18:
+            move    (SP)+,SR
+            rts
+sub_408E181C:
+            movea.l ($C,A3,D2.w),A0
+            divu.w  #$12,D2
+            move.b  (2,A3,D2.w),($13B,A3)
+            moveq   #$21,D3
+            move.l  ($22,A0),D2
+            lsr.l   #8,D2
+            cmpi.w  #$FA,($1A,A0)
+            beq.b   .L2
+            moveq   #0,D2
+            st      D2
+            move.b  ($19,A2),D0
+            beq.b   .L2
+            move.b  D0,D2
+            tst.w   ($340,A2)
+            bpl.b   .L1
+            bsr.b   sub_408E18A8
+            move.l  ($33A,A2),D2
+.L1:
+            moveq   #$11,D3
+.L2:
+            move.l  A1,D0
+            lea     ($128,A3),A1
+            lea     ($141,A3),A0
+            move.l  A0,(A1)+
+            move.b  #2,($D,A0)
+            move.b  D2,($B,A0)
+            lsr.l   #8,D2
+            move.w  D2,(7,A0)
+            move.b  #2,($F,A0)
+            move.w  #7,(A1)+
+            lea     ($13A,A3),A0
+            move.l  A0,(A1)+
+            move.b  D3,(A0)
+            addq.w  #2,A0
+            move.w  ($1A,A2),(A0)+
+            move.b  (A2),(A0)+
+            move.b  ($124,A3),D1
+            move.b  D1,(A0)
+            movea.l D0,A0
+            clr.w   D2
+            move.b  (A0),D2
+            add.b   (1,A0,D2.w),D2
+            add.b   (2,A0,D2.w),D2
+            addq.b  #3,D2
+            move.w  D2,(A1)+
+            move.l  A0,(A1)+
+            clr.w   (A1)
+            rts
+sub_408E18A8:
+            moveq   #2,D1
+            add.b   (A1),D1
+            add.b   (-1,A1,D1.w),D1
+            cmpi.b  #1,(0,A1,D1.w)
+            bne.b   .L1
+            cmpi.b  #$2A,(1,A1,D1.w)
+            bne.b   .L1
+            move.l  A0,-(SP)
+            movea.l A1,A0
+            lea     ($C0,A3),A1
+            move.l  D1,D0
+            _BlockMove
+            lea     ($356,A2),A0
+            adda.w  D1,A3
+            lea     ($C0,A3),A1
+            suba.w  D1,A3
+            moveq   #1,D0
+            add.b   (A0),D0
+            _BlockMove
+            lea     ($C0,A3),A1
+            movea.l (SP)+,A0
+.L1:
+            rts
+sub_408E18E6:
+            movea.l ($2D8).w,A2
+            movea.l ABusDCE,A3
+            lea     (-4,A0),A1
+            move.l  A1,D2
+            movea.l (A1),A1
+            subq.b  #1,($1D,A1)
+            beq.b   .L7
+            bset    #7,(5,A3)
+            beq.b   .L2
+.L1:
+            move.w  #1,($A,A0)
+            addq.b  #1,($1D,A1)
+            rts
+.L2:
+            movea.l ($2A8,A2),A3
+            moveq   #0,D0
+            move.b  ($1C,A1),D0
+            bne.b   .L3
+            moveq   #1,D0
+.L3:
+            lsl.w   #3,D0
+            move.w  D0,($A,A0)
+            move.w  ($1A,A1),D3
+            movea.l ($1E,A1),A1
+            cmpi.w  #$FD,D3
+            bne.b   .L4
+            lea     (9,A1),A1
+.L4:
+            lea     ($C,A3),A0
+            sub.l   A0,D2
+            ext.l   D2
+            cmpi.w  #$101,D3
+            bne.b   .L5
+            bsr.w   sub_408E2116
+            bra.b   .L6
+.L5:
+            bsr.w   sub_408E181C
+.L6:
+            lea     ($126,A3),A1
+            movea.l ($2AC,A2),A0
+            moveq   #0,D3
+            jsr     (A0)
+            move    SR,-(SP)
+            move    #$2600,SR
+            movea.l ABusDCE,A1
+            bclr    #7,(5,A1)
+            bra.w   sub_408E16D0.L17
+.L7:
+            btst    #7,(5,A3)
+            beq.b   .L8
+            cmpa.l  (8,A3),A1
+            beq.b   .L1
+.L8:
+            movea.l ($2A8,A2),A3
+            move.w  ($1A,A1),D0
+            movea.l A1,A0
+            movea.l ($1E,A1),A1
+            move    SR,-(SP)
+            move    #$2600,SR
+            tst.w   ($10,A0)
+            ble.b   .L13
+            cmpi.w  #$101,D0
+            bne.b   .L9
+            move.w  #$FFA3,D0
+            bra.b   .L12
+.L9:
+            cmpi.w  #$FD,D0
+            beq.b   .L10
+            cmpi.w  #$FA,D0
+            bne.b   .L11
+            move.w  #$FBFF,D0
+            bra.b   .L12
+.L10:
+            bsr.w   sub_408E1650
+.L11:
+            moveq   #0,D0
+.L12:
+            bsr.b   sub_408E19C2
+.L13:
+            move    (SP)+,SR
+            rts
+.L14:
+            moveq   #0,D0
+sub_408E19C2:
+            movea.l ($2A8,A2),A3
+            moveq   #9,D2
+.L1:
+            tst.b   (2,A3,D2.w)
+            dbne    D2,.L1
+            beq.b   .L6
+            move.w  D2,D3
+            mulu.w  #$12,D3
+            move.l  ($C,A3,D3.w),D1
+            sub.l   A0,D1
+            exg     D0,D1
+            _StripAddress
+            exg     D0,D1
+            tst.l   D1
+            bne.b   .L5
+            move.w  D0,($10,A0)
+            lea     ($10,A3,D3.w),A1
+            tst.w   ($A,A1)
+            beq.b   .L2
+            exg     A0,A1
+            move.w  D0,D1
+            _VRemove
+            move.w  D1,D0
+            movea.l A1,A0
+.L2:
+            clr.b   (2,A3,D2.w)
+            move.l  ($3A2,A2),D1
+            beq.b   .L3
+            sub.l   A0,D1
+            bne.b   .L3
+            clr.l   ($3A2,A2)
+.L3:
+            move.l  ($C,A0),D1
+            beq.b   .L4
+            movea.l D1,A1
+            tst.w   D0
+            jsr     (A1)
+.L4:
+            moveq   #0,D0
+            rts
+.L5:
+            subq.w  #1,D2
+            bpl.b   .L1
+.L6:
+            move.w  #$FBB2,D0
+            rts
+sub_408E1A2C:
+            move.l  A5,D2
+            cmpi.w  #$FD,($1A,A5)
+            beq.b   .L1
+            moveq   #4,D3
+            jsr     (2,A4)
+            bne.b   .L2
+            move.b  -(A3),D0
+            movea.l ($2A8,A2),A3
+            movea.l D2,A0
+            move.b  D0,($26,A0)
+            cmp.b   ($25,A0),D0
+            beq.w   sub_408E18E6.L14
+            move.w  #$FBFE,D0
+            bra.w   sub_408E19C2
+.L1:
+            jsr     (2,A4)
+            bne.b   .L2
+            movea.l D2,A0
+            move.w  #$FBFD,D0
+            bra.w   sub_408E19C2
+.L2:
+            rts
+sub_408E1A6C:
+            clr.w   D3
+            jmp     (2,A4)
+sub_408E1A72:
+            moveq   #2,D3
+            jsr     (A4)
+            bne.b   sub_408E1A2C.L2
+            movea.l ($2A8,A2),A5
+            lea     ($C,A5),A5
+            moveq   #9,D2
+            move.b  -(A3),D0
+            beq.b   sub_408E1A6C
+.L1:
+            cmp.b   -(A5),D0
+            dbeq    D2,.L1
+            bne.b   sub_408E1A6C
+            suba.w  D2,A5
+            mulu.w  #$12,D2
+            lea     ($A,A5),A5
+            movea.l (0,A5,D2.w),A5
+            move.b  -(A3),D2
+            cmpi.w  #$FB,($1A,A5)
+            bne.b   sub_408E1A2C
+            movea.l ABusDCE,A3
+            cmpa.l  (8,A3),A5
+            beq.b   sub_408E1A6C
+            movea.l (A5),A3
+            move.w  ($12,A5),D3
+            move.l  A5,-(SP)
+            jsr     (2,A4)
+            movea.l (SP)+,A1
+            bne.b   sub_408E1A2C.L2
+            subi.b  #$30,D2
+            ble.b   sub_408E1A2C.L2
+            cmpi.b  #$F,D2
+            bgt.b   sub_408E1A2C.L2
+            move.l  A3,D1
+            movea.l ($2A8,A2),A3
+            clr.w   D0
+            tst.w   D3
+            bpl.b   sub_408E1B26
+            clr.w   D2
+            movea.l (A1),A0
+.L2:
+            addq.w  #5,A0
+            cmp.l   A0,D1
+            ble.b   .L3
+            move.b  (A0)+,D0
+            beq.b   sub_408E1A2C.L2
+            cmpi.b  #$20,D0
+            bhi.w   sub_408E1A2C.L2
+            adda.w  D0,A0
+            cmp.l   A0,D1
+            ble.b   .L3
+            move.b  (A0)+,D0
+            beq.w   sub_408E1A2C.L2
+            cmpi.b  #$20,D0
+            bhi.w   sub_408E1A2C.L2
+            adda.w  D0,A0
+            cmp.l   A0,D1
+            ble.b   .L3
+            move.b  (A0)+,D0
+            beq.w   sub_408E1A2C.L2
+            cmpi.b  #$20,D0
+            bhi.w   sub_408E1A2C.L2
+            adda.w  D0,A0
+            cmp.l   A0,D1
+            blt.b   .L3
+            addq.w  #1,D2
+            bra.b   .L2
+.L3:
+            tst.w   D2
+            beq.w   sub_408E1A2C.L2
+sub_408E1B26:
+            movem.l D4/A2/A4-A6,-(SP)
+            clr.w   D1
+            move.l  ($22,A1),D3
+            movea.l (A1),A5
+            movea.l A5,A6
+.L1:
+            movea.l D3,A4
+.L2:
+            cmpa.l  (A1),A4
+            beq.b   .L5
+            movea.l A4,A0
+            movea.l A5,A2
+            moveq   #0,D0
+            move.l  D0,D4
+            move.b  (A0)+,D0
+            swap    D0
+            move.b  (A0)+,D0
+            move.b  (A2)+,D4
+            swap    D4
+            move.b  (A2)+,D4
+            cmp.l   D0,D4
+            beq.b   .L3
+            tst.l   D0
+            beq.b   .L3
+            tst.l   D4
+            bne.b   .L4
+.L3:
+            cmpm.b  (A0)+,(A2)+
+            bne.b   .L4
+            cmpm.b  (A0)+,(A2)+
+            bne.b   .L4
+            cmpm.b  (A0)+,(A2)+
+            beq.w   .L12
+.L4:
+            addq.w  #5,A4
+            moveq   #0,D0
+            move.b  (A4),D0
+            add.b   (1,A4,D0.w),D0
+            add.b   (2,A4,D0.w),D0
+            addq.w  #3,D0
+            adda.w  D0,A4
+            bra.b   .L2
+.L5:
+            tst.b   (5,A5)
+            beq.w   .L11
+            cmpi.b  #$20,(5,A5)
+            bhi.w   .L11
+            move.b  (5,A5),D0
+            tst.b   (6,A5,D0.w)
+            beq.b   .L11
+            cmpi.b  #$20,(6,A5,D0.w)
+            bhi.b   .L11
+            add.b   (6,A5,D0.w),D0
+            tst.b   (7,A5,D0.w)
+            beq.b   .L11
+            cmpi.b  #$20,(7,A5,D0.w)
+            bhi.b   .L11
+            add.b   (7,A5,D0.w),D0
+            addq.w  #8,D0
+            movea.l A5,A0
+            adda.w  D0,A5
+            cmpa.l  A0,A6
+            bne.b   .L6
+            movea.l A5,A6
+            bra.b   .L7
+.L6:
+            move.l  A1,-(SP)
+            movea.l A6,A1
+            adda.w  D0,A6
+            _BlockMove
+            movea.l (SP)+,A1
+.L7:
+            addq.w  #1,D1
+.L8:
+            subq.b  #1,D2
+            bne.w   .L1
+            move.l  A6,(A1)
+            suba.l  ($22,A1),A6
+            move.w  ($26,A1),D0
+            sub.w   A6,D0
+            movem.l (SP)+,D4/A2/A4-A6
+            movea.l A1,A0
+            add.w   ($2A,A1),D1
+            move.w  D1,($2A,A1)
+            cmp.w   ($28,A1),D1
+            bpl.b   .L9
+            move.w  D0,($12,A1)
+            bne.b   .L10
+.L9:
+            movea.l ABusDCE,A3
+            btst    #7,(5,A3)
+            beq.w   sub_408E18E6.L14
+            cmpa.l  (8,A3),A1
+            bne.w   sub_408E18E6.L14
+.L10:
+            rts
+.L11:
+            movem.l (SP)+,D4/A2/A4-A6
+            rts
+.L12:
+            addq.w  #5,A5
+            tst.b   (A5)
+            beq.b   .L11
+            cmpi.b  #$20,(A5)
+            bhi.b   .L11
+            move.b  (A5),D0
+            tst.b   (1,A5,D0.w)
+            beq.b   .L11
+            cmpi.b  #$20,(1,A5,D0.w)
+            bhi.b   .L11
+            add.b   (1,A5,D0.w),D0
+            tst.b   (2,A5,D0.w)
+            beq.b   .L11
+            cmpi.b  #$20,(2,A5,D0.w)
+            bhi.b   .L11
+            add.b   (2,A5,D0.w),D0
+            addq.w  #3,D0
+            adda.w  D0,A5
+            bra.w   .L8
+.L13:
+            bra.b   .L26
+            bra.b   .L27
+            movea.l ($2B4,A2),A3
+            tst.w   (A3)+
+            bne.b   .L28
+            moveq   #$7C,D3
+            jsr     (2,A4)
+            bne.b   .L29
+            movea.l ($2B4,A2),A0
+            tst.b   ($2B8,A2)
+            bne.b   .L30
+            move.b  (6,A0),D0
+            cmp.b   (A2),D0
+            bne.b   .L30
+            move.w  (4,A0),D0
+            cmp.w   ($1A,A2),D0
+            beq.b   .L29
+.L30:
+            move.w  #$F2,(A0)
+            suba.w  #$1A,A0
+            lea     .L31,A1
+            move.l  A1,($C,A0)
+            movea.l ABusDCE,A1
+            move.w  ($18,A1),($18,A0)
+            _Control async
+.L29:
+            rts
+.L28:
+            clr.w   D3
+            jmp     (2,A4)
+.L31:
+            clr.w   ($1A,A0)
+            rts
+.L26:
+            bra.b   .L32
+.L27:
+            lea     ($2B0,A2),A3
+            movea.l SysZone,A0
+.L35:
+            move.l  (A3),D0
+            beq.b   .L33
+            _StripAddress
+            movea.l D0,A1
+            cmpa.l  (A0),A1
+            bcs.b   .L34
+            cmpa.l  BufPtr,A1
+            bcc.b   .L34
+            move.l  (A1),(A3)
+            bra.b   .L35
+.L34:
+            movea.l A1,A3
+            bra.b   .L35
+.L33:
+            moveq   #0,D0
+            rts
+.L32:
+            move.l  ($2B0,A2),D3
+            beq.w   .L25
+            move    SR,-(SP)
+            move    ($1C,A2),SR
+            movem.l A2/A4-A5,-(SP)
+            movea.l A0,A4
+            tst.b   ($19,A2)
+            beq.b   .L15
+            tst.w   ($340,A2)
+            bpl.b   .L15
+            moveq   #0,D0
+            lea     ($23,A4),A0
+            move.b  (A0)+,D0
+            adda.w  D0,A0
+            move.b  (A0)+,D0
+            adda.w  D0,A0
+            cmpi.b  #1,(A0)
+            bne.b   .L14
+            cmpi.b  #$2A,(1,A0)
+            beq.b   .L15
+.L14:
+            lea     ($356,A2),A1
+            bsr.w   sub_408E1E5A
+            bne.w   .L24
+.L15:
+            move.l  D3,D2
+            clr.w   D3
+.L16:
+            movea.l D2,A3
+            lea     (9,A3),A3
+            lea     ($23,A4),A5
+            movea.l A3,A1
+            movea.l A5,A0
+            bsr.w   sub_408E1E74
+            bne.b   .L17
+            clr.w   D0
+            move.b  (A5)+,D0
+            adda.w  D0,A5
+            movea.l A3,A1
+            move.b  (A1)+,D0
+            adda.w  D0,A1
+            movea.l A5,A0
+            bsr.w   sub_408E1E74
+            bne.b   .L17
+            move.l  A3,-(SP)
+            addq.w  #1,D3
+.L17:
+            move.l  (-9,A3),D2
+            bne.b   .L16
+            tst.w   D3
+            beq.w   .L24
+            lea     ($1F,A4),A1
+            lea     ($1E,A4),A5
+            move.w  (A5)+,(7,A1)
+            move.b  (A5)+,($B,A1)
+            move.b  (A5)+,($D,A1)
+            move.b  #2,($F,A1)
+            move.l  A1,($32,A4)
+            movea.l ($2D8).w,A2
+            move.b  ($1E,A4),($26,A4)
+            clr.w   D2
+            clr.w   D1
+            lea     ($36,A4),A3
+            lea     ($1C,A4),A1
+            move.w  #2,(A3)+
+            move.l  A1,(A3)+
+.L18:
+            movea.l (SP),A5
+            clr.w   D0
+            move.b  (A5),D0
+            add.b   (1,A5,D0.w),D0
+            move.b  #1,(2,A5,D0.w)
+            move.b  #$2A,(3,A5,D0.w)
+            addi.w  #9,D0
+            add.w   D0,D2
+            cmpi.w  #$248,D2
+            bgt.b   .L19
+            addq.w  #4,SP
+            move.w  D0,(A3)+
+            subq.w  #5,A5
+            move.l  A5,(A3)+
+            move.w  ($1A,A2),(A5)
+            addq.w  #1,D1
+            subq.w  #1,D3
+            beq.b   .L19
+            cmpi.w  #$F,D1
+            bne.b   .L18
+.L19:
+            clr.w   (A3)+
+            ori.w   #$30,D1
+            move.b  D1,(A1)
+            move.w  D3,D2
+            beq.b   .L23
+            movea.l (SP),A0
+            lea     (-9,A0),A0
+            movea.l A0,A5
+            move    #$2600,SR
+            tst.l   (A0)
+            beq.b   .L22
+            move.l  A4,-(SP)
+            movea.l ($2B0,A2),A4
+            move.l  (A0),($2B0,A2)
+.L20:
+            tst.l   (A0)
+            beq.b   .L21
+            movea.l (A0),A0
+            bra.b   .L20
+.L21:
+            move.l  A4,(A0)
+            clr.l   (A5)
+            movea.l (SP)+,A4
+.L22:
+            asl.w   #2,D2
+            adda.w  D2,SP
+.L23:
+            lea     ($30,A4),A1
+            movem.l (SP)+,A2/A4-A5
+            move    (SP)+,SR
+            move.b  #2,D1
+            moveq   #0,D3
+            jsr     sub_408E0F32
+            bra.b   .L25
+.L24:
+            movem.l (SP)+,A2/A4-A5
+            move    (SP)+,SR
+.L25:
+            movea.l JIODone,A0
+            movea.l ABusDCE,A1
+            moveq   #0,D0
+            jmp     (A0)
+            moveq   #2,D1
+            lea     ($30,A4),A1
+            movea.l ($2AC,A2),A0
+            moveq   #0,D3
+            jsr     (A0)
+            movea.l ($2B4,A2),A0
+            st      ($15,A0)
+            rts
+sub_408E1E46:
+            moveq   #2,D0
+            add.b   (A1),D0
+            add.b   (-1,A1,D0.w),D0
+            move.w  D0,D1
+            swap    D0
+            move.w  D1,D0
+            lea     (9,A0),A0
+            bra.b   sub_408E1E62
+sub_408E1E5A:
+            moveq   #0,D0
+            move.b  (A0)+,D0
+            swap    D0
+            move.b  (A1)+,D0
+sub_408E1E62:
+            move.w  #$A03C,D1
+            pea     sub_408E1E70
+            move.l  ($388,A2),-(SP)
+            rts
+sub_408E1E70:
+            tst.w   D0
+            rts
+sub_408E1E74:
+            moveq   #0,D0
+            moveq   #0,D2
+            move.l  A0,D1
+            move.b  (A0)+,D0
+            beq.w   .L6
+            subq.w  #1,D0
+            bne.b   .L1
+            cmpi.b  #$3D,(A0)
+            beq.b   .L5
+.L1:
+            addq.w  #1,D2
+            cmpi.b  #$C5,(A0)+
+            dbeq    D0,.L1
+            move    SR,-(SP)
+            movea.l D1,A0
+            move.b  (A0),D1
+            move    (SP)+,SR
+            beq.b   .L2
+            moveq   #0,D0
+            move.b  (A0)+,D0
+            swap    D0
+            move.b  (A1)+,D0
+            bra.b   .L4
+.L2:
+            cmpi.b  #1,D2
+            beq.b   .L3
+            moveq   #0,D0
+            move.b  D2,D0
+            swap    D0
+            move.b  D2,D0
+            subi.l  #$10001,D0
+            addq.w  #1,A0
+            addq.w  #1,A1
+            movem.l D1-D2/A0-A1,-(SP)
+            bsr.b   sub_408E1E62
+            movem.l (SP)+,D1-D2/A0-A1
+            bne.b   .L5
+            subq.w  #1,A0
+            subq.w  #1,A1
+.L3:
+            cmp.b   D1,D2
+            beq.b   .L5
+            moveq   #0,D0
+            move.b  D2,D0
+            subq.b  #1,D0
+            cmp.b   (A1),D0
+            bcc.b   .L6
+            sub.b   D2,D1
+            move.b  (A1),D0
+            sub.b   D1,D0
+            bcs.b   .L6
+            adda.w  D0,A1
+            move.b  (A0),D0
+            sub.b   D1,D0
+            adda.w  D0,A0
+            move.b  D1,D0
+            swap    D0
+            move.b  D1,D0
+            addq.w  #1,A0
+            addq.w  #1,A1
+.L4:
+            bra.w   sub_408E1E62
+.L5:
+            rts
+.L6:
+            move    #0,CCR
+            rts
+sub_408E1F04:
+            move.l  #$82,D0
+            _NewPtrSysClear
+            bne.b   .L1
+            move.l  A0,($380,A2)
+            lea     ($6A,A0),A0
+            move.l  A0,($3A6,A2)
+            lea     sub_408E1F52,A0
+            move.l  A0,($86,A2)
+            pea     sub_408E1F32
+            move.l  (SP)+,($37C,A2)
+            move.b  #6,($57,A2)
+.L1:
+            rts
+sub_408E1F32:
+            move.l  ($380,A2),D2
+            beq.b   .L1
+            tst.w   ($340,A2)
+            bpl.b   .L1
+            movea.l D2,A1
+            bset    #7,($384,A2)
+            bne.b   .L1
+            moveq   #$4F,D0
+            _BlockMove
+            movea.l D2,A3
+            bra.b   sub_408E1F52.L3
+.L1:
+            rts
+sub_408E1F52:
+            subq.b  #6,-(A3)
+            bne.b   .L1
+            tst.w   ($340,A2)
+            bpl.b   .L1
+            move.l  ($380,A2),D2
+            beq.b   .L1
+            bset    #7,($384,A2)
+            beq.b   .L2
+.L1:
+            bra.w   sub_408E10AE.L9
+.L2:
+            movea.l D2,A3
+            moveq   #$4F,D3
+            jsr     (2,A4)
+            bne.b   .L6
+            movea.l D2,A3
+            subq.b  #6,(A3)
+.L3:
+            move.l  ($33E,A2),D3
+            tst.b   (A3)
+            bmi.b   .L6
+            cmpi.b  #1,(A3)
+            bgt.b   .L6
+            lea     (6,A3),A0
+            cmpi.b  #$20,(A0)
+            bhi.b   .L6
+            move.w  (2,A3),D0
+            cmp.w   (4,A3),D0
+            bhi.b   .L6
+            cmpi.w  #$FF00,(4,A3)
+            bcc.b   .L6
+            lea     ($356,A2),A1
+            move.l  ($3A2,A2),D1
+            beq.b   .L4
+            movea.l D1,A1
+            movea.l ($1E,A1),A1
+.L4:
+            bsr.w   sub_408E1E5A
+            bne.b   .L6
+            move.w  (2,A3),($348,A2)
+            move.w  (4,A3),($34A,A2)
+            btst    #$D,D3
+            beq.b   .L6
+            tst.b   (A3)
+            beq.b   .L5
+            btst    #4,($384,A2)
+            bne.b   .L7
+            bra.b   .L6
+.L5:
+            bclr    #5,($384,A2)
+            beq.w   .L18
+            btst    #$B,D3
+            beq.b   .L7
+            cmpi.w  #$FF00,($1A,A2)
+            bcs.b   .L7
+.L6:
+            bclr    #7,($384,A2)
+            rts
+.L7:
+            bclr    #6,($341,A2)
+            btst    #5,(1,A3)
+            beq.b   .L8
+            bset    #6,($341,A2)
+.L8:
+            bclr    #7,($341,A2)
+            btst    #7,(1,A3)
+            beq.b   .L9
+            bset    #7,($341,A2)
+.L9:
+            btst    #6,(1,A3)
+            bne.b   .L10
+            moveq   #6,D0
+            lea     ($34C,A2),A1
+            movea.l ($378,A2),A0
+            jsr     (2,A0)
+            moveq   #0,D0
+            lea     (6,A3),A0
+            move.b  (A0)+,D0
+            adda.w  D0,A0
+            move.b  (A0)+,D0
+            cmp.b   ($353,A2),D0
+            bne.b   .L6
+            lea     ($34C,A2),A1
+            _BlockMove
+            moveq   #5,D0
+            lea     ($34C,A2),A1
+            movea.l ($378,A2),A0
+            jsr     (2,A0)
+.L10:
+            moveq   #0,D0
+            lea     (6,A3),A0
+            btst    #7,($341,A2)
+            bne.b   .L11
+            tst.l   ($3A2,A2)
+            bne.b   .L12
+            tst.b   (A3)
+            beq.b   .L15
+.L11:
+            move.b  (A0)+,D0
+            adda.w  D0,A0
+            move.b  (A0)+,D0
+            adda.w  D0,A0
+.L12:
+            btst    #$1E,D3
+            beq.b   .L13
+            btst    #$B,D3
+            beq.b   .L15
+.L13:
+            move.b  (A0),D0
+            addq.w  #1,D0
+            lea     ($356,A2),A1
+            _BlockMove
+            lea     ($356,A2),A0
+            move.l  ($410,A2),D0
+            beq.b   .L14
+            movea.l D0,A1
+            moveq   #4,D0
+            jsr     (A1)
+.L14:
+            move.l  #$2100BD,D0
+            _WriteXPRam
+.L15:
+            tst.b   (A3)
+            bne.b   .L17
+            btst    #$1E,D3
+            beq.b   .L16
+            btst    #$B,D3
+            beq.b   .L18
+.L16:
+            moveq   #0,D0
+            move.w  ($A,A2),D0
+            lsl.l   #8,D0
+            move.b  ($D,A2),D0
+            move.l  D0,($33A,A2)
+            move.b  #$FE,($19,A2)
+            move.b  #$96,($2D0,A2)
+.L17:
+            st      ($352,A2)
+            bsr.w   sub_408E508E
+.L18:
+            bclr    #7,($384,A2)
+            move    ($1C,A2),SR
+            moveq   #0,D0
+            move.l  ($3A2,A2),D1
+            beq.b   .L19
+            movea.l D1,A0
+            bra.w   sub_408E19C2
+.L19:
+            rts
+            moveq   #-1,D0
+            move.b  (A1),D1
+            cmpi.b  #$21,D1
+            bcs.b   .L20
+            clr.b   (A1)
+.L20:
+            moveq   #3,D1
+            move.b  D1,($1C,A0)
+            move.b  D1,($1D,A0)
+            bra.w   sub_408E16D0.L4
+sub_408E2116:
+            movea.l ($C,A3,D2.w),A0
+            move.l  A1,D0
+            lea     ($128,A3),A1
+            lea     ($141,A3),A0
+            move.l  A0,(A1)+
+            moveq   #6,D1
+            move.b  D1,($D,A0)
+            st      ($B,A0)
+            clr.w   (7,A0)
+            move.b  D1,($F,A0)
+            move.w  #6,(A1)+
+            lea     ($13A,A3),A0
+            move.l  A0,(A1)+
+            move.b  #5,(A0)+
+            clr.b   (A0)+
+            clr.l   (A0)+
+            movea.l D0,A0
+            moveq   #1,D0
+            add.b   (A0),D0
+            move.w  D0,(A1)+
+            move.l  A0,(A1)+
+            clr.w   (A1)
+            bset    #5,($384,A2)
+            rts
+sub_408E215E:
+            movem.l D2-D7/A2-A6,-(SP)
+            movea.l ($30,SP),A2
+            clr.w   -(SP)
+            subq.w  #4,SP
+            move.w  #$38,-(SP)
+            movea.l SP,A3
+            suba.w  #$38,SP
+            lea     (1,SP),A1
+            move.l  A1,(2,A3)
+            st      (A1)+
+            move.b  (A2),(A1)+
+            move.b  #2,(A1)+
+            movea.l A1,A4
+            move.w  #$35,(A1)+
+            clr.l   (A1)+
+            move.w  ($1A,A2),(A1)+
+            st      (A1)+
+            move.b  (A2),(A1)+
+            move.w  #$606,(A1)+
+            move.b  #6,(A1)+
+            move.b  #5,(A1)+
+            clr.w   (A1)+
+            clr.w   (A1)+
+            clr.b   (A1)+
+            lea     ($356,A2),A0
+            moveq   #1,D0
+            add.b   (A0),D0
+            move.w  D0,D1
+            _BlockMove
+            moveq   #$22,D0
+            sub.w   D1,D0
+            sub.w   D0,(A3)
+            sub.w   D0,(A4)
+            movea.l A3,A1
+            moveq   #0,D2
+            st      D2
+            bset    #5,($384,A2)
+            bsr.w   sub_408E37F4
+.L1:
+            tst.b   ($2C8,A2)
+            beq.b   .L1
+            lea     ($40,SP),SP
+            movem.l (SP)+,D2-D7/A2-A6
+            rts
+sub_408E21DA:
+            cmpi.b  #4,-(A3)
+            bne.b   .L1
+            move.l  A3,D2
+            movea.l ($92,A2),A3
+            tst.w   ($10,A3)
+            bgt.b   .L1
+            move.w  #$24A,D3
+            lea     ($41,A3),A3
+            jsr     (2,A4)
+            beq.b   .L2
+            rts
+.L1:
+            clr.w   D3
+            jmp     (2,A4)
+.L2:
+            move.w  #$24A,D0
+            sub.w   D3,D0
+            beq.b   .L6
+            movea.l ($92,A2),A0
+            cmpi.b  #1,($41,A0)
+            bne.b   .L6
+            move.w  D0,($28,A0)
+            movea.l D2,A3
+            move.b  -(A3),($3E,A0)
+            move.b  (2,A2),D0
+            moveq   #0,D1
+            subq.b  #1,(3,A2)
+            beq.b   .L5
+            movea.l A0,A1
+            lea     (6,A2),A0
+            move.w  (A0)+,D1
+            sne     ($1D,A1)
+            beq.b   .L4
+            move.w  D1,-(SP)
+            moveq   #9,D0
+            clr.w   D3
+            clr.w   D1
+            bsr.w   sub_408E0F24
+            lea     ($41,A1),A0
+            move.w  ($28,A1),D0
+            bsr.w   sub_408E0F24
+            tst.w   D3
+            bne.b   .L3
+            subq.w  #1,D3
+.L3:
+            cmp.w   (SP)+,D3
+            bne.b   .L6
+.L4:
+            movea.l A1,A0
+            move.b  (-2,A3),D0
+            move.w  (-5,A3),D1
+.L5:
+            move.b  D0,($3C,A0)
+            move.w  D1,($38,A0)
+            addq.b  #1,($41,A0)
+            _Control async
+.L6:
+            rts
+            moveq   #-$5E,D0
+            tst.w   ($458,A2)
+            beq.b   .L7
+            cmpi.b  #$80,D1
+            beq.b   .L8
+.L7:
+            tst.b   D1
+            ble.b   .L11
+.L8:
+            bsr.b   sub_408E22A8
+            beq.b   .L11
+            moveq   #7,D2
+.L9:
+            lea     ($24,A2,D2.w),A3
+            tst.b   (A3)
+            dbmi    D2,.L9
+            bpl.b   .L11
+            lsl.w   #2,D2
+            move.l  A1,($2C,A2,D2.w)
+            move.b  D1,(A3)
+.L10:
+            clr.w   D0
+.L11:
+            bra.w   MPPStatus.L3
+sub_408E22A8:
+            moveq   #7,D2
+.L1:
+            cmp.b   ($24,A2,D2.w),D1
+            dbeq    D2,.L1
+            rts
+            moveq   #-$5E,D0
+            moveq   #7,D2
+.L2:
+            cmp.b   ($24,A2,D2.w),D1
+            dbeq    D2,.L2
+            bne.b   sub_408E21DA.L11
+            st      ($24,A2,D2.w)
+            bra.b   sub_408E21DA.L10
+            move.l  ($22,A0),D3
+            movea.l (2,A1),A0
+            moveq   #-$5E,D0
+            tst.b   (2,A0)
+            ble.b   MPPStatus.L3
+            moveq   #0,D2
+            move.b  (A0),D2
+            move.l  ($33E,A2),D1
+            btst    #$F,D1
+            beq.b   .L3
+            moveq   #-$5F,D0
+            btst    #$1E,D1
+            beq.b   MPPStatus.L3
+            move.l  D3,D2
+.L3:
+            bsr.b   sub_408E2370
+            bra.b   MPPStatus.L3
+MPPStatus:
+            movea.l ($2D8).w,A2
+            btst    #$1E,($33E,A2)
+            beq.b   .L1
+            moveq   #-$12,D0
+            bra.b   .L3
+.L1:
+            moveq   #-$12,D0
+            cmpi.w  #$190,($1A,A0)
+            bne.b   .L3
+            movea.l ($1C,A0),A1
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($3D0,A2),A3
+            moveq   #$F,D0
+            moveq   #0,D1
+.L2:
+            move.l  (A3),(A1)+
+            move.l  D1,(A3)+
+            dbra    D0,.L2
+            move    (SP)+,SR
+.L3:
+            movea.l ($330,A2),A1
+.L4:
+            tst.w   ($3B8,A2)
+            beq.b   sub_408E2346.L1
+            bsr.w   sub_408E2B44
+            move.w  D0,($3BA,A2)
+            move.l  A1,D0
+            lea     sub_408E2346,A0
+            _DeferUserFn
+            rts
+sub_408E2346:
+            bsr.w   sub_408E2B44
+            movea.l ($2D8).w,A1
+            move.w  ($3BA,A1),D0
+            movea.l A0,A1
+.L1:
+            move.l  JIODone,-(SP)
+            rts
+MPPPrime:
+            bclr    #7,(5,A1)
+            rts
+.L1:
+            tst.b   ($2C8,A2)
+            bne.b   sub_408E2378.L3
+.L2:
+            movea.l ($2BE,A2),A0
+            moveq   #-$5F,D0
+            jmp     (A0)
+sub_408E2370:
+            clr.b   ($2C8,A2)
+            move.l  A1,($2BA,A2)
+sub_408E2378:
+            movea.l ROMBase,A3
+            cmpi.b  #3,(8,A3)
+            bne.b   .L1
+            movea.l PmgrBase,A3
+            move.b  #$10,($E,A3)
+            tst.w   ($FE0000).l
+.L1:
+            btst    #0,HWCfgFlags                   ; TestFor hwCbPwrMgr
+            beq.b   .L2
+            _IdleUpdate
+.L2:
+            move.l  (SP)+,($2BE,A2)
+            tst.b   ($335,A2)
+            beq.b   MPPPrime.L1
+.L3:
+            move.l  LAPMgrPtr,D3
+            ble.b   .L4
+            movea.l D3,A3
+            clr.w   D3
+            move.b  ($334,A2),D3
+            jsr     (A3)
+.L4:
+            tst.l   ($378,A2)
+            bne.b   .L8
+            tst.b   ($2C8,A2)
+            bne.w   sub_408E2490.L4
+            cmpi.b  #$FF,D2
+            bne.b   .L5
+            tst.b   ($2B8,A2)
+            beq.w   sub_408E2490.L4
+            bsr.b   sub_408E2422
+.L5:
+            cmp.b   (A2),D2
+            bne.w   sub_408E2490.L4
+.L6:
+            tst.b   ($2B8,A2)
+            beq.b   .L7
+            bsr.b   sub_408E2422
+.L7:
+            movea.l ($2BE,A2),A0
+            moveq   #0,D0
+            jmp     (A0)
+.L8:
+            cmp.b   (A2),D2
+            bne.b   .L9
+            tst.w   ($340,A2)
+            bpl.b   .L6
+            move.l  D2,D0
+            lsr.l   #8,D0
+            cmp.w   ($1A,A2),D0
+            beq.b   .L6
+.L9:
+            cmpi.b  #$FF,D2
+            bne.b   .L11
+            tst.b   ($2B8,A2)
+            beq.b   .L10
+            bsr.b   sub_408E2422
+.L10:
+            tst.w   ($458,A2)
+            beq.b   .L7
+.L11:
+            movea.l (2,A1),A0
+            ori.b   #$80,(2,A0)
+            bsr.b   sub_408E2422
+            bra.b   .L7
+sub_408E2422:
+            movem.l D2/A1-A2/A4-A5,-(SP)
+            move    SR,-(SP)
+            lea     (1,A2),A3
+            moveq   #5,D3
+            suba.l  A0,A0
+            move    #$2600,SR
+            bsr.b   sub_408E2490
+            move.b  (A2),(2,A2)
+            moveq   #7,D2
+            move.b  (3,A2),D0
+            bpl.b   .L1
+            andi.b  #$7F,(3,A2)
+            move.b  #$80,D0
+.L1:
+            move.w  (4,A2),D1
+            andi.w  #$3FF,D1
+            subq.w  #2,D1
+.L2:
+            cmp.b   ($24,A2,D2.w),D0
+            dbeq    D2,.L2
+            bne.b   .L3
+            lsl.w   #2,D2
+            movea.l ($2C,A2,D2.w),A5
+            lea     .L4,A4
+            jsr     (A5)
+.L3:
+            move    (SP)+,SR
+            movem.l (SP)+,D2/A1-A2/A4-A5
+            rts
+.L4:
+            bra.b   .L6
+            tst.w   D3
+            beq.b   .L7
+            sub.w   D3,D1
+            bsr.b   sub_408E2490
+.L7:
+            move.w  D1,D3
+            neg.w   D3
+            moveq   #0,D0
+            rts
+.L6:
+            sub.w   D3,D1
+            bsr.b   sub_408E2490
+            beq.b   .L5
+            moveq   #-4,D0
+.L5:
+            rts
+sub_408E2490:
+            moveq   #0,D0
+            move.w  (A1),D0
+            sub.w   A0,D0
+            bne.b   .L1
+            addq.w  #6,A1
+            suba.l  A0,A0
+            move.w  (A1),D0
+            beq.b   .L3
+.L1:
+            cmp.w   D0,D3
+            bcc.b   .L2
+            move.w  D3,D0
+.L2:
+            movem.l D0/A0-A1,-(SP)
+            adda.l  (2,A1),A0
+            movea.l A3,A1
+            _BlockMove
+            movem.l (SP)+,D0/A0-A1
+            adda.w  D0,A0
+            adda.w  D0,A3
+            sub.w   D0,D3
+            bne.b   sub_408E2490
+.L3:
+            move.w  D3,D0
+            rts
+.L4:
+            tst.w   ($3B8,A2)
+            beq.b   .L6
+            bsr.w   sub_408E2B44
+            movea.l ($2BA,A2),A1
+            bsr.w   sub_408E5200
+            beq.b   .L5
+            bra.w   MPPPrime.L2
+.L5:
+            move.l  A1,($2BA,A2)
+.L6:
+            move.b  D2,($2C4,A2)
+            lea     ($2CB,A2),A3
+            move.b  (A3)+,D3
+            move.b  (A3),D2
+            add.b   D2,(A3)+
+            bsr.b   sub_408E24FE
+            ble.b   sub_408E24FE.L3
+            add.b   D3,D3
+            addq.b  #1,D3
+            andi.w  #$F,D3
+            clr.b   (-1,A3)
+            bra.b   sub_408E24FE.L4
+sub_408E24FE:
+            moveq   #0,D0
+            moveq   #7,D1
+.L1:
+            btst    D1,D2
+            beq.b   .L2
+            addq.w  #1,D0
+.L2:
+            dbra    D1,.L1
+            subq.b  #2,D0
+            rts
+.L3:
+            move.b  (A3),D2
+            bsr.b   sub_408E24FE
+            bge.b   .L4
+            lsr.b   #1,D3
+            st      (A3)
+.L4:
+            move.b  (A3),D2
+            add.b   D2,(A3)+
+            moveq   #$20,D0
+            move.b  D0,(A3)+
+            move.b  D0,(A3)
+            subq.w  #5,A3
+            move.b  D3,(A3)+
+            move.b  D3,(A3)+
+            movem.l SCCRd,A0-A1
+.L5:
+            move    SR,-(SP)
+.L6:
+            move.w  D0,D3
+            btst    #4,(A0)
+            beq.b   .L10
+            bsr.w   sub_408E26C8
+            and.b   ($2CA,A2),D0
+            andi.w  #$F,D0
+            move.w  D0,D3
+            beq.b   .L8
+.L7:
+            bsr.b   sub_408E25CA
+            beq.b   .L10
+            subq.w  #1,D0
+            bne.b   .L7
+.L8:
+            move    #$2600,SR
+            moveq   #3,D0
+            addq.w  #3,D3
+.L9:
+            move.b  #$E,(A1)
+            nop
+            move.b  #$41,(A1)
+            bsr.b   sub_408E25CA
+            dbeq    D0,.L9
+.L10:
+            beq.w   sub_408E25CA.L9
+            move.b  #$A,(A1)
+            move.b  ($2C4,A2),D2
+            tst.b   (A0)
+            bmi.w   sub_408E25CA.L9
+            move.b  #5,(A1)
+            moveq   #-$7C,D0
+            move.b  #$62,(A1)
+            tst.b   ($2C8,A2)
+            beq.b   .L11
+            moveq   #-$7F,D0
+.L11:
+            move.b  #5,(A1)
+            nop
+            move.b  ($323,A2),(A1)
+            move.w  ($2E4,A2),D1
+.L12:
+            dbra    D1,.L12
+            bsr.w   sub_408E279A
+            addq.b  #1,D2
+            beq.b   sub_408E25CA.L4
+            clr.b   ($2C6,A2)
+            bsr.w   sub_408E26AC
+            tst.b   ($2C8,A2)
+            beq.b   .L13
+            tst.b   ($2C7,A2)
+            beq.b   sub_408E25CA.L8
+            bra.b   sub_408E25CA.L6
+.L13:
+            tst.b   ($2C6,A2)
+            st      ($2C6,A2)
+            beq.b   sub_408E25CA.L8
+            bra.b   sub_408E25CA.L5
+sub_408E25CA:
+            move.w  ($2E0,A2),D1
+            bra.b   .L2
+.L1:
+            dbra    D1,.L1
+            bra.b   .L3
+.L2:
+            bra.b   .L1
+.L3:
+            btst    #4,(A0)
+            rts
+.L4:
+            bsr.b   sub_408E25CA
+            beq.b   .L8
+            cmpi.w  #$72,($2E0,A2)
+            bcs.b   .L5
+            bsr.b   sub_408E25CA
+            beq.b   .L8
+.L5:
+            bsr.w   sub_408E2710
+.L6:
+            moveq   #0,D0
+            addq.l  #1,($3D8,A2)
+.L7:
+            move    (SP)+,SR
+            movea.l ($2BE,A2),A0
+            jmp     (A0)
+.L8:
+            addq.l  #1,($3F4,A2)
+            move    (SP),SR
+            bset    #0,($2CC,A2)
+            move.b  ($2CA,A2),D0
+            add.b   D0,D0
+            addq.b  #1,D0
+            move.b  D0,($2CA,A2)
+            moveq   #-$5F,D0
+            subq.b  #1,($2CF,A2)
+            beq.b   .L7
+            bra.w   sub_408E24FE.L6
+.L9:
+            sub.w   D0,D3
+            subq.w  #4,D3
+            blt.b   .L10
+            addq.l  #1,($3F8,A2)
+            moveq   #-$5F,D0
+            subq.b  #1,($2CE,A2)
+            beq.b   .L7
+            bset    #0,($2CA,A2)
+            bset    #0,($2CD,A2)
+.L10:
+            move    #$2600,SR
+            move.b  #$F,(A1)
+            moveq   #-$78,D0
+            move.b  D0,(A1)
+            move.b  #2,($2C9,A2)
+            moveq   #0,D0
+.L11:
+            move    (SP)+,SR
+            rts
+sub_408E265A:
+            movea.l ($2D8).w,A2
+            tst.b   ($2C9,A2)
+            bne.b   .L1
+            btst    #3,D1
+            beq.b   sub_408E26AC.L3
+            movea.l ($2C2).w,A3
+            jmp     (A3)
+.L1:
+            clr.b   ($2C9,A2)
+.L2:
+            move.b  #$F,(A1)
+            moveq   #8,D0
+            move.b  D0,(A1)
+            move    ($1C,A2),SR
+            bra.w   sub_408E24FE.L5
+sub_408E2684:
+            bsr.w   sub_408E50FA
+            move    SR,-(SP)
+            move    #$2600,SR
+            tst.b   ($2C9,A2)
+            beq.b   sub_408E25CA.L11
+            subq.b  #1,($2C9,A2)
+            bne.b   sub_408E25CA.L11
+            addq.w  #2,SP
+            movem.l SCCRd,A0-A1
+            bsr.w   sub_408E2958
+            addq.l  #1,($3FC,A2)
+            bra.b   sub_408E265A.L2
+sub_408E26AC:
+            movem.l A0-A2,-(SP)
+            move.w  ($2DA,A2),D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.b   .L2
+            bsr.w   sub_408E27F4
+.L2:
+            movem.l (SP)+,A0-A2
+.L3:
+            rts
+sub_408E26C8:
+            move.w  ($2C2,A2),D0
+            mulu.w  #$305,D0
+            addq.w  #1,D0
+            move.w  D0,-(SP)
+            lsl.w   #8,D0
+            move.b  (SP)+,D0
+            move.w  D0,($2C2,A2)
+            rts
+.L1:
+            dc.w    $056B,$03D0
+sub_408E26E2:
+            move.w  ($2D6,A2),D1
+.L1:
+            btst    #2,(A0)
+            dbne    D1,.L1
+            beq.b   .L2
+            move.b  D3,(4,A1)
+.L2:
+            tst.w   D1
+            rts
+sub_408E26F8:
+            lea     sub_408E26C8.L1,A3
+            moveq   #4,D3
+            bsr.w   sub_408E27E4
+            move.w  ($2DC,A2),D3
+.L1:
+            dbra    D3,.L1
+            move.b  #$80,(A1)
+            rts
+sub_408E2710:
+            movem.l A0-A1/A4-A6,($30A,A2)
+            move.l  DskRtnAdr,-(SP)
+            move.l  PollStack,-(SP)
+            move.l  SP,PollStack
+            movea.l ($31E,A2),A5
+            cmpi.w  #$D,($3C8,A2)
+            bne.b   .L1
+            movea.l SCCRd,A5
+            lea     (-$1C,A5),A5
+.L1:
+            lea     (6,A0),A6
+            movea.l ($2BA,A2),A4
+            bsr.b   sub_408E26F8
+            move.w  (A4)+,D3
+            movea.l (A4)+,A3
+            move.b  (A3)+,(4,A1)
+            subq.w  #1,D3
+            move.b  (A2),(A3)
+.L2:
+            move.w  ($2D6,A2),D0
+.L3:
+            btst    #2,(A0)
+            dbne    D0,.L3
+            bne.b   .L4
+            bsr.w   sub_408E27DE
+            bra.b   .L7
+.L4:
+            move.b  (A3)+,(4,A1)
+            tst.b   (A5)
+            bmi.b   .L5
+            move.b  (A6),-(SP)
+.L5:
+            subq.w  #1,D3
+            bgt.b   .L2
+            move.w  (A4)+,D3
+            beq.b   .L6
+            movea.l (A4)+,A3
+            bra.b   .L2
+.L6:
+            bsr.b   sub_408E27BA
+.L7:
+            move.l  PollProc,D3
+            beq.b   .L8
+            movea.l D3,A4
+            jsr     (A4)
+            movea.l ($2D8).w,A2
+.L8:
+            movem.l ($30A,A2),A0-A1/A4-A6
+            movea.l PollStack,SP
+            move.l  (SP)+,PollStack
+            move.l  (SP)+,DskRtnAdr
+            rts
+sub_408E279A:
+            bsr.w   sub_408E26F8
+            move.b  D2,(4,A1)
+            move.b  (A2),D3
+            cmpi.b  #$81,D0
+            bne.b   .L1
+            move.b  D2,D3
+.L1:
+            bsr.w   sub_408E26E2
+            bmi.b   sub_408E27DE
+            move.b  D0,D3
+            bsr.w   sub_408E26E2
+            bmi.b   sub_408E27DE
+sub_408E27BA:
+            move.b  #$C0,(A1)
+            lsl.w   #1,D3
+.L1:
+            btst    #6,(A0)
+            beq.b   .L1
+.L2:
+            btst    #2,(A0)
+            beq.b   .L2
+            move.b  #5,(A1)
+            moveq   #0,D3
+            move.b  #$62,(A1)
+            move.w  ($2D2,A2),D3
+.L3:
+            dbra    D3,.L3
+sub_408E27DE:
+            lea     ($322,A2),A3
+            moveq   #6,D3
+sub_408E27E4:
+            move.b  (A3)+,(A1)
+            subq.w  #1,D3
+            bne.b   sub_408E27E4
+            rts
+sub_408E27EC:
+            movea.l ($2D8).w,A2
+            addq.l  #1,($3D0,A2)
+sub_408E27F4:
+            lea     (1,A2),A3
+            move.b  (4,A0),(A3)+
+            move.w  ($2D4,A2),D1
+            add.w   D1,D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.b   .L6
+            move.b  (4,A0),(A3)+
+.L2:
+            btst    #0,(A0)
+            dbne    D1,.L2
+            beq.b   .L6
+            move.b  (4,A0),D0
+            move.b  D0,(A3)+
+            bmi.b   .L9
+            moveq   #7,D2
+.L3:
+            cmp.b   ($24,A2,D2.w),D0
+            dbeq    D2,.L3
+            lsl.w   #2,D2
+            move.w  ($2D4,A2),D0
+            add.w   D0,D0
+.L4:
+            btst    #0,(A0)
+            dbne    D0,.L4
+            beq.b   .L6
+            move.b  (4,A0),(A3)
+            moveq   #3,D1
+            and.b   (A3)+,D1
+            lsl.w   #8,D1
+            movem.l A4-A5,($2E6,A2)
+.L5:
+            btst    #0,(A0)
+            dbne    D0,.L5
+.L6:
+            beq.w   sub_408E2902.L2
+            move.b  (4,A0),D1
+            move.b  D1,(A3)+
+            subq.w  #2,D1
+            tst.w   D2
+            bmi.b   .L8
+            movea.l ($2C,A2,D2.w),A5
+            lea     sub_408E2994.L6,A4
+            tst.w   ($3B8,A2)
+            beq.b   .L7
+            bsr.w   sub_408E2B44
+            bra.w   sub_408E52E8.L4
+.L7:
+            RTS5
+.L8:
+            move.b  #1,(A1)
+            moveq   #-$60,D0
+            and.b   (A0),D0
+            bne.w   sub_408E2994.L1
+            addq.l  #1,($3E8,A2)
+            clr.w   D3
+            bra.w   sub_408E2994.L7
+.L9:
+            moveq   #$7F,D2
+            and.b   D0,D2
+            cmpi.b  #5,D2
+            bgt.b   sub_408E2902.L1
+            bsr.b   sub_408E291E
+            bne.b   .L10
+            cmpi.b  #$FF,(1,A2)
+            seq     D1
+            beq.b   .L11
+            tst.b   ($2C5,A2)
+            bne.b   .L11
+            st      ($2C7,A2)
+.L10:
+            rts
+.L11:
+            subq.b  #1,D2
+            beq.b   .L17
+            subq.b  #3,D2
+            beq.b   .L13
+            tst.b   ($2C6,A2)
+            beq.b   .L12
+            addq.l  #1,($408,A2)
+.L12:
+            subq.b  #1,D2
+            seq     ($2C6,A2)
+            rts
+.L13:
+            tst.b   D1
+            bne.b   .L15
+            move.w  ($2DE,A2),D0
+.L14:
+            dbra    D0,.L14
+            moveq   #-$7B,D0
+            bsr.b   sub_408E2902
+.L15:
+            move.w  ($2D8,A2),D1
+.L16:
+            btst    #0,(A0)
+            dbne    D1,.L16
+            bne.w   sub_408E27F4
+            addq.l  #1,($404,A2)
+            rts
+.L17:
+            move.w  ($2DE,A2),D0
+.L18:
+            dbra    D0,.L18
+            moveq   #-$7E,D0
+sub_408E2902:
+            move.b  (2,A2),D2
+            bra.w   sub_408E279A
+            addq.l  #1,($3E8,A2)
+            bra.b   .L3
+.L1:
+            addq.l  #1,($3F0,A2)
+            bra.b   .L3
+.L2:
+            addq.l  #1,($3E4,A2)
+.L3:
+            bsr.b   sub_408E2958
+            bra.b   sub_408E2958
+sub_408E291E:
+            clr.w   D0
+            move.w  ($2D4,A2),D1
+.L1:
+            btst    #0,(A0)
+            dbne    D1,.L1
+            beq.w   sub_408E2994.L3
+            bsr.b   sub_408E2994
+            bmi.b   sub_408E2994.L2
+            tst.b   (4,A0)
+            move.w  ($2D4,A2),D1
+.L2:
+            btst    #0,(A0)
+            dbne    D1,.L2
+            beq.b   sub_408E2994.L3
+            bsr.b   sub_408E2994
+            bpl.b   sub_408E2994.L2
+            lsl.b   #1,D1
+            bmi.b   sub_408E2994.L4
+            move.w  ($2E2,A2),D1
+.L3:
+            dbra    D1,.L3
+            bra.b   sub_408E2958.L3
+sub_408E2958:
+            bsr.b   sub_408E2994
+            btst    #5,D1
+            beq.b   .L1
+            bclr    #7,($15F).w
+.L1:
+            moveq   #-$30,D1
+            bsr.b   sub_408E298A
+            moveq   #2,D1
+.L2:
+            tst.b   (4,A0)
+            move.b  #$30,(A1)
+            dbra    D1,.L2
+            moveq   #-$23,D1
+            bsr.b   sub_408E298A
+.L3:
+            move.b  #$30,(A1)
+            move.w  (SP),(SP)
+            move.b  #$20,(A1)
+            tst.w   D0
+            rts
+sub_408E298A:
+            move.b  #3,(A1)
+            nop
+            move.b  D1,(A1)
+            rts
+sub_408E2994:
+            move.b  #1,(A1)
+            nop
+            move.b  (A0),D1
+            rts
+.L1:
+            move.b  D0,D1
+            moveq   #0,D0
+.L2:
+            btst    #5,D1
+            bne.b   .L5
+            addq.l  #1,($3EC,A2)
+            moveq   #-4,D0
+            bra.b   sub_408E2958
+.L3:
+            addq.l  #1,($3E4,A2)
+            moveq   #-3,D0
+            bra.b   sub_408E2958
+.L4:
+            addq.l  #1,($3DC,A2)
+            moveq   #-2,D0
+            bra.b   sub_408E2958
+.L5:
+            addq.l  #1,($3E0,A2)
+            moveq   #-1,D0
+            bra.b   sub_408E2958
+.L25:
+            bra.w   .L24
+.L6:
+            bra.b   .L25
+.L7:
+            movea.l ($31E,A2),A5
+            cmpi.w  #$D,($3C8,A2)
+            bne.b   .L8
+            movea.l SCCRd,A5
+            lea     (-$1C,A5),A5
+.L8:
+            movea.l SP,A4
+.L9:
+            move.w  ($2D4,A2),D0
+            subq.w  #1,D1
+            bmi.b   .L12
+.L10:
+            btst    #0,(A0)
+            dbne    D0,.L10
+            beq.b   .L12
+            move.b  (4,A0),D0
+            tst.b   (A5)
+            bmi.b   .L11
+            move.b  (6,A0),-(SP)
+.L11:
+            subq.w  #1,D3
+            bmi.b   .L9
+            move.b  D0,(A3)+
+            bra.b   .L9
+.L12:
+            bsr.w   sub_408E291E
+            move.l  PollStack,($2F2,A2)
+            move.l  A4,PollStack
+            move.l  PollProc,D1
+            beq.b   .L13
+            movem.l D0/D2-D3/A3/A6,($30A,A2)
+            lea     (6,A0),A6
+            movea.l D1,A0
+            move.l  DskRtnAdr,($2EE,A2)
+            jsr     (A0)
+            movea.l ($2D8).w,A2
+            move.l  ($2EE,A2),DskRtnAdr
+            movem.l ($30A,A2),D0/D2-D3/A3/A6
+.L13:
+            movea.l PollStack,SP
+            move.l  ($2F2,A2),PollStack
+.L14:
+            movem.l ($2E6,A2),A4-A5
+            tst.w   D0
+            bne.b   .L15
+            addq.l  #1,($3D4,A2)
+.L15:
+            tst.w   D0
+.L16:
+            rts
+.L24:
+            sub.w   D3,D1
+.L17:
+            move.w  ($2D4,A2),D0
+.L18:
+            btst    #0,(A0)
+            dbne    D0,.L18
+            beq.b   .L19
+            move.b  (4,A0),(A3)+
+            subq.w  #1,D3
+            bne.b   .L17
+            move.b  #1,(A1)
+            moveq   #-$60,D0
+            and.b   (A0),D0
+            beq.b   .L16
+            bmi.b   .L20
+            addq.l  #1,($3E0,A2)
+            moveq   #-1,D0
+            bra.b   .L21
+.L19:
+            addq.l  #1,($3E4,A2)
+            moveq   #-3,D0
+            bra.b   .L21
+.L20:
+            addq.l  #1,($3EC,A2)
+            moveq   #-4,D0
+.L21:
+            bsr.w   sub_408E2958
+            bra.b   .L14
+            move.l  A0,-(SP)
+            link.w  A4,#-$34
+            clr.w   (-2,A4)
+            movem.l D4-D7/A5-A6,-(SP)
+            suba.w  #$2A,SP
+            movea.l SP,A1
+            moveq   #$29,D0
+.L22:
+            move.b  (A0)+,(A1)+
+            dbra    D0,.L22
+            movea.l SP,A6
+            addq.w  #1,($24,A6)
+            move.l  ($33E,A2),D6
+            suba.w  #$16,SP
+            movea.l SP,A1
+            bsr.w   sub_408E376C
+            tst.w   D0
+            bne.b   .L23
+            cmpi.w  #3,(A1)
+            bcs.b   .L23
+            move.w  ($14,A1),(-2,A4)
+.L23:
+            lea     ($16,SP),SP
+            bsr.w   sub_408E380A
+            move.w  ($24,A6),D1
+            lea     ($2A,SP),SP
+            movem.l (SP)+,D4-D7/A5-A6
+            unlk    A4
+            movea.l (SP)+,A0
+            move.w  D1,($24,A0)
+            pea     ($418,A2)
+            move.l  (SP)+,($26,A0)
+            moveq   #0,D0
+            bra.w   MPPStatus.L3
+            lea     ($33A,A2),A1
+            move.l  A1,($1C,A0)
+            lea     ($33E,A2),A1
+            move.l  A1,($20,A0)
+            lea     ($356,A2),A1
+            move.l  A1,($24,A0)
+            lea     ($344,A2),A1
+            move.l  A1,($28,A0)
+            lea     ($346,A2),A1
+            move.l  A1,($2C,A0)
+            lea     ($410,A2),A1
+            move.l  A1,($30,A0)
+            lea     ($414,A2),A1
+            move.l  A1,($34,A0)
+            bra.w   sub_408E151E.L12
+sub_408E2B44:
+            move.l  A0,-(SP)
+            movea.l ROMBase,A0
+            cmpi.b  #$76,(9,A0)
+            bcs.b   .L1
+            movea.l ($D1C).w,A0
+            cmpa.w  #$FFFF,A0
+            beq.b   .L1
+            movea.l (A0),A0
+            tst.l   ($C,A0)
+            beq.b   .L1
+            move.l  ($C,A0),-(SP)
+            movea.l (4,SP),A0
+            move.l  (SP)+,(SP)
+            rts
+.L1:
+            movea.l (SP)+,A0
+            rts
+            move.l  A0,-(SP)
+            movea.l ExpandMem,A1
+            movea.l ($74,A1),A1
+            pea     ($1C,A0)
+            bsr.w   sub_408E553A
+            addq.w  #4,SP
+            movea.l (SP)+,A0
+            bne.b   .L2
+            clr.l   ($1C,A0)
+            bra.w   MPPStatus.L3
+.L2:
+            moveq   #-$18,D0
+            bra.w   MPPStatus.L3
+            movea.l ExpandMem,A1
+            movea.l ($74,A1),A1
+            bsr.w   sub_408E55AA
+            moveq   #0,D0
+            bra.w   MPPStatus.L3
+            moveq   #-$32,D0
+            cmpi.w  #1,($1C,A0)
+            bhi.w   MPPStatus.L3
+            lea     ($1E,A0),A3
+            moveq   #$12,D0
+.L3:
+            clr.w   (A3)+
+            dbra    D0,.L3
+            move.l  A2,($1E,A0)
+            move.l  ($330,A2),($22,A0)
+            move.b  ($334,A2),($27,A0)
+            move.l  ($33E,A2),($28,A0)
+            move.b  ($2B8,A2),($2D,A0)
+            move.l  ($344,A2),($2E,A0)
+            moveq   #0,D0
+            move.w  ($1A,A2),D0
+            lsl.l   #8,D0
+            move.b  (A2),D0
+            move.l  D0,($32,A0)
+            move.l  ($33A,A2),($36,A0)
+            move.b  ($22,A2),($3B,A0)
+            move.b  ($23,A2),($3D,A0)
+            move.l  ($2A8,A2),D0
+            beq.b   sub_408E2C18
+            movea.l D0,A3
+            move.b  (A3),($3F,A0)
+            move.l  ($2B0,A2),($40,A0)
+sub_408E2C18:
+            movem.l D4/D7/A0-A1,-(SP)
+            suba.w  #$16,SP
+            movea.l SP,A1
+            move.b  ($334,A2),D0
+            pea     (A0)
+            bsr.w   sub_408E376C
+            movea.l (SP)+,A0
+            tst.w   D0
+            bne.b   .L1
+            exg     A0,A1
+            moveq   #0,D0
+            move.w  ($44,A1),D0
+            clr.w   ($44,A1)
+            move.b  ($D,A0),($45,A1)
+            move.l  ($46,A1),D1
+            beq.b   .L1
+            lea     ($E,A0),A0
+            movea.l D1,A1
+            _BlockMove
+.L1:
+            lea     ($16,SP),SP
+            movem.l (SP)+,D4/D7/A0-A1
+            tst.l   ($4A,A0)
+            beq.b   .L2
+            movea.l ($4A,A0),A1
+            lea     ($356,A2),A0
+            moveq   #$21,D0
+            _BlockMove
+.L2:
+            moveq   #0,D0
+            bra.w   MPPStatus.L3
+sub_408E2C72:
+            movem.l A1-A2,-(SP)
+            btst    #8,D6
+            bne.b   .L1
+            moveq   #4,D0
+            bsr.w   sub_408E3966
+            moveq   #8,D0
+            jsr     (2,A0)
+.L1:
+            movem.l (SP)+,A1-A2
+            rts
+sub_408E2C8E:
+            btst    #8,D6
+            beq.b   .L1
+            moveq   #$12,D0
+            moveq   #1,D1
+            bsr.w   sub_408E3966
+            st      PortBUse
+            bra.b   .L2
+.L1:
+            moveq   #$13,D0
+            bsr.w   sub_408E3966
+            move.b  D1,PortBUse
+            cmpi.b  #1,D1
+            bne.b   .L2
+            st      PortBUse
+.L2:
+            rts
+sub_408E2CB8:
+            tst.w   (4,A0)
+            beq.b   .L1
+            _VRemove
+.L1:
+            rts
+sub_408E2CC2:
+            move.w  #$3FC,($A,A0)
+            lea     (-$394,A0),A2
+            clr.w   ($392,A2)
+            rts
+MPPClose:
+            movea.l A0,A6
+            movea.l ($14,A1),A2
+            move.l  ($33E,A2),D6
+            btst    #$D,D6
+            beq.b   .L1
+            move.l  A1,-(SP)
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            bsr.w   sub_408E5510
+            movea.l (SP)+,A1
+.L1:
+            movea.l ($14,A1),A2
+            move.l  A2,D0
+            beq.w   .L16
+.L2:
+            move    SR,-(SP)
+            ori     #$2600,SR
+            tst.l   (8,A1)
+            beq.b   .L3
+            move    (SP)+,SR
+            bra.b   .L2
+.L3:
+            bclr    #5,(5,A1)
+            move.l  A1,-(SP)
+            moveq   #$7E,D6
+            lea     ($96,A2),A1
+.L4:
+            clr.l   (A1)+
+            dbra    D6,.L4
+            moveq   #$D,D6
+            lea     ($4C,A2),A1
+.L5:
+            clr.b   (A1)+
+            dbra    D6,.L5
+            movea.l (SP)+,A1
+            move    (SP)+,SR
+            move.l  ($33E,A2),D6
+            btst    #$D,D6
+            beq.w   .L11
+            bset    #$A,D6
+            or.l    D6,($33E,A2)
+            suba.w  #$32,SP
+            movea.l SP,A0
+            move.w  #$FFF5,($18,A0)
+            _Close
+            move.w  #$FFD7,($18,A0)
+            move.w  #$F6,($1A,A0)
+            move.w  #1,($1C,A0)
+            move.w  #7,($1E,A0)
+            _Control
+            move.w  #6,($1E,A0)
+            _Control
+            move.w  #5,($1E,A0)
+            _Control
+            lea     ($32,SP),SP
+            btst    #$F,D6
+            beq.b   .L6
+            btst    #$1E,D6
+            bne.b   .L6
+            bsr.w   sub_408E125A
+.L6:
+            moveq   #0,D3
+            movea.l ($2A0,A2),A0
+            cmpa.w  #0,A0
+            beq.b   .L7
+            jsr     (A0)
+.L7:
+            move    SR,-(SP)
+            move    #$2600,SR
+            move.l  ($2A8,A2),D0
+            beq.b   .L8
+            movea.l D0,A0
+            _DisposPtr
+.L8:
+            move.l  ($2B4,A2),D0
+            beq.b   .L9
+            moveq   #$1A,D1
+            sub.l   D1,D0
+            movea.l D0,A0
+            _DisposPtr
+.L9:
+            btst    #$1E,D6
+            bne.b   .L10
+            btst    #8,D6
+            beq.b   .L10
+            lea     sub_408E2E66.L2,A0
+            bsr.w   sub_408E2E66
+            lea     ($2FE,A2),A0
+            lea     ($1BA).w,A3
+            move.l  (A0)+,(A3)+
+            move.l  (A0)+,(A3)+
+            move.l  (A0)+,ExtStsDT
+.L10:
+            move    (SP)+,SR
+.L11:
+            move.l  ($92,A2),D0
+            beq.b   .L12
+            movea.l D0,A0
+            _DisposPtr
+.L12:
+            move.l  ($380,A2),D0
+            beq.b   .L13
+            movea.l D0,A0
+            _DisposPtr
+.L13:
+            lea     ($292,A2),A0
+            bsr.w   sub_408E2CB8
+            lea     ($394,A2),A0
+            bsr.w   sub_408E2CB8
+            bsr.w   sub_408E51C6
+            move.b  ($334,A2),D4
+            bsr.w   sub_408E2C72
+            btst    #$D,D6
+            bne.b   .L14
+            movea.l UTableBase,A4
+            move.w  ($18,A6),D2
+            not.w   D2
+            lsl.w   #2,D2
+            movea.l (0,A4,D2.w),A0
+            _HPurge
+            clr.l   (0,A4,D2.w)
+            bra.b   .L16
+.L14:
+            bsr.w   sub_408E2C8E
+            clr.l   ($2D8).w
+            btst    #$1E,D6
+            beq.b   .L15
+            move.l  ($336,A2),AtalkHk1
+.L15:
+            btst    #8,HWCfgFlags
+            beq.b   .L16
+            moveq   #0,D0
+            bset    #7,D0
+            _SerialPower
+.L16:
+            movea.l A2,A0
+            cmpa.w  #0,A0
+            beq.b   .L17
+            _DisposPtr
+.L17:
+            clr.l   ($14,A1)
+            moveq   #0,D0
+.L18:
+            rts
+sub_408E2E66:
+            movea.l SCCWr,A3
+.L1:
+            move.w  (A0)+,D0
+            beq.b   MPPClose.L18
+            move.b  D0,(A3)
+            ror.w   #8,D0
+            move.b  D0,(A3)
+            bra.b   .L1
+.L2:
+            dc.w    $4A09,$000A,$1000,$080F,$0101,0,$2C54
+MPPOpen:
+            moveq   #0,D6
+            movea.l A0,A6
+            moveq   #-$17,D0
+            move.l  LAPMgrPtr,D1
+            ble.b   .L1
+            bra.b   .L2
+.L1:
+            rts
+.L2:
+            suba.l  A2,A2
+            btst    #9,(6,A6)
+            beq.b   .L4
+            btst    #$1E,($1C,A6)
+            beq.b   .L3
+            movea.l ExpandMem,A3
+            movea.l ($74,A3),A3
+            tst.b   ($1F7,A3)
+            bne.b   .L1
+.L3:
+            move.l  ($1C,A6),D6
+            andi.l  #$E0000000,D6
+.L4:
+            link.w  A4,#-$34
+            movea.l A4,A0
+            move.w  #$19,D0
+.L5:
+            clr.w   -(A0)
+            dbra    D0,.L5
+            bclr    #6,(5,A1)
+            move.w  ($18,A6),D0
+            cmpi.w  #$FFF6,D0
+            bne.b   .L6
+            lea     (-$34,A4),A0
+            move.w  #2,($1A,A0)
+            move.w  D0,($18,A0)
+            _Control async
+.L6:
+            moveq   #0,D0
+            moveq   #0,D2
+            btst    #$1E,D6
+            beq.b   .L7
+            move.b  ($1A,A6),D0
+            andi.b  #$7F,D0
+.L7:
+            move.l  A1,-(SP)
+            suba.w  #$16,SP
+            movea.l SP,A1
+            bsr.w   sub_408E376C
+            tst.w   D0
+            bne.b   .L9
+            move.b  ($D,A1),D2
+            btst    #7,($C,A1)
+            beq.b   .L8
+            bset    #$F,D6
+.L8:
+            cmpi.w  #3,(A1)
+            bcs.b   .L9
+            move.w  ($14,A1),(-2,A4)
+.L9:
+            lea     ($16,SP),SP
+            movea.l (SP)+,A1
+            tst.l   D7
+            bne.b   .L10
+            bset    #8,D6
+.L10:
+            cmpi.w  #$FFF6,($18,A6)
+            bne.b   .L12
+            bset    #$D,D6
+            clr.l   ($2D8).w
+            tst.b   PortBUse
+            bmi.b   .L11
+            move.l  A1,-(SP)
+            moveq   #$13,D0
+            bsr.w   sub_408E3966
+            movea.l (SP)+,A1
+            moveq   #-$61,D0
+            cmp.b   PortBUse,D1
+            bne.w   .L59
+.L11:
+            moveq   #-$62,D0
+            move.b  SPConfig,D1
+            andi.b  #$F,D1
+            subq.b  #1,D1
+            bgt.w   .L59
+            st      PortBUse
+            btst    #8,D6
+            beq.b   .L12
+            move.l  A1,-(SP)
+            moveq   #$11,D0
+            moveq   #1,D1
+            bsr.w   sub_408E3966
+            movea.l (SP)+,A1
+            bne.w   .L59
+            bra.b   .L14
+.L12:
+            moveq   #0,D4
+            btst    #$1E,D6
+            beq.b   .L13
+            move.b  ($1A,A6),D4
+.L13:
+            move.l  A1,-(SP)
+            andi.b  #$7F,D4
+            moveq   #4,D0
+            bsr.w   sub_408E3966
+            moveq   #7,D0
+            jsr     (2,A0)
+            movea.l (SP)+,A1
+            cmpi.w  #$FF9F,D0
+            beq.w   .L59
+.L14:
+            clr.l   ($14,A1)
+            move.l  #$45A,D0
+            _NewPtrSysClear
+            bne.w   .L59
+            movea.l A0,A2
+            move.l  A2,($14,A1)
+            move.l  A1,($330,A2)
+            move.l  D7,($378,A2)
+            move.l  D6,($33E,A2)
+            move.b  RsrcDRVR_9.L1,(7,A1)
+            move.b  D2,($353,A2)
+            moveq   #0,D0
+            move.w  D0,($344,A2)
+            subq.w  #2,D0
+            move.w  D0,($346,A2)
+            suba.w  #$10,SP
+            movea.l SP,A0
+            move.w  #1,D0
+            _SysEnvirons
+            move.w  (4,A0),($3AA,A2)
+            lea     ($10,SP),SP
+            move.w  #$A02E,D0
+            _GetTrapAddress
+            move.l  A0,($3CC,A2)
+            btst    #$D,D6
+            beq.b   .L16
+            btst    #8,HWCfgFlags
+            beq.b   .L15
+            moveq   #1,D0
+            _SerialPower
+.L15:
+            move.b  #1,PortBUse
+            move.l  A2,($2D8).w
+            move.l  A1,ABusDCE
+.L16:
+            btst    #$1E,D6
+            bne.b   .L17
+            btst    #$F,D6
+            beq.b   .L20
+            lea     ($342,A2),A0
+            move.l  #$200DE,D0
+            _ReadXPRam
+            bra.b   .L19
+.L17:
+            move.l  ($28,A6),D0
+            tst.b   D0
+            bne.b   .L18
+            move.b  ($16D).w,D0
+            add.b   ($20F).w,D0
+.L18:
+            move.b  D0,($1FA).w
+            btst    #$F,D6
+            beq.b   .L20
+            lsr.l   #8,D0
+            move.w  D0,($342,A2)
+            move.w  ($24,A6),D0
+            beq.b   .L19
+            swap    D0
+            move.w  ($26,A6),D0
+            beq.b   .L19
+            move.l  D0,($344,A2)
+            bset    #$E,D6
+            or.l    D6,($33E,A2)
+.L19:
+            tst.w   ($342,A2)
+            bne.b   .L20
+            moveq   #0,D0
+            move.b  #$FE,D0
+            move.l  D0,-(SP)
+            move.b  ($16D).w,D0
+            add.b   ($20F).w,D0
+            move.l  D0,-(SP)
+            bsr.w   sub_408E5478
+            addq.w  #8,SP
+            addi.w  #$FF00,D0
+            move.w  D0,($342,A2)
+.L20:
+            btst    #$1E,D6
+            beq.b   .L21
+            move.b  ($1A,A6),D0
+            andi.b  #$7F,D0
+            move.b  D0,($334,A2)
+.L21:
+            st      ($335,A2)
+            move.w  #$80E,($22,A2)
+            moveq   #7,D0
+.L22:
+            st      ($24,A2,D0.w)
+            dbra    D0,.L22
+            movea.l VIA,A1
+            lea     ($1E00,A1),A1
+            movea.l ROMBase,A3
+            cmpi.b  #3,(8,A3)
+            bne.b   .L23
+            suba.w  #$1E00,A1
+.L23:
+            lea     sub_408E38A6.L6,A0
+            move.l  A1,($31E,A2)
+            move.l  (A0)+,($322,A2)
+            move.w  (A0)+,($326,A2)
+            move.w  (A0)+,($1C,A2)
+            cmpi.b  #$75,(9,A3)
+            beq.b   .L24
+            cmpi.b  #$76,(9,A3)
+            beq.b   .L24
+            move.w  #$2300,($1C,A2)
+.L24:
+            lea     ($2D2,A2),A1
+            moveq   #$14,D0
+            cmpi.b  #$76,(9,A3)
+            bcs.b   .L30
+            moveq   #0,D1
+            move.w  TimeDBRA,D1
+            divu.w  #$64,D1
+            movea.l A3,A0
+            lea     sub_408E38A6.L7,A3
+.L25:
+            move.w  (A3)+,D3
+            moveq   #0,D2
+            move.b  (A3)+,D2
+            divu.w  D1,D2
+            sub.w   D2,D3
+            tst.b   (A3)+
+            bmi.b   .L29
+            mulu.w  TimeDBRA,D3
+.L26:
+            divu.w  #$3E8,D3
+            cmpi.b  #2,(8,A0)
+            bne.b   .L27
+            mulu.w  #6,D3
+            lsr.l   #3,D3
+.L27:
+            subq.w  #1,D3
+            bpl.b   .L28
+            moveq   #0,D3
+.L28:
+            move.w  D3,(A1)+
+            subq.w  #2,D0
+            bne.b   .L25
+            bra.b   .L31
+.L29:
+            mulu.w  TimeSCCDB,D3
+            bra.b   .L26
+.L30:
+            _BlockMove
+.L31:
+            btst    #$D,D6
+            beq.b   .L32
+            btst    #$F,D6
+            beq.b   .L32
+            btst    #$1E,D6
+            bne.b   .L32
+            bsr.w   sub_408E117C
+            lea     ($394,A2),A0
+            move.w  #1,(4,A0)
+            lea     sub_408E2CC2,A1
+            move.l  A1,(6,A0)
+            move.w  #$3FC,($A,A0)
+            _VInstall
+.L32:
+            btst    #$1E,D6
+            bne.b   .L33
+            lea     ($292,A2),A0
+            move.w  #1,(4,A0)
+            lea     sub_408E2684,A1
+            move.l  A1,(6,A0)
+            move.w  #$14,($A,A0)
+            _VInstall
+            btst    #8,D6
+            beq.b   .L33
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($1BA).w,A3
+            lea     ($2FE,A2),A1
+            lea     sub_408E27EC,A0
+            move.l  (A3),(A1)+
+            move.l  A0,(A3)+
+            lea     sub_408E2902.L3,A0
+            move.l  (A3),(A1)+
+            move.l  A0,(A3)+
+            lea     sub_408E265A,A0
+            move.l  ExtStsDT,(A1)
+            move.l  A0,ExtStsDT
+            lea     sub_408E38A6.L5,A0
+            bsr.w   sub_408E2E66
+            move    (SP)+,SR
+.L33:
+            bsr.w   sub_408E3856
+            bne.w   .L59
+            lea     sub_408E1134,A3
+            lea     ($4C,A2),A0
+            move.l  A3,-(A0)
+            lea     sub_408E10AE,A3
+            move.l  A3,-(A0)
+            lea     ($2C,A2),A0
+            move.b  #1,-(A0)
+            move.b  #2,-(A0)
+            move.w  #$A03C,D0
+            _GetTrapAddress
+            move.l  A0,($388,A2)
+            btst    #$F,D6
+            beq.w   .L42
+            bsr.w   sub_408E1F04
+            btst    #$D,D6
+            beq.b   .L34
+            lea     ($356,A2),A0
+            move.l  #$2100BD,D0
+            _ReadXPRam
+            cmpi.b  #$20,($356,A2)
+            bls.b   .L34
+            clr.b   ($356,A2)
+.L34:
+            move.l  A2,-(SP)
+            pea     ($34A,A2)
+            pea     sub_408E215E
+            bsr.w   sub_408E54C6
+            lea     ($C,SP),SP
+            btst    #$1E,D6
+            bne.b   .L36
+            tst.w   ($34A,A2)
+            beq.w   .L40
+.L35:
+            move.w  ($348,A2),($344,A2)
+            move.w  ($34A,A2),($346,A2)
+            move.w  ($1A,A2),D0
+            cmp.w   ($344,A2),D0
+            bcs.b   .L39
+            cmp.w   ($346,A2),D0
+            bhi.b   .L39
+            bra.b   .L40
+.L36:
+            btst    #$E,D6
+            beq.b   .L38
+            tst.w   ($34A,A2)
+            beq.b   .L37
+            move.w  #$EC76,D0
+            move.w  ($348,A2),D1
+            cmp.w   ($344,A2),D1
+            bne.w   .L59
+            move.w  ($34A,A2),D1
+            cmp.w   ($346,A2),D1
+            bne.w   .L59
+.L37:
+            cmpi.w  #$FF00,($1A,A2)
+            bcc.b   .L39
+            bra.b   .L40
+.L38:
+            move.w  #$EC70,D0
+            tst.w   ($34A,A2)
+            bne.b   .L35
+            cmpi.w  #$FF00,($1A,A2)
+            bcc.w   .L59
+            bra.b   .L40
+.L39:
+            clr.l   ($418,A2)
+            suba.w  #$2A,SP
+            moveq   #0,D0
+            move.w  ($1A,A2),D0
+            lsl.l   #8,D0
+            move.b  (A2),D0
+            move.l  D0,($1C,SP)
+            movea.l SP,A0
+            movea.l ($378,A2),A1
+            moveq   #$A,D0
+            jsr     (2,A1)
+            lea     ($2A,SP),SP
+            clr.w   ($1A,A2)
+            clr.b   (A2)
+            bsr.w   sub_408E38A6
+            bne.w   .L59
+.L40:
+            btst    #$1E,D6
+            beq.b   .L41
+            clr.b   ($57,A2)
+            bra.b   .L42
+.L41:
+            cmpi.w  #$FF00,($1A,A2)
+            bcc.b   .L42
+            lea     ($1A,A2),A0
+            move.l  #$200DE,D0
+            _WriteXPRam
+            lea     ($356,A2),A0
+            tst.b   ($352,A2)
+            beq.b   .L42
+            move.l  #$2100BD,D0
+            _WriteXPRam
+.L42:
+            btst    #9,(6,A6)
+            beq.b   .L43
+            bsr.w   sub_408E380A
+.L43:
+            bsr.w   sub_408E3794
+            btst    #$D,D6
+            beq.b   .L44
+            lea     SPValid,A0
+            moveq   #-1,D0
+            _WriteParam
+.L44:
+            clr.b   ($335,A2)
+            btst    #$1E,D6
+            beq.b   .L45
+            lea     sub_408E5648.L1,A0
+            move.l  A0,($32C,A2)
+            tst.b   ($1A,A6)
+            bpl.b   .L46
+.L45:
+            st      ($335,A2)
+.L46:
+            lea     sub_408E0F32,A0
+            move.l  A0,($2AC,A2)
+            move.l  #$28B,D0
+            _NewPtrSysClear
+            bne.b   .L47
+            move.l  A0,($92,A2)
+            movea.l ($330,A2),A1
+            move.w  ($18,A1),($18,A0)
+            lea     ($1A,A0),A1
+            move.w  #$F6,(A1)+
+            move.w  #$400,(A1)+
+            lea     ($22,A0),A3
+            move.l  A3,(A1)+
+            lea     ($31,A0),A1
+            move.l  A1,(2,A3)
+            move.b  #4,($F,A1)
+            lea     ($41,A0),A1
+            move.l  A1,(8,A3)
+            lea     sub_408E21DA,A1
+            move.l  A1,($8A,A2)
+            move.b  #4,($58,A2)
+.L47:
+            btst    #$1E,D6
+            beq.b   .L48
+            st      ($2B8,A2)
+            btst    #$D,D6
+            beq.w   .L55
+.L48:
+            suba.w  #$32,SP
+            lea     sub_408E37F4.L1,A0
+            move.l  A0,($12,SP)
+            movea.l SP,A0
+            clr.b   ($1B,A0)
+            _Open
+            lea     ($32,SP),SP
+            tst.w   D0
+            bne.w   .L59
+            bset    #9,D6
+            or.l    D6,($33E,A2)
+            suba.w  #$32,SP
+            lea     sub_408E37F4.L2,A0
+            move.l  A0,($12,SP)
+            movea.l SP,A0
+            clr.b   ($1B,A0)
+            _Open
+            movea.l ROMBase,A0
+            cmpi.b  #$76,(9,A0)
+            bcs.w   .L54
+            movea.l ($D1C).w,A0
+            cmpa.w  #$FFFF,A0
+            bne.b   .L49
+            moveq   #$10,D0
+            _ResrvMem sys
+            moveq   #$10,D0
+            _NewHandleClear async
+            bne.w   .L59
+            move.l  A0,($D1C).w
+            bra.b   .L52
+.L49:
+            _HUnlock
+            moveq   #$10,D0
+            _ResrvMem sys
+            bne.b   .L52
+            moveq   #$10,D0
+            _NewHandleClear async
+            bne.b   .L52
+            move.l  A0,D1
+            move.l  (A0),D0
+            _StripAddress
+            move.l  D0,-(SP)
+            movea.l ($D1C).w,A0
+            move.l  (A0),D0
+            _StripAddress
+            movea.l (SP)+,A1
+            cmpa.l  D0,A1
+            bhi.b   .L50
+            movea.l D0,A0
+            moveq   #$10,D0
+            _BlockMove
+            movea.l ($D1C).w,A0
+            move.l  D1,($D1C).w
+            bra.b   .L51
+.L50:
+            movea.l D1,A0
+.L51:
+            _DisposHandle
+.L52:
+            movea.l ($D1C).w,A0
+            _HLock
+            movea.l (A0),A0
+            movea.l (4,A0),A1
+            cmpa.w  #0,A1
+            bne.b   .L53
+            lea     MPPClose.L18,A1
+.L53:
+            movea.l ExpandMem,A3
+            movea.l ($74,A3),A3
+            move.l  ($286,A3),D0
+            bne.b   .L54
+            move.l  A1,($286,A3)
+            lea     sub_408E462A,A1
+            move.l  A1,(4,A0)
+.L54:
+            movea.l SP,A0
+            move.w  #$FFD7,($18,A0)
+            move.w  #$F6,($1A,A0)
+            clr.w   ($1C,A0)
+            move.w  #7,($1E,A0)
+            lea     sub_408E470E,A1
+            move.l  A1,($20,A0)
+            _Control
+            move.w  #6,($1E,A0)
+            lea     sub_408E470E,A1
+            move.l  A1,($20,A0)
+            _Control
+            move.w  #5,($1E,A0)
+            lea     sub_408E470E,A1
+            move.l  A1,($20,A0)
+            _Control
+            lea     ($32,SP),SP
+            lea     sub_408E1B26.L13,A3
+            move.l  A3,($2A4,A2)
+            moveq   #7,D3
+            bsr.w   sub_408E151E
+.L55:
+            btst    #$1E,D6
+            beq.b   .L56
+            lea     ($292,A2),A0
+            move.w  #1,(4,A0)
+            move.w  #$7FFF,($A,A0)
+            pea     RsrcDRVR_9.L2
+            move.l  (SP)+,(6,A0)
+            _VInstall
+            movea.l ($330,A2),A1
+            bra.b   .L58
+.L56:
+            movea.l ExpandMem,A1
+            movea.l ($74,A1),A1
+            st      ($1F7,A1)
+            move.l  #'rom ',D0
+            _Gestalt
+            move.l  A0,D1
+            movea.l ABusDCE,A1
+            move.l  (A1),D0
+            _StripAddress
+            movea.l D0,A0
+            move.l  ROMBase,D0
+            _StripAddress
+            cmpa.l  D0,A0
+            bcs.b   .L57
+            add.l   D0,D1
+            cmpa.l  D1,A0
+            bcs.b   .L58
+.L57:
+            _RecoverHandle
+            lea     sub_408E5626,A1
+            move.l  A1,D0
+            lea     RsrcDRVR_9,A1
+            sub.l   A1,D0
+            _SetHandleSize
+.L58:
+            bset    #$B,D6
+            or.l    D6,($33E,A2)
+            move.l  ($33E,A2),($1C,A6)
+            bsr.w   sub_408E5152
+            bne.b   .L59
+            moveq   #0,D0
+.L59:
+            move.w  D0,-(SP)
+            tst.w   D0
+            bne.b   .L61
+            bsr.w   sub_408E2B44
+            lea     sub_408E2422,A0
+            move.l  A0,($414,A2)
+            btst    #$D,D6
+            beq.b   .L60
+            movem.l D0/A1-A2,-(SP)
+            movea.l ($330,A2),A1
+            movea.l JIODone,A0
+            jsr     (A0)
+            movem.l (SP)+,D0/A1-A2
+            clr.l   -(SP)
+            pea     (A6)
+            jsr     sub_408E5428
+            lea     (4,SP),SP
+.L60:
+            bra.b   .L64
+.L61:
+            cmpi.w  #$FFF6,($18,A6)
+            bne.b   .L63
+            movea.l UTableBase,A1
+            movea.l ($24,A1),A1
+            movea.l (A1),A1
+            movea.l (8,A1),A0
+            move.l  (A0),(8,A1)
+            tst.l   (A0)
+            bne.b   .L62
+            clr.l   ($C,A1)
+.L62:
+            cmpi.w  #$FF9F,(SP)
+            beq.b   .L63
+            cmpi.w  #$FF9E,(SP)
+            beq.b   .L63
+            bsr.w   sub_408E2C8E
+            cmpi.b  #1,PortBUse
+            bne.b   .L63
+            st      PortBUse
+.L63:
+            cmpa.w  #0,A2
+            beq.b   .L64
+            move.b  ($334,A2),D4
+            bsr.w   sub_408E2C72
+            bsr.w   sub_408E125A
+            bsr.w   sub_408E51C6
+            lea     ($292,A2),A0
+            bsr.w   sub_408E2CB8
+            lea     ($394,A2),A0
+            bsr.w   sub_408E2CB8
+            btst    #$1E,D6
+            bne.b   .L64
+            clr.l   ($2D8).w
+            movea.l A2,A0
+            _DisposPtr
+.L64:
+            move.w  (SP)+,D0
+            unlk    A4
+            rts
+sub_408E3626:
+            sub.l   D5,D5
+            move.b  ($334,A2),D5
+            mulu.w  #$10,D5
+            movea.l ExpandMem,A3
+            movea.l ($74,A3),A3
+            lea     (0,A3,D5.l),A3
+            lea     ($310,A3),A3
+            move.b  D0,D2
+            move.w  #$100,($354,A2)
+.L1:
+            tst.b   D0
+            beq.b   .L3
+            btst    #$F,D6
+            beq.b   .L2
+            cmpi.b  #$FE,D0
+            beq.b   .L3
+.L2:
+            cmpi.b  #$FF,D0
+            bne.b   .L4
+.L3:
+            tst.w   ($354,A2)
+            beq.w   .L13
+            move.l  #$FF,-(SP)
+            andi.w  #$FF,D2
+            move.l  D2,-(SP)
+            bsr.w   sub_408E5478
+            addq.w  #8,SP
+            move.b  D0,D2
+            bra.b   .L1
+.L4:
+            btst    #$F,D6
+            bne.b   .L6
+            btst    #5,(A3)
+            beq.b   .L6
+            btst    #$1F,D6
+            beq.b   .L5
+            tst.b   D0
+            bpl.b   .L3
+            bra.b   .L6
+.L5:
+            tst.b   D0
+            bmi.b   .L3
+.L6:
+            subq.w  #1,($354,A2)
+            moveq   #$13,D4
+            btst    #$F,D6
+            beq.b   .L7
+            asr.l   #1,D4
+            bra.b   .L8
+.L7:
+            tst.b   D0
+            bpl.b   .L8
+            btst    #5,(A3)
+            beq.b   .L8
+            moveq   #$77,D4
+.L8:
+            move.b  D0,($1FA).w
+            clr.b   ($2C5,A2)
+            clr.b   ($2C7,A2)
+            btst    #$1E,D6
+            bne.b   .L9
+            btst    #8,D6
+            beq.b   .L9
+            movea.l SCCWr,A1
+            move.b  #6,(A1)
+            move.b  ($1FA).w,(A1)
+.L9:
+            st      ($2C8,A2)
+            moveq   #0,D2
+            move.w  ($342,A2),D2
+            lsl.l   #8,D2
+            move.b  ($1FA).w,D2
+            moveq   #$F,D0
+            lea     ($418,A2),A1
+.L10:
+            cmp.l   (A1)+,D2
+            dbeq    D0,.L10
+            beq.w   .L3
+            movem.l D2/A3,-(SP)
+            bsr.b   sub_408E3728
+            movem.l (SP)+,D2/A3
+.L11:
+            tst.b   ($2C8,A2)
+            bne.b   .L11
+            tst.b   ($2C7,A2)
+            bne.w   .L3
+            dbra    D4,.L9
+            moveq   #$F,D0
+            lea     ($418,A2),A1
+.L12:
+            tst.l   (A1)+
+            dbeq    D0,.L12
+            move.l  D2,-(A1)
+            st      ($2C5,A2)
+.L13:
+            rts
+sub_408E3728:
+            tst.w   (-2,A4)
+            beq.b   .L1
+            clr.b   ($2C8,A2)
+            movea.l ($378,A2),A1
+            suba.w  #$2A,SP
+            move.l  D2,($1C,SP)
+            move.w  D4,($20,SP)
+            move.l  A2,($22,SP)
+            pea     PortBUse
+            move.l  (SP)+,($26,SP)
+            movea.l SP,A0
+            moveq   #9,D0
+            jsr     (2,A1)
+            lea     ($2A,SP),SP
+            clr.w   D4
+            move.b  D0,($2C7,A2)
+            bra.b   .L2
+.L1:
+            bsr.w   sub_408E2378
+            clr.b   ($2C8,A2)
+.L2:
+            rts
+sub_408E376C:
+            move.b  D0,D4
+            move.w  #4,D0
+            movem.l A1-A2,-(SP)
+            bsr.w   sub_408E3966
+            movem.l (SP)+,A1-A2
+            bne.b   .L1
+            moveq   #-1,D0
+            move.l  A0,D7
+            beq.b   .L1
+            move.w  #3,D0
+            move.w  #$16,D1
+            jmp     (2,A0)
+.L1:
+            rts
+sub_408E3794:
+            btst    #$1E,D6
+            bne.b   .L1
+            lea     sub_408E47A6.L2,A0
+            move.l  A0,($8E,A2)
+            move.b  #1,($59,A2)
+            btst    #$F,D6
+            bne.b   .L1
+            bsr.b   sub_408E37C0
+            lea     ($2).w,A0
+            _Delay
+            tst.b   ($19,A2)
+            bne.b   .L1
+            bsr.b   sub_408E37C0
+.L1:
+            rts
+sub_408E37C0:
+            clr.w   -(SP)
+            subq.w  #4,SP
+            move.w  #9,-(SP)
+            movea.l SP,A1
+            move.w  #$501,-(SP)
+            move.w  #$101,-(SP)
+            move.w  #6,-(SP)
+            move.w  #1,-(SP)
+            st      D2
+            move.w  D2,-(SP)
+            lea     (1,SP),A3
+            move.l  A3,($B,A3)
+            bsr.b   sub_408E37F4
+.L1:
+            tst.b   ($2C8,A2)
+            beq.b   .L1
+            lea     ($12,SP),SP
+            rts
+sub_408E37F4:
+            bsr.w   sub_408E2370
+            st      ($2C8,A2)
+            rts
+.L1:
+            dc.b    4,'.ATP'
+            dc.b    $20
+.L2:
+            dc.b    4,'.XPP'
+            dc.b    $20
+sub_408E380A:
+            subq.w  #1,($24,A6)
+            bmi.b   .L4
+            tst.w   (-2,A4)
+            beq.b   .L4
+            moveq   #$E,D5
+            move.l  ($344,A2),-(SP)
+            btst    #$F,D6
+            bne.b   .L1
+            clr.l   ($344,A2)
+            bra.b   .L2
+.L1:
+            cmpi.w  #$FF00,($1A,A2)
+            bcs.b   .L2
+            move.l  #$FF00FFFE,($344,A2)
+.L2:
+            move.w  D5,-(SP)
+            bsr.b   sub_408E38A6
+            movem.w (SP)+,D5
+            bne.b   .L3
+            addq.w  #1,($458,A2)
+            subq.w  #1,($24,A6)
+            bmi.b   .L3
+            dbra    D5,.L2
+.L3:
+            move.l  (SP)+,($344,A2)
+.L4:
+            rts
+sub_408E3856:
+            move.w  #$FE,D7
+.L1:
+            moveq   #0,D0
+            move.b  ($1FA).w,D0
+            bsr.w   sub_408E3626
+            tst.b   ($2C7,A2)
+            beq.b   .L3
+            btst    #$F,D6
+            bne.b   .L2
+            moveq   #-$5F,D0
+            bra.b   .L4
+.L2:
+            pea     ($FE).w
+            move.w  ($342,A2),D0
+            subi.w  #$FF00,D0
+            move.l  D0,-(SP)
+            bsr.w   sub_408E5478
+            addq.w  #8,SP
+            addi.w  #$FF00,D0
+            move.w  D0,($342,A2)
+            dbra    D7,.L1
+            moveq   #-$5F,D0
+            bra.b   .L4
+.L3:
+            move.w  ($342,A2),($1A,A2)
+            move.b  ($1FA).w,(A2)
+            moveq   #0,D0
+.L4:
+            rts
+sub_408E38A6:
+            move.w  ($344,A2),-(SP)
+            move.w  ($346,A2),D7
+            sub.w   (SP),D7
+            moveq   #0,D0
+            move.w  ($346,A2),D0
+            sub.w   (SP),D0
+            move.l  D0,-(SP)
+.L1:
+            move.w  ($342,A2),D0
+            sub.w   (4,SP),D0
+            move.l  D0,-(SP)
+            bsr.w   sub_408E5478
+            addq.w  #4,SP
+            add.w   (4,SP),D0
+            move.w  D0,($342,A2)
+            moveq   #0,D0
+            move.b  ($1FA).w,D0
+            bsr.w   sub_408E3626
+            tst.b   ($2C7,A2)
+            bne.b   .L3
+            tst.b   (A2)
+            bne.b   .L2
+            move.w  ($342,A2),($1A,A2)
+            move.b  ($1FA).w,(A2)
+.L2:
+            moveq   #0,D0
+            bra.b   .L4
+.L3:
+            dbra    D7,.L1
+            moveq   #-$5F,D0
+.L4:
+            addq.w  #6,SP
+            rts
+.L5:
+            dc.w    $4009,$2004,$E00A,$0006,$7E07,$060C,$000D,$C00E
+            dc.w    $DD03,$0002,$080F,$0901,$0A09,$700B,$210E,$6005
+            dc.w    0
+.L6:
+            dc.w    $0560,$0E41,$03DD,$2100,$0046,$0014,$001E,$0082
+            dc.w    $007D,$0028,$0014,$0039
+            ds.b    4
+.L7:
+            dc.w    $0066,$3A00,$0064,$00FF,$00C8,$00FF,$01F4,$00FF
+            dc.w    $0190,$72FF,$0046,$2C00,$001E,0,$0064,$5A00
+            dc.w    $003C,$FF00,$000A,$4000,$6052
+sub_408E3966:
+            bra.w   sub_408E3A62.L3
+            dc.b    $00,$0C,$60,$00,$04,$32,$38,$02,$80,$00,$00,$00,$08
+            dc.b    '56.0.2  '
+            dc.b    $00,$37
+            dc.b    'LAP Manager v56.0.2  ; '
+            dc.w    $A920
+            dc.b    'Apple Computer, Inc. 1984-1991&x'
+            dc.w    $02B6,$266B,$0074,$B653,$6502,$7600,$E94B,$0643
+            dc.w    $030A,$4AB3,$3000,$6602,$4E75
+            lea     (0,A3,D3.w),A0
+            move.b  ($2C8,A2),D0
+            bmi.w   sub_408E3A62.L1
+            tst.w   ($3B8,A2)
+            beq.b   .L1
+            btst    #3,(6,A0)
+            beq.b   .L1
+            bsr.w   sub_408E5200
+            bne.w   MPPPrime.L2
+.L1:
+            cmpi.b  #1,D0
+            beq.b   .L9
+            move.l  A0,-(SP)
+            moveq   #$F,D1
+            lea     ($418,A2),A0
+            tst.w   ($340,A2)
+            bmi.b   .L3
+.L2:
+            cmp.b   (3,A0),D2
+            addq.w  #4,A0
+            dbeq    D1,.L2
+            bra.b   .L4
+.L3:
+            cmp.l   (A0)+,D2
+            dbeq    D1,.L3
+.L4:
+            movem.l (SP)+,A0
+            bne.b   .L5
+            bra.b   .L6
+.L5:
+            cmpi.b  #$FF,D2
+            bne.b   .L9
+.L6:
+            tst.w   ($458,A2)
+            beq.b   .L7
+            cmpi.b  #$FF,D2
+            beq.b   .L8
+            cmpi.w  #$F,D1
+            bne.b   .L11
+.L7:
+            tst.b   (6,A0)
+            bmi.b   .L9
+            tst.b   ($2B8,A2)
+            beq.b   .L9
+            cmpi.b  #$FF,D2
+            bne.b   .L11
+.L8:
+            movea.l A0,A3
+            lea     sub_408E3A62,A0
+            bra.b   .L10
+.L9:
+            movea.l A0,A3
+            movea.l ($2BE,A2),A0
+.L10:
+            move.l  (SP)+,D1
+            move.l  (A3),-(SP)
+.L11:
+            rts
+sub_408E3A62:
+            moveq   #-1,D2
+            bra.w   sub_408E2378.L4
+.L1:
+            lea     PortBUse,A1
+            cmpa.l  ($2D8).w,A2
+            beq.b   .L2
+            lea     (7,A0),A1
+            move.b  #1,(A1)
+.L2:
+            st      D0
+            bra.b   sub_408E3966.L9
+.L3:
+            subq.w  #1,D0
+            beq.w   sub_408E4418.L2
+            move.l  A3,-(SP)
+            cmpi.w  #$1A,D0
+            bhi.b   .L5
+            lea     .L4,A3
+            add.w   D0,D0
+            adda.w  (-2,A3,D0.w),A3
+            move.l  A3,-(SP)
+            movea.l ExpandMem,A3
+            movea.l ($74,A3),A3
+            rts
+.L4:
+            dc.w    $0034,$0050,$005A,$0070,$008A,$0372,$03FA,$009A
+            dc.w    $00C4,$0362,$007C,$0090,$00A0,$00EC,$0110,$0174
+            dc.w    $01BC,$01EC,$0200,$04A2,$060C,$02B4,$02E2,$02F6
+.L5:
+            moveq   #-1,D0
+            bra.b   .L7
+            bsr.w   sub_408E456C
+            tst.l   (0,A3,D0.w)
+            bne.b   .L5
+            move.l  A0,(0,A3,D0.w)
+            move.b  D1,(6,A3,D0.w)
+            move.w  D2,(4,A3,D0.w)
+.L6:
+            moveq   #0,D0
+.L7:
+            movea.l (SP)+,A3
+            rts
+            bsr.w   sub_408E456C
+            clr.l   (0,A3,D0.w)
+            bra.b   .L6
+            bsr.w   sub_408E456C
+            movea.l (0,A3,D0.w),A0
+            lea     PortBUse,A1
+            tst.b   D4
+            beq.b   .L6
+            lea     (7,A3,D0.w),A1
+            bra.b   .L6
+sub_408E3B12:
+            eori.b  #$80,($1FA).w
+.L1:
+            st      ($2C7,A2)
+            bra.b   sub_408E3A62.L6
+            bsr.w   sub_408E456C
+            btst    #5,(6,A3,D0.w)
+            bne.b   .L1
+            bra.b   sub_408E3B12
+            move.b  ($2B8,A2),D1
+            bra.b   sub_408E3A62.L6
+            move.w  (2,A3),D1
+            lea     (6,A3),A1
+            bra.b   sub_408E3A62.L6
+            bsr.w   sub_408E4540
+            bra.b   sub_408E3A62.L6
+            cmpi.b  #$7F,D1
+            bne.b   .L3
+            tst.w   (2,A3)
+            bne.b   .L3
+            move.l  D1,-(SP)
+            bsr.w   sub_408E4540
+            cmpi.b  #$7F,D1
+            beq.b   .L2
+            move.l  D1,($312,A3)
+.L2:
+            move.l  (SP)+,D1
+.L3:
+            bsr.w   sub_408E4558
+            bra.b   sub_408E3A62.L6
+            cmp.b   (1,A3),D4
+            bcc.w   sub_408E3A62.L5
+            tst.w   (2,A3)
+            bne.b   .L4
+            bsr.w   sub_408E4540
+            cmpi.b  #$7F,D1
+            beq.b   .L4
+            move.l  D1,($312,A3)
+.L4:
+            bsr.w   sub_408E456C
+            move.l  (8,A3,D0.w),D1
+            bra.w   sub_408E3A62.L6
+            suba.w  #$32,SP
+            movea.l SP,A0
+            move.w  (4,A3),($18,A0)
+            _Close
+            move.w  (2,A3),($16,A0)
+            moveq   #2,D0
+            _HFSDispatch
+            lea     ($32,SP),SP
+            clr.w   (2,A3)
+            bra.w   sub_408E3A62.L6
+            st      ($1F6,A0)
+            move.l  A0,-(SP)
+            lea     .L5,A0
+            move.l  #'atkv',D0
+            _NewGestalt
+            movea.l (SP)+,A0
+            bra.w   sub_408E3A62.L6
+.L5:
+            movea.l (4,SP),A0
+            move.l  (8,SP),D0
+            cmpi.l  #'atkv',D0
+            beq.b   .L6
+            clr.l   (A0)
+            move.w  #$EA51,($C,SP)
+            bra.b   .L7
+.L6:
+            moveq   #0,D0
+            move.l  RsrcDRVR_9.L1,(A0)
+            clr.w   ($C,SP)
+.L7:
+            movea.l (SP)+,A0
+            addq.l  #8,SP
+            jmp     (A0)
+sub_408E3BF4:
+            movem.l D1-D2/A0,-(SP)
+            move.b  SPConfig,D2
+            andi.b  #$F,D2
+            cmpi.b  #1,D2
+            bne.b   .L1
+            bsr.w   sub_408E4540
+            tst.l   D1
+            bne.b   .L1
+            moveq   #0,D0
+.L1:
+            movem.l (SP)+,D1-D2/A0
+            rts
+            cmp.b   ($1F6,A3),D1
+            beq.w   sub_408E3A62.L6
+            cmpi.b  #1,D1
+            beq.b   .L2
+            bsr.b   sub_408E3BF4
+            beq.b   .L5
+.L2:
+            tst.b   ($1F6,A3)
+            bpl.b   .L5
+            move.b  PortBUse,D0
+            bmi.b   .L3
+            andi.b  #$F,D0
+            cmpi.b  #1,D0
+            bne.b   .L5
+.L3:
+            tst.b   D1
+            bpl.b   .L4
+            moveq   #-$32,D0
+            bra.b   .L6
+.L4:
+            move.b  D1,($1F6,A3)
+            tst.b   D0
+            bpl.w   sub_408E3A62.L6
+            move.b  D1,PortBUse
+            bra.w   sub_408E3A62.L6
+.L5:
+            moveq   #-$61,D0
+.L6:
+            bra.w   sub_408E3A62.L7
+            tst.b   ($1F6,A3)
+            bmi.w   sub_408E3A62.L6
+            cmp.b   ($1F6,A3),D1
+            beq.b   .L7
+            moveq   #-$61,D0
+            bra.w   sub_408E3A62.L7
+.L7:
+            st      ($1F6,A3)
+            move.b  PortBUse,D0
+            andi.b  #$F,D0
+            cmpi.b  #1,D0
+            beq.w   sub_408E3A62.L6
+            st      PortBUse
+            bra.w   sub_408E3A62.L6
+            bsr.w   sub_408E3BF4
+            bne.b   .L8
+            moveq   #1,D1
+            bra.w   sub_408E3A62.L6
+.L8:
+            move.b  ($1F6,A3),D1
+            bra.w   sub_408E3A62.L6
+            movem.l A1,-(SP)
+            movea.l ($1F2,A3),A0
+            movea.l (A0),A0
+            move.w  (A0)+,D0
+            cmp.w   D0,D1
+            bgt.w   .L12
+            bset    #7,($274,A3)
+            bne.w   .L12
+            move.w  D1,-(SP)
+            moveq   #0,D0
+.L9:
+            subq.w  #1,D1
+            beq.b   .L10
+            move.b  (A0)+,D0
+            adda.l  D0,A0
+            bra.b   .L9
+.L10:
+            movea.l A0,A1
+            lea     ($254,A3),A0
+            move.w  #8,(4,A0)
+            move.l  A1,($18,A0)
+            move.w  (SP)+,D1
+            cmpi.w  #1,D1
+            bne.b   .L11
+            move.l  A0,-(SP)
+            pea     (A1)
+            movea.l A1,A0
+            movea.l ($278,A3),A1
+            pea     (A1)
+            moveq   #1,D0
+            add.b   (A0),D0
+            _BlockMove
+            movea.l ($2D8).w,A3
+            lea     ($356,A3),A3
+            move.b  (A3),D0
+            add.b   D0,(A1)
+            moveq   #1,D0
+            add.b   (A0),D0
+            adda.w  D0,A1
+            move.b  (A3)+,D0
+            movea.l A3,A0
+            _BlockMove
+            move.b  (-1,A3),D0
+            adda.w  D0,A1
+            movea.l (SP)+,A3
+            movea.l (SP)+,A0
+            move.b  (A0),D0
+            lea     (1,A0,D0.w),A0
+            move.b  (A0)+,D0
+            add.b   D0,(A3)
+            _BlockMove
+            movea.l (SP)+,A0
+            move.l  A3,($18,A0)
+.L11:
+            pea     sub_408E3D44
+            move.l  (SP)+,($1C,A0)
+            move.l  A5,-(SP)
+            movea.l CurrentA5,A5
+            _NMInstall
+            movea.l (SP)+,A5
+.L12:
+            movem.l (SP)+,A1
+            bra.w   sub_408E3A62.L6
+sub_408E3D44:
+            movea.l (4,SP),A0
+            _NMRemove
+            movea.l (4,SP),A0
+            move.l  (SP)+,(SP)
+            clr.l   ($20,A0)
+            rts
+            movem.l A1-A2,-(SP)
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($27C,A3),A1
+            exg     D0,A0
+            _StripAddress
+            exg     D0,A0
+            move.l  (2,A1),(A0)
+            move.l  A0,(2,A1)
+            tst.l   (A0)
+            bne.b   .L1
+            move.l  A0,(6,A1)
+.L1:
+            move    (SP)+,SR
+            movem.l (SP)+,A1-A2
+            bra.w   sub_408E3A62.L6
+            move.l  A1,-(SP)
+            lea     ($27C,A3),A1
+            exg     D0,A0
+            _StripAddress
+            exg     D0,A0
+            _Dequeue
+            movea.l (SP)+,A1
+            bra.w   sub_408E3A62.L6
+            lea     ($27C,A3),A1
+            bra.w   sub_408E3A62.L6
+sub_408E3DA0:
+            link.w  A6,#0
+            move.l  A2,-(SP)
+            movea.l ExpandMem,A1
+            movea.l ($74,A1),A1
+            move    SR,-(SP)
+            move    #$2600,SR
+            lea     ($27C,A1),A2
+            movea.l (8,A6),A0
+            tst.l   (A0)
+            bne.b   .L2
+.L1:
+            move.l  (2,A2),D0
+            beq.b   .L5
+            movea.l D0,A2
+            bra.b   .L6
+.L2:
+            lea     (2,A2),A2
+            bra.b   .L4
+.L3:
+            movea.l D0,A2
+            cmpa.l  (A0),A2
+            beq.b   .L6
+.L4:
+            move.l  (A2),D0
+            bne.b   .L3
+            lea     ($27C,A1),A2
+            bra.b   .L1
+.L5:
+            move    (SP)+,SR
+            moveq   #0,D0
+            bra.b   .L7
+.L6:
+            move.l  (A2),(A0)
+            movea.l (6,A2),A0
+            move    (SP)+,SR
+            move.l  ($10,A6),-(SP)
+            move.l  A2,-(SP)
+            move.l  ($C,A6),-(SP)
+            jsr     (A0)
+            lea     ($C,SP),SP
+.L7:
+            movea.l (SP)+,A2
+            unlk    A6
+            rts
+            movem.l A0-A2,-(SP)
+            bsr.w   sub_408E4580
+            movem.l (SP)+,A0-A2
+            bra.w   sub_408E3A62.L7
+            lea     ($26,A3),A3
+            moveq   #6,D0
+.L8:
+            tst.b   (A3)
+            beq.b   .L9
+            cmp.w   (2,A3),D2
+            beq.b   .L11
+.L9:
+            lea     ($C,A3),A3
+            subq.w  #1,D0
+            bne.b   .L8
+.L10:
+            suba.w  #$C,A3
+            addq.w  #1,D0
+            tst.b   (A3)
+            beq.b   .L11
+            cmpi.w  #6,D0
+            bcs.b   .L10
+            bra.b   .L14
+.L11:
+            move.w  D2,(2,A3)
+            moveq   #0,D2
+.L12:
+            cmp.l   (4,A3,D2.w),D1
+            beq.b   .L14
+            subq.w  #4,D2
+            bpl.b   .L12
+            moveq   #0,D2
+.L13:
+            tst.l   (4,A3,D2.w)
+            beq.b   .L15
+            subq.w  #4,D2
+            bpl.b   .L13
+.L14:
+            bra.w   sub_408E3A62.L5
+.L15:
+            move.l  A0,(8,A3,D2.w)
+            tst.b   (A3)
+            bne.b   .L16
+            suba.w  #$32,SP
+            movea.l SP,A0
+            move.w  (2,A3),($18,A0)
+            move.w  #$F7,($1A,A0)
+            move.w  #$80F3,($1C,A0)
+            pea     .L24
+            asl.w   #2,D0
+            sub.l   D0,(SP)
+            move.l  (SP)+,($1E,A0)
+            _Control
+            lea     ($32,SP),SP
+            bne.b   .L14
+.L16:
+            move.l  D1,(4,A3,D2.w)
+            addq.b  #1,(A3)
+            bra.w   sub_408E3A62.L6
+            lea     ($26,A3),A3
+            moveq   #6,D0
+.L17:
+            tst.b   (A3)
+            beq.b   .L18
+            cmp.w   (2,A3),D2
+            beq.b   .L20
+.L18:
+            lea     ($C,A3),A3
+            subq.w  #1,D0
+            bne.b   .L17
+.L19:
+            bra.w   sub_408E3A62.L5
+.L20:
+            moveq   #0,D2
+.L21:
+            cmp.l   (4,A3,D2.w),D1
+            beq.b   .L22
+            subq.w  #4,D2
+            bpl.b   .L21
+            bra.b   .L19
+.L22:
+            clr.l   (4,A3,D2.w)
+            subq.b  #1,(A3)
+            bne.b   .L23
+            move.l  A0,-(SP)
+            suba.w  #$32,SP
+            movea.l SP,A0
+            move.w  (2,A3),($18,A0)
+            move.w  #$F8,($1A,A0)
+            move.w  #$80F3,($1C,A0)
+            _Control
+            lea     ($32,SP),SP
+            movea.l (SP)+,A0
+.L23:
+            bra.w   sub_408E3A62.L6
+            moveq   #0,D2
+            bra.b   .L24
+            moveq   #1,D2
+            bra.b   .L24
+            moveq   #2,D2
+            bra.b   .L24
+            moveq   #3,D2
+            bra.b   .L24
+            moveq   #4,D2
+            bra.b   .L24
+            moveq   #5,D2
+            nop
+.L24:
+            mulu.w  #$C,D2
+            subq.w  #4,SP
+            movea.l SP,A3
+            moveq   #4,D3
+            jsr     (A4)
+            bne.b   sub_408E3F40
+            move.l  (SP)+,D0
+            beq.b   .L26
+            movea.l ExpandMem,A5
+            movea.l ($74,A5),A5
+            adda.l  D2,A5
+            moveq   #0,D2
+.L25:
+            cmp.l   ($2A,A5,D2.w),D0
+            beq.b   .L27
+            subq.w  #4,D2
+            bpl.b   .L25
+.L26:
+            moveq   #0,D3
+            jmp     (2,A4)
+.L27:
+            movea.l ($2E,A5,D2.w),A5
+            RTS5
+sub_408E3F40:
+            addq.w  #4,SP
+            rts
+            move.l  A2,-(SP)
+            movea.l A3,A2
+            cmpi.b  #1,(A1)
+            bne.b   .L4
+            move.b  (1,A1),D1
+            btst    #0,D1
+            bne.b   .L4
+            addq.w  #2,A1
+            lea     ($6E,A2),A3
+            moveq   #5,D0
+.L1:
+            cmp.w   (A3),D2
+            beq.b   .L6
+            addq.w  #8,A3
+            dbra    D0,.L1
+            lea     ($6E,A2),A3
+            moveq   #1,D0
+.L2:
+            tst.w   (A3)
+            beq.b   .L3
+            addq.w  #8,A3
+            addq.w  #1,D0
+            cmpi.w  #6,D0
+            ble.b   .L2
+            bra.b   .L4
+.L3:
+            move.w  D2,(A3)
+            clr.w   (2,A3)
+            clr.w   (4,A3)
+            clr.w   (6,A3)
+            move.l  A0,-(SP)
+            suba.w  #$32,SP
+            movea.l SP,A0
+            move.w  D2,($18,A0)
+            move.w  #$F7,($1A,A0)
+            clr.w   ($1C,A0)
+            pea     sub_408E4182.L5
+            asl.w   #2,D0
+            sub.l   D0,(SP)
+            move.l  (SP)+,($1E,A0)
+            _Control
+            lea     ($32,SP),SP
+            movea.l (SP)+,A0
+            beq.b   .L5
+.L4:
+            movea.l (SP)+,A2
+            moveq   #-2,D0
+            bra.w   sub_408E3A62.L7
+.L5:
+            movem.l D1/A0,-(SP)
+            lea     sub_408E439A,A0
+            move.b  #$AA,D1
+            bsr.b   sub_408E4014
+            movem.l (SP)+,D1/A0
+            bmi.b   .L4
+.L6:
+            cmpi.b  #$AA,D1
+            beq.b   .L7
+            bsr.b   sub_408E4014
+            bmi.b   .L4
+            tst.b   (A1)
+            bne.b   .L4
+            bra.b   .L9
+.L7:
+            cmpi.b  #5,(A1)
+            bne.b   .L4
+            cmpi.b  #4,(6,A1)
+            beq.b   .L8
+            bsr.b   sub_408E403E
+            bmi.b   .L4
+            bra.b   .L9
+.L8:
+            move.l  A0,-(SP)
+            lea     sub_408E43E4,A0
+            bsr.b   sub_408E403E
+            movea.l (SP)+,A0
+            bmi.b   .L4
+            tst.b   (A1)
+            beq.b   .L9
+            bsr.b   sub_408E4076
+            bmi.b   .L4
+.L9:
+            movea.l (SP)+,A2
+            bra.w   sub_408E3A62.L6
+sub_408E4014:
+            move.l  A1,-(SP)
+            lea     ($9E,A2),A1
+            moveq   #7,D0
+.L1:
+            tst.w   (4,A1)
+            beq.b   .L2
+            addq.w  #8,A1
+            dbra    D0,.L1
+            bra.b   .L3
+.L2:
+            move.l  A0,(A1)
+            move.w  D2,(4,A1)
+            move.b  D1,(6,A1)
+            addq.b  #1,(2,A3)
+.L3:
+            tst.w   D0
+            movea.l (SP)+,A1
+            rts
+sub_408E403E:
+            move.l  A2,-(SP)
+            lea     ($DE,A2),A2
+            moveq   #$F,D0
+.L1:
+            tst.w   (4,A2)
+            beq.b   .L2
+            lea     ($C,A2),A2
+            dbra    D0,.L1
+            bra.b   .L4
+.L2:
+            move.l  A0,(A2)
+            move.w  D2,(4,A2)
+            lea     (6,A2),A2
+            move.b  (A1)+,D0
+            subq.w  #1,D0
+.L3:
+            move.b  (A1)+,(A2)+
+            dbra    D0,.L3
+            addq.b  #1,(4,A3)
+            addq.w  #1,D0
+.L4:
+            tst.w   D0
+            movea.l (SP)+,A2
+            rts
+sub_408E4076:
+            move.l  A2,-(SP)
+            lea     ($19E,A2),A2
+            moveq   #7,D0
+.L1:
+            tst.w   (4,A2)
+            beq.b   .L2
+            lea     ($A,A2),A2
+            dbra    D0,.L1
+            bra.b   .L4
+.L2:
+            move.l  A0,(A2)
+            move.w  D2,(4,A2)
+            lea     (6,A2),A2
+            move.b  (A1)+,D0
+            subq.w  #1,D0
+.L3:
+            move.b  (A1)+,(A2)+
+            dbra    D0,.L3
+            addq.b  #1,(6,A3)
+            addq.w  #1,D0
+.L4:
+            tst.w   D0
+            movea.l (SP)+,A2
+            rts
+            move.l  A2,-(SP)
+            movea.l A3,A2
+            lea     ($6E,A2),A3
+            moveq   #5,D0
+.L5:
+            cmp.w   (A3),D2
+            beq.b   .L7
+            addq.w  #8,A3
+            dbra    D0,.L5
+.L6:
+            movea.l (SP)+,A2
+            moveq   #-3,D0
+            bra.w   sub_408E3A62.L7
+.L7:
+            moveq   #0,D0
+            moveq   #0,D1
+.L8:
+            move.b  (A1),D1
+            beq.b   .L9
+            move.l  A1,-(SP)
+            addq.w  #1,D1
+            adda.w  D1,A1
+            addq.w  #1,D0
+            cmpi.w  #3,D0
+            blt.b   .L8
+.L9:
+            cmpi.w  #3,D0
+            beq.b   .L10
+            cmpi.w  #2,D0
+            beq.b   .L11
+            cmpi.w  #1,D0
+            beq.b   .L12
+            cmpi.w  #0,D0
+            beq.b   .L6
+.L10:
+            movea.l (SP)+,A1
+            movem.l A2-A3,-(SP)
+            lea     ($19E,A2),A2
+            lea     (6,A3),A3
+            moveq   #7,D0
+            moveq   #$A,D3
+            bsr.b   sub_408E4182
+            movem.l (SP)+,A2-A3
+            tst.b   (6,A3)
+            beq.b   .L11
+            addq.w  #8,SP
+            bra.b   .L14
+.L11:
+            movea.l (SP)+,A1
+            movem.l A2-A3,-(SP)
+            lea     ($DE,A2),A2
+            lea     (4,A3),A3
+            moveq   #$F,D0
+            moveq   #$C,D3
+            bsr.b   sub_408E4182
+            movem.l (SP)+,A2-A3
+            tst.b   (4,A3)
+            beq.b   .L12
+            addq.w  #4,SP
+            bra.b   .L14
+.L12:
+            movea.l (SP)+,A1
+            movem.l A2-A3,-(SP)
+            lea     ($9E,A2),A2
+            lea     (2,A3),A3
+            moveq   #7,D0
+            moveq   #8,D3
+            bsr.b   sub_408E4182
+            movem.l (SP)+,A2-A3
+            tst.b   (2,A3)
+            beq.b   .L13
+            bra.b   .L14
+.L13:
+            clr.w   (A3)
+            move.l  A0,-(SP)
+            suba.w  #$32,SP
+            movea.l SP,A0
+            move.w  D2,($18,A0)
+            move.w  #$F8,($1A,A0)
+            clr.w   ($1C,A0)
+            _Control
+            lea     ($32,SP),SP
+            movea.l (SP)+,A0
+.L14:
+            movea.l (SP)+,A2
+            bra.w   sub_408E3A62.L6
+sub_408E4182:
+            cmp.w   (4,A2),D2
+            beq.b   .L2
+.L1:
+            adda.w  D3,A2
+            dbra    D0,sub_408E4182
+            bra.b   .L4
+.L2:
+            movem.l D0/A1-A2,-(SP)
+            lea     (6,A2),A2
+            move.b  (A1)+,D0
+            subq.w  #1,D0
+.L3:
+            cmpm.b  (A1)+,(A2)+
+            dbne    D0,.L3
+            movem.l (SP)+,D0/A1-A2
+            bne.b   .L1
+            clr.w   (4,A2)
+            clr.l   (A2)
+            subq.b  #1,(A3)
+            addq.w  #1,D0
+.L4:
+            tst.w   D0
+            rts
+            moveq   #5,D2
+            bra.b   .L5
+            moveq   #4,D2
+            bra.b   .L5
+            moveq   #3,D2
+            bra.b   .L5
+            moveq   #2,D2
+            bra.b   .L5
+            moveq   #1,D2
+            bra.b   .L5
+            moveq   #0,D2
+            nop
+.L5:
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            moveq   #$E,D0
+            suba.w  D0,A3
+            lea     ($1FE,A2),A5
+            moveq   #6,D0
+.L6:
+            move.w  (A3)+,(A5)+
+            dbra    D0,.L6
+            movea.l A5,A3
+            move.w  (-2,A3),D0
+            cmp.w   D1,D0
+            bge.b   .L7
+            move.w  D0,D1
+.L7:
+            lea     ($6E,A2),A5
+            mulu.w  #8,D2
+            adda.w  D2,A5
+            move.w  (A5),D2
+            moveq   #3,D3
+            jsr     (A4)
+            beq.b   .L8
+            rts
+.L8:
+            move.b  (-1,A3),D0
+            btst    #0,(-2,A3)
+            bne.b   .L9
+            cmpi.b  #3,D0
+            beq.b   .L10
+            bra.b   .L14
+.L9:
+            bclr    #4,D0
+            cmpi.b  #$E3,D0
+            beq.b   .L10
+            cmpi.b  #$AF,D0
+            bne.b   .L13
+.L10:
+            lea     ($9E,A2),A5
+            lea     ($DE,A2),A2
+            move.b  (-3,A3),D0
+            moveq   #8,D3
+.L11:
+            cmp.w   (4,A5),D2
+            bne.b   .L12
+            cmp.b   (6,A5),D0
+            bne.b   .L12
+            tst.l   (A5)
+            beq.b   .L13
+            movea.l (A5),A5
+            RTS5
+.L12:
+            adda.l  D3,A5
+            cmpa.l  A2,A5
+            blt.b   .L11
+.L13:
+            bra.w   sub_408E4320
+.L14:
+            bclr    #4,D0
+            cmpi.b  #$E3,D0
+            beq.b   .L15
+            cmpi.b  #$AF,D0
+            bne.b   .L13
+.L15:
+            tst.w   ($22E,A2)
+            bne.b   .L13
+            lea     sub_408E4352,A3
+            move.l  A3,($220,A2)
+            move.b  ($20C,A2),D3
+            beq.b   .L17
+            btst    #0,D3
+            beq.b   .L16
+            cmpi.b  #$FF,D3
+            bne.b   .L13
+            lea     sub_408E4326,A3
+            move.l  A3,($220,A2)
+.L16:
+            bsr.w   sub_408E4358
+            tst.w   D3
+            beq.b   .L13
+.L17:
+            lea     ($204,A2),A5
+            lea     ($1F8,A2),A3
+            move.l  A3,($248,A2)
+            move.w  #$11,($246,A2)
+            move.l  (A5)+,(A3)+
+            move.w  (A5)+,(A3)+
+            lea     ($20A,A2),A5
+            lea     ($204,A2),A3
+            move.w  (A5)+,(A3)+
+            move.b  (1,A5),(A3)+
+            bset    #0,D3
+            move.b  D3,(A3)+
+            move.b  (2,A5),D0
+            move.b  D0,(A3)+
+            bclr    #4,D0
+            cmpi.b  #$E3,D0
+            bne.b   .L19
+            move.w  D1,D3
+            cmpi.w  #$A,D1
+            ble.b   .L18
+            move.w  #3,($204,A2)
+            moveq   #0,D3
+.L18:
+            add.w   D3,($246,A2)
+            jsr     (2,A4)
+            bra.b   .L20
+.L19:
+            cmpi.b  #$AF,D0
+            bne.b   sub_408E4320
+            move.w  #6,($204,A2)
+            addq.w  #3,($246,A2)
+            move.b  #$81,(A3)+
+            move.b  #1,(A3)+
+            clr.b   (A3)+
+            bsr.b   sub_408E4320
+.L20:
+            lea     ($214,A2),A0
+            lea     ($246,A2),A1
+            move.w  D2,($18,A0)
+            move.w  #$F9,($1A,A0)
+            move.l  A1,($1E,A0)
+            _Control async
+            rts
+sub_408E4320:
+            moveq   #0,D3
+            jmp     (2,A4)
+sub_408E4326:
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            move.b  #$FF,D3
+            move.w  ($252,A2),D2
+            moveq   #8,D0
+            movea.l ($24E,A2),A3
+            lea     ($DE,A2),A2
+            bsr.b   sub_408E4364
+            tst.b   D3
+            beq.b   sub_408E4352
+            bset    #0,D3
+            move.b  D3,($207,A2)
+            _Control async
+            rts
+sub_408E4352:
+            clr.w   ($1A,A0)
+            rts
+sub_408E4358:
+            lea     ($9E,A2),A3
+            lea     ($DE,A2),A2
+            moveq   #8,D0
+            suba.w  D0,A3
+sub_408E4364:
+            adda.w  D0,A3
+            cmpa.l  A2,A3
+            bge.b   .L2
+            cmp.w   (4,A3),D2
+            bne.b   sub_408E4364
+            tst.l   (A3)
+            beq.b   sub_408E4364
+            cmpi.b  #$FF,D3
+            beq.b   .L1
+            cmp.b   (6,A3),D3
+            bne.b   sub_408E4364
+.L1:
+            move.b  (6,A3),D3
+            bne.b   .L3
+.L2:
+            clr.b   D3
+.L3:
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            move.l  A3,($24E,A2)
+            move.w  D2,($252,A2)
+.L4:
+            rts
+sub_408E439A:
+            moveq   #5,D3
+            jsr     (A4)
+            bne.b   sub_408E4364.L4
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            lea     ($DE,A2),A5
+            lea     ($19E,A2),A2
+            move.l  (-6,A3),D0
+            lsl.l   #8,D0
+            move.b  (-2,A3),D0
+            move.b  (-1,A3),D3
+.L1:
+            cmp.w   (4,A5),D2
+            bne.b   .L2
+            cmp.l   (6,A5),D0
+            bne.b   .L2
+            cmp.b   ($A,A5),D3
+            bne.b   .L2
+            tst.l   (A5)
+            beq.b   .L3
+            movea.l (A5),A5
+            RTS5
+.L2:
+            lea     ($C,A5),A5
+            cmpa.l  A2,A5
+            blt.b   .L1
+.L3:
+            bra.w   sub_408E4320
+sub_408E43E4:
+            subq.w  #4,SP
+            movea.l SP,A3
+            move.w  #4,D3
+            jsr     (A4)
+            movem.l (SP)+,D0
+            bne.b   sub_408E4364.L4
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            lea     ($19E,A2),A5
+            lea     ($1EE,A2),A2
+.L1:
+            cmp.w   (4,A5),D2
+            bne.b   sub_408E4418
+            cmp.l   (6,A5),D0
+            bne.b   sub_408E4418
+            tst.l   (A5)
+            beq.b   sub_408E4418.L1
+            movea.l (A5),A5
+            RTS5
+sub_408E4418:
+            lea     ($A,A5),A5
+            cmpa.l  A2,A5
+            blt.b   sub_408E43E4.L1
+.L1:
+            bra.w   sub_408E4320
+.L2:
+            tst.w   ($3B8,A2)
+            beq.b   sub_408E4460
+            bsr.w   sub_408E2B44
+            movem.l D0/D4/A3,-(SP)
+            movea.l ExpandMem,A3
+            movea.l ($74,A3),A3
+            move.b  ($334,A2),D4
+            bsr.w   sub_408E456C
+            btst    #4,(6,A3,D0.w)
+            movem.l (SP)+,D0/D4/A3
+            beq.b   sub_408E4460
+            lea     .L3,A5
+            addq.w  #4,SP
+            bra.w   sub_408E52E8.L4
+.L3:
+            bsr.w   sub_408E2B44
+            bsr.b   sub_408E4460
+            rts
+sub_408E4460:
+            tst.w   ($340,A2)
+            bpl.b   .L4
+            btst    #$1E,($33E,A2)
+            beq.b   .L1
+            moveq   #0,D3
+.L1:
+            addq.w  #4,SP
+            sub.l   D0,D0
+            move.w  ($1A,A2),D0
+            lsl.l   #8,D0
+            move.b  (A2),D0
+            move.l  D0,-(SP)
+            sub.l   D0,D0
+            move.w  (8,A2),D0
+            lsl.l   #8,D0
+            move.b  ($C,A2),D0
+            cmp.l   (SP)+,D0
+            beq.w   sub_408E10AE.L2
+            cmpi.b  #$FF,D0
+            bne.b   .L2
+            tst.w   ($458,A2)
+            beq.w   sub_408E10AE.L2
+            lea     sub_408E10AE.L2,A5
+            bsr.w   sub_408E52E8
+            cmpa.w  #0,A3
+            beq.b   .L3
+            movea.l A3,A0
+            bsr.w   sub_408E5288
+            move.w  #$80,($E,A0)
+            pea     .L6
+            move.l  (SP)+,(4,A0)
+            bsr.w   sub_408E5288
+            bsr.w   sub_408E52C4
+            bra.b   .L3
+.L2:
+            lsr.l   #8,D0
+            cmp.w   ($344,A2),D0
+            bcs.w   sub_408E10AE.L2
+            cmp.w   ($346,A2),D0
+            bhi.w   sub_408E10AE.L2
+            bsr.b   sub_408E451E
+.L3:
+            rts
+.L4:
+            move.b  (1,A2),D0
+            cmp.b   (A2),D0
+            beq.b   sub_408E4522
+            cmpi.b  #$FF,D0
+            bne.b   sub_408E451E
+            tst.w   ($458,A2)
+            beq.b   sub_408E4522
+            lea     .L6,A5
+            bsr.w   sub_408E52E8
+            cmpa.w  #0,A3
+            beq.b   .L5
+            movea.l A3,A0
+            bsr.w   sub_408E5288
+            move.w  #$80,($E,A0)
+            bsr.w   sub_408E5288
+            bsr.w   sub_408E52C4
+.L5:
+            addq.w  #4,SP
+            bra.b   sub_408E4522.L3
+.L6:
+            bsr.b   sub_408E4522
+            rts
+sub_408E451E:
+            move.b  #$80,D2
+sub_408E4522:
+            moveq   #0,D0
+            move.b  ($22,A2),D0
+            move.w  D0,D3
+            bra.b   .L2
+.L1:
+            cmp.b   ($24,A2,D0.w),D2
+.L2:
+            dbeq    D0,.L1
+            bne.b   .L3
+            lsl.w   #2,D0
+            add.w   D3,D0
+            move.l  ($24,A2,D0.w),(SP)
+.L3:
+            rts
+sub_408E4540:
+            clr.l   -(SP)
+            btst    #$E,HWCfgFlags
+            beq.b   .L1
+            movea.l SP,A0
+            move.l  #$400E0,D0
+            _ReadXPRam
+.L1:
+            move.l  (SP)+,D1
+            rts
+sub_408E4558:
+            move.l  A0,-(SP)
+            move.l  D1,-(SP)
+            movea.l SP,A0
+            move.l  #$400E0,D0
+            _WriteXPRam
+            addq.w  #4,SP
+            movea.l (SP)+,A0
+            rts
+sub_408E456C:
+            moveq   #0,D0
+            cmp.b   (1,A3),D4
+            bcc.b   .L1
+            move.b  D4,D0
+.L1:
+            mulu.w  #$10,D0
+            addi.w  #$30A,D0
+            rts
+sub_408E4580:
+            move.w  ResLoad,-(SP)
+            clr.w   ResLoad
+            movem.l D1/A1,-(SP)
+            subq.w  #2,SP
+            move.l  #'extn',-(SP)
+            bsr.w   sub_408E5380
+            move.w  (SP)+,D0
+            movem.l (SP)+,D1/A1
+            move.w  D0,-(SP)
+            suba.w  #$7A,SP
+            movea.l SP,A2
+            move.w  D0,($16,A2)
+            move.l  A1,($12,A2)
+            clr.w   ($1C,A2)
+            tst.b   D1
+            bne.b   .L1
+            move.w  D3,($1C,A2)
+.L1:
+            movea.l A2,A0
+            clr.w   ($1A,A0)
+            addq.w  #1,($1C,A0)
+            _GetFileInfo
+            bne.b   .L3
+            move.l  ($20,A0),D0
+            cmpi.l  #'adev',D0
+            bne.b   .L1
+            clr.w   -(SP)
+            move.l  A1,-(SP)
+            move.w  ($16,A0),-(SP)
+            clr.b   -(SP)
+            _OpenRFPerm
+            move.w  (SP)+,D2
+            move.w  ResErr,D0
+            bne.b   .L1
+            tst.b   D1
+            beq.b   .L2
+            subq.w  #4,SP
+            move.l  #'atlk',-(SP)
+            move.w  D1,-(SP)
+            clr.b   (SP)
+            _Get1Resource
+            moveq   #0,D0
+            tst.l   (SP)+
+            bne.b   .L3
+            move.w  D2,-(SP)
+            _CloseResFile
+            bra.b   .L1
+.L2:
+            move.w  ($1C,A2),D3
+.L3:
+            lea     ($7A,SP),SP
+            movem.l D0-D2,-(SP)
+            subq.w  #2,SP
+            move.w  ($E,SP),-(SP)
+            bsr.w   sub_408E53F4
+            move.w  (SP)+,D0
+            movem.l (SP)+,D0-D2
+            addq.w  #2,SP
+            move.w  (SP)+,ResLoad
+            rts
+sub_408E462A:
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            cmpi.w  #$F6,($1A,A0)
+            beq.b   .L1
+            movea.l ($286,A2),A2
+            jmp     (A2)
+.L1:
+            lea     ($28A,A2),A2
+            move.w  ($1C,A0),D3
+            bmi.b   .L2
+            cmpi.w  #$1F,D3
+            ble.b   .L3
+.L2:
+            moveq   #-$11,D0
+            addq.w  #8,SP
+            movea.l JIODone,A2
+            jmp     (A2)
+.L3:
+            tst.l   (A2)
+            bne.b   .L4
+            move.l  A0,-(SP)
+            lea     sub_408E46BA,A0
+            move.l  A0,(A2)
+            move.l  A0,(4,A2)
+            movea.l (SP)+,A0
+.L4:
+            lsl.w   #2,D3
+            move.l  (0,A2,D3.w),D3
+            beq.b   .L2
+            movea.l D3,A2
+            move    SR,-(SP)
+            move    #$2600,SR
+            bclr    #7,(5,A1)
+            move.l  (A0),(8,A1)
+            bne.b   .L5
+            clr.l   ($C,A1)
+.L5:
+            clr.l   (A0)
+            move.l  (8,A1),D0
+            beq.b   .L6
+            bset    #7,(5,A1)
+            move    (SP)+,SR
+            movem.l D1-D3/A0/A2-A3,-(SP)
+            movea.l D0,A0
+            moveq   #0,D0
+            movea.l (A1),A2
+            move.w  ($C,A2),D1
+            jsr     (0,A2,D1.w)
+            movem.l (SP)+,D1-D3/A0/A2-A3
+            bra.b   .L7
+.L6:
+            move    (SP)+,SR
+.L7:
+            addq.w  #8,SP
+            jmp     (A2)
+sub_408E46BA:
+            move.w  ($1E,A0),D3
+            cmpi.w  #5,D3
+            bcs.b   .L2
+            cmpi.w  #$1F,D3
+            bhi.b   .L2
+            movea.l ExpandMem,A2
+            movea.l ($74,A2),A2
+            lea     ($28A,A2),A2
+            lsl.w   #2,D3
+            cmpi.w  #0,($1C,A0)
+            beq.b   .L1
+            clr.l   (0,A2,D3.w)
+            bra.b   .L4
+.L1:
+            move.l  (0,A2,D3.w),D0
+            bne.b   .L2
+            move.l  ($20,A0),D0
+            bne.b   .L3
+.L2:
+            moveq   #-1,D0
+            bra.b   .L5
+.L3:
+            move.l  D0,(0,A2,D3.w)
+.L4:
+            moveq   #0,D0
+.L5:
+            move.w  D0,($10,A0)
+            move.l  ($C,A0),D1
+            beq.b   .L6
+            movea.l D1,A1
+            tst.w   D0
+            jsr     (A1)
+.L6:
+            rts
+sub_408E470E:
+            movea.l ($2D8).w,A2
+            moveq   #-$5D,D0
+            tst.b   ($19,A2)
+            beq.b   sub_408E46BA.L5
+            lea     ($32,A0),A1
+            tst.w   ($2A,A0)
+            bne.b   .L1
+            move.w  ($1C,A0),D0
+            move.l  ($33A,A2),D1
+            lsl.l   #8,D1
+            move.b  #6,D1
+            move.l  D1,($1E,A1)
+            move.w  #$700,($12,A1)
+            cmpi.w  #7,D0
+            beq.b   .L1
+            addq.w  #1,($2A,A0)
+            move.w  #$900,($12,A1)
+            cmpi.w  #5,D0
+            beq.b   .L1
+            move.w  #$800,($12,A1)
+.L1:
+            move.w  ($2A,A0),($14,A1)
+            clr.b   ($1D,A1)
+            clr.w   ($22,A1)
+            lea     ($64,A0),A2
+            move.w  #$242,(A2)
+            move.l  ($22,A0),(2,A2)
+            move.l  A2,($28,A1)
+            move.b  #1,($2C,A1)
+            move.b  ($1E,A0),($2D,A1)
+            move.b  ($1F,A0),($2F,A1)
+            movea.l A1,A0
+            lea     sub_408E47A6,A3
+            move.l  A3,($C,A0)
+            move.w  #$FFF5,($18,A0)
+            move.w  #$FF,($1A,A0)
+            _Control async
+            moveq   #0,D0
+            rts
+sub_408E47A6:
+            lea     (-$32,A0),A1
+            bne.b   .L1
+            movea.l ($28,A0),A2
+            move.b  (8,A2),($28,A1)
+            move.w  ($A,A2),D0
+            move.w  D0,($26,A1)
+            add.w   D0,($2A,A1)
+            moveq   #0,D0
+.L1:
+            movea.l A1,A0
+            bra.w   sub_408E46BA.L5
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF,$A9FF
+            dc.w    $A9FF
+.L2:
+            dc.w    $5323,$6706,$4243,$4EEC,$0002,$47EA,$0002,$7604
+            dc.w    $4E94,$6670,$3601,$660A,$4EAC,$0002,$6666,$7601
+            dc.w    $6024,$363C,$0006,$B243,$6316,$4E94,$6656,$202A
+            dc.w    $0410,$670A,$2A40,$7002,$4E95,$670A,$6046,$7600
+            dc.w    $4EAC,$0002,$663E,$47EA,$0002,$142B,$0003,$6734
+            dc.w    $0C2B,$0008,$0002,$662C,$4842,$3413,$6726,$4A6A
+            dc.w    $0340,$6B22,$3542,$001A,$3542,$0344,$3542,$0346
+            dc.w    $4842,$1542,$0019
+.L3:
+            asl.w   #8,D2
+            ror.l   #8,D2
+            move.l  D2,($33A,A2)
+            move.b  #$96,($2D0,A2)
+.L4:
+            rts
+            tst.w   D3
+            bgt.b   .L4
+            cmpi.w  #$FF00,($1A,A2)
+            bcc.b   .L8
+            move.b  (7,A3),D0
+            lsl.w   #8,D0
+            move.b  (8,A3),D0
+            tst.w   D0
+            beq.b   .L4
+            cmpi.w  #$FF00,D0
+            bcc.b   .L4
+            tst.w   (4,A3)
+            beq.b   .L4
+            cmp.w   (4,A3),D0
+            bcs.b   .L4
+            cmp.w   D0,D2
+            bhi.b   .L4
+            cmp.w   (4,A3),D2
+            bcs.b   .L4
+            move.w  ($344,A2),D1
+            beq.b   .L5
+            cmp.w   (4,A3),D1
+            bne.b   .L4
+            cmp.w   ($346,A2),D0
+            bne.b   .L4
+            tst.b   ($352,A2)
+            beq.b   .L6
+            bra.b   .L7
+.L5:
+            move.w  ($1A,A2),D1
+            cmp.w   (4,A3),D1
+            bcs.b   .L9
+            cmp.w   D0,D1
+            bhi.b   .L9
+            move.w  (4,A3),($344,A2)
+            move.w  D0,($346,A2)
+.L6:
+            move    ($1C,A2),SR
+            bsr.b   sub_408E503E
+.L7:
+            move.b  #$FE,($19,A2)
+            swap    D2
+            bra.w   .L3
+.L8:
+            bset    #4,($341,A2)
+            bra.b   .L10
+.L9:
+            bset    #5,($341,A2)
+.L10:
+            bsr.b   sub_408E508E
+            rts
+sub_408E503E:
+            movea.l ($2D8).w,A2
+            btst    #$B,($340,A2)
+            beq.b   .L2
+            move.l  ($3A6,A2),D0
+            beq.b   .L2
+            movea.l D0,A0
+            move    SR,-(SP)
+            move    #$2600,SR
+            tst.w   (A0)
+            beq.b   .L1
+            move    (SP)+,SR
+            bra.b   .L2
+.L1:
+            move.w  #$101,(A0)
+            move    (SP)+,SR
+            suba.w  #$1A,A0
+            lea     sub_408E5088,A1
+            move.l  A1,($C,A0)
+            lea     ($356,A2),A1
+            move.l  A1,($1E,A0)
+            movea.l ($330,A2),A1
+            move.w  ($18,A1),($18,A0)
+            _Control async
+.L2:
+            rts
+sub_408E5088:
+            clr.w   ($1A,A0)
+            rts
+sub_408E508E:
+            cmpi.w  #$600,($3AA,A2)
+            bcs.b   .L5
+            move.l  ($33E,A2),D0
+            btst    #$B,D0
+            beq.b   .L1
+            btst    #4,D0
+            bne.b   .L3
+            btst    #5,D0
+            bne.b   .L3
+.L1:
+            btst    #7,D0
+            beq.b   .L5
+            btst    #6,D0
+            bne.b   .L5
+            btst    #$1D,D0
+            beq.b   .L2
+            btst    #$B,D0
+            beq.b   .L5
+.L2:
+            moveq   #1,D1
+            bsr.b   sub_408E50E4
+            bra.b   .L5
+.L3:
+            btst    #$1C,D0
+            bne.b   .L5
+            moveq   #3,D1
+            btst    #4,D0
+            bne.b   .L4
+            moveq   #4,D1
+.L4:
+            bsr.b   sub_408E50E4
+            bset    #$1C,($33E,A2)
+.L5:
+            rts
+sub_408E50E4:
+            move.l  ($33E,A2),D0
+            btst    #$D,D0
+            bne.b   .L1
+            rts
+.L1:
+            movea.l LAPMgrPtr,A0
+            moveq   #$14,D0
+            jmp     (2,A0)
+sub_408E50FA:
+            move.w  #$14,($A,A0)
+            movea.l ($2D8).w,A2
+            tst.b   ($2D0,A2)
+            beq.b   .L3
+            subq.b  #1,($2D0,A2)
+            bne.b   .L3
+            move.l  ($410,A2),D0
+            beq.b   .L1
+            movea.l D0,A1
+            moveq   #5,D0
+            jsr     (A1)
+            bne.b   .L2
+.L1:
+            moveq   #0,D0
+            move.b  D0,($19,A2)
+            move.l  D0,($33A,A2)
+.L2:
+            moveq   #0,D0
+            move.l  D0,($344,A2)
+            subq.w  #2,($346,A2)
+            tst.w   ($340,A2)
+            bpl.b   .L3
+            clr.b   ($352,A2)
+            moveq   #6,D0
+            lea     ($34C,A2),A1
+            movea.l ($378,A2),A0
+            jsr     (2,A0)
+            bclr    #$1C,($33E,A2)
+.L3:
+            rts
+sub_408E5152:
+            movem.l D0/A0-A1,-(SP)
+            move.w  #9,D1
+.L1:
+            move.l  #$271,D0
+            _NewPtrSysClear
+            bne.b   sub_408E51C6.L2
+            move.l  ($3B0,A2),(A0)
+            move.l  A0,($3B0,A2)
+            dbra    D1,.L1
+            move.w  #$A89F,D0
+            _GetTrapAddress
+            move.l  A0,D0
+            _StripAddress
+            move.l  D0,D1
+            move.w  #$A1AD,D0
+            _GetOSTrapAddress
+            move.l  A0,D0
+            _StripAddress
+            cmp.l   D0,D1
+            beq.b   .L2
+            move.l  #$766D2020,D0
+            _Gestalt
+            bne.b   .L2
+            move.l  A0,D0
+            beq.b   .L2
+            move.w  #1,($3B8,A2)
+            move.l  #$263,D0
+            _NewPtrSysClear
+            bne.b   sub_408E51C6.L1
+            move.l  A0,($3B4,A2)
+            move.w  #$24,D0
+            bsr.b   sub_408E51EA
+            move.w  #$28,D0
+            bsr.b   sub_408E51EA
+            move.w  #$A0,D0
+            bsr.b   sub_408E51EA
+.L2:
+            movem.l (SP)+,D0/A0-A1
+            moveq   #0,D0
+            rts
+sub_408E51C6:
+            movem.l D0/A0-A1,-(SP)
+.L1:
+            move.l  ($3B4,A2),D0
+            beq.b   .L2
+            movea.l D0,A0
+            _DisposPtr
+.L2:
+            lea     ($3B0,A2),A1
+            move.l  (A1),D0
+            beq.b   .L3
+            movea.l D0,A0
+            move.l  (A0),(A1)
+            _DisposPtr
+            bra.b   .L2
+.L3:
+            movem.l (SP)+,D0/A0-A1
+            rts
+sub_408E51EA:
+            movea.l UTableBase,A0
+            move.l  (0,A0,D0.w),D0
+            beq.b   .L1
+            movea.l D0,A0
+            movea.l (A0),A0
+            bset    #0,(5,A0)
+.L1:
+            rts
+sub_408E5200:
+            movem.l D0/D3/A0/A2,-(SP)
+            movea.l ($3B4,A2),A0
+            lea     (8,A0),A0
+            moveq   #0,D0
+.L1:
+            move.w  (A1)+,D3
+            beq.b   .L3
+            add.w   D3,D0
+            cmpi.w  #$25B,D0
+            bhi.b   .L4
+            movea.l (A1)+,A2
+            subq.w  #1,D3
+.L2:
+            move.b  (A2)+,(A0)+
+            dbra    D3,.L2
+            bra.b   .L1
+.L3:
+            movea.l ($2D8).w,A1
+            movea.l ($3B4,A1),A1
+            move.w  D0,(A1)
+            move.l  A1,(2,A1)
+            addq.l  #8,(2,A1)
+            movem.l (SP)+,D0/D3/A0/A2
+            clr.w   (6,A1)
+            rts
+.L4:
+            movem.l (SP)+,D0/D3/A0/A2
+            moveq   #-$5F,D0
+            rts
+.L5:
+            bra.b   .L7
+            cmp.w   D3,D1
+            ble.b   .L8
+            move.w  D3,-(SP)
+            sub.w   D1,D3
+            move.w  (SP)+,D1
+            bra.b   .L9
+.L8:
+            sub.w   D1,D3
+.L9:
+            moveq   #0,D0
+            move.w  D1,D0
+            movea.l A3,A1
+            _BlockMove
+            adda.w  D1,A0
+            adda.w  D1,A3
+            moveq   #0,D0
+            rts
+.L7:
+            cmp.w   D3,D1
+            bge.b   .L6
+            sub.w   D1,D3
+            moveq   #-4,D0
+            rts
+.L6:
+            sub.w   D3,D1
+            moveq   #0,D0
+            move.w  D3,D0
+            movea.l A3,A1
+            _BlockMove
+            adda.w  D3,A0
+            adda.w  D3,A3
+            moveq   #0,D3
+            moveq   #0,D0
+            rts
+sub_408E5288:
+            movem.l A0/A4-A5,-(SP)
+            movea.l A0,A1
+            lea     ($16,A1),A0
+            move.w  ($14,A1),D1
+            movea.l (8,A1),A2
+            lea     (1,A2),A3
+            move    #$2600,SR
+            move.w  ($C,A1),D0
+.L1:
+            move.b  (A0)+,(A3)+
+            dbra    D0,.L1
+            move.w  ($E,A1),D2
+            move.l  ($10,A1),D3
+            lea     sub_408E5200.L5,A4
+            movea.l (4,A1),A5
+            jsr     (A5)
+            movem.l (SP)+,A0/A4-A5
+            rts
+sub_408E52C4:
+            move    SR,-(SP)
+            clr.w   ($14,A0)
+            movea.l ($2D8).w,A2
+            move    #$2600,SR
+            move.l  ($3B0,A2),(A0)
+            move.l  A0,($3B0,A2)
+            move    (SP)+,SR
+            rts
+sub_408E52DE:
+            bsr.w   sub_408E5288
+            bsr.w   sub_408E52C4
+            rts
+sub_408E52E8:
+            move.l  A5,-(SP)
+            lea     (1,A2),A5
+            move.l  A3,D0
+            sub.l   A5,D0
+            movem.l D0-D3,-(SP)
+            cmpi.w  #5,D0
+            blt.b   .L3
+            move.l  ($3B0,A2),D3
+            beq.b   .L3
+            movea.l D3,A5
+            lea     ($16,A5,D0.w),A3
+            neg.w   D0
+            addi.w  #$25B,D0
+            cmp.w   D0,D1
+            bhi.b   .L3
+            move.w  D1,D3
+            jsr     (2,A4)
+            movea.w D3,A1
+            movem.l (SP)+,D0-D3
+            movem.l (SP)+,A0
+            bne.b   .L2
+            move.w  A1,-(SP)
+            movea.l ($3B0,A2),A3
+            move.l  D3,($10,A3)
+            move.w  D2,($E,A3)
+            move.w  D1,($14,A3)
+            subq.w  #1,D0
+            move.w  D0,($C,A3)
+            move.l  A0,(4,A3)
+            move.l  A2,(8,A3)
+            tst.w   (SP)+
+            bne.b   .L2
+            move.l  (A3),($3B0,A2)
+            lea     ($16,A3),A0
+            lea     (1,A2),A1
+.L1:
+            move.b  (A1)+,(A0)+
             dbra    D0,.L1
             rts
 .L2:
-            fmove.l FPSR,D0
-            bsr.w   sub_408EF7C2
-            bsr.w   sub_408EF7D4
-            fsub.l  #1,FP0
-            fsne    D1
-            bsr.w   sub_408EF7F4
-            tst.b   D1
-            beq.b   .L3
-            move.l  #$80000,D0
+            suba.l  A3,A3
+            rts
 .L3:
-            jmp     (A4)
+            lea     ($14,SP),SP
+            moveq   #0,D3
+            jsr     (2,A4)
+            bra.b   .L2
 .L4:
-            fmove.x FP0,FP1
-            fadd.l  #1,FP0
-            fmove.l FPSR,D0
-            bsr.w   sub_408EF7C2
-            fmove.l FPSR,D1
-            swap    D1
-            fcmp.x  sub_408EFCAA.L5,FP0
-            fbgt.w  .L5
-            fcmp.x  sub_408EFCAA.L6,FP0
-            fblt.w  .L5
-            fmove.l #0,FP3
-            fmove.x FP1,FP0
-            bfextu  (A0){1:16},D0
-            beq.b   .L9
-            moveq   #1,D1
-            bra.b   .L6
+            bsr.w   sub_408E52E8
+            cmpa.w  #0,A3
+            beq.b   .L5
+            move.l  A3,D0
+            lea     sub_408E52DE,A0
+            _DeferUserFn
 .L5:
-            bsr.w   sub_408EF7D4
-            fsub.l  #1,FP0
-            fsne    D1
+            rts
+sub_408E5380:
+            link.w  A6,#-$4A
+            lea     (-$44,A6),A0
+            move.w  #1,D0
+            _SysEnvirons
+            move.w  (-$40,A6),D1
+            cmpi.w  #$700,D1
+            bcs.b   .L1
+            subq.w  #2,SP
+            move.w  #$8000,-(SP)
+            move.l  (8,A6),-(SP)
+            move.w  #1,-(SP)
+            pea     (-$46,A6)
+            pea     (-$4A,A6)
+            moveq   #0,D0
+            _AliasDispatch
+            move.w  (SP)+,D0
+            moveq   #0,D0
+            bne.b   .L2
+            lea     (-$34,A6),A0
+            move.w  (-$46,A6),($16,A0)
+            move.l  (-$4A,A6),($30,A0)
+            clr.l   ($12,A0)
+            move.l  #'atlk',($1C,A0)
+            moveq   #1,D0
+            _HFSDispatch
+            move.w  ($10,A0),D0
+            moveq   #0,D0
+            bne.b   .L2
+            move.w  ($16,A0),D0
+            bra.b   .L2
+.L1:
+            move.w  (-$36,A6),D0
+.L2:
+            unlk    A6
+            movea.l (SP)+,A0
+            addq.w  #4,SP
+            move.w  D0,(SP)
+            jmp     (A0)
+sub_408E53F4:
+            link.w  A6,#-$44
+            moveq   #0,D0
+            lea     (-$44,A6),A0
+            move.w  #1,D0
+            _SysEnvirons
+            move.w  (8,A6),D1
+            cmp.w   (-$36,A6),D1
+            beq.b   .L1
+            lea     (-$34,A6),A0
+            move.w  D1,($16,A0)
+            moveq   #2,D0
+            _HFSDispatch
+            move.w  ($10,A0),D0
+.L1:
+            unlk    A6
+            movea.l (SP)+,A0
+            addq.w  #2,SP
+            move.w  D0,(SP)
+            jmp     (A0)
+sub_408E5428:
+            link.w  A6,#0
+            move.l  D3,-(SP)
+            move    SR,D1
+            ori     #$2600,SR
+            movea.l LAPMgrPtr,A1
+            moveq   #$19,D0
+            jsr     (2,A1)
+            moveq   #0,D3
+            move.l  (2,A1),D0
+.L1:
+            beq.b   .L2
+            move.l  D0,-(SP)
+            addq.w  #1,D3
+            movea.l D0,A1
+            move.l  (A1),D0
+            bra.b   .L1
+.L2:
+            move    D1,SR
+            tst.l   D3
+            beq.b   .L4
+            subq.w  #1,D3
+.L3:
+            movea.l (SP)+,A1
+            move.l  (8,A6),-(SP)
+            move.l  A1,-(SP)
+            move.l  ($C,A6),-(SP)
+            movea.l (6,A1),A1
+            jsr     (A1)
+            lea     ($C,SP),SP
+            dbra    D3,.L3
+.L4:
+            move.l  (SP)+,D3
+            unlk    A6
+            rts
+sub_408E5478:
+            movem.l D5-D7,-(SP)
+            move.w  ($16,SP),D5
+            moveq   #2,D7
+            bra.b   .L2
+.L1:
+            lsl.l   #1,D7
+.L2:
+            moveq   #0,D0
+            move.w  D5,D0
+            cmp.l   D7,D0
+            bcc.b   .L1
+            moveq   #0,D0
+            move.w  ($12,SP),D0
+            move.l  D0,D6
+.L3:
+            move.l  D6,D1
+            move.l  D1,D0
+            mulu.w  #$15,D1
+            swap    D0
+            mulu.w  #$15,D0
+            swap    D0
+            clr.w   D0
+            add.l   D0,D1
+            addq.l  #1,D1
+            move.l  D1,D0
+            move.l  D7,D1
+            jsr     sub_408E55D6
+            move.l  D0,D6
+            moveq   #0,D0
+            move.w  D5,D0
+            cmp.l   D6,D0
+            bcs.b   .L3
+            move.l  D6,D0
+            movem.l (SP)+,D5-D7
+            rts
+sub_408E54C6:
+            link.w  A6,#0
+            movem.l D5-D7/A3-A4,-(SP)
+            movea.l (8,A6),A4
+            movea.l ($C,A6),A3
+            moveq   #3,D5
+            bra.b   .L4
+.L1:
+            move.l  ($10,A6),-(SP)
+            jsr     (A4)
+            subq.l  #4,SP
+            _TickCount
+            move.l  (SP)+,D7
+            addq.l  #4,SP
+            bra.b   .L3
+.L2:
+            tst.w   (A3)
+            bne.b   .L5
+.L3:
+            subq.l  #4,SP
+            _TickCount
+            move.l  (SP)+,D6
+            move.l  D6,D0
+            sub.l   D7,D0
+            moveq   #$1E,D1
+            cmp.l   D0,D1
+            bhi.b   .L2
+.L4:
+            move.l  D5,D0
+            subq.l  #1,D5
+            tst.l   D0
+            bne.b   .L1
+.L5:
+            movem.l (-$14,A6),D5-D7/A3-A4
+            unlk    A6
+            rts
+sub_408E5510:
+            link.w  A6,#-4
+            moveq   #0,D0
+            move.l  D0,(-4,A6)
+.L1:
+            moveq   #0,D0
+            move.l  D0,-(SP)
+            moveq   #2,D1
+            move.l  D1,-(SP)
+            pea     (-4,A6)
+            jsr     sub_408E3DA0
+            lea     ($C,SP),SP
+            tst.l   (-4,A6)
+            bne.b   .L1
+            moveq   #0,D0
+            unlk    A6
+            rts
+sub_408E553A:
+            link.w  A6,#-4
+            movem.l A3-A4,-(SP)
+            movea.l (8,A6),A4
+            moveq   #0,D0
+            move.l  D0,(-4,A6)
+            movea.l D0,A3
+            move.l  D0,(A4)
+.L1:
+            move.l  A4,-(SP)
+            moveq   #3,D0
+            move.l  D0,-(SP)
+            pea     (-4,A6)
+            jsr     sub_408E3DA0
+            tst.w   D0
+            lea     ($C,SP),SP
+            beq.b   .L4
+            moveq   #0,D0
+            move.l  D0,(-4,A6)
+            move.l  A3,D1
+            beq.b   .L3
+.L2:
+            moveq   #0,D0
+            move.l  D0,-(SP)
+            moveq   #4,D1
+            move.l  D1,-(SP)
+            pea     (-4,A6)
+            jsr     sub_408E3DA0
+            lea     ($C,SP),SP
+            cmpa.l  (-4,A6),A3
+            beq.b   .L3
+            tst.l   (-4,A6)
+            bne.b   .L2
+.L3:
+            moveq   #-1,D0
+            bra.b   .L5
+.L4:
+            movea.l (-4,A6),A3
+            tst.l   (-4,A6)
+            bne.b   .L1
+            moveq   #0,D0
+.L5:
+            movem.l (-$C,A6),A3-A4
+            unlk    A6
+            rts
+sub_408E55AA:
+            link.w  A6,#-4
+.L1:
+            moveq   #0,D0
+            move.l  D0,-(SP)
+            moveq   #4,D1
+            move.l  D1,-(SP)
+            pea     (-4,A6)
+            jsr     sub_408E3DA0
+            lea     ($C,SP),SP
+            tst.l   (-4,A6)
+            bne.b   .L1
+            moveq   #0,D0
+            unlk    A6
+            rts
+            move.l  (4,SP),D1
+            move.l  (8,SP),D0
+sub_408E55D6:
+            movem.l D2-D4,-(SP)
+            move.l  D1,D2
+            swap    D2
+            tst.w   D2
+            bne.b   .L2
+            move.w  D0,D3
+            clr.w   D0
+            swap    D0
+            beq.b   .L1
+            divu.w  D1,D0
+            move.w  D0,D2
+.L1:
+            swap    D2
+            move.w  D3,D0
+            divu.w  D1,D0
+            move.w  D0,D2
+            move.l  D2,D1
+            clr.w   D0
+            swap    D0
+            bra.b   .L5
+.L2:
+            move.l  D0,D2
+            clr.w   D0
+            swap    D0
+            swap    D2
+            clr.w   D2
+            move.l  D1,D3
+            moveq   #0,D1
+            moveq   #$F,D4
+.L3:
+            add.l   D2,D2
+            addx.l  D0,D0
+            add.l   D1,D1
+            cmp.l   D3,D0
+            blt.b   .L4
+            sub.l   D3,D0
+            addq.b  #1,D1
+.L4:
+            dbra    D4,.L3
+.L5:
+            movem.l (SP)+,D2-D4
+            rts
+sub_408E5626:
+            move.l  A1,-(SP)
+            move    SR,-(SP)
+            movea.l ($2D8).w,A1
+            movea.l ($328,A1),A1
+            move    #$2600,SR
+            move.l  ($30E,A1),(A0)
+            move.l  A0,($30E,A1)
+            addq.l  #1,($50,A1)
+            move    (SP)+,SR
+            movea.l (SP)+,A1
+            rts
+sub_408E5648:
+            movem.l D1/A0,-(SP)
+            movea.l ($328,A2),A0
+            lea     ($72,A0),A0
+            clr.w   D1
+            move.b  ($334,A2),D1
+            mulu.w  #$40,D1
+            add.l   D0,D1
+            addq.l  #1,(0,A0,D1.l)
+            movem.l (SP)+,D1/A0
+            rts
+.L1:
+            bra.b   .L4
+            bra.w   sub_408E5930
+.L5:
+            clr.w   D3
+            jmp     (2,A4)
 .L6:
-            bsr.w   sub_408EF7F4
-            tst.b   D1
-            bne.b   .L7
-            btst    #$13,D1
+            clr.w   D3
+            jsr     (2,A4)
+            moveq   #$14,D0
+            bra.w   sub_408E5648
+.L4:
+            movea.l ($328,A2),A3
+            move.l  A3,D0
+            beq.b   .L5
+            move.l  ($50,A3),D0
+            sub.l   ($54,A3),D0
+            ble.b   .L6
+            move    #$2600,SR
+            move.l  ($30E,A3),D2
+            beq.b   .L6
+            movea.l D2,A5
+            move.l  (A5),($30E,A3)
+            subq.l  #1,($50,A3)
+            lea     ($43,A5),A3
+            move.w  #$24A,D3
+            jsr     (2,A4)
+            movea.l ($328,A2),A3
+            movea.l D2,A0
+            beq.b   .L7
+            moveq   #$10,D0
+            bsr.w   sub_408E5648
+            bra.w   sub_408E5626
+.L7:
+            cmpi.b  #$FF,($C,A2)
+            bne.b   .L8
+            move.w  (8,A2),D0
+            cmp.w   ($344,A2),D0
+            bcs.b   .L8
+            cmp.w   ($346,A2),D0
+            bhi.b   .L8
+            movea.l D2,A0
+            bra.w   sub_408E5626
+.L8:
+            lea     ($72,A3),A1
+            moveq   #0,D0
+            move.b  ($334,A2),D0
+            beq.b   .L9
+            asl.l   #6,D0
+.L9:
+            addq.l  #1,(0,A1,D0.l)
+            move.w  #$24A,D0
+            sub.w   D3,D0
+            moveq   #$10,D1
+            add.w   D1,D0
+            lea     ($28E,A0),A1
+            move.l  A1,($1E,A0)
+            move.w  D0,(A1)+
+            lea     ($33,A0),A0
+            move.l  A0,(A1)+
+            clr.w   (A1)+
+            lea     (1,A2),A1
+.L10:
+            move.b  (A1)+,(A0)+
+            subq.w  #1,D1
+            bne.b   .L10
+            movea.l D2,A0
+            movem.l D2-D3/A0-A3,(6,A0)
+            bset    #0,($284,A3)
+            bne.b   .L11
+            move    ($1C,A2),SR
+            bra.b   sub_408E5758.L13
+.L11:
+            lea     ($284,A3),A1
+            bsr.b   .L12
+            rts
+.L12:
+            addq.w  #2,A1
+            clr.l   (A0)
+            tst.l   (A1)+
+            bne.b   .L2
+            move.l  A0,(A1)
+            move.l  A0,-(A1)
+            bra.b   .L3
+.L2:
+            move.l  A2,-(SP)
+            movea.l (A1),A2
+            move.l  A0,(A2)
+            move.l  A0,(A1)
+            movea.l (SP)+,A2
+            subq.w  #4,A1
+.L3:
+            subq.w  #2,A1
+            rts
+sub_408E5758:
+            move    (SP)+,SR
+.L13:
+            movem.l (6,A0),D2-D3/A0-A3
+            move.l  A2,D1
+            movea.l D2,A2
+            tst.b   ($3E,A2)
+            bne.b   .L3
+            move.l  A2,-(SP)
+            bsr.w   sub_408E587E
+            beq.b   .L1
+            movea.l (SP)+,A2
+            bra.b   .L3
+.L1:
+            move.w  ($1A,A2),D3
+            sub.l   D2,D2
+            move.w  ($1A,A2),D2
+            move.w  D2,D0
+            lsl.l   #8,D2
+            move.b  (A2),D2
+            movea.l (SP)+,A2
+            move.b  D2,($3E,A2)
+            move.w  D0,($3A,A2)
+            pea     (A2)
+            bsr.w   sub_408E5930
+            movea.l (SP)+,A0
+            beq.b   .L2
+            move.l  A0,D2
+            bra.b   .L4
+.L2:
+            movea.l A2,A1
+            movea.l A0,A2
+            bra.b   .L10
+.L3:
+            move.w  ($3A,A2),D3
+            bsr.w   sub_408E5930
+            beq.b   .L6
+.L4:
+            moveq   #$18,D0
+.L5:
+            movea.l D1,A2
+            bsr.w   sub_408E5648
+            movea.l D2,A0
+            bsr.w   sub_408E5626
+            bra.w   .L11
+.L6:
+            movea.l A2,A1
+            moveq   #0,D0
+            movea.l D1,A2
+            move.b  ($334,A2),D0
+            movea.l D2,A2
+            move.b  ($44,A3,D0.w),D3
+            andi.b  #$F,D3
+            lsl.b   #2,D3
+            move.b  D3,-(SP)
+            btst    #6,($44,A3,D0.w)
+            beq.b   .L7
+            move.b  (8,A1),D0
+            btst    #6,($44,A3,D0.w)
             beq.b   .L8
 .L7:
-            move.l  #$80000,D0
+            move.b  #4,(SP)
 .L8:
-            jmp     (A4)
+            move.b  ($36,A2),D0
+            add.b   (SP)+,D0
+            cmpi.b  #$40,D0
+            bcs.b   .L9
+            moveq   #$1C,D0
+            bra.b   .L5
 .L9:
-            fbeq.w  .L10
-            fmovecr.x #$30,FP1
-            fdiv.x  FP1,FP0
-            move.l  #$200000,D0
+            move.b  D0,($36,A2)
+            lea     (A2),A0
+            sub.l   D2,D2
+            move.w  (4,A1),D2
+            lsl.l   #8,D2
+            move.b  (6,A1),D2
+            bne.b   .L10
+            moveq   #0,D2
+            move.w  ($3A,A2),D2
+            lsl.l   #8,D2
+            move.b  ($3E,A2),D2
 .L10:
-            jmp     (A4)
+            move.b  D2,($33,A2)
+            move.l  D2,($22,A0)
+            clr.w   D0
+            move.b  (8,A1),D0
+            mulu.w  #$60,D0
+            movea.l ($38,A3),A1
+            move.w  (8,A1,D0.l),($18,A0)
+            movea.l (0,A1,D0.l),A2
+            move.w  #$F3,($1A,A0)
+            lea     sub_408E58D6,A1
+            move.l  A1,($C,A0)
+            move.l  A3,($12,A0)
+            _Control async
+            moveq   #4,D0
+            bsr.w   sub_408E5648
 .L11:
-            fmove.x FP0,FP1
-            fadd.l  #1,FP0
-            fmove.l FPSR,D0
-            bsr.b   sub_408EF7C2
-            fcmp.x  sub_408EFCAA.L5,FP0
-            fbgt.w  .L12
-            fcmp.x  sub_408EFCAA.L6,FP0
-            fblt.w  .L12
-            fmove.l #0,FP3
-            fmove.x FP1,FP0
-            bfextu  (A0){1:16},D0
-            beq.b   .L14
-            bra.b   .L13
+            move    SR,-(SP)
+            move    #$2600,SR
+            movea.l ($286,A3),A0
+            move.l  A0,D0
+            beq.b   .L12
+            lea     ($284,A3),A1
+            bsr.w   sub_408E58F0
+            bra.w   sub_408E5758
 .L12:
-            bsr.b   sub_408EF7D4
-            fsub.l  #1,FP0
-.L13:
-            bsr.b   sub_408EF7F4
-            fmovecr.x #$30,FP1
-            fmul.x  FP1,FP0
-            move.l  #$80000,D0
-            jmp     (A4)
-.L14:
-            fbeq.w  .L15
-            move.l  #$200000,D0
-.L15:
-            jmp     (A4)
-.L16:
-            fmove.l FPSR,D0
-            bsr.b   sub_408EF7C2
-            bsr.b   sub_408EF7D4
-            fsub.l  #1,FP0
-            bsr.b   sub_408EF7F4
-            fmovecr.x #$30,FP1
-            fmul.x  FP1,FP0
-            fbeq.w  .L17
-            move.l  #$80000,D0
-            jmp     (A4)
-.L17:
-            moveq   #8,D0
-            jmp     (A4)
-sub_408EF7C2:
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bcs.w   sub_408EF7F4.L3
-            bne.b   sub_408EF7F4.L1
+            bclr    #0,($284,A3)
+            move    (SP)+,SR
             rts
-sub_408EF7D4:
-            fgetexp.x FP0,FP3
-            fgetman.x FP0,FP0
-            fcmp.x  sub_408EFCAA.L5,FP0
-            fblt.w  .L1
-            fadd.w  #1,FP3
-            fdiv.w  #2,FP0
+sub_408E587E:
+            movem.l D0/D2-D3/A0-A1/A5,-(SP)
+            move.w  ($3A,A2),D2
+            movea.l ($2D8).w,A2
+            movea.l ($328,A2),A5
+            lea     ($44,A5),A1
+            movea.l ($38,A5),A5
+            moveq   #7,D0
 .L1:
-            rts
-sub_408EF7F4:
-            fmove.x FP0,FP2
-            fadd.l  #2,FP2
-            fdiv.x  FP2,FP0
-            fmove.x FP0,FP2
-            fmul.x  FP2,FP0
-            lea     sub_408EFCAA.L1,A0
-            bsr.w   sub_408EF67C
-            fmul.x  FP1,FP2
-            lea     sub_408EFCAA.L2,A0
-            bsr.w   sub_408EF67C
-            fmove.l FPSR,D0
-            bclr    #5,D0
-            fmove.l D0,FPSR
-            fdiv.x  FP1,FP2
-            fmove.x FP2,FP0
-            fadd.x  FP3,FP0
-            rts
-.L1:
-            addq.l  #4,SP
-            bmi.b   .L2
-            jmp     (A4)
-.L2:
-            fmove.x #"$FFFF00000000000000000000",FP0
-            move.l  #$100000,D0
-            jmp     (A4)
-.L3:
-            addq.l  #4,SP
-            lsl.l   #1,D0
+            move.l  (4,A5),D3
+            btst    #6,(A1)+
+            bne.b   .L2
+            btst    #0,D3
+            beq.b   .L2
+            btst    #1,D3
+            bne.b   .L2
+            movea.l (A5),A0
+            cmp.w   ($344,A0),D2
             bcs.b   .L2
-            btst    #$1E,D0
-            bne.b   .L4
-            fmove.x #"$7FFF00004024000000000000",FP0
-            move.l  #$800008,D0
+            cmp.w   ($346,A0),D2
+            bhi.b   .L2
+            movea.l A0,A2
+            move    #4,CCR
+            bra.b   .L3
+.L2:
+            lea     ($60,A5),A5
+            dbra    D0,.L1
+            move    #0,CCR
+.L3:
+            movem.l (SP)+,D0/D2-D3/A0-A1/A5
+            rts
+sub_408E58D6:
+            movea.l ($12,A0),A3
+            tst.l   ($66,A3)
+            beq.w   sub_408E5626
+            move.l  A0,-(SP)
+            movea.l ($66,A3),A0
+            jsr     (A0)
+            movea.l (SP)+,A0
+            bra.w   sub_408E5626
+sub_408E58F0:
+            movem.l A2-A3,-(SP)
+            movea.l (2,A1),A2
+            movea.l A2,A3
+.L1:
+            cmpa.l  A3,A0
+            beq.b   .L2
+            movea.l A3,A2
+            movea.l (A2),A3
+            cmpa.l  (6,A1),A2
+            bne.b   .L1
+            moveq   #-1,D0
+            bra.b   .L4
+.L2:
+            cmpa.l  A2,A3
+            bne.b   .L5
+            move.l  (A2),(2,A1)
+            bne.b   .L3
+            clr.l   (6,A1)
+.L3:
+            moveq   #0,D0
 .L4:
-            jmp     (A4)
+            movem.l (SP)+,A2-A3
+            rts
 .L5:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
+            move.l  (A3),(A2)
+            cmpa.l  (6,A1),A3
+            bne.b   .L3
+            move.l  A2,(6,A1)
+            bra.b   .L3
+sub_408E5930:
+            movem.l D0-D2,-(SP)
+            movea.l ($316,A3),A0
+            moveq   #0,D0
+            move.l  D0,D2
+            move.l  ($31A,A3),D1
+            beq.b   .L5
+            subq.l  #4,D1
+.L1:
+            move.l  D0,D2
+            add.l   D1,D2
+            asr.l   #3,D2
+            asl.l   #2,D2
+            cmp.w   (2,A0,D2.l),D3
+            beq.b   .L6
+            bhi.b   .L2
+            move.l  D2,D1
+            subq.l  #4,D1
+            bra.b   .L3
+.L2:
+            move.l  D2,D0
+            addq.l  #4,D0
+.L3:
+            cmp.l   D0,D1
+            bge.b   .L1
+            cmp.l   ($31A,A3),D0
+            bge.b   .L5
+            move.l  D0,D2
+            pea     (0,A0,D2.l)
+            bsr.b   sub_408E59AE
+            tst.w   (2,A2)
+            beq.b   .L4
+            cmp.w   (2,A2),D3
+            bcs.b   .L4
+            cmp.w   (A2),D3
+            bls.b   .L7
+.L4:
+            addq.w  #4,SP
+.L5:
+            move.l  ($31E,A3),D1
+            move.w  (0,A0,D1.l),D2
+            movea.l ($14,A3),A2
+            lea     (0,A2,D2.w),A2
+            lea     (0,A0,D0.l),A0
+            move    #0,CCR
+            bra.b   .L8
+.L6:
+            pea     (0,A0,D2.l)
+            bsr.b   sub_408E59AE
+.L7:
+            movea.l (SP)+,A0
+            ori.b   #4,CCR
+.L8:
+            movem.l (SP)+,D0-D2
+            rts
+sub_408E59AE:
+            move.w  (0,A0,D2.l),D2
+            movea.l ($14,A3),A2
+            lea     (0,A2,D2.w),A2
+            rts
+            dc.w    $756C,$2031
+RsrcEntryDRVR_3:
+            dc.b    $78,$00,$00,$00,$00,$00,$00,$00 ; Resource 'DRVR' 3 ".Sound" (2468 bytes) - Combo mask
+            dc.l    RsrcEntryDRVR_9-BaseOfROM       ; Next entry
+            dc.l    RsrcDRVR_3-BaseOfROM            ; Data
+            dc.b    'DRVR'                          ; Type
+            dc.w    3                               ; ID
+            dc.b    $58                             ; Attributes
+            dc.b    6,'.Sound'                      ; Name
+            dc.b    'BMGGDC'
+            dc.l    $C0A00000,$000009B0,$00000214   ; Block header
+RsrcDRVR_3:
+            dc.w    $4E00                           ; drvrFlags
+            dc.w    0                               ; drvrDelay
+            dc.w    $0000                           ; drvrEMask
+            dc.w    0                               ; drvrMenu
+            dc.w    SoundOpen-RsrcDRVR_3            ; drvrOpen
+            dc.w    SoundPrime-RsrcDRVR_3           ; drvrPrime
+            dc.w    SoundCtl-RsrcDRVR_3             ; drvrCtl
+            dc.w    SoundStatus-RsrcDRVR_3          ; drvrStatus
+            dc.w    SoundClose-RsrcDRVR_3           ; drvrClose
+            dc.b    6,'.Sound'
+            dc.b    $20
+SoundOpen:
+            bsr.b   sub_408E5A30
+            beq.b   sub_408E5A30.L1
+            bra.w   sub_408E5E78.L3
+SoundPrime:
+            bsr.b   sub_408E5A30
+            beq.w   SoundStatus.L2
+            bra.w   sub_408E5F2A.L4
+SoundCtl:
+            bsr.b   sub_408E5A30
+            beq.w   sub_408E5B3C.L1
+            bra.w   sub_408E5F2A.L2
+SoundClose:
+            bsr.b   sub_408E5A30
+            beq.w   sub_408E5A52.L4
+            bra.w   sub_408E5E78.L6
+sub_408E5A30:
+            move.l  A2,D2
+            movea.l ASCBase,A2
+            move.b  ($800,A2),D1
+            andi.b  #$F0,D1
+            movea.l D2,A2
+            rts
+.L1:
+            move.l  A1,SoundDCE
+            move.b  SPVolCtl,D0
+            bsr.w   sub_408E5B00
+            bsr.b   sub_408E5A52
+            rts
+sub_408E5A52:
+            clr.b   SoundActive
+            tst.l   SoundBase
+            beq.b   .L2
+            moveq   #$10,D0
+            _NewPtrSys
+            tst.w   D0
+            bne.b   .L2
+            clr.l   (A0)
+            move.w  #1,(4,A0)
+            lea     sub_408E5E78,A1
+            move.l  A1,(6,A0)
+            move.w  #$3D,($A,A0)
+            move.w  #9,($C,A0)
+            movea.l VIA,A1
+            bset    #7,(A1)
+            move.w  #$80,($E,A0)
+            _VInstall
+.L1:
+            movea.l ASCBase,A0
+            move.l  A0,SoundBase
+.L2:
+            moveq   #0,D0
+            rts
+.L3:
+            clr.w   CurPitch
+.L4:
+            movea.l ASCBase,A0
+            clr.b   ($801,A0)
+            bsr.b   sub_408E5AAC
+            bra.b   .L2
+sub_408E5AAC:
+            tst.b   SoundActive
+            beq.b   .L1
+            lea     SoundVBL,A0
+            _VRemove
+            clr.b   SoundActive
+.L1:
+            rts
+sub_408E5ABE:
+            move.b  D0,SoundLevel
+            movea.l ASCBase,A0
+            movea.l D2,A1
+            move.b  #$80,D2
+            lsr.b   #1,D0
+            tst.b   ($800,A0)
+            bne.b   .L1
+            move.b  #$40,D2
+            lsr.b   #1,D0
+.L1:
+            move.b  D2,D1
+            sub.b   D0,D1
+            add.b   D2,D0
+            move.w  #$FF,D3
+.L2:
+            move.b  D1,($500,A0)
+            move.b  D1,($100,A0)
+            move.b  D0,($400,A0)
+            move.b  D0,(A0)+
+            dbra    D3,.L2
+            move.b  D2,(A0)
+            move.b  D2,($400,A0)
+            move.l  A1,D2
+            rts
+sub_408E5B00:
+            andi.w  #7,D0
+            move.b  D0,SdVolume
+            move.b  BoxFlag,D1
+            cmpi.b  #$F,D1
+            beq.b   .L1
+            movea.l ASCBase,A0
+            lsl.b   #5,D0
+            move.b  D0,($806,A0)
+            bra.b   .L2
+.L1:
+            lea     sub_408E5B3C,A0
+            move.b  (0,A0,D0.w),D0
+            movea.l ASCBase,A0
+            move.b  D0,($F06,A0)
+            clr.b   ($F07,A0)
+            clr.b   ($F26,A0)
+            move.b  D0,($F27,A0)
+.L2:
+            rts
+sub_408E5B3C:
+            btst    D0,(A2)
+            move.l  ($5A,A6,D4.l),D2
+            bge.b   SoundStatus.L4+1
+.L1:
+            move.w  ($1A,A0),D0
+            beq.b   SoundStatus
+            subq.w  #2,D0
+            beq.b   SoundStatus.L1
+            blt.w   sub_408E5A52.L3
+            move.w  ($1C,A0),D0
+            bsr.w   sub_408E5ABE
+SoundStatus:
+            bra.w   sub_408E5CE2
+.L1:
+            move.w  ($1C,A0),D0
+            bsr.b   sub_408E5B00
+            bra.b   SoundStatus
+.L2:
+            movea.l ($20,A0),A1
+            tst.w   (A1)+
+            beq.w   sub_408E5D36.L2
+            bpl.w   sub_408E5CE2.L1
+            move.l  A0,-(SP)
+            movea.l ASCBase,A0
+            lea     ($800,A0),A0
+            clr.b   (7,A0)
+            move.b  #2,(2,A0)
+            movem.l D0/A0,-(SP)
+            lea     ($10,A0),A0
+            move.w  #$1F,D0
+.L3:
+            clr.b   (A0)+
+            dbra    D0,.L3
+            movem.l (SP)+,D0/A0
+            move.b  #$FE,($30,A0)
+            clr.b   ($31,A0)
+            move.b  #$FE,($32,A0)
+            clr.b   ($33,A0)
+            move.b  #$FE,($34,A0)
+            clr.b   ($35,A0)
+            move.b  #$FE,($36,A0)
+.L4:
+            clr.b   ($37,A0)
+            clr.b   (5,A0)
+            cmpi.b  #2,(1,A0)
+            beq.b   .L5
+            move.b  #2,(1,A0)
+.L5:
+            movea.l (SP)+,A0
+.L6:
+            movem.w (A1)+,D0-D2
+            tst.w   D2
+            beq.w   sub_408E5C64.L1
+            move.l  A0,-(SP)
+            move.w  D0,CurPitch
+            moveq   #0,D3
+            tst.w   D0
+            beq.b   .L7
+            move.l  #$11999999,D3
+            divu.l  D0,D3
+.L7:
+            movea.l ASCBase,A0
+            move.b  D3,($817,A0)
+            move.b  D3,($827,A0)
+            ror.l   #8,D3
+            move.b  D3,($816,A0)
+            move.b  D3,($826,A0)
+            ror.l   #8,D3
+            move.b  D3,($815,A0)
+            move.b  D3,($825,A0)
+            ror.l   #8,D3
+            move.b  D3,($814,A0)
+            move.b  D3,($824,A0)
+            move.w  D1,D0
+            bsr.w   sub_408E5ABE
+            move.w  D2,D0
+            lea     sub_408E5C64,A1
+            bsr.b   sub_408E5C3E
+            movea.l (SP)+,A0
+            addq.l  #6,($28,A0)
+            bra.w   sub_408E5A52.L2
+sub_408E5C3C:
+            moveq   #1,D0
+sub_408E5C3E:
+            lea     SoundVBL,A0
+            move.w  D0,($A,A0)
+            tst.b   SoundActive
+            bne.b   .L1
+            clr.l   (A0)
+            move.w  #1,(4,A0)
+            move.l  A1,(6,A0)
+            clr.w   ($C,A0)
+            _VInstall
+            st      SoundActive
+.L1:
+            rts
+sub_408E5C64:
+            movea.l SoundDCE,A1
+            movea.l (8,A1),A0
+            move.l  ($28,A0),D0
+            movea.l ($20,A0),A1
+            adda.l  D0,A1
+            addq.l  #2,A1
+            addq.w  #4,D0
+            cmp.l   ($24,A0),D0
+            blt.w   SoundStatus.L6
+.L1:
+            clr.w   CurPitch
+            movea.l ASCBase,A0
+            lea     ($800,A0),A0
+            clr.b   ($14,A0)
+            clr.b   ($15,A0)
+            clr.b   ($16,A0)
+            clr.b   ($17,A0)
+            clr.b   ($1C,A0)
+            clr.b   ($1D,A0)
+            clr.b   ($1E,A0)
+            clr.b   ($1F,A0)
+            clr.b   ($24,A0)
+            clr.b   ($25,A0)
+            clr.b   ($26,A0)
+            clr.b   ($27,A0)
+            clr.b   ($2C,A0)
+            clr.b   ($2D,A0)
+            clr.b   ($2E,A0)
+            clr.b   ($2F,A0)
+            clr.b   (1,A0)
+            clr.b   (2,A0)
+            clr.b   (3,A0)
+            clr.b   (4,A0)
+sub_408E5CDE:
+            bsr.w   sub_408E5AAC
+sub_408E5CE2:
+            moveq   #0,D0
+            movea.l SoundDCE,A1
+            movea.l JIODone,A0
+            jmp     (A0)
+.L1:
+            move.l  (A1)+,SoundPtr
+            movea.l ASCBase,A1
+            lea     ($800,A1),A1
+            cmpi.b  #1,(1,A1)
+            beq.b   .L2
+            clr.b   (7,A1)
+            clr.b   (2,A1)
+            move.b  #1,(1,A1)
+            bset    #7,(3,A1)
+            bclr    #7,(3,A1)
+.L2:
+            lea     sub_408E5D36,A1
+.L3:
+            bsr.w   sub_408E5C3C
+            bra.w   sub_408E5A52.L2
+sub_408E5D28:
+            movea.l ASCBase,A1
+            clr.b   ($801,A1)
+            movem.l (SP)+,D0-D7/A0-A6
+            bra.b   sub_408E5CDE
+sub_408E5D36:
+            movem.l D0-D7/A0-A6,-(SP)
+            movea.l SoundPtr,A6
+            tst.w   (A6)
+            beq.b   sub_408E5D28
+            lea     SoundVBL,A0
+            move.w  #1,($A,A0)
+            subq.w  #1,(A6)+
+            movem.l (A6),D2-D7/A0-A5
+            movea.l ASCBase,A6
+            move.l  #$FF0000,D1
+            move.w  #$172,-(SP)
+.L1:
+            clr.w   D1
+            add.l   D2,D3
+            add.l   D4,D5
+            add.l   D6,D7
+            adda.l  A0,A1
+            move.l  D3,D0
             and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   .L10
-            movem.l A1,-(SP)
-            movea.l A0,A1
-            fmove.x sub_408EFCAA.L10,FP1
-            frem.x  FP1,FP0
-            fmove.x FP0,FP3
-            fmul.x  FP0,FP0
-            lea     sub_408EFCAA.L16,A0
-            bsr.w   sub_408EF67C
-            fmove.x FP1,FP2
-            lea     sub_408EFCAA.L15,A0
-            bsr.w   sub_408EF67C
-            fdiv.x  FP1,FP2
-            fmul.x  FP0,FP2
-            fmove.x FP0,FP1
-            fmul.x  FP3,FP1
-            fmul.x  FP1,FP2
-            fcmp.s  #"$3E800000",FP0
-            fbgt.w  .L6
-            fmul.x  FP3,FP0
-            fdiv.w  #3,FP0
-            fadd.x  FP2,FP0
-            fadd.x  FP3,FP0
+            swap    D0
+            move.b  (0,A2,D0.w),D1
+            move.l  D5,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A3,D0.w),D0
+            add.w   D0,D1
+            move.l  D7,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A4,D0.w),D0
+            add.w   D0,D1
+            move.l  A1,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A5,D0.w),D0
+            add.w   D0,D1
+            lsr.w   #2,D1
+            move.b  D1,(A6)
+            subq.w  #1,(SP)
+            bne.b   .L1
+            move.b  D1,SoundLevel
+            addq.w  #2,SP
+            movea.l SoundPtr,A6
+            addq.w  #2,A6
+            movem.l D2-D7/A0-A1,(A6)
+            movem.l (SP)+,D0-D7/A0-A6
+            rts
+.L2:
+            movea.l ASCBase,A1
+            lea     ($800,A1),A1
+            cmpi.b  #1,(1,A1)
+            beq.b   .L3
+            clr.b   (7,A1)
+            clr.b   (2,A1)
+            move.b  #1,(1,A1)
+            bset    #7,(3,A1)
+            bclr    #7,(3,A1)
+.L3:
+            movea.l SoundDCE,A1
+            clr.l   ($10,A1)
+            lea     sub_408E5DF0,A1
+            bra.w   sub_408E5CE2.L3
+sub_408E5DF0:
+            movea.l SoundDCE,A1
+            move.l  (8,A1),D0
+            bne.b   .L1
+            movea.l ASCBase,A1
+            clr.b   ($801,A1)
+            bsr.w   sub_408E5AAC
+            rts
+.L1:
+            movea.l D0,A0
+            move.l  ($28,A0),D0
+            cmp.l   ($24,A0),D0
+            blt.b   .L2
+            bsr.w   sub_408E5CDE
+            bra.b   sub_408E5DF0
+.L2:
+            move.l  ($10,A1),D3
+            lea     SoundVBL,A3
+            move.w  #1,($A,A3)
+            movea.l ($20,A0),A1
+            addq.w  #2,A1
+            move.l  (A1)+,D1
+            movea.l A1,A3
+            adda.l  ($24,A0),A3
+            adda.l  D0,A1
+            movea.l ASCBase,A2
+            move.w  #$171,D2
+            moveq   #0,D0
+.L3:
+            move.b  (A1),(A2)
+            add.l   D1,D3
+            swap    D3
+            adda.w  D3,A1
+            add.w   D3,D0
+            clr.w   D3
+            swap    D3
+            cmpa.l  A1,A3
+            dble    D2,.L3
+            add.l   D0,($28,A0)
+            move.b  (-1,A1),SoundLevel
+            movea.l SoundDCE,A1
+            move.l  D3,($10,A1)
+            move.l  ($28,A0),D0
+            cmp.l   ($24,A0),D0
+            blt.b   .L4
+            bsr.w   sub_408E5CE2
+.L4:
+            rts
+sub_408E5E78:
+            move.w  #$3D,($A,A0)
+            movea.l VIA,A1
+            move.b  (A1),D0
+            andi.b  #$80,D0
+            move.b  ($E,A0),D1
+            eor.b   D0,D1
+            beq.b   .L2
+            move.b  D0,($E,A0)
+            beq.b   .L1
+            movea.l ASCBase,A1
+            clr.b   ($801,A1)
+            rts
+.L1:
+            movea.l ASCBase,A0
+            lea     ($800,A0),A0
+            cmpi.b  #1,(1,A0)
+            beq.b   .L2
+            clr.b   (7,A0)
+            clr.b   (2,A0)
+            move.b  #1,(1,A0)
+            bset    #7,(3,A0)
+            bclr    #7,(3,A0)
+.L2:
+            rts
+.L3:
+            move.l  D1,D2
+            move.l  A1,SoundDCE
+            bsr.b   sub_408E5F0A
+            move.b  SPVolCtl,D0
+            bsr.w   sub_408E5B00
+            clr.b   SoundActive
+            moveq   #$C,D0
+            _NewPtrSys
+            move.l  A0,D0
+            beq.b   .L4
+            movea.l SoundDCE,A1
+            move.l  A0,($14,A1)
+.L4:
+            cmpi.b  #$B0,D2
+            beq.w   sub_408E5A52
+            bra.w   sub_408E5A52.L1
+.L5:
+            clr.w   CurPitch
+.L6:
+            bsr.w   sub_408E5AAC
+            bsr.b   sub_408E5F0A
+            bra.w   sub_408E5A52.L2
+sub_408E5F0A:
+            move.b  #$80,D0
+            bsr.b   sub_408E5F2A
+sub_408E5F10:
+            movea.l VIA,A0
+            tst.b   T1Arbitrate
+            bne.b   .L1
+            andi.b  #$3F,($1600,A0)
+            st      T1Arbitrate
+.L1:
+            rts
+sub_408E5F26:
+            move.b  SoundLevel,D0
+sub_408E5F2A:
+            move.b  D0,SoundLevel
+            move.b  D0,D1
+            lsl.w   #8,D0
+            move.b  D1,D0
+            move.w  D0,D1
+            swap    D0
+            move.w  D1,D0
+            movea.l SoundBase,A0
+            moveq   #$2D,D1
+.L1:
+            movep.l D0,0.w(A0)
+            movep.l D0,(8,A0)
+            lea     ($10,A0),A0
+            dbra    D1,.L1
+            movep.w D0,0.w(A0)
+            rts
+.L2:
+            move.w  ($1A,A0),D0
+            beq.w   SoundStatus
+            subq.w  #2,D0
+            beq.w   SoundStatus.L1
+            blt.b   sub_408E5E78.L5
+            move.w  ($1C,A0),D0
+            bsr.w   sub_408E5A30
+            cmpi.b  #$E0,D1
+            beq.b   .L3
+            cmpi.b  #$B0,D1
+            beq.b   .L3
+            bsr.b   sub_408E5F2A
+            bra.w   SoundStatus
+.L3:
+            movea.l SoundDCE,A1
+            movea.l ($14,A1),A1
+            move.b  D0,SoundLevel
+            move.b  #$80,D1
+            lsr.b   #1,D0
+            move.b  D1,D2
+            sub.b   D0,D2
+            add.b   D1,D0
+            move.b  D2,(8,A1)
+            move.b  D0,(9,A1)
+            bra.w   SoundStatus
+.L4:
+            movea.l VIA,A1
+            bclr    #7,(A1)
+            movea.l ($20,A0),A1
+            tst.w   (A1)+
+            beq.w   sub_408E61AC.L6
+            bpl.w   sub_408E60C2.L8
+            bsr.w   sub_408E5A30
+            cmpi.b  #$E0,D1
+            beq.w   sub_408E6072.L1
+            cmpi.b  #$B0,D1
+            beq.w   sub_408E6072.L1
+.L5:
+            movem.w (A1)+,D0-D2
+            tst.w   D2
+            beq.w   sub_408E604C.L1
+            move.l  A0,-(SP)
+            tst.b   T1Arbitrate
+            beq.b   .L6
+            bclr    #7,T1Arbitrate
+            beq.b   .L7
+            clr.b   T1Arbitrate
+.L6:
+            movea.l VIA,A0
+            ori.b   #$C0,($1600,A0)
+            cmp.w   CurPitch,D0
+            beq.b   .L7
+            move.b  D0,($800,A0)
+            ror.w   #8,D0
+            move.b  D0,($A00,A0)
+            ror.w   #8,D0
+.L7:
+            move.w  D0,CurPitch
+            move.w  D1,D0
+            bsr.w   sub_408E5F2A
+            move.w  D2,D0
+            lea     sub_408E604C,A1
+            bsr.b   sub_408E6026
+            movea.l (SP)+,A0
+            addq.l  #6,($28,A0)
+            bra.w   sub_408E5A52.L2
+sub_408E6024:
+            moveq   #1,D0
+sub_408E6026:
+            lea     SoundVBL,A0
+            move.w  D0,($A,A0)
+            tst.b   SoundActive
+            bne.b   .L1
+            clr.l   (A0)
+            move.w  #1,(4,A0)
+            move.l  A1,(6,A0)
+            clr.w   ($C,A0)
+            _VInstall
+            st      SoundActive
+.L1:
+            rts
+sub_408E604C:
+            movea.l SoundDCE,A1
+            movea.l (8,A1),A0
+            move.l  ($28,A0),D0
+            movea.l ($20,A0),A1
+            adda.l  D0,A1
+            addq.l  #2,A1
+            addq.w  #4,D0
+            cmp.l   ($24,A0),D0
+            blt.w   sub_408E5F2A.L5
+.L1:
+            bsr.w   sub_408E5F10
+            clr.w   CurPitch
+sub_408E6072:
+            bsr.w   sub_408E5AAC
+            bsr.w   sub_408E5F26
+            bra.w   sub_408E5CE2
+.L1:
+            movea.l ASCBase,A0
+            lea     ($800,A0),A0
+            cmpi.b  #1,(1,A0)
+            beq.b   .L2
+            clr.b   (7,A0)
+            clr.b   (2,A0)
+            move.b  #1,(1,A0)
+            bset    #7,(3,A0)
+            bclr    #7,(3,A0)
+.L2:
+            movea.l SoundDCE,A1
+            movea.l ($14,A1),A2
+            clr.l   (A2)
+            clr.w   ($A,A2)
+            lea     sub_408E60C2,A1
+            bsr.w   sub_408E5C3C
+            bra.w   sub_408E5A52.L2
+sub_408E60C2:
+            movem.l D4-D6,-(SP)
+            move.w  #1,($A,A0)
+            movea.l SoundDCE,A1
+            movea.l ($14,A1),A2
+            tst.w   ($A,A2)
+            bne.w   .L4
+            movea.l SoundDCE,A1
+            movea.l (8,A1),A0
+            move.l  ($28,A0),D0
+            movea.l ($20,A0),A1
+            adda.l  D0,A1
+            addq.l  #2,A1
+            addq.w  #4,D0
+            cmp.l   ($24,A0),D0
+            blt.w   .L2
+.L1:
+            clr.w   CurPitch
+            movea.l ASCBase,A0
+            clr.b   ($801,A0)
+            bsr.w   sub_408E5AAC
+            movem.l (SP)+,D4-D6
+            bra.w   sub_408E5CE2
+.L2:
+            movem.w (A1)+,D0-D2
+            tst.w   D2
+            beq.b   .L1
+            moveq   #0,D3
+            tst.w   D0
+            beq.b   .L3
+            move.l  #$11999999,D3
+            divu.l  D0,D3
+            move.w  D0,CurPitch
+.L3:
+            move.l  D3,(4,A2)
+            move.b  D1,SoundLevel
+            move.b  #$80,D0
+            lsr.b   #1,D1
+            move.b  D0,D3
+            sub.b   D1,D3
+            add.b   D0,D1
+            move.b  D3,(8,A2)
+            move.b  D1,(9,A2)
+            move.w  D2,($A,A2)
+            addq.l  #6,($28,A0)
+.L4:
+            subq.w  #1,($A,A2)
+            move.l  (A2),D0
+            move.l  (4,A2),D1
+            move.b  (8,A2),D2
+            move.b  (9,A2),D3
+            movea.l ASCBase,A0
+            move.l  #$800000,D4
+            move.w  #$172,D6
+            tst.l   D0
+            bne.b   .L5
+            move.w  #$1F2,D6
+.L5:
+            add.l   D1,D0
+            move.l  D0,D5
+            and.l   D4,D5
+            bne.b   .L6
+            move.b  D3,(A0)
             bra.b   .L7
 .L6:
-            fmove.x FP3,FP1
-            fadd.x  #"$BFFEBFFEC000000000000000",FP1
-            fdiv.w  #3,FP1
-            fmul.x  FP0,FP1
-            fadd.x  FP2,FP1
-            fdiv.w  #4,FP0
-            fadd.x  FP1,FP0
-            fadd.x  FP3,FP0
+            move.b  D2,(A0)
 .L7:
-            fmove.l FPSR,D0
-            swap    D0
-            lsr.b   #1,D0
-            bcc.b   .L8
-            fmove.w #$FFFF,FP1
-            fdiv.x  FP0,FP1
-            fmove.x FP1,FP0
-            btst    #$A,D0
-            beq.b   .L8
-            fneg.x  FP0,FP0
+            subq.w  #1,D6
+            bne.b   .L5
+            move.l  D0,(A2)
+            movem.l (SP)+,D4-D6
+            rts
 .L8:
-            bfextu  (A1){1:16},D0
-            movea.l (SP)+,A1
-            beq.b   .L9
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
+            move.l  (A1)+,SoundPtr
+            lea     sub_408E61AC,A1
 .L9:
-            move.l  #$280000,D0
-            jmp     (A4)
-.L10:
-            bmi.b   .L11
-            btst    #$1D,D0
-            bne.b   .L11
-            fmove.x #"$7FFF00004021000000000000",FP0
-            move.l  #$800000,D0
-            jmp     (A4)
-.L11:
-            moveq   #0,D0
-            jmp     (A4)
-.L12:
-            movem.l A1-A3,-(SP)
-            movea.l A0,A3
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bcs.b   .L13
-            suba.l  A1,A1
-            bra.b   .L14
-.L13:
-            movea.w #1,A1
-.L14:
-            bne.w   .L22
-            fabs.x  FP0,FP0
-            fcmp.w  #1,FP0
-            fble.w  .L15
-            movea.w #1,A2
-            fmove.w #1,FP3
-            fdiv.x  FP0,FP3
-            fmove.x FP3,FP0
-            bra.b   .L16
-.L15:
-            suba.l  A2,A2
-            fmove.x FP0,FP3
-.L16:
-            fcmp.x  sub_408EFCAA.L9,FP0
-            fbgt.w  .L21
-            fmul.x  FP0,FP0
-            lea     sub_408EFCAA.L18,A0
-            bsr.w   sub_408EF67C
-            fmove.x FP1,FP2
-            lea     sub_408EFCAA.L17,A0
-            bsr.w   sub_408EF67C
-            fdiv.x  FP1,FP2
-            fmul.x  FP3,FP2
-            fsub.x  FP2,FP3
-            fmove.x FP3,FP0
-.L17:
-            move.w  A2,D1
-            beq.b   .L18
-            fmove.x sub_408EFCAA.L10,FP1
-            fsub.x  FP0,FP1
-            fmove.x FP1,FP0
-.L18:
-            move.w  A1,D1
-            beq.b   .L19
-            fmul.b  #$FF,FP0
-.L19:
-            bfextu  (A3){1:16},D0
-            movem.l (SP)+,A1-A3
-            beq.b   .L20
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
-.L20:
-            move.l  #$80000,D0
-            jmp     (A4)
-.L21:
-            fmovem.x FP4-FP5,-(SP)
-            fmul.x  sub_408EFCAA.L7,FP3
-            fmove.w #1,FP2
-            fdiv.x  FP3,FP2
-            fadd.w  #1,FP2
-            fadd.w  #1,FP3
-            fmove.x FP0,FP1
-            fsub.x  sub_408EFCAA.L7,FP1
-            fmove.x FP1,FP4
-            fdiv.x  FP3,FP1
-            fdiv.x  FP2,FP4
-            fmove.x FP1,FP3
-            fmul.x  FP1,FP1
-            fmove.x FP0,FP2
-            fmove.x FP1,FP0
-            lea     sub_408EFCAA.L18,A0
-            bsr.w   sub_408EF67C
-            fmove.x FP1,FP5
-            lea     sub_408EFCAA.L17,A0
-            bsr.w   sub_408EF67C
-            fdiv.x  FP1,FP5
-            fmul.x  FP3,FP5
-            fadd.x  sub_408EFCAA.L8,FP5
-            fadd.x  FP4,FP5
-            fsub.x  FP2,FP5
-            fmove.x FP5,FP0
-            fmul.b  #$FF,FP0
-            fmovem.x (SP)+,FP4-FP5
-            bra.w   .L17
-.L22:
-            bmi.b   .L23
-            btst    #$1D,D0
-            beq.b   .L24
-.L23:
-            movem.l (SP)+,A1-A3
-            moveq   #0,D0
-            jmp     (A4)
-.L24:
-            fmove.x sub_408EFCAA.L10,FP0
-            move.w  A1,D1
-            beq.b   .L25
-            fmul.b  #$FF,FP0
-.L25:
-            movem.l (SP)+,A1-A3
-            moveq   #0,D0
-            jmp     (A4)
-.L26:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.b   .L33
-            movem.l A1,-(SP)
-            movea.l A0,A1
-            movem.l D2,-(SP)
-            bcc.b   .L27
-            moveq   #1,D2
-            bra.b   .L28
-.L27:
-            moveq   #0,D2
-.L28:
-            fmove.x sub_408EFCAA.L10,FP1
-            frem.x  FP1,FP0
-            fmove.l FPSR,D0
-            swap    D0
-            move.b  D0,D1
-            lsr.b   #1,D0
-            bcc.b   .L29
-            bsr.w   sub_408EFC12
-            subq.b  #1,D2
-            bmi.b   .L30
-            fmul.w  #$FFFF,FP0
-            bra.b   .L30
-.L29:
-            bsr.w   sub_408EFCAA
-.L30:
-            movem.l (SP)+,D2
-            andi.b  #3,D1
-            subq.b  #2,D1
-            bmi.b   .L31
-            fmul.w  #$FFFF,FP0
-.L31:
-            bfextu  (A1){1:16},D0
-            movea.l (SP)+,A1
-            beq.b   .L32
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
-.L32:
-            move.l  #$280000,D0
-            jmp     (A4)
-.L33:
-            bmi.b   .L34
-            btst    #$1D,D0
-            bne.b   .L34
-            fmove.x #"$7FFF00004021000000000000",FP0
-            move.l  #$800000,D0
-            jmp     (A4)
-.L34:
-            moveq   #0,D0
-            jmp     (A4)
-.L35:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.b   .L41
-            movem.l D2,-(SP)
-            bcc.b   .L36
-            moveq   #1,D2
-            bra.b   .L37
-.L36:
-            moveq   #0,D2
-.L37:
-            fmove.x sub_408EFCAA.L10,FP1
-            frem.x  FP1,FP0
-            fmove.l FPSR,D0
-            swap    D0
-            move.b  D0,D1
-            lsr.b   #1,D0
-            bcs.b   .L38
-            bsr.b   sub_408EFC12
-            bra.b   .L39
-.L38:
-            bsr.w   sub_408EFCAA
-            subq.b  #1,D2
-            bmi.b   .L39
-            fmul.w  #$FFFF,FP0
-.L39:
-            movem.l (SP)+,D2
-            andi.b  #3,D1
-            subq.b  #1,D1
-            bmi.b   .L40
-            subq.b  #2,D1
-            bpl.b   .L40
-            fmul.w  #$FFFF,FP0
-.L40:
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
-.L41:
-            bmi.b   .L43
-            btst    #$1D,D0
-            bne.b   .L42
-            fmove.x #"$7FFF00004021000000000000",FP0
-            move.l  #$800000,D0
-            jmp     (A4)
-.L42:
-            moveq   #0,D0
-            jmp     (A4)
-.L43:
-            fmove.w #1,FP0
-            moveq   #0,D0
-            jmp     (A4)
-sub_408EFC12:
-            fmove.x FP0,FP3
-            fmul.x  FP0,FP0
-            lea     sub_408EFCAA.L14,A0
-            bsr.w   sub_408EF67C
-            fmove.x FP1,FP2
-            lea     sub_408EFCAA.L13,A0
-            bsr.w   sub_408EF67C
-            fdiv.x  FP1,FP2
-            fmul.x  FP0,FP2
-            fmul.x  FP0,FP2
-            fcmp.x  #"$3FFD3FFD8000000000000000",FP0
-            fblt.w  .L1
-            fabs.x  FP3,FP3
-            fsub.x  #"$3FFE3FFE8000000000000000",FP3
-            fmove.x FP3,FP1
-            fdiv.w  #2,FP1
-            fmul.x  FP1,FP3
-            fsub.x  FP2,FP3
-            fadd.x  FP1,FP3
-            fmul.w  #$FFFF,FP3
-            fadd.x  #"$3FFE3FFEE000000000000000",FP3
-            fmove.x FP3,FP0
-            rts
+            bsr.w   sub_408E6024
+            bra.w   sub_408E5A52.L2
+sub_408E61A4:
+            movem.l (SP)+,D0-D7/A0-A6
+            bra.w   sub_408E6072
+sub_408E61AC:
+            movem.l D0-D7/A0-A6,-(SP)
+            movea.l SoundPtr,A6
+            tst.w   (A6)
+            beq.b   sub_408E61A4
+            lea     SoundVBL,A0
+            move.w  #1,($A,A0)
+            subq.w  #1,(A6)+
+            movem.l (A6),D2-D7/A0-A5
+            movea.l SoundBase,A6
+            move.l  #$FF0000,D1
+            move.l  A0,D0
+            bne.b   .L1
+            move.l  D6,D0
+            bne.b   .L1
+            move.l  D4,D0
+            beq.b   .L3
 .L1:
-            fdiv.w  #2,FP0
-            fsub.x  FP0,FP2
-            fadd.w  #1,FP2
-            fmove.x FP2,FP0
-            rts
-sub_408EFCAA:
-            fmove.x FP0,FP3
-            fmul.x  FP0,FP0
-            lea     .L12,A0
-            bsr.w   sub_408EF67C
-            fmove.x FP1,FP2
-            lea     .L11,A0
-            bsr.w   sub_408EF67C
-            fdiv.x  FP1,FP2
-            fmul.x  FP3,FP0
-            fmul.x  FP0,FP2
-            fsub.x  FP2,FP3
-            fmove.x FP3,FP0
-            rts
-.L1:
-            dc.w    $0004,$3FF6,0,$B946,$46AF,$F6CE,$3BFF,$3FF9
-            dc.w    0,$94F4,$3221,$4D61,$FBEB,$3FFB,0,$DC97
-            dc.w    $8903,$D944,$7893,$3FFF,0,$9F9E,$3946,$57CA
-            dc.w    $1D05,$C001,0,$CD6B,$C53A,$46EC,$DC9A,$4001
-            dc.w    0,$B483,$97E7,$BAE6,$FCE0
+            lea     ($172,A6),A6
+            move.w  #2,-(SP)
+            move.w  #$B9,-(SP)
 .L2:
-            dc.b    $00,$01,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $C000,0,$B818,$35C3,$CE0A,$5E1D,$3FFF,0
-            dc.w    $FA3E,$DF0E,$DDF4,$1A96
+            clr.w   D1
+            add.l   D2,D3
+            add.l   D4,D5
+            add.l   D6,D7
+            adda.l  A0,A1
+            move.l  D3,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A2,D0.w),D1
+            move.l  D5,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A3,D0.w),D0
+            add.w   D0,D1
+            move.l  D7,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A4,D0.w),D0
+            add.w   D0,D1
+            move.l  A1,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A5,D0.w),D0
+            add.w   D0,D1
+            lsr.w   #2,D1
+            move.b  D1,(A6)
+            addq.w  #2,A6
+            subq.w  #1,(SP)
+            bne.b   .L2
+            move.b  (-2,A2),SoundLevel
+            movea.l SoundBase,A6
+            move.w  #$B9,(SP)
+            subq.w  #1,(2,SP)
+            bne.b   .L2
+            bra.b   .L5
 .L3:
-            dc.w    $0002,$BFEE,0,$FF88,$90C8,$1B20,$9B79,$3FF9
-            dc.w    0,$DA5C,$84EF,$B813,$272F,$4003,0,$97D3
-            dc.w    $BAEA,$F80F,$FD45,$4009,0,$AB86,$71A1,$95BE
-            dc.w    $FF0C
+            lea     ($8C,A6),A6
+            move.w  #2,-(SP)
+            move.w  #$12C,-(SP)
+            move.l  D5,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A3,D0.w),D0
+            move.w  D0,-(SP)
+            move.l  D7,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A4,D0.w),D0
+            add.w   D0,(SP)
+            move.l  A1,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A5,D0.w),D0
+            add.w   D0,(SP)
 .L4:
-            dc.b    $00,$01,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4006,0,$D548,$7002,$984B,$5AB4,$400A,0
-            dc.w    $F775,$612E,$96B7,$0780,$400D,0,$FFFE
-            ds.b    6
-            dc.w    $7FFF
-            ds.b    10
-            dc.w    $FFFF
-            ds.b    10
-            dc.b    $3F,$FD,$00,$00,$80
-            ds.b    7
-            dc.b    $3F,$FE,$00,$00,$80
-            ds.b    7
-            dc.b    $3F,$FE,$00,$00,$C0
-            ds.b    7
-            dc.b    $3F,$FE,$00,$00,$E0
-            ds.b    7
-            dc.w    $400D,0,$834E
-            ds.b    6
-            dc.w    $401D,0,$FFFF,$FFFE
-            ds.b    4
+            clr.w   D1
+            add.l   D2,D3
+            move.l  D3,D0
+            and.l   D1,D0
+            swap    D0
+            move.b  (0,A2,D0.w),D1
+            add.w   (SP),D1
+            lsr.w   #2,D1
+            move.b  D1,(A6)
+            addq.w  #2,A6
+            subq.w  #1,(2,SP)
+            bne.b   .L4
+            move.b  (-2,A2),SoundLevel
+            movea.l SoundBase,A6
+            move.w  #$46,(2,SP)
+            subq.w  #1,(4,SP)
+            bne.b   .L4
+            addq.w  #2,SP
 .L5:
-            dc.w    $3FFF,0,$B504,$F333,$F9DE,$6484
+            addq.w  #4,SP
+            movea.l SoundPtr,A6
+            addq.w  #2,A6
+            movem.l D2-D7/A0-A1,(A6)
+            movem.l (SP)+,D0-D7/A0-A6
+            rts
 .L6:
-            dc.w    $3FFE,0,$B504,$F333,$F9DE,$6484
+            movea.l SoundDCE,A1
+            clr.l   ($10,A1)
+            lea     sub_408E62C8,A1
+            bra.w   sub_408E60C2.L9
+sub_408E62C8:
+            movea.l SoundDCE,A1
+            move.l  (8,A1),D0
+            bne.b   .L1
+            bsr.w   sub_408E5AAC
+            bsr.w   sub_408E5F26
+            rts
+.L1:
+            movea.l D0,A0
+            move.l  ($28,A0),D0
+            cmp.l   ($24,A0),D0
+            blt.b   .L2
+            bsr.w   sub_408E6072
+            bra.b   sub_408E62C8
+.L2:
+            move.l  ($10,A1),D3
+            lea     SoundVBL,A3
+            move.w  #1,($A,A3)
+            move.l  A4,-(SP)
+            movea.l ($20,A0),A1
+            addq.w  #2,A1
+            move.l  (A1)+,D1
+            movea.l A1,A3
+            adda.l  ($24,A0),A3
+            adda.l  D0,A1
+            movea.l SoundBase,A2
+            lea     ($40,A2),A2
+            lea     ($2A4,A2),A4
+            clr.w   -(SP)
+            move.w  #$151,D2
+.L3:
+            moveq   #0,D0
+.L4:
+            move.b  (A1),(A2)
+            addq.w  #2,A2
+            add.l   D1,D3
+            swap    D3
+            adda.w  D3,A1
+            add.w   D3,D0
+            clr.w   D3
+            swap    D3
+            cmpa.l  A1,A3
+            dble    D2,.L4
+            add.l   D0,($28,A0)
+            tst.w   (SP)+
+            beq.b   .L10
+            tst.w   D2
+            bmi.b   .L8
+.L5:
+            moveq   #0,D0
+.L6:
+            move.b  D0,(A2)
+            addq.w  #2,A2
+            cmpa.l  A2,A4
+            bgt.b   .L7
+            movea.l SoundBase,A2
 .L7:
-            dc.w    $3FFE,0,$93CD,$3A2C,$8198,$E26A
+            dbra    D2,.L6
 .L8:
-            dc.w    $3FFA,0,$DC2A,$86B1,$5FDB,$6462
+            movea.l SoundDCE,A1
+            move.l  D3,($10,A1)
+            move.b  (-2,A2),SoundLevel
+            movea.l (SP)+,A4
+            move.l  ($28,A0),D0
+            cmp.l   ($24,A0),D0
+            blt.b   .L9
+            bsr.w   sub_408E5CE2
 .L9:
-            dc.w    $3FFD,0,$8930,$A2F4,$F66A,$B18A
+            rts
 .L10:
-            dc.w    $3FFF,0,$C90F,$DAA2,$2168,$C235
+            tst.w   D2
+            bmi.b   .L11
+            addi.w  #$20,D2
+            bra.b   .L5
 .L11:
-            dc.b    $00,$02,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4007,0,$88D8,$B844,$A6A8,$5A30,$400E,0
-            dc.w    $8A15,$8A49,$0979,$2320,$4013,0,$FAA9,$FE26
-            dc.w    $FE63,$F22B
-.L12:
-            dc.w    $0002,$BFFE,0,$C250,$86AE,$43F5,$CBF5,$4006
-            dc.w    0,$9E76,$EC66,$BEE7,$6BA2,$C00C,0,$AF51
-            dc.w    $A1D6,$C4C4,$AA01,$4011,0,$A71B,$FEC4,$A997
-            dc.w    $F6CE
-.L13:
-            dc.b    $00,$02,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4007,0,$A6D9,$6A95,$FBDF,$9685,$400E,0
-            dc.w    $C7A7,$EA65,$E85D,$156B,$4014,0,$D26E,$871C
-            dc.w    $7B17,$52B2
-.L14:
-            dc.w    $0002,$BFFB,0,$D57E,$18D7,$A6F6,$D758,$4003
-            dc.w    0,$E364,$937E,$32B3,$D072,$C00A,0,$A62D
-            dc.w    $4056,$586B,$C045,$4010,0,$8C49,$AF68,$520F
-            dc.w    $8C7A
-.L15:
-            dc.b    $00,$02,$BF,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4005,0,$B513,$0324,$83C0,$0955,$C009,0
-            dc.w    $D1FF,$B242,$5762,$E0CF,$400A,0,$E190,$9309
-            dc.w    $9376,$66AB
-.L16:
-            dc.w    $0002,$BFE9,0,$B1FC,$3363,$D79B,$2838,$3FFD
-            dc.w    0,$AA9D,$71D8,$3EC7,$4CD1,$C003,0,$E9CD
-            dc.w    $8E24,$B965,$7DBB,$4007,0,$F09A,$3670,$9D4B
-            dc.w    $1836
-.L17:
-            dc.w    $0003,$3FFF,0,$98D3,$1EAE,$2AFA,$5DAD,$4003
-            dc.w    0,$8F79,$4CD8,$B3CD,$EFD9,$4005,0,$8E37
-            dc.w    $ED85,$70B8,$B368,$4005,0,$CDA4,$BEA1,$AC59
-            dc.w    $F3B8,$4004,0,$C405,$9C55,$4CF0,$C656
-.L18:
-            dc.b    $00,$03,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4002,0,$A23B,$6C13,$1F92,$0E30,$4003,0
-            dc.w    $C3C8,$593D,$FA3A,$486F,$4003,0,$82AE,$6838
-            dc.w    $DDF5,$D945
-            ds.b    12
-            REPT    152
-            dc.b    ' Copyright Apple'
-            dc.b    ' Computer, Inc. '
-            dc.b    '1989-1990][',$11,'Tue,'
-            dc.b    ' Jul 18, 1989]<<'
-            dc.b    'HJRBGMSHJMAAGCSL'
-            dc.b    'RWHBBMGGDCCHDAFD'
-            dc.b    'JWGMRSWCRLESRCSM'
-            dc.b    'BPKEBALJWKDMLPAT'
-            dc.b    'WTOSGSG DEVAJMP>'
-            dc.b    '>[(c)'
-            ENDR
-            dc.b    ' Copyright Apple Computer, Inc. 1989-1990]['
-            dc.b    17,'Tue, Jul 18, 1989'
-            dc.b    ']<<HJRBGMSHJMAAGCSLRWHBBMGGDCCHDAFDJWGMRSWCRLESRCSMBPKEBALJ'
+            move.w  #1,-(SP)
+            movea.l SoundBase,A2
+            moveq   #$1F,D2
+            bra.b   .L3
+            ds.b    4
 
             EVEN
