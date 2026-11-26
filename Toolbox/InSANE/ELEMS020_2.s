@@ -5,7 +5,7 @@
             IMPORT  DIVM0STUFF,DIVP0STUFF,ERRORNAN,EXP21P_PACK_5_2,EXP21Q_PACK_5_2,FPK0
             IMPORT  FPK1,FPK2,FPKINF,FPKLOGE2,FPKM1,M0STUFF
             IMPORT  M1STUFF,MINFSTUFF,P0STUFF,P1STUFF,PINFSTUFF,RESULTDELIVERED
-            IMPORT  RsrcPACK_5_2,CLASSIFY,A0TOA1,POLYEVAL,CLEARUFLOW,CLEAROFLOW
+            IMPORT  ELEMS020,CLASSIFY,A0TOA1,POLYEVAL,CLEARUFLOW,CLEAROFLOW
             IMPORT  CLEARINVALID,CLEARINEXACT,FORCEOFLOW,FORCEUFLOW,FORCEDIVZER,FORCEINEXACT
             IMPORT  TESTUFLOW,TESTOFLOW,TESTINVALID,TESTINEXACT,SCALBXX,ELI2X
 
@@ -14,27 +14,27 @@
 EXPTOP:
             subq.b  #1,D1
             beq.b   P1STUFF
-            bgt.b   .L18
+            bgt.b   .EXPNONZERO
             tst.w   D1
             bmi.b   P0STUFF
             bra.b   RESULTDELIVERED
-.L18:
+.EXPNONZERO:
             btst    #1,D3
-            beq.b   .L19
-            bsr.b   sub_408EA53E
-            bra.b   .L20
-.L19:
-            bsr.b   sub_408EA560
+            beq.b   .EXPR
+            bsr.b   SPLIT2
+            bra.b   .EXPROOT
+.EXPR:
+            bsr.b   SPLIT
             bsr.w   TESTOFLOW
-            beq.b   .L20
+            beq.b   .EXPROOT
             bsr.w   FORCEINEXACT
             tst.w   D1
             bpl.b   PINFSTUFF
             bsr.w   CLEAROFLOW
             bsr.w   FORCEUFLOW
             bra.w   P0STUFF
-.L20:
-            bsr.w   sub_408EA62A
+.EXPROOT:
+            bsr.w   EXPAPPROX
             pea     (FPK1.w,PC)
             pea     (A4)
             clr.w   -(SP)
@@ -50,7 +50,7 @@ EXPTOP:
             beq.b   RESULTDELIVERED
             bsr.w   FORCEUFLOW
             bra.b   RESULTDELIVERED
-sub_408EA53E:
+SPLIT2:
             movea.l A4,A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
@@ -63,7 +63,7 @@ sub_408EA53E:
             move.w  #2,-(SP)
             jsr     (A3)
             rts
-sub_408EA560:
+SPLIT:
             movea.l A4,A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
@@ -89,45 +89,45 @@ sub_408EA560:
             bra.w   CLEARINEXACT
 EXP1TOP:
             subq.b  #1,D1
-            bgt.b   .L3
-            beq.b   .L2
+            bgt.b   .EXP1FINITE
+            beq.b   .EXPEASY
             tst.w   D1
             bmi.w   M1STUFF
-.L2:
+.EXPEASY:
             bra.w   RESULTDELIVERED
-.L3:
+.EXP1FINITE:
             subq.b  #1,D1
             btst    #1,D3
-            beq.b   .L6
+            beq.b   .EXP1R
             tst.b   D1
-            beq.b   .L5
+            beq.b   .EXP21RNORM
             pea     (FPKLOGE2.w,PC)
             pea     (A4)
             move.w  #4,-(SP)
             jsr     (A3)
-.L4:
+.EXP1OUT:
             bsr.w   FORCEUFLOW
             bsr.w   FORCEINEXACT
-            bra.b   .L8
-.L5:
-            bsr.w   sub_408EA53E
-            bra.b   .L7
-.L6:
+            bra.b   .EXP1RDONE
+.EXP21RNORM:
+            bsr.w   SPLIT2
+            bra.b   .EXP1ROOT
+.EXP1R:
             tst.b   D1
-            bne.b   .L4
-            bsr.b   sub_408EA560
+            bne.b   .EXP1OUT
+            bsr.b   SPLIT
             bsr.w   TESTOFLOW
-            beq.b   .L7
+            beq.b   .EXP1ROOT
             bsr.w   FORCEINEXACT
             tst.w   D1
             bpl.w   PINFSTUFF
             bsr.w   CLEAROFLOW
             bra.w   M1STUFF
-.L7:
-            bsr.b   sub_408EA62A
+.EXP1ROOT:
+            bsr.b   EXPAPPROX
             move.l  (-$E,A6),D0
             or.l    (-$A,A6),D0
-            beq.b   .L8
+            beq.b   .EXP1RDONE
             pea     (FPK1.w,PC)
             pea     (A4)
             clr.w   -(SP)
@@ -140,14 +140,14 @@ EXP1TOP:
             move.w  #2,-(SP)
             jsr     (A3)
             bsr.w   CLEARUFLOW
-.L8:
+.EXP1RDONE:
             bra.w   RESULTDELIVERED
-sub_408EA62A:
+EXPAPPROX:
             move.l  (2,A4),D0
             or.l    (6,A4),D0
-            bne.b   .L1
+            bne.b   EXPHARD
             rts
-.L1:
+EXPHARD:
             lea     (-$24,A6),A1
             movea.l A4,A0
             bsr.w   A0TOA1
@@ -186,7 +186,7 @@ XPWRITOP:
             move.w  (A0),D2
             beq.w   P1STUFF
             subq.b  #1,D1
-            bgt.b   .L5
+            bgt.b   .FINPWRI
             asr.w   #1,D2
             bcs.b   .L3
             bclr    #7,(A4)
@@ -194,31 +194,31 @@ XPWRITOP:
             addx.w  D2,D2
             bpl.w   RESULTDELIVERED
             tst.b   D1
-            bpl.b   .L4
+            bpl.b   .ZPWRNEG
             tst.b   (A4)
             bpl.w   P0STUFF
             bra.w   M0STUFF
-.L4:
+.ZPWRNEG:
             tst.b   (A4)
             bpl.w   DIVP0STUFF
             bra.w   DIVM0STUFF
-.L5:
+.FINPWRI:
             move.w  D2,D0
             bpl.b   .L6
             neg.w   D0
 .L6:
             cmpi.w  #$FF,D0
-            bhi.b   .L7
-            bsr.b   sub_408EA70C
+            bhi.b   .XPWRBIG
+            bsr.b   XPWRK
             bra.w   RESULTDELIVERED
-.L7:
+.XPWRBIG:
             move.w  (A4),-(SP)
             bclr    #7,(A4)
             move.l  D4,-(SP)
             pea     (-$10,A6)
             move.l  (SP),D4
             bsr.w   ELI2X
-            bsr.w   sub_408EA792
+            bsr.w   XPWRY
             move.w  (SP)+,D0
             bpl.b   .L8
             asr.w   #1,D2
@@ -226,31 +226,31 @@ XPWRITOP:
             bset    #7,(A4)
 .L8:
             bra.w   RESULTDELIVERED
-sub_408EA70C:
+XPWRK:
             movea.l A4,A0
             lea     (-$1A,A6),A1
             bsr.w   A0TOA1
-            bsr.b   sub_408EA766
+            bsr.b   XPWRKLOOP
             tst.w   D2
-            bmi.b   .L2
-.L1:
+            bmi.b   .XPWRKDIV
+.XPWRKSTORE:
             movea.l A1,A0
             movea.l A4,A1
             bra.w   A0TOA1
-.L2:
+.XPWRKDIV:
             lea     (FPK1.w,PC),A0
             lea     (A4),A1
             bsr.w   A0TOA1
             bsr.w   TESTUFLOW
-            bne.b   .L3
+            bne.b   .XPWRKCLEAR
             bsr.w   TESTOFLOW
-            bne.b   .L3
+            bne.b   .XPWRKCLEAR
             pea     (-$10,A6)
             pea     (A4)
             move.w  #6,-(SP)
             jsr     (A3)
             rts
-.L3:
+.XPWRKCLEAR:
             bsr.w   CLEAROFLOW
             bsr.w   CLEARUFLOW
             pea     (-$1A,A6)
@@ -261,60 +261,60 @@ sub_408EA70C:
             bpl.b   .L4
             neg.w   D0
 .L4:
-            bsr.b   sub_408EA766
-            bra.b   .L1
-sub_408EA766:
+            bsr.b   XPWRKLOOP
+            bra.b   .XPWRKSTORE
+XPWRKLOOP:
             lea     (FPK1.w,PC),A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
-            bra.b   .L2
-.L1:
+            bra.b   .XKLPENTRY
+.XKLPTOP:
             pea     (A4)
             pea     (A4)
             move.w  #4,-(SP)
             jsr     (A3)
-.L2:
+.XKLPENTRY:
             lsr.w   #1,D0
-            bcc.b   .L3
+            bcc.b   .XKLPSKIP
             pea     (A4)
             pea     (A1)
             move.w  #4,-(SP)
             jsr     (A3)
-.L3:
+.XKLPSKIP:
             tst.w   D0
-            bne.b   .L1
+            bne.b   .XKLPTOP
             rts
-sub_408EA792:
+XPWRY:
             movea.l A4,A0
             lea     (-$1A,A6),A1
             bsr.w   A0TOA1
             pea     (A1)
             move.w  #2,-(SP)
-            bsr.w   RsrcPACK_5_2
+            bsr.w   ELEMS020
             move.l  D4,-(SP)
             pea     (A1)
             move.w  #4,-(SP)
             jsr     (A3)
             pea     (A1)
             move.w  #$A,-(SP)
-            bsr.w   RsrcPACK_5_2
+            bsr.w   ELEMS020
             movea.l A1,A0
             movea.l A4,A1
             bra.w   A0TOA1
 XPWRYTOP:
             tst.w   D1
-            bmi.b   .L4
-            bsr.b   sub_408EA828
+            bmi.b   .NEGPWRY
+            bsr.b   XPWRYCOM
             bra.w   RESULTDELIVERED
-.L2:
+.XPWRY9ERR:
             addq.l  #4,SP
-.L3:
+.XPWRYERR:
             bsr.w   CLEARINEXACT
             moveq   #$25,D0
             bra.w   ERRORNAN
-.L4:
+.NEGPWRY:
             tst.b   D2
-            beq.b   .L3
+            beq.b   .XPWRYERR
             movea.l D4,A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
@@ -322,7 +322,7 @@ XPWRYTOP:
             move.w  #$14,-(SP)
             jsr     (A3)
             bsr.w   TESTINEXACT
-            bne.b   .L3
+            bne.b   .XPWRYERR
             pea     (FPK2.w,PC)
             pea     (A1)
             move.w  #6,-(SP)
@@ -333,17 +333,17 @@ XPWRYTOP:
             move.w  FPState,(-6,A6)
             bsr.w   CLEARINEXACT
             bclr    #7,(A4)
-            bsr.b   sub_408EA828
+            bsr.b   XPWRYCOM
             btst    #4,(-6,A6)
             beq.b   .L5
             bchg    #7,(A4)
 .L5:
             bra.w   RESULTDELIVERED
-sub_408EA828:
+XPWRYCOM:
             subq.b  #1,D1
-            bne.b   .L3
+            bne.b   .NONPWRY
             subq.b  #1,D2
-            beq.b   XPWRYTOP.L2
+            beq.b   XPWRYTOP.XPWRY9ERR
             tst.w   D2
             bpl.b   .L1
             bsr.w   FORCEDIVZER
@@ -354,20 +354,20 @@ sub_408EA828:
 .L2:
             movea.l A4,A1
             bra.w   A0TOA1
-.L3:
-            bpl.b   .L4
+.NONPWRY:
+            bpl.b   .FINPWRY
             subq.b  #1,D2
-            bne.b   .L5
-            bra.w   XPWRYTOP.L2
-.L4:
+            bne.b   .XPWRYOK
+            bra.w   XPWRYTOP.XPWRY9ERR
+.FINPWRY:
             subq.b  #1,D2
-            bpl.b   .L5
+            bpl.b   .XPWRYOK
             pea     (FPK1.w,PC)
             pea     (A4)
             move.w  #8,-(SP)
             jsr     (A3)
-            beq.w   XPWRYTOP.L2
-.L5:
+            beq.w   XPWRYTOP.XPWRY9ERR
+.XPWRYOK:
             move.w  D2,D6
             move.l  D4,-(SP)
             pea     (-4,A6)
@@ -379,17 +379,17 @@ sub_408EA828:
             bsr.w   TESTINEXACT
             sne     D1
             or.b    D1,D7
-            bne.b   .L7
+            bne.b   .XPWRYHARD
             move.w  (-4,A6),D2
             move.w  D2,D0
             bpl.b   .L6
             neg.w   D0
 .L6:
             cmpi.w  #$FF,D0
-            ble.w   sub_408EA70C
-.L7:
+            ble.w   XPWRK
+.XPWRYHARD:
             bsr.w   CLEARINEXACT
-            bsr.w   sub_408EA792
+            bsr.w   XPWRY
             tst.b   D6
             bmi.w   CLEARINEXACT
             rts
@@ -399,54 +399,54 @@ COMPOUNDTOP:
             move.w  #8,-(SP)
             jsr     (A3)
             blt.w   ERRFINAN
-            bgt.b   .L12
+            bgt.b   .CMPGTM1
             subq.b  #1,D2
-            bne.b   .L10
-.L9:
+            bne.b   .CMPM1N
+.CMPTOZERO:
             bra.w   P1STUFF
-.L10:
+.CMPM1N:
             movea.l D4,A0
             tst.b   (A0)
             bmi.w   DIVP0STUFF
-.L11:
+.CMPZERO:
             bra.w   P0STUFF
-.L12:
+.CMPGTM1:
             subq.b  #1,D2
-            beq.b   .L9
-            bgt.b   .L13
+            beq.b   .CMPTOZERO
+            bgt.b   .CMPTOFIN
             subq.b  #1,D1
             beq.b   ERRFINAN
             eor.w   D2,D1
-            bmi.b   .L11
+            bmi.b   .CMPZERO
             bra.w   PINFSTUFF
-.L13:
+.CMPTOFIN:
             lea     (-$1A,A6),A1
             movea.l D5,A0
             bsr.w   A0TOA1
             move.w  (A1),D0
             bclr    #$F,D0
             cmpi.w  #$3F7F,D0
-            blt.b   .L14
+            blt.b   .cmpbasee
             pea     (A1)
             move.w  #6,-(SP)
-            bsr.w   RsrcPACK_5_2
+            bsr.w   ELEMS020
             move.l  D4,-(SP)
             pea     (A1)
             move.w  #4,-(SP)
             jsr     (A3)
             pea     (A1)
             move.w  #$A,-(SP)
-            bra.b   .L15
-.L14:
+            bra.b   .cmpresult
+.cmpbasee:
             move.l  D4,-(SP)
             pea     (A1)
             move.w  #4,-(SP)
             jsr     (A3)
             pea     (A1)
             move.w  #8,-(SP)
-.L15:
+.cmpresult:
             bsr.w   CLEARUFLOW
-            bsr.w   RsrcPACK_5_2
+            bsr.w   ELEMS020
             movea.l A1,A0
             movea.l A4,A1
             bsr.w   A0TOA1
@@ -460,42 +460,42 @@ ANNUITYTOP:
             move.w  #8,-(SP)
             jsr     (A3)
             blt.b   ERRFINAN
-            bne.b   .L19
+            bne.b   .ANNOK
             subq.b  #1,D2
-            beq.b   .L20
+            beq.b   .ANN0
             tst.w   D2
             bpl.w   DIVP0STUFF
-.L18:
+.ANNM1:
             bra.w   M1STUFF
-.L19:
+.ANNOK:
             subq.b  #1,D2
-            bne.b   .L21
-.L20:
+            bne.b   .ANNXN
+.ANN0:
             bra.w   P0STUFF
-.L21:
+.ANNXN:
             subq.b  #1,D1
-            bgt.b   .L24
-            blt.b   .L23
-.L22:
+            bgt.b   .ANNROK
+            blt.b   .ANNRINF
+.ANNSRC:
             movea.l A4,A1
             movea.l D4,A0
             bsr.w   A0TOA1
             bra.w   RESULTDELIVERED
-.L23:
+.ANNRINF:
             tst.w   D2
-            bpl.b   .L20
+            bpl.b   .ANN0
             pea     (FPKM1.w,PC)
             move.l  D4,-(SP)
             move.w  #8,-(SP)
             jsr     (A3)
-            beq.b   .L18
+            beq.b   .ANNM1
             bgt.w   M0STUFF
             bra.w   MINFSTUFF
-.L24:
+.ANNROK:
             tst.b   D2
-            bpl.b   .L25
+            bpl.b   .ANNDOIT
             eor.w   D2,D1
-            bmi.b   .L22
+            bmi.b   .ANNSRC
             movea.l D5,A0
             lea     (-$1A,A6),A1
             bsr.w   A0TOA1
@@ -507,17 +507,17 @@ ANNUITYTOP:
             move.w  #6,-(SP)
             jsr     (A3)
             bra.w   RESULTDELIVERED
-.L25:
+.ANNDOIT:
             lea     (-$1A,A6),A1
             movea.l D5,A0
             bsr.w   A0TOA1
             move.w  (A1),D0
             bclr    #$F,D0
             cmpi.w  #$3F7F,D0
-            blt.b   .L27
+            blt.b   .annbasee
             pea     (A1)
             move.w  #6,-(SP)
-            bsr.w   RsrcPACK_5_2
+            bsr.w   ELEMS020
             move.l  D4,-(SP)
             pea     (A1)
             move.w  #4,-(SP)
@@ -527,12 +527,12 @@ ANNUITYTOP:
             blt.b   .L26
             movea.l D5,A0
             cmpi.w  #$407F,(A0)
-            bge.b   .L32
+            bge.b   .annspecial
 .L26:
             pea     (A1)
             move.w  #$E,-(SP)
-            bra.b   .L28
-.L27:
+            bra.b   .annresult
+.annbasee:
             move.l  D4,-(SP)
             pea     (A1)
             move.w  #4,-(SP)
@@ -540,14 +540,14 @@ ANNUITYTOP:
             bchg    #7,(A1)
             pea     (A1)
             move.w  #$C,-(SP)
-.L28:
-            bsr.w   RsrcPACK_5_2
+.annresult:
+            bsr.w   ELEMS020
             bchg    #7,(A1)
             move.l  D5,-(SP)
             pea     (A1)
             move.w  #6,-(SP)
             jsr     (A3)
-.L29:
+.annclear:
             bsr.w   CLEARUFLOW
             bsr.w   CLEAROFLOW
             movea.l A1,A0
@@ -555,22 +555,22 @@ ANNUITYTOP:
             subq.b  #3,D0
             bne.b   .L30
             bsr.w   FORCEOFLOW
-            bra.b   .L31
+            bra.b   .ANNDOUT
 .L30:
             subq.b  #2,D0
-            beq.b   .L31
+            beq.b   .ANNDOUT
             bsr.w   FORCEUFLOW
-.L31:
+.ANNDOUT:
             lea     (-$1A,A6),A0
             movea.l A4,A1
             bsr.w   A0TOA1
             bra.w   RESULTDELIVERED
-.L32:
+.annspecial:
             movea.l D5,A0
             bsr.w   A0TOA1
             pea     (A1)
             move.w  #2,-(SP)
-            bsr.w   RsrcPACK_5_2
+            bsr.w   ELEMS020
             lea     (-$24,A6),A1
             movea.l D4,A0
             bsr.w   A0TOA1
@@ -586,8 +586,8 @@ ANNUITYTOP:
             bchg    #7,(A1)
             pea     (A1)
             move.w  #$A,-(SP)
-            bsr.w   RsrcPACK_5_2
+            bsr.w   ELEMS020
             bchg    #7,(A1)
-            bra.b   .L29
+            bra.b   .annclear
 
             EVEN

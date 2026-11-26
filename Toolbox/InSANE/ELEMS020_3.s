@@ -59,7 +59,7 @@ TRIGREDUCTION:
             rts
 SINGUTS:
             lea     (SINQ_PACK_5_2.w,PC),A2
-            bsr.b   sub_408EAB38
+            bsr.b   POVERQ
             pea     (A4)
             pea     (A2)
             move.w  #4,-(SP)
@@ -73,14 +73,14 @@ SINGUTS:
             move.w  #2,-(SP)
             jsr     (A3)
             rts
-sub_408EAB2A:
-            bsr.b   sub_408EAB38
+T2POVERQ:
+            bsr.b   POVERQ
             pea     (A2)
             pea     (A0)
             move.w  #4,-(SP)
             jsr     (A3)
             rts
-sub_408EAB38:
+POVERQ:
             movea.l A4,A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
@@ -100,7 +100,7 @@ sub_408EAB38:
             rts
 COSGUTS:
             lea     (COSQ_PACK_5_2.w,PC),A2
-            bsr.b   sub_408EAB2A
+            bsr.b   T2POVERQ
             pea     (A2)
             pea     (A0)
             move.w  #4,-(SP)
@@ -109,7 +109,7 @@ COSGUTS:
             pea     (A2)
             move.w  #8,-(SP)
             jsr     (A3)
-            bgt.b   .L1
+            bgt.b   .CGBIG
             pea     (FPKHALF.w,PC)
             pea     (A2)
             move.w  #4,-(SP)
@@ -125,7 +125,7 @@ COSGUTS:
             clr.w   -(SP)
             jsr     (A3)
             rts
-.L1:
+.CGBIG:
             bclr    #7,(A4)
             pea     (FPKHALF.w,PC)
             pea     (A4)
@@ -163,7 +163,7 @@ TANTOP:
             bmi.w   ERRORNAN
             beq.w   RESULTDELIVERED
             bsr.w   TRIGREDUCTION
-            bsr.b   sub_408EAC48
+            bsr.b   TANGUTS
             ror.w   #1,D2
             bcc.b   .L3
             bchg    #7,(A4)
@@ -182,9 +182,9 @@ TANTOP:
             bchg    #7,(A4)
 .L3:
             bra.w   TRIGFINI
-sub_408EAC48:
+TANGUTS:
             lea     (TANQ_PACK_5_2.w,PC),A2
-            bsr.w   sub_408EAB2A
+            bsr.w   T2POVERQ
             movea.l A4,A0
             lea     (-$2E,A6),A1
             bsr.w   A0TOA1
@@ -201,7 +201,7 @@ sub_408EAC48:
             pea     (A2)
             move.w  #8,-(SP)
             jsr     (A3)
-            bgt.b   .L1
+            bgt.b   .TGBIG
             pea     (FPK3.w,PC)
             pea     (A1)
             move.w  #6,-(SP)
@@ -210,8 +210,8 @@ sub_408EAC48:
             pea     (A0)
             clr.w   -(SP)
             jsr     (A3)
-            bra.b   .L2
-.L1:
+            bra.b   .TGFIN
+.TGBIG:
             pea     (A0)
             movea.l A4,A0
             lea     (-$24,A6),A1
@@ -240,7 +240,7 @@ sub_408EAC48:
             clr.w   -(SP)
             jsr     (A3)
             movea.l A1,A0
-.L2:
+.TGFIN:
             pea     (A0)
             pea     (A4)
             clr.w   -(SP)
@@ -254,24 +254,24 @@ ATANTOP:
             bsr.w   A0TOA1
             clr.b   D1
             or.w    D1,(A4)
-            bra.b   .L5
+            bra.b   .ATQUICK
 .L4:
-            bne.b   .L6
-.L5:
+            bne.b   .ATHARD
+.ATQUICK:
             bra.w   RESULTDELIVERED
-.L6:
+.ATHARD:
             bclr    #7,(A4)
-            bsr.b   sub_408EAD12
+            bsr.b   ATANGUTS
             clr.b   D1
             or.w    D1,(A4)
             bra.w   TRIGFINI
-sub_408EAD12:
+ATANGUTS:
             moveq   #0,D2
             pea     (FPK1.w,PC)
             pea     (A4)
             move.w  #8,-(SP)
             jsr     (A3)
-            bls.b   .L1
+            bls.b   .AGNOINV
             moveq   #-1,D2
             movea.l A4,A0
             lea     (-$10,A6),A1
@@ -283,7 +283,7 @@ sub_408EAD12:
             pea     (A1)
             move.w  #6,-(SP)
             jsr     (A3)
-.L1:
+.AGNOINV:
             move.l  (A4)+,-(SP)
             move.l  (A4)+,-(SP)
             move.w  (A4),-(SP)
@@ -292,15 +292,15 @@ sub_408EAD12:
             pea     (A4)
             move.w  #8,-(SP)
             jsr     (A3)
-            bgt.b   .L2
+            bgt.b   .AGLONGFORM
             lea     (ATANQ_PACK_5_2.w,PC),A2
-            bsr.w   sub_408EAB38
+            bsr.w   POVERQ
             pea     (A0)
             pea     (A4)
             move.w  #4,-(SP)
             jsr     (A3)
-            bra.w   .L3
-.L2:
+            bra.w   .AGFINI
+.AGLONGFORM:
             movea.l A4,A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
@@ -339,7 +339,7 @@ sub_408EAD12:
             move.w  #6,-(SP)
             jsr     (A3)
             lea     (ATANQ_PACK_5_2.w,PC),A2
-            bsr.w   sub_408EAB38
+            bsr.w   POVERQ
             pea     (A0)
             pea     (A4)
             move.w  #4,-(SP)
@@ -352,7 +352,7 @@ sub_408EAD12:
             pea     (A4)
             clr.w   -(SP)
             jsr     (A3)
-.L3:
+.AGFINI:
             lea     (-8,A6),A1
             move.w  (SP)+,(A1)
             move.l  (SP)+,-(A1)
@@ -362,10 +362,10 @@ sub_408EAD12:
             move.w  #2,-(SP)
             jsr     (A3)
             tst.w   D2
-            bne.b   .L4
+            bne.b   .AGSUBPI2
             bchg    #7,(A4)
             rts
-.L4:
+.AGSUBPI2:
             pea     (FPKPI2_PACK_5_2.w,PC)
             pea     (A4)
             clr.w   -(SP)
@@ -373,18 +373,18 @@ sub_408EAD12:
             rts
 RANDTOP:
             move.w  (A4),D1
-            bmi.b   .L7
+            bmi.b   .OLDRAND
             move.l  (2,A4),D2
-            bpl.b   .L7
+            bpl.b   .OLDRAND
             move.l  (6,A4),D0
-            bne.b   .L7
+            bne.b   .OLDRAND
             move.l  #$401E,D0
             sub.w   D1,D0
-            ble.b   .L7
+            ble.b   .OLDRAND
             cmpi.w  #$1F,D0
-            bgt.b   .L7
+            bgt.b   .OLDRAND
             bfins   D2,D1{0:D0}
-            bne.b   .L7
+            bne.b   .OLDRAND
             lsr.l   D0,D2
             mulu.l  #$41A7,D1:D2
             divu.l  #$7FFFFFFF,D1:D2
@@ -404,7 +404,7 @@ RANDTOP:
             unlk    A6
             adda.w  (SP),SP
             rts
-.L7:
+.OLDRAND:
             pea     (FPKARAND.w,PC)
             pea     (A4)
             move.w  #4,-(SP)

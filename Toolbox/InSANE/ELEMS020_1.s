@@ -2,7 +2,7 @@
 
             EXPORT  DIVM0STUFF,DIVP0STUFF,ELCLASSX,ERRORNAN,M0STUFF,M1STUFF
             EXPORT  MINFSTUFF,P0STUFF,P1STUFF,PINFSTUFF,RESULTDELIVERED,RsrcEntryPACK_5_2
-            EXPORT  RsrcPACK_5_2,CLASSIFY,A0TOA1,POLYEVAL,CLEARUFLOW,CLEAROFLOW
+            EXPORT  ELEMS020,CLASSIFY,A0TOA1,POLYEVAL,CLEARUFLOW,CLEAROFLOW
             EXPORT  CLEARINVALID,CLEARINEXACT,FORCEOFLOW,FORCEUFLOW,FORCEDIVZER,FORCEINEXACT
             EXPORT  TESTDIVZER,TESTUFLOW,TESTOFLOW,TESTINVALID,TESTINEXACT,SCALBXX
             EXPORT  ELI2X
@@ -18,14 +18,14 @@
 RsrcEntryPACK_5_2:
             dc.b    $08,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 5 (4660 bytes) - Combo mask
             dc.l    RsrcEntryPACK_4_2-BaseOfROM     ; Next entry
-            dc.l    RsrcPACK_5_2-BaseOfROM          ; Data
+            dc.l    ELEMS020-BaseOfROM          ; Data
             dc.b    'PACK'                          ; Type
             dc.w    5                               ; ID
             dc.b    $58                             ; Attributes
             dc.b    0                               ; Name
             dc.b    'ter, Inc. 19'
             dc.l    $C0A00000,$00001240,$000001F4   ; Block header
-RsrcPACK_5_2:
+ELEMS020:
             link.w  A6,#-$44
             movem.l D0-D7/A0-A4,-(SP)
             moveq   #0,D3
@@ -33,11 +33,11 @@ RsrcPACK_5_2:
             lea     (4,A6),A2
             lea     (8,A6),A0
             move.w  (A0)+,D3
-            bpl.w   CLASSIFY.L2
+            bpl.w   CLASSIFY.DSTONLY
             movea.l (A0)+,A4
             move.l  (A0),D4
             btst    #$E,D3
-            bne.b   .L4
+            bne.b   .HAVESRC2
             tst.b   D3
             bpl.b   .L1
             move.w  (A4),(2,A4)
@@ -50,28 +50,28 @@ RsrcPACK_5_2:
             moveq   #$3E,D0
             and.w   D3,D0
             cmpi.b  #$10,D0
-            beq.b   CLASSIFY.L4
+            beq.b   CLASSIFY.CLASSDSTORSRC2
             tst.b   D3
-            bpl.b   .L3
-.L2:
+            bpl.b   .CLCOM2
+.CLCOM1:
             movea.l D4,A0
             lea     (-$38,A6),A1
             move.l  A1,D4
             move.w  (A0),(A1)+
             move.l  (4,A0),(A1)+
             move.l  (8,A0),(A1)
-.L3:
+.CLCOM2:
             movea.l D4,A0
             bsr.b   CLASSIFY
             move.w  D0,D2
-            bra.b   CLASSIFY.L4
-.L4:
+            bra.b   CLASSIFY.CLASSDSTORSRC2
+.HAVESRC2:
             addq.l  #4,A0
             move.l  (A0),D5
             move.l  (A2),(A0)
             move.w  #$E,(A2)
             tst.b   D3
-            bpl.b   .L3
+            bpl.b   .CLCOM2
             addq.w  #2,A4
             movea.l D5,A0
             lea     (-$42,A6),A1
@@ -79,7 +79,7 @@ RsrcPACK_5_2:
             move.w  (A0),(A1)+
             move.l  (4,A0),(A1)+
             move.l  (8,A0),(A1)
-            bra.b   .L2
+            bra.b   .CLCOM1
 CLASSIFY:
             pea     (A0)
             pea     (-4,A6)
@@ -90,7 +90,7 @@ CLASSIFY:
             ori.w   #$8000,D0
 .L1:
             rts
-.L2:
+.DSTONLY:
             moveq   #$F,D2
             movea.l (A0),A4
             tst.b   D3
@@ -101,14 +101,14 @@ CLASSIFY:
             move.l  (A2),(A0)
             move.w  #6,(A2)
             move.l  A4,D5
-.L4:
+.CLASSDSTORSRC2:
             movea.l D5,A0
             bsr.b   CLASSIFY
             move.w  D0,D1
             move.w  FPState,(-2,A6)
             clr.w   FPState
             subq.b  #3,D2
-            bge.b   .L5
+            bge.b   .NOT2NANS
             movea.l D5,A0
             movea.l A4,A1
             bsr.b   A0TOA1
@@ -116,15 +116,15 @@ CLASSIFY:
             pea     (A4)
             clr.w   -(SP)
             jsr     (A3)
-            bra.b   .L6
-.L5:
+            bra.b   .NANEXIT
+.NOT2NANS:
             subq.b  #3,D1
             bge.b   LIFTOFF
             move.l  D5,-(SP)
             pea     (A4)
             move.w  #$E,-(SP)
             jsr     (A3)
-.L6:
+.NANEXIT:
             bra.w   RESULTDELIVERED
 LIFTOFF:
             move.w  D3,D0
@@ -160,7 +160,7 @@ POLYEVAL:
             move.l  (A1),(A0)
             move.l  (4,A1),(4,A0)
             move.w  (8,A1),(8,A0)
-.L1:
+.POLYLOOP:
             pea     (A2)
             pea     (A0)
             move.w  #4,-(SP)
@@ -172,7 +172,7 @@ POLYEVAL:
             clr.w   -(SP)
             jsr     (A3)
             subq.w  #1,D0
-            bgt.b   .L1
+            bgt.b   .POLYLOOP
             addq.l  #8,A1
             addq.l  #2,A1
             rts
@@ -232,7 +232,7 @@ SCALBXX:
             move.w  (A1),-(A2)
             bclr    #7,(A2)
             bsr.b   VSMAXINT
-            bge.b   .L2
+            bge.b   .At1
             pea     (FPKMAXINT.w,PC)
             pea     (A2)
             move.w  #2,-(SP)
@@ -243,12 +243,12 @@ SCALBXX:
 .L1:
             bsr.b   SCALEINT
             bsr.b   VSMAXINT
-            bge.b   .L2
+            bge.b   .At1
             pea     (FPKMAXINT.w,PC)
-            bra.b   .L3
-.L2:
+            bra.b   .At3
+.At1:
             pea     (A2)
-.L3:
+.At3:
             pea     (-6,A6)
             move.w  #$2010,-(SP)
             jsr     (A3)
@@ -399,12 +399,12 @@ ELPROCEXIT:
             move.w  D0,FPState
             lsr.w   #8,D6
             and.w   D6,D0
-            bne.b   .L2
-.L1:
+            bne.b   .FASTHALT
+.FASTEX:
             move    D0,CCR
             movem.l (SP)+,D0/D6/A0
             rtd     #4
-.L2:
+.FASTHALT:
             lea     ($10,SP),A0
             clr.w   -(SP)
             move.w  D0,-(SP)
@@ -417,35 +417,35 @@ ELPROCEXIT:
             movea.l ($A4C).w,A0
             jsr     (A0)
             move.l  (SP)+,D0
-            bra.b   .L1
+            bra.b   .FASTEX
 LOGTOP:
             subq.b  #1,D1
-            bpl.b   .L5
+            bpl.b   .LOGFINITE
             tst.w   D1
             bpl.w   PINFSTUFF
-.L4:
+.LOGERROR:
             moveq   #$24,D0
             bra.w   ERRORNAN
-.L5:
+.LOGFINITE:
             btst    #2,D3
-            bne.b   .L6
+            bne.b   .LOG1PLUSX
             tst.b   D1
-            beq.b   .L7
+            beq.b   .LOG0
             tst.w   D1
-            bmi.b   .L4
-            bra.b   .L9
-.L6:
+            bmi.b   .LOGERROR
+            bra.b   .LOG2R
+.LOG1PLUSX:
             tst.b   D1
             beq.w   RESULTDELIVERED
             pea     (A4)
             pea     (FPKM1.w,PC)
             move.w  #8,-(SP)
             jsr     (A3)
-            bhi.b   .L4
-            bcs.b   .L8
-.L7:
+            bhi.b   .LOGERROR
+            bcs.b   .LOG12R
+.LOG0:
             bra.w   DIVM0STUFF
-.L8:
+.LOG12R:
             movea.l A4,A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
@@ -457,18 +457,18 @@ LOGTOP:
             pea     (A4)
             move.w  #8,-(SP)
             jsr     (A3)
-            ble.b   .L9
+            ble.b   .LOG2R
             pea     (A4)
             pea     (FPKSQRT2_PACK_5_2.w,PC)
             move.w  #8,-(SP)
             jsr     (A3)
-            bls.b   .L9
+            bls.b   .LOG2R
             movea.l A1,A0
             movea.l A4,A1
             bsr.w   A0TOA1
             bsr.w   LOGAPPROX
-            bra.b   .L11
-.L9:
+            bra.b   .LOGFINI
+.LOG2R:
             movea.l A4,A0
             lea     (-$10,A6),A1
             bsr.w   A0TOA1
@@ -488,13 +488,13 @@ LOGTOP:
             pea     (A4)
             move.w  #8,-(SP)
             jsr     (A3)
-            ble.b   .L10
+            ble.b   .At11
             pea     (FPK1.w,PC)
             pea     (-$10,A6)
             clr.w   -(SP)
             jsr     (A3)
             subq.w  #1,(A4)
-.L10:
+.At11:
             pea     (FPK1.w,PC)
             pea     (A4)
             move.w  #2,-(SP)
@@ -504,7 +504,7 @@ LOGTOP:
             pea     (A4)
             clr.w   -(SP)
             jsr     (A3)
-.L11:
+.LOGFINI:
             btst    #1,D3
             bne.b   .L12
             pea     (FPKLOGE2.w,PC)
@@ -530,11 +530,11 @@ LOGAPPROX:
             rts
 .L2:
             subq.w  #1,D0
-            beq.b   .L3
+            beq.b   .LANORMAL
             pea     (FPKLOGE2.w,PC)
             bsr.w   FORCEUFLOW
             bra.b   .L4
-.L3:
+.LANORMAL:
             movea.l A4,A0
             lea     (-$1A,A6),A1
             bsr.w   A0TOA1
