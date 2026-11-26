@@ -2,43 +2,100 @@
 
             EXPORT  SNDCNTLECLIPSE,SNDCNTLSPIKE,SNDCNTLTIM
 
-            IMPORT  USTPMGRSENDBYTE
+            IMPORT  USTPMGRSENDBYTE,ClearASCInt,DisableASCInts,EnableASCInts,SendEgretCmd
 
             SECTION "SndPrimitives",CODE
 
 SNDPRIM:
-            dc.w    $000B
+            dc.w    11                          ; number of entries, TIM (PowerBook 140/170)
 SNDCNTLTIM:
-            dc.w    0,$0320,0,$0354,0,$0160,$FFF7,$DC0C
-            dc.w    $FFF7,$DC2C,$FFF7,$DC4A,0,$024A,0,$03F4
-            dc.w    0,$03B2,0,$0286,0,$02CE,$000B
+            dc.l    TimDFACInit-SNDCNTLTIM ; DFACInit
+            dc.l    VIA2DFACSend-SNDCNTLTIM ; DFACSend
+            dc.l    TimPlayBackVol-SNDCNTLTIM ; SetVol
+            dc.l    EnableASCInts-SNDCNTLTIM ; EnableASCInts
+            dc.l    DisableASCInts-SNDCNTLTIM ; DisableASCInts
+            dc.l    ClearASCInt-SNDCNTLTIM ; ClearASCInt
+            dc.l    TIMInputSelect-SNDCNTLTIM ; InputSelect
+            dc.l    QueryInput-SNDCNTLTIM ; QueryInput
+            dc.l    ByPassControl-SNDCNTLTIM ; ByPassControl
+            dc.l    PlayThruVol-SNDCNTLTIM ; PlayThruVol
+            dc.l    AGCControl-SNDCNTLTIM ; AGCControl
+            dc.w    11                          ; number of entries, Eclipse (Quadra 900/950)
 SNDCNTLECLIPSE:
-            dc.w    0,$00B6,0,$00DC,0,$0374,$FFF7,$DBDE
-            dc.w    $FFF7,$DBFE,$FFF7,$DC1C,0,$01BC,0,$03C6
-            dc.w    0,$0384,0,$0258,0,$02A0,$000B
+            dc.l    EclipseDFACInit-SNDCNTLECLIPSE ; DFACInit
+            dc.l    EgretDFACSend-SNDCNTLECLIPSE ; DFACSend
+            dc.l    ASCSetVol-SNDCNTLECLIPSE ; SetVol
+            dc.l    EnableASCInts-SNDCNTLECLIPSE ; EnableASCInts
+            dc.l    DisableASCInts-SNDCNTLECLIPSE ; DisableASCInts
+            dc.l    ClearASCInt-SNDCNTLECLIPSE ; ClearASCInt
+            dc.l    EclipseInputSelect-SNDCNTLECLIPSE ; InputSelect
+            dc.l    QueryInput-SNDCNTLECLIPSE ; QueryInput
+            dc.l    ByPassControl-SNDCNTLECLIPSE ; ByPassControl
+            dc.l    PlayThruVol-SNDCNTLECLIPSE ; PlayThruVol
+            dc.l    AGCControl-SNDCNTLECLIPSE ; AGCControl
+            dc.w    11                          ; number of entries, Spike (Quadra 700)
 SNDCNTLSPIKE:
-            dc.w    0,$02C0,0,$02F8,0,$0346,$FFF7,$DBB0
-            dc.w    $FFF7,$DBD0,$FFF7,$DBEE,0,$013E,0,$0398
-            dc.w    0,$0356,0,$022A,0,$0272,$000B
+            dc.l    SpikeDFACInit-SNDCNTLSPIKE ; DFACInit
+            dc.l    VIA2DFACSend-SNDCNTLSPIKE ; DFACSend
+            dc.l    ASCSetVol-SNDCNTLSPIKE ; SetVol
+            dc.l    EnableASCInts-SNDCNTLSPIKE ; EnableASCInts
+            dc.l    DisableASCInts-SNDCNTLSPIKE ; DisableASCInts
+            dc.l    ClearASCInt-SNDCNTLSPIKE ; ClearASCInt
+            dc.l    InputSelect-SNDCNTLSPIKE ; InputSelect
+            dc.l    QueryInput-SNDCNTLSPIKE ; QueryInput
+            dc.l    ByPassControl-SNDCNTLSPIKE ; ByPassControl
+            dc.l    PlayThruVol-SNDCNTLSPIKE ; PlayThruVol
+            dc.l    AGCControl-SNDCNTLSPIKE ; AGCControl
+            dc.w    11                          ; number of entries, Apollo (Classic II / LC "Elsie")
 SNDCNTLAPOLLO:
-            dc.w    0,$005E,0,$0080,0,$0318,$FFF7,$DB82
-            dc.w    $FFF7,$DBA2,$FFF7,$DBC0,0,$0194,0,$036A
-            dc.w    0,$0328,0,$01FC,0,$0244,$000B
+            dc.l    ElsieDFACInit-SNDCNTLAPOLLO ; DFACInit
+            dc.l    EgretDFACSend-SNDCNTLAPOLLO ; DFACSend
+            dc.l    ASCSetVol-SNDCNTLAPOLLO ; SetVol
+            dc.l    EnableASCInts-SNDCNTLAPOLLO ; EnableASCInts
+            dc.l    DisableASCInts-SNDCNTLAPOLLO ; DisableASCInts
+            dc.l    ClearASCInt-SNDCNTLAPOLLO ; ClearASCInt
+            dc.l    ElsieInputSelect-SNDCNTLAPOLLO ; InputSelect
+            dc.l    QueryInput-SNDCNTLAPOLLO ; QueryInput
+            dc.l    ByPassControl-SNDCNTLAPOLLO ; ByPassControl
+            dc.l    PlayThruVol-SNDCNTLAPOLLO ; PlayThruVol
+            dc.l    AGCControl-SNDCNTLAPOLLO ; AGCControl
+            dc.w    11                          ; number of entries, DBLite
 SNDCNTLDBLITE:
-            dc.w    0,$0350,0,$037A,0,$02EA,$FFF7,$DB54
-            dc.w    $FFF7,$DB74,$FFF7,$DB92,0,$00E2,0,$033C
-            dc.w    0,$02FA,0,$01CE,0,$0216,$7200,$6006
-            dc.w    $72EA,$6002,$7200,$264E,$203C,$000E,$0001,$7401
-            dc.w    $4DFA,$000C,$45F9,$FFF8,$87CA,$4EFB,$A8F8,$4A40
-            dc.w    $4ED3
+            dc.l    DBLiteDFACInit-SNDCNTLDBLITE ; DFACInit
+            dc.l    DBLiteDFACSend-SNDCNTLDBLITE ; DFACSend
+            dc.l    ASCSetVol-SNDCNTLDBLITE ; SetVol
+            dc.l    EnableASCInts-SNDCNTLDBLITE ; EnableASCInts
+            dc.l    DisableASCInts-SNDCNTLDBLITE ; DisableASCInts
+            dc.l    ClearASCInt-SNDCNTLDBLITE ; ClearASCInt
+            dc.l    InputSelect-SNDCNTLDBLITE ; InputSelect
+            dc.l    QueryInput-SNDCNTLDBLITE ; QueryInput
+            dc.l    ByPassControl-SNDCNTLDBLITE ; ByPassControl
+            dc.l    PlayThruVol-SNDCNTLDBLITE ; PlayThruVol
+            dc.l    AGCControl-SNDCNTLDBLITE ; AGCControl
+EclipseDFACInit:
+            moveq   #0,D1
+            bra.b   EgretDFACInit.common
+ElsieDFACInit:
+            moveq   #-$16,D1
+            bra.b   EgretDFACInit.common
+EgretDFACInit:
+            moveq   #0,D1
+.common:
+            movea.l A6,A3
+            move.l  #$E0001,D0                  ; WrDFAC pseudo command
+            moveq   #1,D2
+            BigBSR6 SendEgretCmd,A2
+            tst.w   D0
+            jmp     (A3)
+EgretDFACSend:
             movem.l D1-D3/A0-A1,-(SP)
             move.l  D0,D3
             moveq   #0,D1
             moveq   #7,D2
-.L1:
+.Loop:
             asr.b   #1,D0
             roxl.b  #1,D1
-            dbra    D2,.L1
+            dbra    D2,.Loop
             suba.w  #$14,SP
             movea.l SP,A0
             move.b  #1,(A0)
@@ -51,15 +108,16 @@ SNDCNTLDBLITE:
             move.b  D1,(2,A0)
             _EgretDispatch
             lea     ($14,SP),SP
-            bne.b   .L2
+            bne.b   .Done
             movea.l ([ExpandMem.w],$1AA.w),A0
             move.b  D3,(-3,A0)
-.L2:
+.Done:
             movem.l (SP)+,D1-D3/A0-A1
             rts
+TimPlayBackVol:
             move.l  A0,-(SP)
             andi.w  #$FF,D0
-            move.b  sub_4088C58C(PC,D0.w),D0
+            move.b  .TimVolumeTable(PC,D0.w),D0
             move    SR,-(SP)
             ori     #$700,SR
             movea.l ASCBase,A0
@@ -70,15 +128,13 @@ SNDCNTLDBLITE:
             move    (SP)+,SR
             movea.l (SP)+,A0
             rts
-sub_4088C58C:
-            btst    D0,(A2)
-            move.l  ($5A,A6,D4.l),D2
-            bge.b   sub_4088C59C.L3+1
-sub_4088C594:
+.TimVolumeTable:
+            dc.b    1,18,36,54,72,90,108,127
+AGCInputSelect:
             tst.b   D0
-            beq.b   sub_4088C59C
-            dc.w    0,$0008
-sub_4088C59C:
+            beq.b   InputSelect
+            ori.b   #8,D0
+InputSelect:
             movem.l D1/A0-A1,-(SP)
             movea.l ([ExpandMem.w],$1AA.w),A0
             move    SR,-(SP)
@@ -89,10 +145,10 @@ sub_4088C59C:
             and.b   (-3,A0),D1
             or.b    D0,D1
             tst.b   D0
-            beq.b   .L1
+            beq.b   .send
             or.b    (-4,A0),D1
             or.b    (-5,A0),D1
-.L1:
+.send:
             move.b  D1,D0
             move.l  A0,-(SP)
             movea.l ([ExpandMem.w],$1AA.w),A0
@@ -106,25 +162,26 @@ sub_4088C59C:
             move.b  D2,D0
             movem.l (SP)+,D1/A0-A1
             rts
+EclipseInputSelect:
             move    SR,-(SP)
             ori     #$700,SR
             movem.l D0-D1,-(SP)
             move.b  ([VIA2.w]),D1
             andi.b  #$B7,D1
             andi.w  #$FF,D0
-            or.b    sub_4088C61C(PC,D0.w),D1
+            or.b    EclipseSelectTable(PC,D0.w),D1
             move.b  D1,([VIA2.w])
             movem.l (SP)+,D0-D1
-.L3:
             move    (SP)+,SR
             tst.b   D0
-            beq.b   sub_4088C59C
+            beq.b   InputSelect
             moveq   #1,D0
-            bra.b   sub_4088C59C
-sub_4088C61C:
-            ori.w   #$4808,D0
+            bra.b   InputSelect
+EclipseSelectTable:
+            dc.b    $00,$40,$48,$08
+ElsieInputSelect:
             cmpi.b  #1,D0
-            beq.w   sub_4088C59C
+            beq.w   InputSelect
             movem.l D1/A0,-(SP)
             moveq   #-$16,D0
             move.l  A0,-(SP)
@@ -137,6 +194,7 @@ sub_4088C61C:
             movea.l (SP)+,A0
             movem.l (SP)+,D1/A0
             rts
+TIMInputSelect:
             move    SR,-(SP)
             movem.l D2/A0-A1,-(SP)
             movea.l PmgrBase,A1
@@ -144,20 +202,21 @@ sub_4088C61C:
             ori     #$700,SR
             moveq   #3,D2
             and.b   (-3,A0),D2
-            beq.b   .L2
+            beq.b   .currentlyOff
             tst.b   D0
-            bne.b   .L3
+            bne.b   .setsource
             subq.b  #1,($F8,A1)
-            bra.b   .L3
-.L2:
+            bra.b   .setsource
+.currentlyOff:
             tst.b   D0
-            beq.b   .L3
+            beq.b   .setsource
             addq.b  #1,($F8,A1)
-.L3:
+.setsource:
             movem.l (SP)+,D2/A0-A1
-            bsr.w   sub_4088C594
+            bsr.w   AGCInputSelect
             move    (SP)+,SR
             rts
+PlayThruVol:
             movem.l D1/A0,-(SP)
             movea.l ([ExpandMem.w],$1AA.w),A0
             move    SR,-(SP)
@@ -166,7 +225,7 @@ sub_4088C61C:
             move.b  D0,(-4,A0)
             moveq   #-4,D1
             and.b   (-3,A0),D1
-            beq.b   .L5
+            beq.b   .Done
             moveq   #$1F,D1
             and.b   (-3,A0),D1
             or.b    D1,D0
@@ -178,23 +237,24 @@ sub_4088C61C:
             jsr     (A0)
 .L4:
             movea.l (SP)+,A0
-.L5:
+.Done:
             move    (SP)+,SR
             movem.l (SP)+,D1/A0
             rts
+AGCControl:
             movem.l D1/A0,-(SP)
             movea.l ([ExpandMem.w],$1AA.w),A0
             moveq   #4,D1
             tst.b   D0
-            beq.b   .L6
+            beq.b   .continue
             moveq   #8,D1
-.L6:
+.continue:
             move    SR,-(SP)
             ori     #$700,SR
             move.b  D1,(-5,A0)
             moveq   #-4,D0
             and.b   (-3,A0),D0
-            beq.b   .L8
+            beq.b   .Done
             moveq   #-$D,D0
             and.b   (-3,A0),D0
             or.b    D1,D0
@@ -206,32 +266,35 @@ sub_4088C61C:
             jsr     (A0)
 .L7:
             movea.l (SP)+,A0
-.L8:
+.Done:
             move    (SP)+,SR
             movem.l (SP)+,D1/A0
             rts
+SpikeDFACInit:
             moveq   #0,D0
-            bra.b   .L9
+            bra.b   VIA2DFACInit
+TimDFACInit:
             moveq   #0,D0
-.L9:
+VIA2DFACInit:
             movea.l ($2C,A0),A3
             bset    #0,(A3)
             bset    #4,(A3)
             bclr    #0,(A3)
             moveq   #7,D1
-.L10:
+.Loop:
             asr.b   #1,D0
-            bcc.b   .L11
+            bcc.b   .zeroBit
             bset    #3,(A3)
-            bra.b   .L12
-.L11:
+            bra.b   .clock
+.zeroBit:
             bclr    #3,(A3)
-.L12:
+.clock:
             bclr    #4,(A3)
             bset    #4,(A3)
-            dbra    D1,.L10
+            dbra    D1,.Loop
             bset    #0,(A3)
             RTS6
+VIA2DFACSend:
             movem.l D1-D2/A0,-(SP)
             move    SR,-(SP)
             ori     #$700,SR
@@ -242,34 +305,36 @@ sub_4088C61C:
             bset    #4,(A0)
             bclr    #0,(A0)
             moveq   #7,D1
-.L13:
+.Loop:
             asr.b   #1,D0
-            bcc.b   .L14
+            bcc.b   .zeroBit
             bset    #3,(A0)
-            bra.b   .L15
-.L14:
+            bra.b   .clock
+.zeroBit:
             bclr    #3,(A0)
-.L15:
+.clock:
             bclr    #4,(A0)
             bset    #4,(A0)
-            dbra    D1,.L13
+            dbra    D1,.Loop
             bset    #0,(A0)
             move    (SP)+,SR
             movem.l (SP)+,D1-D2/A0
             rts
+ASCSetVol:
             move.l  A0,-(SP)
             movea.l ASCBase,A0
             lsl.b   #5,D0
             move.b  D0,($806,A0)
             movea.l (SP)+,A0
             rts
+ByPassControl:
             movem.l D1/A0,-(SP)
             movea.l ([ExpandMem.w],$1AA.w),A0
             moveq   #0,D1
             tst.b   D0
-            beq.b   .L16
+            beq.b   .continue
             moveq   #$10,D1
-.L16:
+.continue:
             move    SR,-(SP)
             ori     #$700,SR
             moveq   #-$11,D0
@@ -286,12 +351,14 @@ sub_4088C61C:
             move    (SP)+,SR
             movem.l (SP)+,D1/A0
             rts
+QueryInput:
             move.l  A0,-(SP)
             movea.l ([ExpandMem.w],$1AA.w),A0
             moveq   #3,D0
             and.b   (-3,A0),D0
             movea.l (SP)+,A0
             rts
+DBLiteDFACInit:
             moveq   #-$1E,D0
             movea.l (8,A0),A2
             movea.l ($2C,A0),A3
@@ -299,6 +366,7 @@ sub_4088C61C:
             move.b  D0,D3
             BigBSR5 USTPMGRSENDBYTE,A4
             RTS6
+DBLiteDFACSend:
             movem.l D1-D2/A0-A1,-(SP)
             move.b  D0,-(SP)
             move.l  SP,-(SP)
