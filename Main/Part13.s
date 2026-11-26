@@ -1,1503 +1,1712 @@
             include "Include/ROMHeader.s"
 
-            EXPORT  RsrcEntryPACK_5
+            EXPORT  RsrcEntryPACK_5_2
 
-            IMPORT  BaseOfROM,RsrcEntryPACK_4
+            IMPORT  BaseOfROM,RsrcEntryPACK_4_2
 
             SECTION "Part13",CODE
 
-RsrcEntryPACK_5:
-            dc.b    $70,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 5 (5028 bytes) - Combo mask
-            dc.l    RsrcEntryPACK_4-BaseOfROM       ; Next entry
-            dc.l    RsrcPACK_5-BaseOfROM            ; Data
+RsrcEntryPACK_5_2:
+            dc.b    $08,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 5 (4660 bytes) - Combo mask
+            dc.l    RsrcEntryPACK_4_2-BaseOfROM     ; Next entry
+            dc.l    RsrcPACK_5_2-BaseOfROM          ; Data
             dc.b    'PACK'                          ; Type
             dc.w    5                               ; ID
             dc.b    $58                             ; Attributes
             dc.b    0                               ; Name
-            dc.b    'omputer, Inc'
-            dc.l    $C0A00000,$000013B0,$000001E4   ; Block header
-RsrcPACK_5:
-            bra.b   .L1
-            dc.w    0,$5041,$434B,$0005,$0008
+            dc.b    'ter, Inc. 19'
+            dc.l    $C0A00000,$00001240,$000001F4   ; Block header
+RsrcPACK_5_2:
+            link.w  A6,#-$44
+            movem.l D0-D7/A0-A4,-(SP)
+            moveq   #0,D3
+            movea.l ($15AC).w,A3
+            lea     (4,A6),A2
+            lea     (8,A6),A0
+            move.w  (A0)+,D3
+            bpl.w   sub_408EA016.L2
+            movea.l (A0)+,A4
+            move.l  (A0),D4
+            btst    #$E,D3
+            bne.b   .L4
+            tst.b   D3
+            bpl.b   .L1
+            move.w  (A4),(2,A4)
+            addq.l  #2,A4
 .L1:
-            movem.l D0-D1/A0/A4,-(SP)
-            fmovem.x FP2-FP3,-(SP)
-            fmove.l FPSR,-(SP)
-            fmove.l FPCR,-(SP)
-            moveq   #0,D1
-            fmove.l D1,FPCR
-            fmove.l D1,FPSR
-            movea.l ($36,SP),A0
-            move.w  ($34,SP),D0
-            btst    #$E,D0
-            beq.b   .L3
-            btst    #7,D0
-            beq.b   .L2
-            lea     sub_408EED10,A4
-            bra.b   .L5
+            move.l  (A2),(A0)
+            move.w  #$A,(A2)
+            move.l  A4,D5
+            moveq   #$F,D2
+            moveq   #$3E,D0
+            and.w   D3,D0
+            cmpi.b  #$10,D0
+            beq.b   sub_408EA016.L4
+            tst.b   D3
+            bpl.b   .L3
 .L2:
-            lea     sub_408EECFE,A4
-            bra.b   .L5
+            movea.l D4,A0
+            lea     (-$38,A6),A1
+            move.l  A1,D4
+            move.w  (A0),(A1)+
+            move.l  (4,A0),(A1)+
+            move.l  (8,A0),(A1)
 .L3:
-            btst    #7,D0
-            beq.b   .L4
-            move.w  (4,A0),(2,A0)
-            lea     sub_408EED10,A4
-            fmove.x (A0),FP0
-            bra.b   .L5
+            movea.l D4,A0
+            bsr.b   sub_408EA016
+            move.w  D0,D2
+            bra.b   sub_408EA016.L4
 .L4:
-            lea     sub_408EECFE,A4
-            addq.l  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.l  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP0
-.L5:
-            move.w  #$3E,D1
-            and.b   D0,D1
-            move.w  .L6(PC,D1.w),D1
-            jmp     .L5(PC,D1.w)
-.L6:
-            dc.w    RLnx-.L5
-            dc.w    RLog2x-.L5
-            dc.w    RLn1x-.L5
-            dc.w    RLog21x-.L5
-            dc.w    sub_408EEEEA.L8-.L5
-            dc.w    sub_408EEEEA.L1-.L5
-            dc.w    Rexp21x.L11-.L5
-            dc.w    Rexp21x-.L5
-            dc.w    RXpwri-.L5
-            dc.w    RXpwry-.L5
-            dc.w    RCompound-.L5
-            dc.w    RAnnuity-.L5
-            dc.w    LogNeg.L26-.L5
-            dc.w    LogNeg.L35-.L5
-            dc.w    LogNeg.L5-.L5
-            dc.w    LogNeg.L12-.L5
-            dc.w    sub_408EED10.L5-.L5
-sub_408EECFE:
-            movea.l ($36,SP),A0
-            fmove.x FP0,-(SP)
-            move.w  (SP)+,(A0)+
-            addq.l  #2,SP
-            move.l  (SP)+,(A0)+
-            move.l  (SP)+,(A0)
-            bra.b   sub_408EED10.L1
-sub_408EED10:
-            movea.l ($36,SP),A0
-            fmove.x FP0,(A0)
+            addq.l  #4,A0
+            move.l  (A0),D5
+            move.l  (A2),(A0)
+            move.w  #$E,(A2)
+            tst.b   D3
+            bpl.b   .L3
+            addq.w  #2,A4
+            movea.l D5,A0
+            lea     (-$42,A6),A1
+            move.l  A1,D5
+            move.w  (A0),(A1)+
+            move.l  (4,A0),(A1)+
+            move.l  (8,A0),(A1)
+            bra.b   .L2
+sub_408EA016:
+            pea     (A0)
+            pea     (-4,A6)
+            bsr.w   ELCLASSX
+            move.w  (-4,A6),D0
+            bpl.b   .L1
+            neg.w   D0
+            ori.w   #$8000,D0
 .L1:
-            moveq   #-1,D1
-            eor.b   D1,D0
-            fmove.l FPSR,D1
-            and.b   D0,D1
-            swap    D0
-            or.b    D1,D0
-            or.b    D0,(7,SP)
-            move.b  (2,SP),D1
-            fmovem.l (SP)+,FPCR/FPSR
-            bclr    #5,D1
-            bftst   D1{24:2}
-            beq.b   .L2
-            bset    #5,D1
+            rts
 .L2:
-            andi.w  #$3E,D1
-            beq.b   .L3
-            lsl.b   #2,D1
-            and.w   D1,D0
-            beq.b   .L3
-            lsr.b   #3,D0
-            clr.l   -(SP)
+            moveq   #$F,D2
+            movea.l (A0),A4
+            tst.b   D3
+            bpl.b   .L3
+            move.w  (A4),(2,A4)
+            addq.l  #2,A4
+.L3:
+            move.l  (A2),(A0)
+            move.w  #6,(A2)
+            move.l  A4,D5
+.L4:
+            movea.l D5,A0
+            bsr.b   sub_408EA016
+            move.w  D0,D1
+            move.w  FPState,(-2,A6)
+            clr.w   FPState
+            subq.b  #3,D2
+            bge.b   .L5
+            movea.l D5,A0
+            movea.l A4,A1
+            bsr.b   sub_408EA0AA
+            move.l  D4,-(SP)
+            pea     (A4)
             clr.w   -(SP)
-            move.b  .L4(PC,D0.w),D0
-            move.w  D0,-(SP)
-            move.l  SP,-(SP)
-            move.l  ($42,SP),-(SP)
-            move.l  ($42,SP),-(SP)
-            move.l  ($42,SP),-(SP)
-            move.w  ($44,SP),-(SP)
-            bset    #7,(SP)
-            movea.w #$A4C,A0
-            movea.l (A0),A0
-            jsr     (A0)
-            addq.w  #8,SP
-.L3:
-            fmovem.x (SP)+,FP2-FP3
-            movem.l (SP)+,D0-D1/A0/A4
-            rtd     #6
-.L4:
-            dc.w    $0010,$0818,$0212,$0A1A,$0414,$0C1C,$0616,$0E1E
-            dc.w    $0111,$0919,$0313,$0B1B,$0515,$0D1D,$0717,$0F1F
+            jsr     (A3)
+            bra.b   .L6
 .L5:
-            fmul.w  #$41A7,FP0
-            moveq   #0,D0
-            fmove.l #$7FFFFFFF,FP1
-            frem.x  FP1,FP0
-            fbge.w  .L6
-            fadd.x  FP1,FP0
+            subq.b  #3,D1
+            bge.b   .L7
+            move.l  D5,-(SP)
+            pea     (A4)
+            move.w  #$E,-(SP)
+            jsr     (A3)
 .L6:
-            jmp     (A4)
-Rexp21x:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   .L15
-            bfextu  (A0){1:16},D0
-            beq.w   .L13
-            fint.x  FP0,FP3
-            fsne    D1
-            fmove.l FPSR,D0
-            bclr    #3,D0
-            fmove.l D0,FPSR
-            fsub.x  FP3,FP0
+            bra.w   sub_408EA3E6.L15
+.L7:
+            move.w  D3,D0
+            andi.w  #$3E,D0
+            move.w  .L8(PC,D0.w),D0
+            jmp     .L7(PC,D0.w)
 .L8:
-            bsr.w   sub_408EEEAA
-            tst.b   D1
-            beq.b   .L10
-            moveq   #1,D1
-            fadd.l  D1,FP0
-            fmove.l #$4000,FP1
-            fcmp.x  FP3,FP1
-            fbne.w  .L9
-            fmove.l #$2000,FP3
-            fscale.x FP3,FP0
-.L9:
-            fscale.x FP3,FP0
-            fsub.l  D1,FP0
-            moveq   #$20,D0
-.L10:
-            jmp     (A4)
-.L11:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.b   .L15
-            bfextu  (A0){1:16},D0
-            beq.b   .L14
-            bsr.w   sub_408EEEEA
-            btst    #6,D0
-            beq.b   .L8
-            move.l  #$80000,D0
-            move.w  (A0),D1
-            bmi.b   .L12
-            move.l  #$7F800000,D1
-            fmove.s D1,FP0
-            bra.b   .L10
-.L12:
-            move.b  #$40,D0
-            fmove.l #$FFFFFFFF,FP0
-            jmp     (A4)
-.L13:
-            fmovecr.x #$30,FP1
-            fmul.x  FP1,FP0
-.L14:
-            move.l  #$280000,D0
-            jmp     (A4)
-.L15:
-            bmi.b   .L16
-            btst    #$1E,D0
-            beq.b   .L16
-            bcc.b   .L16
-            moveq   #-1,D0
-            fmove.l D0,FP0
-.L16:
-            moveq   #0,D0
-            jmp     (A4)
-.L17:
-            bpl.b   .L18
-            fmovecr.x #$32,FP0
-            bra.b   .L19
-.L18:
-            btst    #$1E,D0
-            beq.b   .L19
-            bcc.b   .L19
-            fmovecr.x #$F,FP0
-.L19:
-            moveq   #0,D0
-            jmp     (A4)
-sub_408EEEAA:
-            fbeq.w  .L1
-            fmove.x FP0,FP2
-            fmul.x  FP2,FP0
-            lea     sub_408EFCAA.L3,A0
-            bsr.w   PolyEval
-            fmul.x  FP1,FP2
-            lea     sub_408EFCAA.L4,A0
-            bsr.w   PolyEval
-            fsub.x  FP2,FP1
-            fscale.b #1,FP2
-            fdiv.x  FP1,FP2
-            fmove.x FP2,FP0
-            move.l  #$80000,D0
-            ori.l   #$20,D0
-.L1:
+            dc.w    sub_408EA296.L3-.L7
+            dc.w    sub_408EA296.L3-.L7
+            dc.w    sub_408EA296.L3-.L7
+            dc.w    sub_408EA296.L3-.L7
+            dc.w    sub_408EA3E6.L17-.L7
+            dc.w    sub_408EA3E6.L17-.L7
+            dc.w    sub_408EA560.L1-.L7
+            dc.w    sub_408EA560.L1-.L7
+            dc.w    sub_408EA62A.L2-.L7
+            dc.w    sub_408EA792.L1-.L7
+            dc.w    sub_408EA828.L8-.L7
+            dc.w    sub_408EA828.L17-.L7
+            dc.w    sub_408EA828.L33-.L7
+            dc.w    sub_408EA828.L40-.L7
+            dc.w    sub_408EAB6A.L2-.L7
+            dc.w    sub_408EAC48.L3-.L7
+            dc.w    sub_408EAD12.L5-.L7
+sub_408EA0AA:
+            move.l  (A0)+,(A1)+
+            move.l  (A0)+,(A1)+
+            move.w  (A0),(A1)
+            subq.l  #8,A1
             rts
-sub_408EEEEA:
-            fmovecr.x #$30,FP1
-            fmove.x FP0,FP3
-            frem.x  FP1,FP0
-            fsub.x  FP0,FP3
-            fdiv.x  FP1,FP3
-            fint.x  FP3,FP3
-            fsne    D1
-            fdiv.x  FP1,FP0
-            fmove.l FPSR,D0
-            bclr    #3,D0
-            fmove.l D0,FPSR
-            rts
+sub_408EA0B4:
+            move.w  (A1)+,D0
+            move.l  (A1),(A0)
+            move.l  (4,A1),(4,A0)
+            move.w  (8,A1),(8,A0)
 .L1:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   Rexp21x.L17
-            fint.x  FP0,FP3
-            fmove.l FPSR,D0
-            bclr    #3,D0
-            fmove.l D0,FPSR
-            fsub.x  FP3,FP0
+            pea     (A2)
+            pea     (A0)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            addq.l  #8,A1
+            addq.l  #2,A1
+            pea     (A1)
+            pea     (A0)
+            clr.w   -(SP)
+            jsr     (A3)
+            subq.w  #1,D0
+            bgt.b   .L1
+            addq.l  #8,A1
+            addq.l  #2,A1
+            rts
+sub_408EA0E4:
+            moveq   #1,D0
+            bra.b   sub_408EA0F0.L1
+sub_408EA0E8:
+            moveq   #2,D0
+            bra.b   sub_408EA0F0.L1
+sub_408EA0EC:
+            moveq   #0,D0
+            bra.b   sub_408EA0F0.L1
+sub_408EA0F0:
+            moveq   #4,D0
+.L1:
+            bclr    D0,FPState
+            rts
+sub_408EA0F8:
+            moveq   #2,D0
+            bra.b   sub_408EA108.L1
+sub_408EA0FC:
+            moveq   #1,D0
+            bra.b   sub_408EA108.L1
+sub_408EA100:
+            moveq   #3,D0
+            bra.b   sub_408EA108.L1
+sub_408EA104:
+            moveq   #0,D0
+            bra.b   sub_408EA108.L1
+sub_408EA108:
+            moveq   #4,D0
+.L1:
+            bset    D0,FPState
+            rts
+sub_408EA110:
+            moveq   #3,D0
+            bra.b   sub_408EA120.L1
+sub_408EA114:
+            moveq   #1,D0
+            bra.b   sub_408EA120.L1
+sub_408EA118:
+            moveq   #2,D0
+            bra.b   sub_408EA120.L1
+sub_408EA11C:
+            moveq   #0,D0
+            bra.b   sub_408EA120.L1
+sub_408EA120:
+            moveq   #4,D0
+.L1:
+            btst    D0,FPState
+            rts
+sub_408EA128:
+            move.w  #$7FFF,(-6,A6)
+            lea     (-$1A,A6),A2
+            move.l  (6,A1),-(A2)
+            move.l  (2,A1),-(A2)
+            move.w  (A1),-(A2)
+            bclr    #7,(A2)
+            bsr.b   sub_408EA186
+            bge.b   .L2
+            pea     sub_408EAD12.L18
+            pea     (A2)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            tst.b   (A1)
+            bpl.b   .L1
+            neg.w   (-6,A6)
+.L1:
+            bsr.b   sub_408EA178
+            bsr.b   sub_408EA186
+            bge.b   .L2
+            pea     sub_408EAD12.L18
+            bra.b   .L3
 .L2:
-            bsr.w   sub_408EEEAA
+            pea     (A2)
+.L3:
+            pea     (-6,A6)
+            move.w  #$2010,-(SP)
+            jsr     (A3)
+            tst.b   (A1)
+            bpl.b   sub_408EA178
+            neg.w   (-6,A6)
+sub_408EA178:
+            pea     (-6,A6)
+            pea     (A0)
+            move.w  #$18,-(SP)
+            jsr     (A3)
+            rts
+sub_408EA186:
+            pea     (-$24,A6)
+            pea     sub_408EAD12.L18
+            move.w  #8,-(SP)
+            jsr     (A3)
+            rts
+sub_408EA196:
+            movem.l D0-D2/A0,-(SP)
+            moveq   #0,D1
+            movea.l ($14,SP),A0
+            move.w  (A0),D1
+            bclr    #$F,D1
+            move.l  (2,A0),D0
+            bmi.b   .L2
+            bfffo   D0{0:0},D2
+            bne.b   .L1
+            sub.w   D2,D1
+            move.l  (6,A0),D0
+            bfffo   D0{0:0},D2
+.L1:
+            sub.w   D2,D1
+.L2:
+            move.w  #$401E,D0
+            subi.w  #$3FFF,D1
+            bgt.b   .L4
+            blt.b   .L3
+            move.l  D1,D0
+            bra.b   .L5
+.L3:
+            bset    #$F,D0
+            neg.w   D1
+.L4:
+            bfffo   D1{0:0},D2
+            lsl.l   D2,D1
+            sub.w   D2,D0
+.L5:
+            move.w  D0,(A0)+
+            move.l  D1,(A0)+
+            clr.l   (A0)
+            movem.l (SP)+,D0-D2/A0
+            rtd     #4
+ELCLASSX:
+            movem.l D0-D1/A0,-(SP)
+            movea.l ($14,SP),A0
+            move.w  (A0)+,D0
+            add.l   D0,D0
+            lsr.w   #1,D0
+            cmpi.w  #$7FFF,D0
+            beq.b   .L4
+            move.l  (A0)+,D1
+            bpl.b   .L7
+.L1:
+            moveq   #5,D1
+.L2:
+            btst    #$10,D0
+            beq.b   .L3
+            neg.w   D1
+.L3:
+            movea.l ($10,SP),A0
+            move.w  D1,(A0)
+            movem.l (SP)+,D0-D1/A0
+            rtd     #8
+.L4:
+            move.l  (A0)+,D1
+            add.l   D1,D1
+            lsr.l   #1,D1
+            beq.b   .L6
+            btst    #$1E,D1
+            beq.b   .L5
+            moveq   #2,D1
+            bra.b   .L2
+.L5:
             moveq   #1,D1
-            fadd.l  D1,FP0
-            fmove.l #$FFFFC001,FP1
-            fsub.x  FP3,FP1
-            fbgt.w  .L6
-            fbeq.w  .L3
+            bra.b   .L2
+.L6:
+            move.l  (A0),D1
+            bne.b   .L5
+            moveq   #3,D1
+            bra.b   .L2
+.L7:
+            beq.b   .L10
+.L8:
+            subq.w  #1,D0
+            add.l   D1,D1
+            bpl.b   .L8
+.L9:
+            tst.w   D0
+            bpl.b   .L1
+            moveq   #6,D1
+            bra.b   .L2
+.L10:
+            subi.w  #$20,D0
+            move.l  (A0),D1
+            beq.b   .L11
+            bpl.b   .L8
+            bra.b   .L9
+.L11:
+            moveq   #4,D1
+            bra.b   .L2
+sub_408EA258:
+            movem.l D0-D1/A0,-(SP)
+            movea.l ($14,SP),A0
+            move.w  #$400E,D0
+            swap    D0
+            move.w  (A0),D0
+            beq.b   .L3
+            bpl.b   .L1
+            bset    #$1F,D0
+            neg.w   D0
+            bmi.b   .L2
+.L1:
+            swap    D0
+            bfffo   D0{0:16},D1
+            sub.w   D1,D0
+            swap    D0
+            lsl.w   D1,D0
+.L2:
+            movea.l ($10,SP),A0
+            move.l  D0,(A0)+
+            clr.l   (A0)+
+            clr.w   (A0)
+            movem.l (SP)+,D0-D1/A0
+            rtd     #8
+.L3:
+            moveq   #0,D0
+            bra.b   .L2
+sub_408EA296:
+            movem.l D0/D6/A0,-(SP)
+            movea.l ($10,SP),A0
+            move.w  #$19,D6
+            swap    D6
+            move.w  #$1F00,D6
+            and.w   FPState,D6
+            move.w  (A0),D0
+            or.w    D6,D0
+            move.w  D0,FPState
+            lsr.w   #8,D6
+            and.w   D6,D0
+            bne.b   .L2
+.L1:
+            move    D0,CCR
+            movem.l (SP)+,D0/D6/A0
+            rtd     #4
+.L2:
+            lea     ($10,SP),A0
+            clr.w   -(SP)
+            move.w  D0,-(SP)
+            pea     (SP)
+            move.l  (8,A0),-(SP)
+            move.l  (4,A0),-(SP)
+            move.l  (A0),-(SP)
+            swap    D6
+            move.w  D6,-(SP)
+            movea.l ($A4C).w,A0
+            jsr     (A0)
+            move.l  (SP)+,D0
+            bra.b   .L1
+.L3:
+            subq.b  #1,D1
+            bpl.b   .L5
+            tst.w   D1
+            bpl.w   sub_408EA3E6.L10
+.L4:
+            moveq   #$24,D0
+            bra.w   sub_408EA3E6.L14
+.L5:
+            btst    #2,D3
+            bne.b   .L6
+            tst.b   D1
+            beq.b   .L7
+            tst.w   D1
+            bmi.b   .L4
+            bra.b   .L9
+.L6:
+            tst.b   D1
+            beq.w   sub_408EA3E6.L15
+            pea     (A4)
+            pea     sub_408EAD12.L14
+            move.w  #8,-(SP)
+            jsr     (A3)
+            bhi.b   .L4
+            bcs.b   .L8
+.L7:
+            bra.w   sub_408EA3E6.L11
+.L8:
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     sub_408EAD12.L13
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            pea     sub_408EAD12.L30
+            pea     (A4)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            ble.b   .L9
+            pea     (A4)
+            pea     sub_408EAD12.L29
+            move.w  #8,-(SP)
+            jsr     (A3)
+            bls.b   .L9
+            movea.l A1,A0
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
+            bsr.w   sub_408EA3E6
+            bra.b   .L11
+.L9:
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            bsr.w   sub_408EA196
+            bchg    #7,(A1)
+            pea     (A1)
+            pea     (-6,A6)
+            move.w  #$2010,-(SP)
+            jsr     (A3)
+            pea     (-6,A6)
+            pea     (A4)
+            move.w  #$18,-(SP)
+            jsr     (A3)
+            bchg    #7,(A1)
+            pea     sub_408EAD12.L29
+            pea     (A4)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            ble.b   .L10
+            pea     sub_408EAD12.L13
+            pea     (-$10,A6)
+            clr.w   -(SP)
+            jsr     (A3)
+            subq.w  #1,(A4)
+.L10:
+            pea     sub_408EAD12.L13
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            bsr.b   sub_408EA3E6
+            pea     (-$10,A6)
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+.L11:
+            btst    #1,D3
+            bne.b   .L12
+            pea     sub_408EAD12.L31
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            move.l  (2,A4),D0
+            or.l    (6,A4),D0
+            beq.b   .L12
+            bsr.w   sub_408EA108
+.L12:
+            bra.w   sub_408EA3E6.L15
+sub_408EA3E6:
+            pea     (A4)
+            pea     (-6,A6)
+            bsr.w   ELCLASSX
+            move.w  (-6,A6),D0
+            bpl.b   .L1
+            neg.w   D0
+.L1:
+            subq.w  #4,D0
+            bne.b   .L2
+            rts
+.L2:
+            subq.w  #1,D0
+            beq.b   .L3
+            pea     sub_408EAD12.L31
+            bsr.w   sub_408EA0FC
             bra.b   .L4
 .L3:
-            fmove.l #1,FP1
-            fcmp.x  FP1,FP0
-            fbge.w  .L4
-            ori.l   #$200000,D0
+            movea.l A4,A0
+            lea     (-$1A,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     sub_408EAD12.L17
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            pea     (A4)
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            movea.l A1,A0
+            pea     (A1)
+            pea     (A1)
+            lea     (-$24,A6),A1
+            bsr.w   sub_408EA0AA
+            move.w  #4,-(SP)
+            jsr     (A3)
+            movea.l A4,A0
+            lea     sub_408EAD12.L9,A1
+            lea     (-$1A,A6),A2
+            bsr.w   sub_408EA0B4
+            pea     (-$24,A6)
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            lea     (-$24,A6),A0
+            lea     sub_408EAD12.L10,A1
+            lea     (-$1A,A6),A2
+            bsr.w   sub_408EA0B4
+            bsr.w   sub_408EA0E4
+            pea     (-$24,A6)
 .L4:
-            fmove.l #$4000,FP1
-            fcmp.x  FP3,FP1
-            fbne.w  .L5
-            fmove.l #$2000,FP3
-            fscale.x FP3,FP0
+            pea     (A4)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            bsr.w   sub_408EA108
+            rts
 .L5:
-            fscale.x FP3,FP0
-            jmp     (A4)
+            lea     sub_408EAD12.L15,A0
+            bra.b   .L13
 .L6:
-            fmove.l #$FFFFC001,FP3
-            fscale.x FP3,FP0
-            fneg.x  FP1,FP1
-            fscale.x FP1,FP0
-            btst    #$13,D0
-            beq.b   .L7
-            ori.l   #$200000,D0
+            lea     sub_408EAD12.L16,A0
+            bra.b   .L13
 .L7:
-            jmp     (A4)
+            lea     sub_408EAD12.L13,A0
+            bra.b   .L13
 .L8:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   Rexp21x.L17
-            bsr.w   sub_408EEEEA
-            btst    #6,D0
-            beq.w   .L2
-            move.l  #$80000,D0
-            move.w  (A0),D1
-            bmi.b   .L9
-            move.l  #$7F800000,D1
-            fmove.s D1,FP0
-            jmp     (A4)
+            lea     sub_408EAD12.L14,A0
+            bra.b   .L13
 .L9:
-            move.l  #$280040,D0
-            fmovecr.x #$F,FP0
-            jmp     (A4)
-RCompound:
-            bsr.w   FinInit
-            fbne.w  CpdRateBig
-            btst    #$1A,D0
-            bne.w   P1STUFFFIN
-            btst    #$1B,D0
-            bne.w   DIVP0STUFFFIN
-            bra.w   P0STUFFFIN
-CpdRateBig:
-            btst    #$1A,D0
-            bne.w   P1STUFFFIN
-            btst    #$19,D0
-            beq.b   CpdCompute
-            btst    #$1A,D1
-            bne.w   ERRFINAN
-            eor.l   D1,D0
-            btst    #$1B,D0
-            beq.w   PINFSTUFFFIN
-            bra.w   P0STUFFFIN
-CpdCompute:
-            movem.l A1/A4,-(SP)
-            btst    #$19,D1
-            beq.b   .L13
-            suba.l  A0,A0
-            bra.b   .L14
+            bsr.w   sub_408EA100
+.L10:
+            lea     sub_408EAD12.L19,A0
+            bra.b   .L13
+.L11:
+            bsr.w   sub_408EA100
+.L12:
+            lea     sub_408EAD12.L20,A0
 .L13:
-            fgetexp.x FP0,FP3
-            fmove.w #$FFC0,FP1
-            fcmp.x  FP1,FP3
-            fbolt.w .L14
-            lea     RLog21x,A1
-            bsr.w   CallElems
-            fmove.l FPSR,D0
-            movea.l D1,A0
-            fmul.x  FP2,FP0
-            lea     sub_408EEEEA.L1,A1
-            bsr.w   CallElems
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
             bra.b   .L15
 .L14:
-            fmul.x  FP2,FP0
-            lea     sub_408EEEEA.L8,A1
-            bsr.w   CallElems
+            ori.l   #$7FFF4000,D0
+            move.l  D0,(A4)+
+            clr.l   (A4)+
+            clr.w   (A4)
+            subq.l  #8,A4
+            bsr.w   sub_408EA104
 .L15:
-            move.l  A0,D1
-            btst    #3,D1
-            beq.b   .L16
-            move.l  #$80000,D0
-            bra.b   .L17
+            tst.b   D3
+            bpl.b   .L16
+            move.w  (A4),(-2,A4)
 .L16:
-            moveq   #0,D0
+            pea     (-2,A6)
+            bsr.w   sub_408EA296
+            movem.l (SP)+,D0-D7/A0-A4
+            unlk    A6
+            adda.w  (SP),SP
+            rts
 .L17:
-            movem.l (SP)+,A1/A4
-            bra.w   FinExit
-RAnnuity:
-            bsr.w   FinInit
-            fbne.w  AnnOK
-            btst    #$1A,D0
-            bne.w   P0STUFFFIN
-            btst    #$1B,D0
-            bne.w   M1STUFFFIN
-            bra.w   DIVP0STUFFFIN
-AnnOK:
-            btst    #$1A,D0
-            bne.w   P0STUFFFIN
-            btst    #$19,D1
-            bne.b   AnnInfRate
-            btst    #$1A,D1
-            beq.b   AnnRateOK
-AnnReturnN:
-            fmove.x FP2,FP0
-            bra.w   FinExit
-AnnInfRate:
-            btst    #$1B,D0
-            beq.w   P0STUFFFIN
-            fcmp.x  FP1,FP2
-            fbeq.w  M1STUFFFIN
-            fbogt.w M0STUFFFIN
-            bra.w   MINFSTUFFFIN
-AnnRateOK:
-            fmove.x FP0,FP3
-            btst    #$19,D0
-            beq.b   AnnCompute
-            eor.l   D1,D0
-            btst    #$1B,D0
-            bne.b   AnnReturnN
-            fmovecr.x #$32,FP0
-            fdiv.x  FP3,FP0
-            bra.w   FinExit
-AnnCompute:
-            movem.l A1/A4,-(SP)
-            fgetexp.x FP3,FP0
-            fmove.w #$FFC0,FP1
-            fcmp.x  FP0,FP1
-            fbogt.w AnnBasee
-            lea     RLog21x,A1
-            fmove.x FP3,FP0
-            bsr.w   CallElems
-            fmul.x  FP2,FP0
-            fneg.x  FP0,FP0
-            fcmp.w  #$100,FP0
-            fbolt.w AnnResult
-            fmove.s #"$7F7FFFFF",FP1
-            fcmp.x  FP1,FP3
-            fbogt.w AnnSpecial
-            bra.b   AnnResult
-AnnBasee:
-            fmove.x FP3,FP1
-            fmul.x  FP2,FP3
-            fneg.x  FP3,FP0
-            fmove.x FP1,FP3
-            lea     Rexp21x.L11,A1
-            bsr.w   CallElems
-            bra.b   AnnResult2
-AnnResult:
-            lea     Rexp21x,A1
-            bsr.w   CallElems
-AnnResult2:
-            fneg.x  FP0,FP0
-            fdiv.x  FP3,FP0
-AnnClear:
-            moveq   #$60,D0
-            fmove.l FPSR,D1
-            btst    #$B,D1
-            beq.b   .L28
-            btst    #9,D1
-            beq.b   .L28
-            ori.l   #$280000,D0
-            bra.b   .L30
-.L28:
-            btst    #$19,D1
-            bne.b   .L29
-            btst    #$1A,D1
-            beq.b   .L30
-            ori.l   #$200000,D0
-            bra.b   .L30
-.L29:
-            ori.l   #$400000,D0
-.L30:
-            movem.l (SP)+,A1/A4
-            bra.w   FinExit
-AnnSpecial:
-            lea     RLog2x,A1
-            fmove.x FP3,FP0
-            bsr.w   CallElems
-            fadd.w  #1,FP2
-            fmul.x  FP2,FP0
-            fneg.x  FP0,FP0
-            lea     sub_408EEEEA.L1,A1
-            bsr.w   CallElems
-            fneg.x  FP0,FP0
-            fmove.l FPSR,D1
-            bset    #3,D1
-            fmove.l D1,FPSR
-            bra.b   AnnClear
-FinInit:
-            movea.l ($3E,SP),A0
-            tst.b   ($39,SP)
-            bpl.b   .L1
-            fmove.x (A0),FP2
-            fmove.l FPSR,D0
-            movea.l ($42,SP),A0
-            fmove.x (A0),FP0
-            fmove.l FPSR,D1
-            bra.b   .L2
+            subq.b  #1,D1
+            beq.b   .L7
+            bgt.b   .L18
+            tst.w   D1
+            bmi.b   .L5
+            bra.b   .L15
+.L18:
+            btst    #1,D3
+            beq.b   .L19
+            bsr.b   sub_408EA53E
+            bra.b   .L20
+.L19:
+            bsr.b   sub_408EA560
+            bsr.w   sub_408EA118
+            beq.b   .L20
+            bsr.w   sub_408EA108
+            tst.w   D1
+            bpl.b   .L10
+            bsr.w   sub_408EA0E8
+            bsr.w   sub_408EA0FC
+            bra.w   .L5
+.L20:
+            bsr.w   sub_408EA62A
+            pea     sub_408EAD12.L13
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA128
+            tst.w   (2,A4)
+            bmi.b   .L15
+            bfextu  (A4){1:15},D0
+            bne.b   .L15
+            bsr.w   sub_408EA120
+            beq.b   .L15
+            bsr.w   sub_408EA0FC
+            bra.b   .L15
+sub_408EA53E:
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            move.w  #$14,-(SP)
+            jsr     (A3)
+            bsr.w   sub_408EA0F0
+            pea     (A1)
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            rts
+sub_408EA560:
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     sub_408EAD12.L31
+            move.l  (SP),-(SP)
+            move.l  (SP),-(SP)
+            pea     (A4)
+            move.w  #$C,-(SP)
+            jsr     (A3)
+            pea     (A4)
+            pea     (A1)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            move.w  #$14,-(SP)
+            jsr     (A3)
+            pea     (A4)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            bra.w   sub_408EA0F0
 .L1:
-            addq.l  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.l  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP2
-            fmove.l FPSR,D0
-            movea.l ($42,SP),A0
-            addq.l  #6,A0
-            move.l  (A0),-(SP)
-            move.l  -(A0),-(SP)
-            subq.l  #2,A0
-            move.l  (A0),-(SP)
-            fmove.x (SP)+,FP0
-            fmove.l FPSR,D1
+            subq.b  #1,D1
+            bgt.b   .L3
+            beq.b   .L2
+            tst.w   D1
+            bmi.w   sub_408EA3E6.L8
 .L2:
-            btst    #$18,D0
-            beq.b   .L3
-            fmove.x FP2,FP0
-            btst    #$E,D0
-            beq.b   .L6
-            move.l  #$800000,D0
-            bra.b   .L6
+            bra.w   sub_408EA3E6.L15
 .L3:
-            fmove.w #$FFFF,FP1
-            fcmp.x  FP1,FP0
-            fbolt.w .L4
-            fbun.w  .L5
-            rts
-.L4:
-            addq.l  #4,SP
-            bra.b   ERRFINAN
-.L5:
-            btst    #$E,D1
+            subq.b  #1,D1
+            btst    #1,D3
             beq.b   .L6
-            move.l  #$800000,D0
+            tst.b   D1
+            beq.b   .L5
+            pea     sub_408EAD12.L31
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+.L4:
+            bsr.w   sub_408EA0FC
+            bsr.w   sub_408EA108
+            bra.b   .L8
+.L5:
+            bsr.w   sub_408EA53E
+            bra.b   .L7
 .L6:
-            addq.l  #4,SP
-            bra.b   FinExit
-ERRFINAN:
-            moveq   #$26,D1
-            lsl.l   #8,D1
-            ori.l   #$7FC00000,D1
-            move.l  #$800000,D0
-            bra.b   MINFSTUFFFIN.L15
-P1STUFFFIN:
-            move.l  #$3F800000,D1
-            bra.b   MINFSTUFFFIN.L15
-P0STUFFFIN:
-            moveq   #0,D1
-            bra.b   MINFSTUFFFIN.L15
-M1STUFFFIN:
-            move.l  #$BF800000,D1
-            bra.b   MINFSTUFFFIN.L15
-M0STUFFFIN:
-            move.l  #$80000000,D1
-            bra.b   MINFSTUFFFIN.L15
-DIVP0STUFFFIN:
-            ori.l   #$100000,D0
-PINFSTUFFFIN:
-            move.l  #$7F800000,D1
-            bra.b   MINFSTUFFFIN.L15
-MINFSTUFFFIN:
-            move.l  #$FF800000,D1
-.L15:
-            fmove.s D1,FP0
-FinExit:
-            move.l  ($30,SP),($3A,SP)
-            lea     .L17,A0
-            move.l  A0,($30,SP)
-            jmp     (A4)
-.L17:
-            rtd     #4
-CallElems:
-            fmovem.x FP1-FP3,-(SP)
-            movem.l A0/A4,-(SP)
-            ftst.x  FP0
-            lea     ReturnToHere,A4
-            fmove.x FP0,-(SP)
-            lea     (SP),A0
-            jmp     (A1)
-ReturnToHere:
-            adda.w  #12,SP
-            movem.l (SP)+,A0/A4
-            fmovem.x (SP)+,FP1-FP3
-            moveq   #-1,D1
-            eor.b   D1,D0
-            fmove.l FPSR,D1
-            and.b   D0,D1
-            swap    D0
-            or.b    D0,D1
-            fmove.l D1,FPSR
+            tst.b   D1
+            bne.b   .L4
+            bsr.b   sub_408EA560
+            bsr.w   sub_408EA118
+            beq.b   .L7
+            bsr.w   sub_408EA108
+            tst.w   D1
+            bpl.w   sub_408EA3E6.L10
+            bsr.w   sub_408EA0E8
+            bra.w   sub_408EA3E6.L8
+.L7:
+            bsr.b   sub_408EA62A
+            move.l  (-$E,A6),D0
+            or.l    (-$A,A6),D0
+            beq.b   .L8
+            pea     sub_408EAD12.L13
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA128
+            pea     sub_408EAD12.L13
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            bsr.w   sub_408EA0E4
+.L8:
+            bra.w   sub_408EA3E6.L15
+sub_408EA62A:
+            move.l  (2,A4),D0
+            or.l    (6,A4),D0
+            bne.b   .L1
             rts
-RXpwri:
-            movem.l D2-D4/A1,-(SP)
-            movea.l ($4A,SP),A1
-            move.w  (A1),D2
-            moveq   #0,D4
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            move.l  D0,D1
-            lsl.l   #5,D0
-            beq.b   FinPwrI
-            btst    #$1D,D0
-            bne.w   PwrAllDone
-            tst.w   D2
-            beq.w   P1STUFFXPWR
-            btst    #0,D2
-            bne.b   .L3
+.L1:
+            lea     (-$24,A6),A1
+            movea.l A4,A0
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            lea     (-$1A,A6),A0
+            lea     sub_408EAD12.L11,A1
+            lea     (-$24,A6),A2
+            bsr.w   sub_408EA0B4
+            pea     (-$1A,A6)
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            lea     (-$1A,A6),A0
+            lea     sub_408EAD12.L12,A1
+            lea     (-$24,A6),A2
+            bsr.w   sub_408EA0B4
+            pea     (A4)
+            pea     (-$1A,A6)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            pea     sub_408EAD12.L17
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (-$1A,A6)
+            pea     (A4)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            bsr.w   sub_408EA108
+            bra.w   sub_408EA0E4
+.L2:
+            movea.l D4,A0
+            move.w  (A0),D2
+            beq.w   sub_408EA3E6.L7
+            subq.b  #1,D1
+            bgt.b   .L5
+            asr.w   #1,D2
+            bcs.b   .L3
+            bclr    #7,(A4)
+.L3:
+            addx.w  D2,D2
+            bpl.w   sub_408EA3E6.L15
+            tst.b   D1
+            bpl.b   .L4
+            tst.b   (A4)
+            bpl.w   sub_408EA3E6.L5
+            bra.w   sub_408EA3E6.L6
+.L4:
+            tst.b   (A4)
+            bpl.w   sub_408EA3E6.L9
+            bra.w   sub_408EA3E6.L11
+.L5:
+            move.w  D2,D0
+            bpl.b   .L6
+            neg.w   D0
+.L6:
+            cmpi.w  #$FF,D0
+            bhi.b   .L7
+            bsr.b   sub_408EA70C
+            bra.w   sub_408EA3E6.L15
+.L7:
+            move.w  (A4),-(SP)
+            bclr    #7,(A4)
+            move.l  D4,-(SP)
+            pea     (-$10,A6)
+            move.l  (SP),D4
+            bsr.w   sub_408EA258
+            bsr.w   sub_408EA792
+            move.w  (SP)+,D0
+            bpl.b   .L8
+            asr.w   #1,D2
+            bcc.b   .L8
+            bset    #7,(A4)
+.L8:
+            bra.w   sub_408EA3E6.L15
+sub_408EA70C:
+            movea.l A4,A0
+            lea     (-$1A,A6),A1
+            bsr.w   sub_408EA0AA
+            bsr.b   sub_408EA766
             tst.w   D2
             bmi.b   .L2
-            fabs.x  FP0,FP0
-            bra.w   PwrAllDone
+.L1:
+            movea.l A1,A0
+            movea.l A4,A1
+            bra.w   sub_408EA0AA
 .L2:
-            tst.l   D0
-            bmi.w   DIVP0STUFFXPWR
-            bra.w   P0STUFFXPWR
+            lea     sub_408EAD12.L13,A0
+            lea     (A4),A1
+            bsr.w   sub_408EA0AA
+            bsr.w   sub_408EA114
+            bne.b   .L3
+            bsr.w   sub_408EA118
+            bne.b   .L3
+            pea     (-$10,A6)
+            pea     (A4)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            rts
 .L3:
-            tst.w   D2
-            bpl.w   PwrAllDone
-            tst.l   D0
-            bmi.b   .L4
-            lsl.l   #5,D1
-            bcc.w   P0STUFFXPWR
-            bra.w   M0STUFFXPWR
+            bsr.w   sub_408EA0E8
+            bsr.w   sub_408EA0E4
+            pea     (-$1A,A6)
+            pea     (A4)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            move.w  D2,D0
+            bpl.b   .L4
+            neg.w   D0
 .L4:
-            lsl.l   #5,D1
-            bcc.w   DIVP0STUFFXPWR
-            bra.w   DIVM0STUFFXPWR
-FinPwrI:
-            move.w  D2,D0
-            bpl.b   .L1
-            neg.w   D0
+            bsr.b   sub_408EA766
+            bra.b   .L1
+sub_408EA766:
+            lea     sub_408EAD12.L13,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            bra.b   .L2
 .L1:
-            cmpi.w  #$FF,D0
-            bhi.b   XPWRBIG
-            bsr.b   XPWRK
-            moveq   #0,D0
-            bra.w   PwrAllDone
-XPWRBIG:
-            fabs.x  FP0,FP0
-            fmove.w D2,FP3
-            bsr.w   XPWRY
-            moveq   #0,D0
-            tst.l   (A0)
-            bpl.w   PwrAllDone
-            btst    #0,D2
-            beq.w   PwrAllDone
-            fneg.x  FP0,FP0
-            bra.w   PwrAllDone
-XPWRK:
-            fmove.x FP0,FP1
-            bsr.b   XPWRKLOOP
-            tst.w   D2
-            bmi.b   XPWRKDIV
-XPWRKSTORE:
-            fmove.x FP2,FP0
-            rts
-XPWRKDIV:
-            move.w  D2,D0
-            bpl.b   .L1
-            neg.w   D0
-.L1:
-            fmove.l FPSR,D1
-            andi.l  #$60,D1
-            bne.b   XPWRKCLEAR
-            fmovecr.x #$32,FP0
-            fdiv.x  FP2,FP0
-            rts
-XPWRKCLEAR:
-            fmove.l FPSR,D1
-            moveq   #$60,D0
-            eori.l  #$FFFFFFFF,D0
-            and.l   D0,D1
-            fmove.l D1,FPSR
-            fmovecr.x #$32,FP0
-            fdiv.x  FP1,FP0
-            bsr.b   XPWRKLOOP
-            bra.b   XPWRKSTORE
-XPWRKLOOP:
-            fmovecr.x #$32,FP2
-            bra.b   XKLPENTRY
-XKLPTOP:
-            fmul.x  FP0,FP0
-XKLPENTRY:
+            pea     (A4)
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+.L2:
             lsr.w   #1,D0
-            bcc.b   XKLPSKIP
-            fmul.x  FP0,FP2
-XKLPSKIP:
-            bne.b   XKLPTOP
-            rts
-ClearInexact:
-            fmove.l FPSR,D1
-            moveq   #8,D0
-            eori.l  #$FFFFFFFF,D0
-            and.l   D0,D1
-            fmove.l D1,FPSR
-            rts
-ForceDivByZero:
-            fmove.l FPSR,D0
-            ori.l   #$100000,D0
-            fmove.l D0,FPSR
-            rts
-P1STUFFXPWR:
-            move.l  #$3F800000,D1
-            bra.b   StuffOutXpwr
-P0STUFFXPWR:
-            moveq   #0,D1
-            bra.b   StuffOutXpwr
-M0STUFFXPWR:
-            move.l  #$80000000,D1
-            bra.b   StuffOutXpwr
-DIVP0STUFFXPWR:
-            bsr.b   ForceDivByZero
-            move.l  #$7F800000,D1
-            bra.b   StuffOutXpwr2
-DIVM0STUFFXPWR:
-            bsr.b   ForceDivByZero
-            move.l  #$FF800000,D1
-            bra.b   StuffOutXpwr2
-StuffOutXpwr:
-            moveq   #0,D0
-StuffOutXpwr2:
-            fmove.s D1,FP0
-PwrAllDone:
-            tst.b   D4
-            beq.b   .L9
-            fneg.x  FP0,FP0
-.L9:
-            movem.l (SP)+,D2-D4/A1
-            move.l  ($30,SP),($3A,SP)
-            lea     PwrFinal,A0
-            move.l  A0,($30,SP)
-            jmp     (A4)
-PwrFinal:
-            rts
-XPWRY:
-            lea     RLog2x,A1
-            bsr.w   CallElems
-            fmul.x  FP3,FP0
-            lea     sub_408EEEEA.L1,A1
-            bsr.w   CallElems
-            rts
-RXpwry:
-            fmove.l FPSR,D0
-            movem.l D2-D4/A1,-(SP)
-            movea.l ($4A,SP),A1
-            move.b  ($45,SP),D1
-            bpl.b   .L2
-            fmove.x (A1),FP3
-            bra.b   .L3
-.L2:
-            addq.l  #6,A1
-            move.l  (A1),-(SP)
-            move.l  -(A1),-(SP)
-            subq.l  #2,A1
-            move.l  (A1),-(SP)
-            fmove.x (SP)+,FP3
+            bcc.b   .L3
+            pea     (A4)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
 .L3:
-            moveq   #0,D4
-            fmove.l FPSR,D1
-            move.l  #$F000000,D2
-            move.l  D1,D3
-            and.l   D2,D3
-            lsl.l   #5,D3
-            and.l   D2,D0
-            lsl.l   #5,D0
-            bne.b   XpwrWierd
-            bcs.b   XpwrWierd
-            tst.l   D3
-            bne.b   XpwrWierd
-XPWRYOK:
-            fmove.w FP3,D2
-            fmove.l FPSR,D1
-            bclr    #7,D1
-            sne     D2
-            fmove.l D1,FPSR
-            btst    #3,D1
-            sne     D0
-            or.b    D2,D0
-            bne.b   XPWRYHARD
-            fmove.w FP3,D2
-            move.w  D2,D0
-            bpl.b   .L5
-            neg.w   D0
-.L5:
-            cmpi.w  #$FF,D0
-            ble.b   .L6
-            bra.b   XPWRYHARD
-.L6:
-            bsr.w   XPWRK
-            bra.b   ByPassXPWRY
-XPWRYHARD:
-            bclr    #3,D1
-            fmove.l D1,FPSR
-            bsr.w   XPWRY
-ByPassXPWRY:
-            moveq   #0,D0
-            btst    #$1F,D3
-            bne.b   .L9
-            btst    #$1E,D3
-            beq.b   .L10
-.L9:
-            move.b  #8,D0
-.L10:
-            bra.w   PwrAllDone
-XpwrWierd:
-            bpl.b   .L16
-            bcc.b   .L16
-            btst    #$1D,D3
-            bne.b   .L16
-            lsl.l   #5,D1
-            bne.b   .L15
-            fint.x  FP3,FP3
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   XPWRYERR
-            bcs.b   .L13
-            fscale.w #$FFFF,FP3
-            fint.x  FP3,FP3
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   .L12
-            fabs.x  FP0,FP0
-.L12:
-            moveq   #8,D0
-            bra.w   PwrAllDone
-.L13:
-            bsr.w   ForceDivByZero
-            fscale.w #$FFFF,FP3
-            fint.x  FP3,FP3
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   .L14
-            bra.w   DIVP0STUFFXPWR
-.L14:
-            bra.w   DIVM0STUFFXPWR
-.L15:
-            bra.b   XPWRYERR
-.L16:
-            btst    #$1D,D0
-            beq.b   .L17
-            bra.w   PwrAllDone
-.L17:
-            btst    #$1D,D3
-            beq.b   .L18
-            fmove.x FP3,FP0
-            bra.w   PwrAllDone
-.L18:
-            ftst.x  FP0
-            fblt.w  NEGPWRY
-            bsr.b   XPWRYCOM
-            bra.w   PwrAllDone
-XPWRY9ERR:
-            addq.l  #4,SP
-XPWRYERR:
-            bsr.w   ClearInexact
-            moveq   #$25,D1
-            lsl.l   #8,D1
-            ori.l   #$7FC00000,D1
-            move.l  #$800000,D0
-            bra.w   StuffOutXpwr2
-NEGPWRY:
-            btst    #30,D3
-            bne.b   XPWRYERR
-            btst    #$1E,D0
-            beq.b   .L22
-            btst    #$1F,D3
-            bne.b   XPWRYERR
-.L22:
-            fint.x  FP3,FP2
-            fmove.l FPSR,D2
-            btst    #3,D2
-            bne.b   XPWRYERR
-            fscale.w #$FFFF,FP2
-            fint.x  FP2,FP2
-            fmove.l FPSR,D2
-            btst    #3,D2
-            sne     D4
-            bsr.w   ClearInexact
-            fabs.x  FP0,FP0
-            bsr.b   XPWRYCOM
-            tst.b   D4
-            beq.w   PwrAllDone
-            fneg.x  FP0,FP0
-            bra.w   PwrAllDone
-XPWRYCOM:
-            fbne.w  .L4
-            btst    #$1E,D3
+            tst.w   D0
             bne.b   .L1
-            tst.l   D3
-            bne.b   XPWRY9ERR
-            ftst.x  FP3
-            fblt.w  .L2
+            rts
+sub_408EA792:
+            movea.l A4,A0
+            lea     (-$1A,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            move.w  #2,-(SP)
+            bsr.w   RsrcPACK_5_2
+            move.l  D4,-(SP)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            move.w  #$A,-(SP)
+            bsr.w   RsrcPACK_5_2
+            movea.l A1,A0
+            movea.l A4,A1
+            bra.w   sub_408EA0AA
 .L1:
-            lsl.l   #5,D1
-            bcs.b   .L2
-            moveq   #0,D1
-            moveq   #0,D0
-            bra.b   .L3
+            tst.w   D1
+            bmi.b   .L4
+            bsr.b   sub_408EA828
+            bra.w   sub_408EA3E6.L15
 .L2:
-            bsr.w   ForceDivByZero
-            move.l  #$7F800000,D1
+            addq.l  #4,SP
 .L3:
-            fmove.s D1,FP0
-            rts
+            bsr.w   sub_408EA0F0
+            moveq   #$25,D0
+            bra.w   sub_408EA3E6.L14
 .L4:
-            btst    #$1E,D0
-            beq.b   .L8
-            tst.l   D3
-            bmi.b   .L5
-            bra.b   .L7
-.L5:
-            tst.l   D0
-            bpl.b   .L6
-            fmovecr.x #$32,FP0
-            moveq   #0,D0
-            addq.l  #4,SP
-            bra.w   PwrAllDone
-.L6:
-            bra.w   XPWRY9ERR
-.L7:
-            addq.l  #4,SP
-            bra.w   XPWRYOK
-.L8:
-            btst    #$1E,D3
-            beq.b   .L9
-            fmovecr.x #$32,FP1
-            fcmp.x  FP0,FP1
-            fbne.w  .L9
-            bra.w   XPWRY9ERR
-.L9:
-            addq.l  #4,SP
-            bra.w   XPWRYOK
-PolyEval:
-            move.w  (A0)+,D0
-            fmove.x (A0)+,FP1
-PolyLoop:
-            fmul.x  FP0,FP1
-            fadd.x  (A0)+,FP1
-            dbra    D0,PolyLoop
-            rts
-RLog2x:
-            fmove.l FPSR,D0
-            bsr.w   Classify
-            bsr.w   ArgReduce
-            fsub.l  #1,FP0
-            fsne    D1
-            bsr.w   Log2Approx
-            tst.b   D1
+            tst.b   D2
             beq.b   .L3
-            move.l  #$80000,D0
-.L3:
-            jmp     (A4)
-RLog21x:
-            fmove.x FP0,FP1
-            fadd.l  #1,FP0
-            fmove.l FPSR,D0
-            bsr.w   Classify
-            fmove.l FPSR,D1
-            swap    D1
-            fcmp.x  FPKSQRT2,FP0
-            fbgt.w  .L5
-            fcmp.x  FPKSQRTHALF,FP0
-            fblt.w  .L5
-            fmove.l #0,FP3
-            fmove.x FP1,FP0
-            bfextu  (A0){1:16},D0
-            beq.b   Log21Denormal
-            moveq   #1,D1
-            bra.b   .L6
+            movea.l D4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            move.w  #$14,-(SP)
+            jsr     (A3)
+            bsr.w   sub_408EA120
+            bne.b   .L3
+            pea     sub_408EAD12.L17
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            move.w  #$14,-(SP)
+            jsr     (A3)
+            move.w  FPState,(-6,A6)
+            bsr.w   sub_408EA0F0
+            bclr    #7,(A4)
+            bsr.b   sub_408EA828
+            btst    #4,(-6,A6)
+            beq.b   .L5
+            bchg    #7,(A4)
 .L5:
-            bsr.w   ArgReduce
-            fsub.l  #1,FP0
-            fsne    D1
-.L6:
-            bsr.w   Log2Approx
-            tst.b   D1
-            bne.b   .L7
-            btst    #$13,D1
-            beq.b   .L8
-.L7:
-            move.l  #$80000,D0
-.L8:
-            jmp     (A4)
-Log21Denormal:
-            fbeq.w  .L10
-            fmovecr.x #$30,FP1
-            fdiv.x  FP1,FP0
-            move.l  #$200000,D0
-.L10:
-            jmp     (A4)
-RLn1x:
-            fmove.x FP0,FP1
-            fadd.l  #1,FP0
-            fmove.l FPSR,D0
-            bsr.b   Classify
-            fcmp.x  FPKSQRT2,FP0
-            fbgt.w  .L12
-            fcmp.x  FPKSQRTHALF,FP0
-            fblt.w  .L12
-            fmove.l #0,FP3
-            fmove.x FP1,FP0
-            bfextu  (A0){1:16},D0
-            beq.b   .L14
-            bra.b   .L13
-.L12:
-            bsr.b   ArgReduce
-            fsub.l  #1,FP0
-.L13:
-            bsr.b   Log2Approx
-            fmovecr.x #$30,FP1
-            fmul.x  FP1,FP0
-            move.l  #$80000,D0
-            jmp     (A4)
-.L14:
-            fbeq.w  .L15
-            move.l  #$200000,D0
-.L15:
-            jmp     (A4)
-RLnx:
-            fmove.l FPSR,D0
-            bsr.b   Classify
-            bsr.b   ArgReduce
-            fsub.l  #1,FP0
-            bsr.b   Log2Approx
-            fmovecr.x #$30,FP1
-            fmul.x  FP1,FP0
-            fbeq.w  .L17
-            move.l  #$80000,D0
-            jmp     (A4)
-.L17:
-            moveq   #8,D0
-            jmp     (A4)
-Classify:
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bcs.w   LogNeg
-            bne.b   BadStuff
-            rts
-ArgReduce:
-            fgetexp.x FP0,FP3
-            fgetman.x FP0,FP0
-            fcmp.x  FPKSQRT2,FP0
-            fblt.w  .L1
-            fadd.w  #1,FP3
-            fdiv.w  #2,FP0
+            bra.w   sub_408EA3E6.L15
+sub_408EA828:
+            subq.b  #1,D1
+            bne.b   .L3
+            subq.b  #1,D2
+            beq.b   sub_408EA792.L2
+            tst.w   D2
+            bpl.b   .L1
+            bsr.w   sub_408EA100
+            lea     sub_408EAD12.L19,A0
+            bra.b   .L2
 .L1:
-            rts
-Log2Approx:
-            fmove.x FP0,FP2
-            fadd.l  #2,FP2
-            fdiv.x  FP2,FP0
-            fmove.x FP0,FP2
-            fmul.x  FP2,FP0
-            lea     sub_408EFCAA.L1,A0
-            bsr.w   PolyEval
-            fmul.x  FP1,FP2
-            lea     sub_408EFCAA.L2,A0
-            bsr.w   PolyEval
-            fmove.l FPSR,D0
-            bclr    #5,D0
-            fmove.l D0,FPSR
-            fdiv.x  FP1,FP2
-            fmove.x FP2,FP0
-            fadd.x  FP3,FP0
-            rts
-BadStuff:
-            addq.l  #4,SP
-            bmi.b   LogZero
-            jmp     (A4)
-LogZero:
-            fmove.x #"$FFFF00000000000000000000",FP0
-            move.l  #$100000,D0
-            jmp     (A4)
-LogNeg:
-            addq.l  #4,SP
-            lsl.l   #1,D0
-            bcs.b   LogZero
-            btst    #$1E,D0
-            bne.b   .L4
-            fmove.x #"$7FFF00004024000000000000",FP0
-            move.l  #$800008,D0
+            lea     sub_408EAD12.L15,A0
+.L2:
+            movea.l A4,A1
+            bra.w   sub_408EA0AA
+.L3:
+            bpl.b   .L4
+            subq.b  #1,D2
+            bne.b   .L5
+            bra.w   sub_408EA792.L2
 .L4:
-            jmp     (A4)
+            subq.b  #1,D2
+            bpl.b   .L5
+            pea     sub_408EAD12.L13
+            pea     (A4)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            beq.w   sub_408EA792.L2
 .L5:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.w   .L10
-            movem.l A1,-(SP)
-            movea.l A0,A1
-            fmove.x FPKSQRTHALF.L10,FP1
-            frem.x  FP1,FP0
-            fmove.x FP0,FP3
-            fmul.x  FP0,FP0
-            lea     FPKSQRTHALF.L16,A0
-            bsr.w   PolyEval
-            fmove.x FP1,FP2
-            lea     FPKSQRTHALF.L15,A0
-            bsr.w   PolyEval
-            fdiv.x  FP1,FP2
-            fmul.x  FP0,FP2
-            fmove.x FP0,FP1
-            fmul.x  FP3,FP1
-            fmul.x  FP1,FP2
-            fcmp.s  #"$3E800000",FP0
-            fbgt.w  .L6
-            fmul.x  FP3,FP0
-            fdiv.w  #3,FP0
-            fadd.x  FP2,FP0
-            fadd.x  FP3,FP0
-            bra.b   .L7
+            move.w  D2,D6
+            move.l  D4,-(SP)
+            pea     (-4,A6)
+            move.w  #$2010,-(SP)
+            jsr     (A3)
+            bsr.w   sub_408EA11C
+            sne     D7
+            bsr.w   sub_408EA0EC
+            bsr.w   sub_408EA120
+            sne     D1
+            or.b    D1,D7
+            bne.b   .L7
+            move.w  (-4,A6),D2
+            move.w  D2,D0
+            bpl.b   .L6
+            neg.w   D0
 .L6:
-            fmove.x FP3,FP1
-            fadd.x  #"$BFFEBFFEC000000000000000",FP1
-            fdiv.w  #3,FP1
-            fmul.x  FP0,FP1
-            fadd.x  FP2,FP1
-            fdiv.w  #4,FP0
-            fadd.x  FP1,FP0
-            fadd.x  FP3,FP0
+            cmpi.w  #$FF,D0
+            ble.w   sub_408EA70C
 .L7:
-            fmove.l FPSR,D0
-            swap    D0
-            lsr.b   #1,D0
-            bcc.b   .L8
-            fmove.w #$FFFF,FP1
-            fdiv.x  FP0,FP1
-            fmove.x FP1,FP0
-            btst    #$A,D0
-            beq.b   .L8
-            fneg.x  FP0,FP0
+            bsr.w   sub_408EA0F0
+            bsr.w   sub_408EA792
+            tst.b   D6
+            bmi.w   sub_408EA0F0
+            rts
 .L8:
-            bfextu  (A1){1:16},D0
-            movea.l (SP)+,A1
-            beq.b   .L9
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
+            pea     sub_408EAD12.L14
+            move.l  D5,-(SP)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            blt.w   .L16
+            bgt.b   .L12
+            subq.b  #1,D2
+            bne.b   .L10
 .L9:
-            move.l  #$280000,D0
-            jmp     (A4)
+            bra.w   sub_408EA3E6.L7
 .L10:
-            bmi.b   .L11
-            btst    #$1D,D0
-            bne.b   .L11
-            fmove.x #"$7FFF00004021000000000000",FP0
-            move.l  #$800000,D0
-            jmp     (A4)
+            movea.l D4,A0
+            tst.b   (A0)
+            bmi.w   sub_408EA3E6.L9
 .L11:
-            moveq   #0,D0
-            jmp     (A4)
+            bra.w   sub_408EA3E6.L5
 .L12:
-            movem.l A1-A3,-(SP)
-            movea.l A0,A3
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bcs.b   .L13
-            suba.l  A1,A1
-            bra.b   .L14
+            subq.b  #1,D2
+            beq.b   .L9
+            bgt.b   .L13
+            subq.b  #1,D1
+            beq.b   .L16
+            eor.w   D2,D1
+            bmi.b   .L11
+            bra.w   sub_408EA3E6.L10
 .L13:
-            movea.w #1,A1
+            lea     (-$1A,A6),A1
+            movea.l D5,A0
+            bsr.w   sub_408EA0AA
+            move.w  (A1),D0
+            bclr    #$F,D0
+            cmpi.w  #$3F7F,D0
+            blt.b   .L14
+            pea     (A1)
+            move.w  #6,-(SP)
+            bsr.w   RsrcPACK_5_2
+            move.l  D4,-(SP)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            move.w  #$A,-(SP)
+            bra.b   .L15
 .L14:
-            bne.w   .L22
-            fabs.x  FP0,FP0
-            fcmp.w  #1,FP0
-            fble.w  .L15
-            movea.w #1,A2
-            fmove.w #1,FP3
-            fdiv.x  FP0,FP3
-            fmove.x FP3,FP0
-            bra.b   .L16
+            move.l  D4,-(SP)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            move.w  #8,-(SP)
 .L15:
-            suba.l  A2,A2
-            fmove.x FP0,FP3
+            bsr.w   sub_408EA0E4
+            bsr.w   RsrcPACK_5_2
+            movea.l A1,A0
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
+            bra.w   sub_408EA3E6.L15
 .L16:
-            fcmp.x  FPKSQRTHALF.L9,FP0
-            fbgt.w  .L21
-            fmul.x  FP0,FP0
-            lea     FPKSQRTHALF.L18,A0
-            bsr.w   PolyEval
-            fmove.x FP1,FP2
-            lea     FPKSQRTHALF.L17,A0
-            bsr.w   PolyEval
-            fdiv.x  FP1,FP2
-            fmul.x  FP3,FP2
-            fsub.x  FP2,FP3
-            fmove.x FP3,FP0
+            moveq   #$26,D0
+            bra.w   sub_408EA3E6.L14
 .L17:
-            move.w  A2,D1
-            beq.b   .L18
-            fmove.x FPKSQRTHALF.L10,FP1
-            fsub.x  FP0,FP1
-            fmove.x FP1,FP0
-.L18:
-            move.w  A1,D1
-            beq.b   .L19
-            fmul.b  #$FF,FP0
-.L19:
-            bfextu  (A3){1:16},D0
-            movem.l (SP)+,A1-A3
+            pea     sub_408EAD12.L14
+            move.l  D5,-(SP)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            blt.b   .L16
+            bne.b   .L19
+            subq.b  #1,D2
             beq.b   .L20
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
+            tst.w   D2
+            bpl.w   sub_408EA3E6.L9
+.L18:
+            bra.w   sub_408EA3E6.L8
+.L19:
+            subq.b  #1,D2
+            bne.b   .L21
 .L20:
-            move.l  #$80000,D0
-            jmp     (A4)
+            bra.w   sub_408EA3E6.L5
 .L21:
-            fmovem.x FP4-FP5,-(SP)
-            fmul.x  FPKSQRTHALF.L7,FP3
-            fmove.w #1,FP2
-            fdiv.x  FP3,FP2
-            fadd.w  #1,FP2
-            fadd.w  #1,FP3
-            fmove.x FP0,FP1
-            fsub.x  FPKSQRTHALF.L7,FP1
-            fmove.x FP1,FP4
-            fdiv.x  FP3,FP1
-            fdiv.x  FP2,FP4
-            fmove.x FP1,FP3
-            fmul.x  FP1,FP1
-            fmove.x FP0,FP2
-            fmove.x FP1,FP0
-            lea     FPKSQRTHALF.L18,A0
-            bsr.w   PolyEval
-            fmove.x FP1,FP5
-            lea     FPKSQRTHALF.L17,A0
-            bsr.w   PolyEval
-            fdiv.x  FP1,FP5
-            fmul.x  FP3,FP5
-            fadd.x  FPKSQRTHALF.L8,FP5
-            fadd.x  FP4,FP5
-            fsub.x  FP2,FP5
-            fmove.x FP5,FP0
-            fmul.b  #$FF,FP0
-            fmovem.x (SP)+,FP4-FP5
-            bra.w   .L17
+            subq.b  #1,D1
+            bgt.b   .L24
+            blt.b   .L23
 .L22:
-            bmi.b   .L23
-            btst    #$1D,D0
-            beq.b   .L24
+            movea.l A4,A1
+            movea.l D4,A0
+            bsr.w   sub_408EA0AA
+            bra.w   sub_408EA3E6.L15
 .L23:
-            movem.l (SP)+,A1-A3
-            moveq   #0,D0
-            jmp     (A4)
+            tst.w   D2
+            bpl.b   .L20
+            pea     sub_408EAD12.L14
+            move.l  D4,-(SP)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            beq.b   .L18
+            bgt.w   sub_408EA3E6.L6
+            bra.w   sub_408EA3E6.L12
 .L24:
-            fmove.x FPKSQRTHALF.L10,FP0
-            move.w  A1,D1
-            beq.b   .L25
-            fmul.b  #$FF,FP0
+            tst.b   D2
+            bpl.b   .L25
+            eor.w   D2,D1
+            bmi.b   .L22
+            movea.l D5,A0
+            lea     (-$1A,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            movea.l A4,A1
+            lea     sub_408EAD12.L13,A0
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            bra.w   sub_408EA3E6.L15
 .L25:
-            movem.l (SP)+,A1-A3
-            moveq   #0,D0
-            jmp     (A4)
+            lea     (-$1A,A6),A1
+            movea.l D5,A0
+            bsr.w   sub_408EA0AA
+            move.w  (A1),D0
+            bclr    #$F,D0
+            cmpi.w  #$3F7F,D0
+            blt.b   .L27
+            pea     (A1)
+            move.w  #6,-(SP)
+            bsr.w   RsrcPACK_5_2
+            move.l  D4,-(SP)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            bchg    #7,(A1)
+            cmpi.w  #$4007,(A1)
+            blt.b   .L26
+            movea.l D5,A0
+            cmpi.w  #$407F,(A0)
+            bge.b   .L32
 .L26:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.b   .L33
-            movem.l A1,-(SP)
-            movea.l A0,A1
-            movem.l D2,-(SP)
-            bcc.b   .L27
-            moveq   #1,D2
+            pea     (A1)
+            move.w  #$E,-(SP)
             bra.b   .L28
 .L27:
-            moveq   #0,D2
+            move.l  D4,-(SP)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            bchg    #7,(A1)
+            pea     (A1)
+            move.w  #$C,-(SP)
 .L28:
-            fmove.x FPKSQRTHALF.L10,FP1
-            frem.x  FP1,FP0
-            fmove.l FPSR,D0
-            swap    D0
-            move.b  D0,D1
-            lsr.b   #1,D0
-            bcc.b   .L29
-            bsr.w   sub_408EFC12
-            subq.b  #1,D2
-            bmi.b   .L30
-            fmul.w  #$FFFF,FP0
-            bra.b   .L30
+            bsr.w   RsrcPACK_5_2
+            bchg    #7,(A1)
+            move.l  D5,-(SP)
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
 .L29:
-            bsr.w   sub_408EFCAA
+            bsr.w   sub_408EA0E4
+            bsr.w   sub_408EA0E8
+            movea.l A1,A0
+            bsr.w   sub_408EA016
+            subq.b  #3,D0
+            bne.b   .L30
+            bsr.w   sub_408EA0F8
+            bra.b   .L31
 .L30:
-            movem.l (SP)+,D2
-            andi.b  #3,D1
-            subq.b  #2,D1
-            bmi.b   .L31
-            fmul.w  #$FFFF,FP0
+            subq.b  #2,D0
+            beq.b   .L31
+            bsr.w   sub_408EA0FC
 .L31:
-            bfextu  (A1){1:16},D0
-            movea.l (SP)+,A1
-            beq.b   .L32
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
+            lea     (-$1A,A6),A0
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
+            bra.w   sub_408EA3E6.L15
 .L32:
-            move.l  #$280000,D0
-            jmp     (A4)
+            movea.l D5,A0
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            move.w  #2,-(SP)
+            bsr.w   RsrcPACK_5_2
+            lea     (-$24,A6),A1
+            movea.l D4,A0
+            bsr.w   sub_408EA0AA
+            pea     sub_408EAD12.L13
+            pea     (A1)
+            clr.w   -(SP)
+            jsr     (A3)
+            pea     (A1)
+            lea     (-$1A,A6),A1
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            bchg    #7,(A1)
+            pea     (A1)
+            move.w  #$A,-(SP)
+            bsr.w   RsrcPACK_5_2
+            bchg    #7,(A1)
+            bra.b   .L29
 .L33:
-            bmi.b   .L34
-            btst    #$1D,D0
-            bne.b   .L34
-            fmove.x #"$7FFF00004021000000000000",FP0
-            move.l  #$800000,D0
-            jmp     (A4)
-.L34:
-            moveq   #0,D0
-            jmp     (A4)
-.L35:
-            fmove.l FPSR,D0
-            move.l  #$F000000,D1
-            and.l   D1,D0
-            lsl.l   #5,D0
-            bne.b   .L41
-            movem.l D2,-(SP)
-            bcc.b   .L36
-            moveq   #1,D2
-            bra.b   .L37
-.L36:
+            moveq   #$21,D0
             moveq   #0,D2
-.L37:
-            fmove.x FPKSQRTHALF.L10,FP1
-            frem.x  FP1,FP0
-            fmove.l FPSR,D0
-            swap    D0
-            move.b  D0,D1
-            lsr.b   #1,D0
-            bcs.b   .L38
-            bsr.b   sub_408EFC12
-            bra.b   .L39
-.L38:
-            bsr.w   sub_408EFCAA
-            subq.b  #1,D2
-            bmi.b   .L39
-            fmul.w  #$FFFF,FP0
-.L39:
-            movem.l (SP)+,D2
-            andi.b  #3,D1
             subq.b  #1,D1
-            bmi.b   .L40
-            subq.b  #2,D1
-            bpl.b   .L40
-            fmul.w  #$FFFF,FP0
+            beq.w   sub_408EA3E6.L15
+.L34:
+            bmi.w   sub_408EA3E6.L14
+            bsr.b   sub_408EAAF4
+            btst    #0,D2
+            bne.b   .L35
+            bsr.b   sub_408EAB04
+            bra.b   .L36
+.L35:
+            bsr.w   sub_408EAB6A
+.L36:
+            andi.w  #3,D2
+            subq.w  #2,D2
+            bmi.b   .L37
+            bchg    #7,(A4)
+.L37:
+            bsr.w   sub_408EA0E4
+            bsr.w   sub_408EA108
+            pea     (A4)
+            pea     (-4,A6)
+            bsr.w   ELCLASSX
+            move.w  (-4,A6),D0
+            bpl.b   .L38
+            neg.w   D0
+.L38:
+            subq.w  #6,D0
+            bne.b   .L39
+            bsr.w   sub_408EA0FC
+.L39:
+            bra.w   sub_408EA3E6.L15
 .L40:
-            move.l  #$80000,D0
-            move.b  #$20,D0
-            jmp     (A4)
-.L41:
-            bmi.b   .L43
-            btst    #$1D,D0
-            bne.b   .L42
-            fmove.x #"$7FFF00004021000000000000",FP0
-            move.l  #$800000,D0
-            jmp     (A4)
-.L42:
-            moveq   #0,D0
-            jmp     (A4)
-.L43:
-            fmove.w #1,FP0
-            moveq   #0,D0
-            jmp     (A4)
-sub_408EFC12:
-            fmove.x FP0,FP3
-            fmul.x  FP0,FP0
-            lea     FPKSQRTHALF.L14,A0
-            bsr.w   PolyEval
-            fmove.x FP1,FP2
-            lea     FPKSQRTHALF.L13,A0
-            bsr.w   PolyEval
-            fdiv.x  FP1,FP2
-            fmul.x  FP0,FP2
-            fmul.x  FP0,FP2
-            fcmp.x  #"$3FFD3FFD8000000000000000",FP0
-            fblt.w  .L1
-            fabs.x  FP3,FP3
-            fsub.x  #"$3FFE3FFE8000000000000000",FP3
-            fmove.x FP3,FP1
-            fdiv.w  #2,FP1
-            fmul.x  FP1,FP3
-            fsub.x  FP2,FP3
-            fadd.x  FP1,FP3
-            fmul.w  #$FFFF,FP3
-            fadd.x  #"$3FFE3FFEE000000000000000",FP3
-            fmove.x FP3,FP0
+            moveq   #$21,D0
+            moveq   #1,D2
+            subq.b  #1,D1
+            bne.b   .L34
+            bra.w   sub_408EA3E6.L7
+sub_408EAAF4:
+            pea     sub_408EAD12.L26
+            pea     (A4)
+            move.w  #$C,-(SP)
+            jsr     (A3)
+            add.w   D0,D2
+            rts
+sub_408EAB04:
+            lea     sub_408EAD12.L35,A2
+            bsr.b   sub_408EAB38
+            pea     (A4)
+            pea     (A2)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A2)
+            pea     (A0)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A0)
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            rts
+sub_408EAB2A:
+            bsr.b   sub_408EAB38
+            pea     (A2)
+            pea     (A0)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            rts
+sub_408EAB38:
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            exg     A1,A2
+            lea     (-$24,A6),A0
+            bsr.w   sub_408EA0B4
+            pea     (A0)
+            lea     (-$1A,A6),A0
+            bsr.w   sub_408EA0B4
+            pea     (A0)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            rts
+sub_408EAB6A:
+            lea     sub_408EAD12.L36,A2
+            bsr.b   sub_408EAB2A
+            pea     (A2)
+            pea     (A0)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     sub_408EAD12.L22
+            pea     (A2)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            bgt.b   .L1
+            pea     sub_408EAD12.L23
+            pea     (A2)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A2)
+            pea     (A0)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
+            pea     sub_408EAD12.L13
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
             rts
 .L1:
-            fdiv.w  #2,FP0
-            fsub.x  FP0,FP2
-            fadd.w  #1,FP2
-            fmove.x FP2,FP0
+            bclr    #7,(A4)
+            pea     sub_408EAD12.L23
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            pea     (A0)
+            movea.l A4,A0
+            movea.l A2,A1
+            bsr.w   sub_408EA0AA
+            pea     sub_408EAD12.L23
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            bchg    #7,(A4)
+            pea     sub_408EAD12.L25
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
             rts
-sub_408EFCAA:
-            fmove.x FP0,FP3
-            fmul.x  FP0,FP0
-            lea     FPKSQRTHALF.L12,A0
-            bsr.w   PolyEval
-            fmove.x FP1,FP2
-            lea     FPKSQRTHALF.L11,A0
-            bsr.w   PolyEval
-            fdiv.x  FP1,FP2
-            fmul.x  FP3,FP0
-            fmul.x  FP0,FP2
-            fsub.x  FP2,FP3
-            fmove.x FP3,FP0
-            rts
-.L1:
-            dc.w    $0004,$3FF6,0,$B946,$46AF,$F6CE,$3BFF,$3FF9
-            dc.w    0,$94F4,$3221,$4D61,$FBEB,$3FFB,0,$DC97
-            dc.w    $8903,$D944,$7893,$3FFF,0,$9F9E,$3946,$57CA
-            dc.w    $1D05,$C001,0,$CD6B,$C53A,$46EC,$DC9A,$4001
-            dc.w    0,$B483,$97E7,$BAE6,$FCE0
 .L2:
-            dc.b    $00,$01,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $C000,0,$B818,$35C3,$CE0A,$5E1D,$3FFF,0
-            dc.w    $FA3E,$DF0E,$DDF4,$1A96
+            moveq   #$21,D0
+            moveq   #0,D2
+            subq.b  #1,D1
+            bmi.w   sub_408EA3E6.L14
+            beq.w   sub_408EA3E6.L15
+            bsr.w   sub_408EAAF4
+            bsr.b   sub_408EAC48
+            ror.w   #1,D2
+            bcc.b   .L3
+            bchg    #7,(A4)
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            lea     sub_408EAD12.L13,A0
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
+            pea     (A4)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            bsr.w   sub_408EA110
+            beq.b   .L3
+            bchg    #7,(A4)
 .L3:
-            dc.w    $0002,$BFEE,0,$FF88,$90C8,$1B20,$9B79,$3FF9
-            dc.w    0,$DA5C,$84EF,$B813,$272F,$4003,0,$97D3
-            dc.w    $BAEA,$F80F,$FD45,$4009,0,$AB86,$71A1,$95BE
-            dc.w    $FF0C
+            bra.w   sub_408EA828.L37
+sub_408EAC48:
+            lea     sub_408EAD12.L37,A2
+            bsr.w   sub_408EAB2A
+            movea.l A4,A0
+            lea     (-$2E,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A2)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            lea     (-$1A,A6),A0
+            pea     (A0)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     sub_408EAD12.L22
+            pea     (A2)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            bgt.b   .L1
+            pea     sub_408EAD12.L21
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            pea     (A0)
+            clr.w   -(SP)
+            jsr     (A3)
+            bra.b   .L2
+.L1:
+            pea     (A0)
+            movea.l A4,A0
+            lea     (-$24,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     sub_408EAD12.L24
+            pea     (A1)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            pea     sub_408EAD12.L21
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            pea     (A2)
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            clr.w   -(SP)
+            jsr     (A3)
+            pea     sub_408EAD12.L22
+            pea     (A2)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A2)
+            pea     (A1)
+            clr.w   -(SP)
+            jsr     (A3)
+            movea.l A1,A0
+.L2:
+            pea     (A0)
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            rts
+.L3:
+            subq.b  #1,D1
+            bge.b   .L4
+            lea     sub_408EAD12.L26,A0
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
+            clr.b   D1
+            or.w    D1,(A4)
+            bra.b   .L5
 .L4:
-            dc.b    $00,$01,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4006,0,$D548,$7002,$984B,$5AB4,$400A,0
-            dc.w    $F775,$612E,$96B7,$0780,$400D,0,$FFFE
-            ds.b    6
-            dc.w    $7FFF
-            ds.b    10
-            dc.w    $FFFF
-            ds.b    10
-            dc.b    $3F,$FD,$00,$00,$80
-            ds.b    7
-            dc.b    $3F,$FE,$00,$00,$80
-            ds.b    7
-            dc.b    $3F,$FE,$00,$00,$C0
-            ds.b    7
-            dc.b    $3F,$FE,$00,$00,$E0
-            ds.b    7
-            dc.w    $400D,0,$834E
-            ds.b    6
-            dc.w    $401D,0,$FFFF,$FFFE
-            ds.b    4
-FPKSQRT2:
-            dc.w    $3FFF,0,$B504,$F333,$F9DE,$6484
-FPKSQRTHALF:
-            dc.w    $3FFE,0,$B504,$F333,$F9DE,$6484
+            bne.b   .L6
+.L5:
+            bra.w   sub_408EA3E6.L15
+.L6:
+            bclr    #7,(A4)
+            bsr.b   sub_408EAD12
+            clr.b   D1
+            or.w    D1,(A4)
+            bra.w   sub_408EA828.L37
+sub_408EAD12:
+            moveq   #0,D2
+            pea     .L13
+            pea     (A4)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            bls.b   .L1
+            moveq   #-1,D2
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            lea     .L13,A0
+            movea.l A4,A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+.L1:
+            move.l  (A4)+,-(SP)
+            move.l  (A4)+,-(SP)
+            move.w  (A4),-(SP)
+            subq.l  #8,A4
+            pea     .L34
+            pea     (A4)
+            move.w  #8,-(SP)
+            jsr     (A3)
+            bgt.b   .L2
+            lea     .L38,A2
+            bsr.w   sub_408EAB38
+            pea     (A0)
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            bra.w   .L3
+.L2:
+            movea.l A4,A0
+            lea     (-$10,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     .L32
+            pea     (A1)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     (A1)
+            lea     .L13,A0
+            lea     (-$24,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            pea     .L13
+            pea     (A1)
+            clr.w   -(SP)
+            jsr     (A3)
+            pea     .L13
+            pea     (-$10,A6)
+            clr.w   -(SP)
+            jsr     (A3)
+            pea     .L32
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            movea.l A4,A0
+            lea     (-$2E,A6),A1
+            bsr.w   sub_408EA0AA
+            pea     (-$10,A6)
+            pea     (A4)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            pea     (-$24,A6)
+            pea     (A1)
+            move.w  #6,-(SP)
+            jsr     (A3)
+            lea     .L38,A2
+            bsr.w   sub_408EAB38
+            pea     (A0)
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     .L33
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            pea     (-$2E,A6)
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+.L3:
+            lea     (-8,A6),A1
+            move.w  (SP)+,(A1)
+            move.l  (SP)+,-(A1)
+            move.l  (SP)+,-(A1)
+            pea     (A1)
+            pea     (A4)
+            move.w  #2,-(SP)
+            jsr     (A3)
+            tst.w   D2
+            bne.b   .L4
+            bchg    #7,(A4)
+            rts
+.L4:
+            pea     .L26
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
+            rts
+.L5:
+            move.w  (A4),D1
+            bmi.b   .L7
+            move.l  (2,A4),D2
+            bpl.b   .L7
+            move.l  (6,A4),D0
+            bne.b   .L7
+            move.l  #$401E,D0
+            sub.w   D1,D0
+            ble.b   .L7
+            cmpi.w  #$1F,D0
+            bgt.b   .L7
+            bfins   D2,D1{0:D0}
+            bne.b   .L7
+            lsr.l   D0,D2
+            mulu.l  #$41A7,D1:D2
+            divu.l  #$7FFFFFFF,D1:D2
+            bfffo   D1{0:0},D2
+            move.w  #$401E,D0
+            lsl.l   D2,D1
+            sub.w   D2,D0
+            tst.b   D3
+            bpl.b   .L6
+            move.w  D0,(-2,A4)
+.L6:
+            move.w  D0,(A4)+
+            move.l  D1,(A4)+
+            clr.l   (A4)
+            move.w  (-2,A6),FPState
+            movem.l (SP)+,D0-D7/A0-A4
+            unlk    A6
+            adda.w  (SP),SP
+            rts
 .L7:
-            dc.w    $3FFE,0,$93CD,$3A2C,$8198,$E26A
+            pea     .L27
+            pea     (A4)
+            move.w  #4,-(SP)
+            jsr     (A3)
+            pea     .L28
+            pea     (A4)
+            move.w  #$C,-(SP)
+            jsr     (A3)
+            tst.b   (A4)
+            bpl.b   .L8
+            pea     .L28
+            pea     (A4)
+            clr.w   -(SP)
+            jsr     (A3)
 .L8:
-            dc.w    $3FFA,0,$DC2A,$86B1,$5FDB,$6462
+            bra.w   sub_408EA3E6.L15
 .L9:
-            dc.w    $3FFD,0,$8930,$A2F4,$F66A,$B18A
+            dc.w    $0005,$3FF6,$B946,$46AF,$F6CE,$3BFF,$3FF9,$94F4
+            dc.w    $3221,$4D61,$FBEB,$3FFB,$DC97,$8903,$D944,$7893
+            dc.w    $3FFF,$9F9E,$3946,$57CA,$1D05,$C001,$CD6B,$C53A
+            dc.w    $46EC,$DC9A,$4001,$B483,$97E7,$BAE6,$FCE0
 .L10:
-            dc.w    $3FFF,0,$C90F,$DAA2,$2168,$C235
+            dc.b    $00,$02,$3F,$FF,$80
+            ds.b    7
+            dc.w    $C000,$B818,$35C3,$CE0A,$5E1D,$3FFF,$FA3E,$DF0E
+            dc.w    $DDF4,$1A96
 .L11:
-            dc.b    $00,$02,$3F,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4007,0,$88D8,$B844,$A6A8,$5A30,$400E,0
-            dc.w    $8A15,$8A49,$0979,$2320,$4013,0,$FAA9,$FE26
-            dc.w    $FE63,$F22B
+            dc.w    $0003,$BFEE,$FF88,$90C8,$1B20,$9B79,$3FF9,$DA5C
+            dc.w    $84EF,$B813,$272F,$4003,$97D3,$BAEA,$F80F,$FD45
+            dc.w    $4009,$AB86,$71A1,$95BE,$FF0C
 .L12:
-            dc.w    $0002,$BFFE,0,$C250,$86AE,$43F5,$CBF5,$4006
-            dc.w    0,$9E76,$EC66,$BEE7,$6BA2,$C00C,0,$AF51
-            dc.w    $A1D6,$C4C4,$AA01,$4011,0,$A71B,$FEC4,$A997
-            dc.w    $F6CE
+            dc.b    $00,$02,$3F,$FF,$80
+            ds.b    7
+            dc.w    $4006,$D548,$7002,$984B,$5AB4,$400A,$F775,$612E
+            dc.w    $96B7,$0780
 .L13:
-            dc.b    $00,$02,$3F,$FF,$00,$00,$80
+            dc.b    $3F,$FF,$80
             ds.b    7
-            dc.w    $4007,0,$A6D9,$6A95,$FBDF,$9685,$400E,0
-            dc.w    $C7A7,$EA65,$E85D,$156B,$4014,0,$D26E,$871C
-            dc.w    $7B17,$52B2
 .L14:
-            dc.w    $0002,$BFFB,0,$D57E,$18D7,$A6F6,$D758,$4003
-            dc.w    0,$E364,$937E,$32B3,$D072,$C00A,0,$A62D
-            dc.w    $4056,$586B,$C045,$4010,0,$8C49,$AF68,$520F
-            dc.w    $8C7A
+            dc.b    $BF,$FF,$80
+            ds.b    7
 .L15:
-            dc.b    $00,$02,$BF,$FF,$00,$00,$80
-            ds.b    7
-            dc.w    $4005,0,$B513,$0324,$83C0,$0955,$C009,0
-            dc.w    $D1FF,$B242,$5762,$E0CF,$400A,0,$E190,$9309
-            dc.w    $9376,$66AB
+            ds.b    10
 .L16:
-            dc.w    $0002,$BFE9,0,$B1FC,$3363,$D79B,$2838,$3FFD
-            dc.w    0,$AA9D,$71D8,$3EC7,$4CD1,$C003,0,$E9CD
-            dc.w    $8E24,$B965,$7DBB,$4007,0,$F09A,$3670,$9D4B
-            dc.w    $1836
+            dc.b    $80
+            ds.b    9
 .L17:
-            dc.w    $0003,$3FFF,0,$98D3,$1EAE,$2AFA,$5DAD,$4003
-            dc.w    0,$8F79,$4CD8,$B3CD,$EFD9,$4005,0,$8E37
-            dc.w    $ED85,$70B8,$B368,$4005,0,$CDA4,$BEA1,$AC59
-            dc.w    $F3B8,$4004,0,$C405,$9C55,$4CF0,$C656
-.L18:
-            dc.b    $00,$03,$3F,$FF,$00,$00,$80
+            dc.b    $40,$00,$80
             ds.b    7
-            dc.w    $4002,0,$A23B,$6C13,$1F92,$0E30,$4003,0
-            dc.w    $C3C8,$593D,$FA3A,$486F,$4003,0,$82AE,$6838
-            dc.w    $DDF5,$D945
-            ds.b    12
-            REPT    152
-            dc.b    ' Copyright Apple'
-            dc.b    ' Computer, Inc. '
-            dc.b    '1989-1990][',$11,'Tue,'
-            dc.b    ' Jul 18, 1989]<<'
-            dc.b    'HJRBGMSHJMAAGCSL'
-            dc.b    'RWHBBMGGDCCHDAFD'
-            dc.b    'JWGMRSWCRLESRCSM'
-            dc.b    'BPKEBALJWKDMLPAT'
-            dc.b    'WTOSGSG DEVAJMP>'
-            dc.b    '>[(c)'
-            ENDR
-            dc.b    ' Copyright Apple Computer, Inc. 1989-1990]['
-            dc.b    17,'Tue, Jul 18, 1989'
-            dc.b    ']<<HJRBGMSHJMAAGCSLRWHBBMGGDCCHDAFDJWGMRSWCRLESRCSMBPKEBALJ'
+.L18:
+            dc.w    $400D,$FFFE
+            ds.b    6
+.L19:
+            dc.w    $7FFF
+            ds.b    8
+.L20:
+            dc.w    $FFFF
+            ds.b    8
+.L21:
+            dc.b    $40,$00,$C0
+            ds.b    7
+.L22:
+            dc.b    $3F,$FD,$80
+            ds.b    7
+.L23:
+            dc.b    $3F,$FE,$80
+            ds.b    7
+.L24:
+            dc.b    $3F,$FE,$C0
+            ds.b    7
+.L25:
+            dc.b    $3F,$FE,$E0
+            ds.b    7
+.L26:
+            dc.w    $3FFF,$C90F,$DAA2,$2168,$C235,$3FFE,$C90F,$DAA2
+            dc.w    $2168,$C235
+.L27:
+            dc.w    $400D,$834E
+            ds.b    6
+.L28:
+            dc.w    $401D,$FFFF,$FFFE
+            ds.b    4
+.L29:
+            dc.w    $3FFF,$B504,$F333,$F9DE,$6484
+.L30:
+            dc.w    $3FFE,$B504,$F333,$F9DE,$6484,$4000,$ADF8,$5458
+            dc.w    $A2BB,$4A9B
+.L31:
+            dc.w    $3FFE,$B172,$17F7,$D1CF,$79AC
+.L32:
+            dc.w    $3FFE,$93CD,$3A2C,$8198,$E26A
+.L33:
+            dc.w    $3FFA,$DC2A,$86B1,$5FDB,$6462
+.L34:
+            dc.w    $3FFD,$8930,$A2F4,$F66A,$B18A
+.L35:
+            dc.b    $00,$03,$3F,$FF,$80
+            ds.b    7
+            dc.w    $4007,$88D8,$B844,$A6A8,$5A30,$400E,$8A15,$8A49
+            dc.w    $0979,$2320,$4013,$FAA9,$FE26,$FE63,$F22B,$0003
+            dc.w    $BFFE,$C250,$86AE,$43F5,$CBF5,$4006,$9E76,$EC66
+            dc.w    $BEE7,$6BA2,$C00C,$AF51,$A1D6,$C4C4,$AA01,$4011
+            dc.w    $A71B,$FEC4,$A997,$F6CE
+.L36:
+            dc.b    $00,$03,$3F,$FF,$80
+            ds.b    7
+            dc.w    $4007,$A6D9,$6A95,$FBDF,$9685,$400E,$C7A7,$EA65
+            dc.w    $E85D,$156B,$4014,$D26E,$871C,$7B17,$52B2,$0003
+            dc.w    $BFFB,$D57E,$18D7,$A6F6,$D758,$4003,$E364,$937E
+            dc.w    $32B3,$D072,$C00A,$A62D,$4056,$586B,$C045,$4010
+            dc.w    $8C49,$AF68,$520F,$8C7A
+.L37:
+            dc.b    $00,$03,$BF,$FF,$80
+            ds.b    7
+            dc.w    $4005,$B513,$0324,$83C0,$0955,$C009,$D1FF,$B242
+            dc.w    $5762,$E0CF,$400A,$E190,$9309,$9376,$66AB,$0003
+            dc.w    $BFE9,$B1FC,$3363,$D79B,$2838,$3FFD,$AA9D,$71D8
+            dc.w    $3EC7,$4CD1,$C003,$E9CD,$8E24,$B965,$7DBB,$4007
+            dc.w    $F09A,$3670,$9D4B,$1836
+.L38:
+            dc.w    $0004,$3FFF,$98D3,$1EAE,$2AFA,$5DAD,$4003,$8F79
+            dc.w    $4CD8,$B3CD,$EFD9,$4005,$8E37,$ED85,$70B8,$B368
+            dc.w    $4005,$CDA4,$BEA1,$AC59,$F3B8,$4004,$C405,$9C55
+            dc.b    $4C,$F0,$C6,$56,$00,$04,$3F,$FF,$80
+            ds.b    7
+            dc.w    $4002,$A23B,$6C13,$1F92,$0E30,$4003,$C3C8,$593D
+            dc.w    $FA3A,$486F,$4003,$82AE,$6838,$DDF5,$D945
+            ds.b    20
 
             EVEN

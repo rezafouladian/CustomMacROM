@@ -3317,11 +3317,11 @@ SDMJmpTable:
             dc.w    $001C,$FEA6,$FEEE,$FF16,$FB4C,$322E,$3130
 SlotManager:
             cmpi.w  #$3D,D0
-            bhi.b   .L1
+            bhi.b   SlotEmpty
             movea.l ([SDMJmpTblPtr.w],D0.w*4),A1
             jmp     (A1)
-.L1:
-            move.w  #$FEAE,D0
+SlotEmpty:
+            move.w  #-338,D0
             rts
             ds.b    6
 SINTCORE:

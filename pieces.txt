@@ -38,6 +38,8 @@ OS/NetBoot/ATBoot/Libraries
 Main/Part7
 Drivers/Sony/Sony
 Main/Part8
+OS/MMU/MMUTables
+Main/Part9
 OS/EgretPatchesToo
 OS/HFS/FileMgrPatch
 OS/Gestalt/GestaltPatch
@@ -49,12 +51,12 @@ OS/PowerMgr
 OS/PwrControlsPatches
 OS/SlotMgr/SlotMgrPatch
 OS/IoPrimitives/SndPrimitives
-Main/Part9
-OS/BootSound
 Main/Part10
+OS/BootSound
+Main/Part11
 OS/DispTable
 Drivers/EthernetShell
-Main/Part11
+Main/Part12
 Drivers/SoundDriver
 Drivers/Backlight/DRVRRuntime
 Drivers/Backlight/Backlight
@@ -65,10 +67,10 @@ Drivers/EDiskDriver
 Toolbox/InSANE/FPCTRL
 Toolbox/InSANE/FPOPS
 Toolbox/InSANE/FPBD
-Main/Part12
+Main/Part13
 Toolbox/InSANE/FPHWCtrl
 Toolbox/InSANE/FPHWArith
 Toolbox/InSANE/FPHWNonArith
 Toolbox/InSANE/FPHWB2DC
-Main/Part13
+Main/Part14
 DeclData/DeclData

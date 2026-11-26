@@ -1,7 +1,7 @@
             include "Include/ROMHeader.s"
 
             EXPORT  A24BKCOMPACTS,a24CompactHp,A32BKCOMPACTS,A32COMPACTHP,AddDrive,BlockMove68020
-            EXPORT  BMMOVELONGS,BMOVERLAP,BMVERYSHORT,CallRoutines,Chain,ClkNoMem
+            EXPORT  BMEXIT16,BMMOVELONGS,BMOVERLAP,BMVERYSHORT,CallRoutines,Chain,ClkNoMem
             EXPORT  ClkRW,clock,Close,CmdDone,CmpString,CompactMem
             EXPORT  Control,Delay,DHBusErrHandler,DisposePtr,DoEject,DrvrInstall
             EXPORT  DrvrRemove,DsposeHandle,Eject_2,EmptyHandle,Events,ExitToShell
