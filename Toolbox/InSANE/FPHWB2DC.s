@@ -293,79 +293,79 @@ SetIt:
 drpad:
             movea.l ($3C,A6),A3
             cmpi.w  #$20,D7
-            ble.b   .L19
+            ble.b   .L1
             lea     (-$10,A6),A0
             move.l  A0,($3C,A6)
-.L19:
+.L1:
             movea.l ($40,A6),A2
             lea     (4,A2),A4
             moveq   #0,D4
             move.l  D4,D5
             move.b  (A4)+,D6
-            beq.b   sub_408EE1E2.L6
+            beq.b   DBZSTO
             move.b  (A4),D0
             cmpi.b  #$49,D0
-            beq.b   sub_408EE1E2.L4
+            beq.b   DBNFIN
             cmpi.b  #$4E,D0
-            bne.b   sub_408EE1E2.L5
+            bne.b   DBZER
             move.b  (-1,A4),D2
             addq.l  #1,A4
             subq.b  #1,D2
             moveq   #8,D0
             cmpi.b  #4,D2
-            bge.b   .L20
+            bge.b   .L2
             subq.b  #4,D0
             add.b   D2,D0
-.L20:
-            bsr.b   sub_408EE1E2
+.L2:
+            bsr.b   .L3
             move.l  D5,D4
             moveq   #0,D5
             moveq   #8,D0
-            bsr.b   sub_408EE1E2
-            bra.b   sub_408EE1E2.L3
-sub_408EE1E2:
+            bsr.b   .L3
+            bra.b   .L6
+.L3:
             rol.l   #4,D5
             subq.b  #1,D2
-            bmi.b   .L2
+            bmi.b   .L5
             move.b  (A4)+,D1
             cmpi.b  #$39,D1
-            ble.b   .L1
+            ble.b   .L4
             addi.b  #9,D1
-.L1:
+.L4:
             andi.b  #$F,D1
             or.b    D1,D5
-.L2:
+.L5:
             subq.w  #1,D0
-            bne.b   sub_408EE1E2
+            bne.b   .L3
             rts
-.L3:
+.L6:
             bset    #$1E,D4
             move.l  D4,D0
             swap    D0
             andi.b  #$FF,D0
-            bne.b   .L4
+            bne.b   DBNFIN
             ori.w   #$15,D0
             swap    D0
             move.l  D0,D4
-.L4:
+DBNFIN:
             move.w  #$7FFF,D0
-            bra.b   .L7
-.L5:
+            bra.b   DBSSTO
+DBZER:
             cmpi.b  #$30,D0
-            bne.b   .L10
-.L6:
+            bne.b   SIGDIGS
+DBZSTO:
             moveq   #0,D0
-.L7:
+DBSSTO:
             tst.b   (A2)
-            beq.b   .L8
+            beq.b   .L1
             bset    #$F,D0
-.L8:
+.L1:
             movea.l ($3C,A6),A0
             move.w  D0,(A0)+
             move.l  D4,(A0)+
             move.l  D5,(A0)
-            bra.b   .L11
-.L9:
+            bra.b   NoDigs
+BrnDd:
             move.w  (2,A2),-(SP)
             moveq   #0,D0
             move.b  D6,D0
@@ -375,14 +375,14 @@ sub_408EE1E2:
             move.l  ($40,A6),-(SP)
             jsr     sub_408EE314
             move.w  (SP)+,(2,A2)
-            bra.b   .L11
-.L10:
+            bra.b   NoDigs
+SIGDIGS:
             cmpi.b  #$13,D6
-            bhi.b   .L9
+            bhi.b   BrnDd
             move.l  ($3C,A6),-(SP)
             move.l  ($40,A6),-(SP)
             jsr     sub_408EE314
-.L11:
+NoDigs:
             cmpi.w  #$20,D7
             blt.b   .L14
             bgt.b   .L12
@@ -443,12 +443,12 @@ sub_408EE314:
             movea.l ($38,A6),A0
             addq.w  #2,A0
             move.w  (A0),D0
-            blt.w   StuffIt_PACK_4.L9
+            blt.w   StuffIt.L9
             bsr.w   sub_408EEA06
             bsr.w   sub_408EEBC6
-            bsr.w   StoD_PACK_4
+            bsr.w   StoD
             move.l  (-$10,A6),(-$C,A6)
-            bsr.w   cXb2a_PACK_4
+            bsr.w   cXb2a
             movea.l A1,A3
             move.w  #$4F,D6
             move.w  D1,D2
@@ -464,14 +464,14 @@ sub_408EE314:
 .L3:
             bpl.b   .L2
             moveq   #-1,D5
-            bsr.w   Roundit_FPHWB2DC
+            bsr.w   Roundit
             move.w  D1,D7
             asl.w   #4,D7
             movea.l ($38,A6),A0
             addq.w  #2,A0
             add.w   (A0),D7
             addi.w  #$400E,D7
-            bsr.w   StuffIt_PACK_4
+            bsr.w   StuffIt
             tst.l   D4
             bmi.b   .L5
 .L4:
@@ -528,7 +528,7 @@ sub_408EE314:
             moveq   #0,D4
             moveq   #0,D5
             bra.b   .L6
-StuffIt_PACK_4:
+StuffIt:
             moveq   #0,D4
             moveq   #0,D5
             moveq   #0,D6
@@ -584,7 +584,7 @@ StuffIt_PACK_4:
             bra.b   .L10
 .L9:
             bsr.w   sub_408EE9F2
-            bsr.w   StoD_PACK_4
+            bsr.w   StoD
             bsr.w   Nrmlz10_PACK_4
             movea.l A4,A3
             moveq   #4,D6
@@ -616,9 +616,9 @@ StuffIt_PACK_4:
             bmi.b   sub_408EE4CE.L2
             addi.w  #$3F,D6
             moveq   #-1,D5
-            bsr.w   Roundit_FPHWB2DC
+            bsr.w   Roundit
             move.l  A1,D7
-            bsr.w   StuffIt_PACK_4
+            bsr.w   StuffIt
 .L14:
             tst.l   D4
             bmi.b   .L16
@@ -665,10 +665,10 @@ sub_408EE4CE:
             move.w  D0,-(SP)
             moveq   #-1,D5
             movea.l A3,A1
-            bsr.w   Roundit_FPHWB2DC
+            bsr.w   Roundit
             movea.l A1,A3
             move.w  (SP)+,D7
-            bsr.w   StuffIt_PACK_4
+            bsr.w   StuffIt
             tst.l   D4
             bmi.b   .L5
 .L4:
@@ -700,7 +700,7 @@ sub_408EE4CE:
             lea     (2,SP),SP
 .L6:
             bra.w   sub_408EE5AA.L4
-StoD_PACK_4:
+StoD:
             moveq   #0,D3
             movea.l (-$10,A6),A3
             subq.l  #2,A3
@@ -752,9 +752,9 @@ sub_408EE5AA:
             bsr.w   sub_408EE890
             bsr.w   DivX_PACK_4
             moveq   #0,D5
-            bsr.w   Roundit_FPHWB2DC
+            bsr.w   Roundit
 .L2:
-            bsr.w   sub_408EE63C
+            bsr.w   MakeStr_PACK_4
 .L3:
             unlk    A6
             movem.l (SP)+,D0-D7/A1-A4
@@ -785,7 +785,7 @@ sub_408EE5AA:
             move.w  #$2004,-(SP)
             bsr.w   FP68K
             bra.b   .L3
-sub_408EE63C:
+MakeStr_PACK_4:
             movea.l (-$C,A6),A1
             clr.l   (A1)
             moveq   #0,D3
@@ -793,6 +793,7 @@ sub_408EE63C:
             movea.l A1,A2
             bmi.b   .L3
             addq.w  #1,D1
+.BinLoop:
             moveq   #$F,D5
             cmp.w   D5,D6
             bge.b   .L1
@@ -806,17 +807,50 @@ sub_408EE63C:
             add.w   D2,D2
             move.l  D3,D7
             lea     (4,A2),A2
-            move.l  -(A2),D0
-            dc.w    $C100,$E098,$C100,$E098,$C100,$E098,$C100,$E098
-            dc.w    $2480,$51CF,$FFEA,$7000,$C100,$6704,$5283,$2500
-            dc.w    $51CD,$FFD2,$0446,$0010,$6CBC,$206E,$0038,$5848
-            dc.w    $43E8,$0001,$7A00,$1A10,$6122,$6120,$611E,$611C
-            dc.w    $51CB,$FFF6,$3009,$9048,$5300,$6704,$1080,$4E75
-.L3:
+.L5:
+            move.l  -(A2),D0                        ; next long of BCD string
+            abcd    D0,D0
+            ror.l   #8,D0
+            abcd    D0,D0
+            ror.l   #8,D0
+            abcd    D0,D0
+            ror.l   #8,D0
+            abcd    D0,D0
+            ror.l   #8,D0
+            move.l  D0,(A2)
+            dbra    D7,.L5
+            moveq   #0,D0
+            abcd    D0,D0
+            beq.b   .L6                             ; no carry out
+            addq.l  #1,D3                           ; add a long to the string
+            move.l  D0,-(A2)
+.L6:
+            dbra    D5,.L2
+            subi.w  #16,D6
+            bge.b   .BinLoop
+            movea.l ($38,A6),A0                     ; decimal record
+            addq.w  #4,A0                           ; string
+            lea     (1,A0),A1
+            moveq   #0,D5
+            move.b  (A0),D5
+.L7:
+            bsr.b   BD1OUT_PACK_4
+            bsr.b   BD1OUT_PACK_4
+            bsr.b   BD1OUT_PACK_4
+            bsr.b   BD1OUT_PACK_4
+            dbra    D3,.L7
+            move.w  A1,D0
+            sub.w   A0,D0
+            subq.b  #1,D0
+            beq.b   .L3
+            move.b  D0,(A0)
+            rts
+.L3:                                        ; RtnZero
             movea.l ($38,A6),A0
             addq.w  #4,A0
             move.w  #$130,(A0)
             rts
+BD1OUT_PACK_4:
             moveq   #0,D1
             move.b  (A2)+,D1
             ror.w   #4,D1
@@ -907,7 +941,7 @@ XbyA_PACK_4:
             asl.w   #4,D6
             add.w   D7,D6
             moveq   #0,D5
-Roundit_FPHWB2DC:
+Roundit:
             tst.w   D6
             bge.b   .L2
             cmpi.w  #$FFBE,D6
@@ -1284,11 +1318,11 @@ sub_408EEA06:
 .L11:
             asr.w   #1,D0
             bcc.b   .L10
-            bsr.b   cXb2a_PACK_4
+            bsr.b   cXb2a
             tst.w   D0
             bgt.b   .L9
             rts
-cXb2a_PACK_4:
+cXb2a:
             move.w  D2,D1
             add.w   D3,D1
             addq.w  #1,D1

@@ -13,7 +13,7 @@ QGETENV:
             moveq   #0,D2
             fmove.l FPCR,D1
             bfextu  D0{24:5},D0
-            move.b  .L2(PC,D0.w),D0
+            move.b  STICKYMAP(PC,D0.w),D0
             bfins   D0,D2{19:5}
             bclr    #$D,D1
             bftst   D1{16:2}
@@ -21,23 +21,23 @@ QGETENV:
             bset    #$D,D1
 .L1:
             bfextu  D1{18:5},D0
-            move.b  .L2(PC,D0.w),D0
+            move.b  STICKYMAP(PC,D0.w),D0
             bfins   D0,D2{27:5}
             bfextu  D1{24:2},D0
-            move.b  .L3(PC,D0.w),D0
+            move.b  PRECMAP(PC,D0.w),D0
             bfins   D0,D2{25:2}
             bfextu  D1{26:2},D0
-            move.b  .L4(PC,D0.w),D0
+            move.b  RNDMAP(PC,D0.w),D0
             bfins   D0,D2{17:2}
             move.w  D2,(A0)
             movem.l (SP)+,D0-D2/A0
             rtd     #4
-.L2:
+STICKYMAP:
             dc.w    $0010,$0818,$0212,$0A1A,$0414,$0C1C,$0616,$0E1E
             dc.w    $0111,$0919,$0313,$0B1B,$0515,$0D1D,$0717,$0F1F
-.L3:
+PRECMAP:
             dc.w    $0002,$0103
-.L4:
+RNDMAP:
             dc.w    $0003,$0201
 QSETENV:
             movem.l D0-D2/A0,-(SP)
@@ -54,10 +54,10 @@ QSETENV:
             bset    #4,D0
             bfins   D0,D1{16:7}
             bfextu  D2{25:2},D0
-            move.b  QGETENV.L3(PC,D0.w),D0
+            move.b  PRECMAP(PC,D0.w),D0
             bfins   D0,D1{24:2}
             bfextu  D2{17:2},D0
-            move.b  QGETENV.L4(PC,D0.w),D0
+            move.b  RNDMAP(PC,D0.w),D0
             bfins   D0,D1{26:2}
             fmove.l D1,FPCR
             movem.l (SP)+,D0-D2/A0
@@ -71,26 +71,26 @@ QSETHV:
             move.l  (A0),($A4C).w
             cmpi.b  #4,CPUFlag
             blt.b   .L2
+            pea     SNANHANDLER040
             pea     STDHANDLER040
-            pea     sub_408EDA10.L5
             pea     OPERRHANDLER040
-            pea     sub_408EDA10.L5
+            pea     STDHANDLER040
             pea     DZHANDLER040
-            pea     sub_408EDA10.L5
-            pea     sub_408EDA10.L5
+            pea     STDHANDLER040
+            pea     STDHANDLER040
             bra.b   .L3
 .L2:
-            pea     sub_408EDC6E
-            pea     sub_408EDCF0.L4
+            pea     SNANHANDLER
+            pea     STDHANDLER
             pea     OPERRHANDLER
-            pea     sub_408EDCF0.L4
+            pea     STDHANDLER
             pea     DZHANDLER
-            pea     sub_408EDCF0.L4
-            pea     sub_408EDCF0.L4
+            pea     STDHANDLER
+            pea     STDHANDLER
 .L3:
             movea.l SP,A0
             move.w  #2,D0
-            bsr.w   sub_408EDCF0.L8
+            bsr.w   PrivTrap
             lea     ($1C,SP),SP
             movem.l (SP)+,D0/A0-A1
             rtd     #4
@@ -451,7 +451,7 @@ SetE:
 .L8:
             movea.l D1,A0
             moveq   #0,D0
-            bsr.w   sub_408EDCF0.L8
+            bsr.w   PrivTrap
             fnop
             bra.b   .L10
 .L9:
@@ -521,7 +521,7 @@ DZHANDLER040:
             move.l  (A0),D2
             moveq   #$7F,D1
             bftst   D2{7:3}
-            bne.w   sub_408EDA10.L6
+            bne.w   STDTAIL040
             and.w   D2,D1
             bclr    #6,D1
             beq.b   .L3
@@ -546,7 +546,7 @@ DZHANDLER040:
             cmpi.b  #$D,D1
             beq.b   .L7
             lea     ($C,SP),SP
-            bra.w   sub_408EDA10.L6
+            bra.w   STDTAIL040
 .L4:
             move.l  (-$18,A1),D1
             move.l  (-$C,A1),D2
@@ -555,19 +555,19 @@ DZHANDLER040:
             bset    #7,(SP)
 .L5:
             bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
+            bra.w   STDTAIL040
 .L6:
             bset    #7,(SP)
             bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
+            bra.w   STDTAIL040
 .L7:
             btst    #7,(-$C,A1)
             beq.b   .L8
             bset    #7,(SP)
 .L8:
             bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
-STDHANDLER040:
+            bra.w   STDTAIL040
+SNANHANDLER040:
             fsave   -(SP)
             tst.b   (SP)
             beq.b   .L1
@@ -586,12 +586,12 @@ sub_408ED99E:
             movea.l (8,SP),A0
             move.l  (A0),D2
             bftst   D2{7:3}
-            bne.w   sub_408EDA10.L6
+            bne.w   STDTAIL040
             bfextu  D2{16:3},D0
             beq.b   .L1
             subq.w  #2,D0
             beq.b   .L1
-            bra.w   sub_408EDA10.L6
+            bra.w   STDTAIL040
 .L1:
             bfextu  D2{22:3},D0
             lea     (-$C,A1),A0
@@ -607,7 +607,7 @@ sub_408ED99E:
             move.l  D1,-(SP)
             move.l  (A0),-(SP)
             bsr.w   WRITEFPU
-            bra.w   sub_408EDA10.L6
+            bra.w   STDTAIL040
 OPERRHANDLER040:
             fsave   -(SP)
             tst.b   (SP)
@@ -627,12 +627,12 @@ sub_408EDA10:
             movea.l (8,SP),A0
             move.l  (A0),D2
             bftst   D2{7:3}
-            bne.w   .L6
+            bne.w   STDTAIL040
             bfextu  D2{16:3},D0
             beq.b   .L1
             subq.w  #2,D0
             beq.b   .L1
-            bra.w   .L6
+            bra.w   STDTAIL040
 .L1:
             bfextu  D2{25:7},D1
             bpl.b   .L2
@@ -646,45 +646,91 @@ sub_408EDA10:
             beq.b   .L3
             bfextu  D2{22:3},D0
             bsr.w   NAN2FPU
-            bra.b   .L6
+            bra.b   STDTAIL040
 .L3:
             move.b  #$21,D1
             bfextu  D2{22:3},D0
             bsr.w   NAN2FPU
             bfextu  D2{29:3},D0
             bsr.w   NAN2FPU
-            bra.b   .L6
+            bra.b   STDTAIL040
 .L4:
             dc.w    $FFFF,$FFFF,$01FF,$24FF,$FFFF,$FFFF,$2224,$2121
             dc.w    $FFFF,$FFFF,$2424,$24FF,$FFFF,$FFFF,$2221,$FFFF
             dc.w    $0409,$0208,$0409,$FF08,$02FF,$FFFF,$FFFF,$FFFF
             ds.b    8
-            dc.w    $FFFF,$FFFF,$FFFF,$FFFF,$F018,$2A4A
-.L5:
-            dc.w    $F327,$4A17,$6706,$4A2F,$0001,$6604,$F35F,$4E73
+            dc.w    $FFFF,$FFFF,$FFFF,$FFFF
+OMEGABOUNDS:
+            dc.w    $F018,$2A4A
+STDHANDLER040:
+            fsave   -(SP)
+            tst.b   (SP)
+            beq.b   .L0
+            tst.b   (1,SP)
+            bne.b   .L1
+.L0:
+            frestore (SP)+
+            rte
+.L1:
             movem.l D0-D2/A0-A1,-(SP)
             fmovem.l FPCR/FPSR/FPIAR,-(SP)
             moveq   #4,D0
             add.b   ($21,SP),D0
             lea     ($20,SP),A1
             adda.l  D0,A1
-.L6:
+STDTAIL040:
             movem.l (SP),D1-D2
             bclr    #1,(-$1C,A1)
-            bne.b   .L7
+            bne.b   .L0
             bclr    #2,(-$1C,A1)
-.L7:
+.L0:
             movea.l (8,SP),A0
             suba.l  ($B6E).w,A0
-            dc.w    $02FA,$8000,$FFBA,$6500,$033C,$9CFC,$0018,$F226
-            dc.w    $BC00,$9CFC,$000C,$2001,$ECC0,$0408,$F200,$9000
-            dc.w    $2001,$ECC0,$0403,$E8C1,$0402,$6704,$EEC0,$0403
-            dc.w    $C042,$E8C0,$0402,$6704,$08C0,$000D,$E9C0,$0485
-            dc.w    $103B,$0120,$F7A8,$41EE,$0030,$514E,$3C80,$2D0E
-            dc.w    $2D28,$0010,$2D28,$000C,$2D28,$0008,$3D28,$FFFE
-            dc.w    $3028,$FFFC,$E448,$5940,$6706,$6B08,$2D28,$0010
-            dc.w    $2D28,$000C,$2D28,$0008,$43FA,$02D6,$2D09,$2D10
-            dc.w    $2D28,$FFFC,$584E,$6000,$02BC
+            cmp2.w  OMEGABOUNDS(PC),A0
+            bcs.w   STDEXIT
+            suba.w  #24,A6
+            fmovem.l FPCR/FPSR/FPIAR,-(A6)
+            suba.w  #12,A6
+            move.l  D1,D0
+            bfclr   D0{16:8}
+            fmove.l D0,FPCR
+            move.l  D1,D0
+            bfclr   D0{16:3}
+            bftst   D1{16:2}
+            beq.b   .L3
+            bfset   D0{16:3}
+.L3:
+            and.w   D2,D0
+            bftst   D0{16:2}
+            beq.b   .L31
+            bset    #13,D0
+.L31:
+            bfextu  D0{18:5},D0
+            move.b  (STICKYMAP.w,PC,D0.w),D0
+            lea     ($30,A6),A0
+            subq.w  #8,A6
+            move.w  D0,(A6)
+            move.l  A6,-(A6)
+            move.l  ($10,A0),-(A6)
+            move.l  ($C,A0),-(A6)
+            move.l  (8,A0),-(A6)
+            move.w  (-2,A0),-(A6)
+            move.w  (-4,A0),D0
+            lsr.w   #2,D0
+            subq.w  #4,D0
+            beq.b   .L2
+            bmi.b   .L1
+            move.l  ($10,A0),-(A6)
+.L2:
+            move.l  ($C,A0),-(A6)
+.L1:
+            move.l  (8,A0),-(A6)
+            lea     HALTEMULATOR(PC),A1
+            move.l  A1,-(A6)
+            move.l  (A0),-(A6)
+            move.l  (-4,A0),-(A6)
+            addq.w  #4,A6
+            bra.w   STDEXIT
 sub_408EDB88:
             movea.l (SP)+,A0
             jmp     .L1(PC,D0.w*8)
@@ -719,7 +765,7 @@ DZHANDLER:
             move.l  (A0),D2
             moveq   #$3F,D1
             bftst   D2{7:3}
-            bne.w   sub_408EDCF0.L5
+            bne.w   STDTAIL
             and.w   D2,D1
             bfextu  D2{22:3},D0
             clr.w   D2
@@ -743,7 +789,7 @@ DZHANDLER:
             cmpi.b  #$D,D1
             beq.b   .L5
             lea     ($C,SP),SP
-            bra.w   sub_408EDCF0.L5
+            bra.w   STDTAIL
 .L2:
             bsr.w   sub_408EDB88
             move.l  (SP)+,D1
@@ -753,19 +799,19 @@ DZHANDLER:
             bset    #7,(SP)
 .L3:
             bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
+            bra.w   STDTAIL
 .L4:
             bset    #7,(SP)
             bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
+            bra.w   STDTAIL
 .L5:
             tst.l   D2
             bpl.b   .L6
             bset    #7,(SP)
 .L6:
             bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
-sub_408EDC6E:
+            bra.w   STDTAIL
+SNANHANDLER:
             fsave   -(SP)
             tst.b   (SP)
             bne.b   sub_408EDC78
@@ -777,12 +823,12 @@ sub_408EDC78:
             movea.l (8,SP),A0
             move.l  (A0),D2
             bftst   D2{7:3}
-            bne.w   sub_408EDCF0.L5
+            bne.w   STDTAIL
             bfextu  D2{16:3},D0
             beq.b   .L1
             subq.w  #2,D0
             beq.b   .L1
-            bra.w   sub_408EDCF0.L5
+            bra.w   STDTAIL
 .L1:
             bfextu  D2{22:3},D0
             bsr.w   sub_408EDB88
@@ -797,7 +843,7 @@ sub_408EDC78:
             beq.b   .L2
             bset    #6,-(A1)
             bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
+            bra.w   STDTAIL
 .L2:
             lea     ($C,SP),SP
             clr.w   D1
@@ -808,67 +854,119 @@ sub_408EDC78:
             bset    #6,(SP)
             move.l  -(A1),-(SP)
             bsr.w   WRITEFPU
-            bra.w   sub_408EDCF0.L5
+            bra.w   STDTAIL
 OPERRHANDLER:
             fsave   -(SP)
             tst.b   (SP)
-            bne.b   sub_408EDCF0
+            bne.b   .L1
             frestore (SP)+
             rte
-sub_408EDCF0:
+.L1:
             movem.l D0-D2/A0-A1,-(SP)
             fmovem.l FPCR/FPSR/FPIAR,-(SP)
             movea.l (8,SP),A0
             move.l  (A0),D2
             bftst   D2{7:3}
-            bne.w   .L5
+            bne.w   STDTAIL
             bfextu  D2{16:3},D0
-            beq.b   .L1
+            beq.b   FPUDEST
             subq.w  #2,D0
-            beq.b   .L1
-            bra.w   .L5
-.L1:
+            beq.b   FPUDEST
+            bra.w   STDTAIL
+FPUDEST:
             move.w  D2,D1
             andi.w  #$3F,D1
-            move.b  .L3(PC,D1.w),D1
-            beq.b   .L2
+            move.b  NANMAP040(PC,D1.w),D1
+            beq.b   FSINCOS
             bfextu  D2{22:3},D0
             bsr.w   NAN2FPU
-            bra.b   .L5
-.L2:
+            bra.b   STDTAIL
+FSINCOS:
             move.b  #$21,D1
             bfextu  D2{22:3},D0
             bsr.w   NAN2FPU
             bfextu  D2{29:3},D0
             bsr.w   NAN2FPU
-            bra.b   .L5
-.L3:
+            bra.b   STDTAIL
+NANMAP040:
             dc.w    $FFFF,$FFFF,$01FF,$24FF,$FFFF,$FFFF,$2224,$2121
             dc.w    $FFFF,$FFFF,$2424,$24FF,$FFFF,$FFFF,$2221,$FFFF
             dc.w    $0409,$0208,$0409,$FF08,$02FF,$FFFF,$FFFF,$FFFF
             ds.b    8
-            dc.w    $FFFF,$FFFF,$FFFF,$FFFF,0,$0080
-.L4:
-            dc.w    $F327,$4A17,$6604,$F35F,$4E73
+            dc.w    $FFFF,$FFFF,$FFFF,$FFFF
+PRIVTRAPBOUNDS:
+            dc.w    $0000,$0080
+STDHANDLER:
+            fsave   -(SP)
+            tst.b   (SP)
+            bne.b   .L0
+            frestore (SP)+
+            rte
+.L0:
             movem.l D0-D2/A0-A1,-(SP)
             fmovem.l FPCR/FPSR/FPIAR,-(SP)
-.L5:
+STDTAIL:
             movem.l (SP),D1-D2
             clr.w   D0
             move.b  ($21,SP),D0
             bset    #3,($20,SP,D0.w)
             movea.l (8,SP),A0
             suba.l  ($B6E).w,A0
-            dc.w    $02FA,$8000,$FD0A,$6410,$206F,$0008,$91F8,$065C
-            dc.w    $02FA,$8000,$FFBE,$657C,$9CFC,$0018,$F226,$BC00
-            dc.w    $9CFC,$000C,$2001,$ECC0,$0408,$F200,$9000,$2001
-            dc.w    $ECC0,$0403,$E8C1,$0402,$6704,$EEC0,$0403,$C042
-            dc.w    $E8C0,$0402,$6704,$08C0,$000D,$E9C0,$0485,$103B
-            dc.w    $0120,$F4EA,$41EE,$0030,$514E,$3C80,$2D0E,$2D28
-            dc.w    $0010,$2D28,$000C,$2D28,$0008,$3D28,$FFFE,$3028
-            dc.w    $FFFC,$E448,$5940,$6706,$6B08,$2D28,$0010,$2D28
-            dc.w    $000C,$2D28,$0008,$43FA,$0018,$2D09,$2D10,$2D28
-            dc.w    $FFFC,$584E,$4FEF,$000C,$4CDF,$0307,$F35F,$4E73
+            cmp2.w  OMEGABOUNDS(PC),A0
+            bcc.b   .L4
+            movea.l (8,SP),A0
+            suba.l  ($65C).w,A0
+            cmp2.w  PRIVTRAPBOUNDS(PC),A0
+            bcs.b   STDEXIT
+.L4:
+            suba.w  #24,A6
+            fmovem.l FPCR/FPSR/FPIAR,-(A6)
+            suba.w  #12,A6
+            move.l  D1,D0
+            bfclr   D0{16:8}
+            fmove.l D0,FPCR
+            move.l  D1,D0
+            bfclr   D0{16:3}
+            bftst   D1{16:2}
+            beq.b   .L3
+            bfset   D0{16:3}
+.L3:
+            and.w   D2,D0
+            bftst   D0{16:2}
+            beq.b   .L31
+            bset    #13,D0
+.L31:
+            bfextu  D0{18:5},D0
+            move.b  (STICKYMAP.w,PC,D0.w),D0
+            lea     ($30,A6),A0
+            subq.w  #8,A6
+            move.w  D0,(A6)
+            move.l  A6,-(A6)
+            move.l  ($10,A0),-(A6)
+            move.l  ($C,A0),-(A6)
+            move.l  (8,A0),-(A6)
+            move.w  (-2,A0),-(A6)
+            move.w  (-4,A0),D0
+            lsr.w   #2,D0
+            subq.w  #4,D0
+            beq.b   .L2
+            bmi.b   .L1
+            move.l  ($10,A0),-(A6)
+.L2:
+            move.l  ($C,A0),-(A6)
+.L1:
+            move.l  (8,A0),-(A6)
+            lea     HALTEMULATOR,A1
+            move.l  A1,-(A6)
+            move.l  (A0),-(A6)
+            move.l  (-4,A0),-(A6)
+            addq.w  #4,A6
+STDEXIT:
+            lea     ($C,SP),SP
+            movem.l (SP)+,D0-D2/A0-A1
+            frestore (SP)+
+            rte
+HALTEMULATOR:
             fmovem.x FP3,($1A,SP)
             movem.l D0-D2/A0-A1,($32,SP)
             lea     ($14,SP),A0
@@ -895,8 +993,8 @@ sub_408EDCF0:
             movea.l (4,A6),A6
             adda.w  (SP),SP
             rts
-.L8:
-            dc.w    $A097
+PrivTrap:   ; PrivTrap% in source
+            dc.w    $A097                           ; _FPPriv
             rts
 
             EVEN
