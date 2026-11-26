@@ -178,46 +178,220 @@ Concat:
             move.l  (A1)+,D2
             jmp     .mergTbl(PC,D1.w)
 .mergTbl:
-            ori.b   #$16,(A6)
-            ori.b   #$16,(A6)
-            ori.b   #$40,(A4)+
-            dc.w    $007A,$011E,$00B8,$0154,$0212,$7214,$6000,$022A
-            dc.w    $720F,$C205,$6604,$5049,$E88D,$103B,$1010,$2A68
-            dc.w    $002C,$C12D,$1E00,$721C,$6000,$020E,$FF3F,$FF7F
-            dc.w    $FFBF,$FFFF,$9BCD,$43E9,$0010,$4A05,$6700,$0226
-            dc.w    $5149,$E98D,$3205,$E049,$0201,$000F,$67EC,$4DFA
-            dc.w    $0006,$4EFA,$01D6,$220D,$660E,$2A51,$DBC0,$42A5
-            dc.w    $42A5,$2B3C,$FFFF,$FFFF,$2B00,$2B11,$60CC,$323C
-            dc.w    $F3EF,$0800,$0014,$6704,$323C,$F3FF,$3001,$720F
-            dc.w    $C205,$6604,$5049,$E88D,$C03B,$101A,$2A68,$004C
-            dc.w    $720F,$1A80,$E248,$51C9,$FFFA,$50ED,$0010,$721C
-            dc.w    $6000,$0196,$FFFF,$FF3F,$7FBF,$FFFF,$3205,$4845
-            dc.w    $3A01,$2C09,$97CB,$7600,$6032,$2203,$5381,$4C3C
-            dc.w    $1001,0,$0006,$2A68,$0054,$4BF5,$1400,$220B
-            dc.w    $7816,$E8A9,$383C,$0005,$2AC1,$E289,$51CC,$FFFA
-            dc.w    $2A68,$0054,$4BED,$00A0,$1ABC,$00FF,$720F,$C205
-            dc.w    $E88D,$4DFA,$0006,$4EFA,$0132,$D7C0,$4AA9,$0008
-            dc.w    $6B06,$5089,$5283,$60B2,$722C,$260B,$2246,$6000
-            dc.w    $0128,$1205,$E809,$4DFA,$0006,$4EFA,$010E,$2200
-            dc.w    $70DF,$0C81,$0010,0,$6702,$70FF,$720F,$C205
-            dc.w    $C03B,$1010,$2A68,$0034,$C12D,$0001,$721C,$6000
-            dc.w    $00F8,$3FFF,$7FBF,$FF00,$7800,$7203,$BA81,$6604
-            dc.w    $7800,$6020,$4841,$BA81,$6604,$7820,$6016,$4DFA
-            dc.w    $0006,$4EFA,$0036,$4DFA,$0006,$4EFA,$002E,$700D
-            dc.w    $E16C,$E0AC,$103B,$4050,$2A68,$0058,$DBFC,$0001
-            dc.w    0,$1A80,$E408,$4BED,$2000,$1A80,$E408,$4BED
-            dc.w    $2000,$1A80,$724C,$6000,$00A0,$2A4E,$7203,$4841
-            dc.w    $323C,$000F,$E99D,$C205,$4DFA,$0006,$4EFA,$007C
-            dc.w    $D880,$4841,$51C9,$FFE8,$4844,$E84C,$0C04,$0008
-            dc.w    $6602,$5304,$4ED5,$0001,$0102
-            ds.b    4
-            dc.w    $1F13,$030A,$0900,$0608,$1F07,$0312,$0900,$0608
-            dc.b    $1D,$04,$04,$19,$11,$00,$0E,$18,$17,$09,$05,$0F,$1B,$00,$16
-            ds.b    9
-            dc.w    $170B,$0B0C,$1400,$1A00,$170D,$0D15,$1700,$1700
-            dc.w    $2205,$0281,$000F,0,$6614,$7015,$E0AB,$5343
-            dc.w    $EB0B,$0003,$001F,$2A68,$006C,$C72D,$0001,$7234
-            dc.w    $6000,$0010
+            dc.w    noMerge-.mergTbl
+            dc.w    noMerge-.mergTbl
+            dc.w    noMerge-.mergTbl
+            dc.w    noMerge-.mergTbl
+            dc.w    GlueMerge-.mergTbl
+            dc.w    MDUMerge-.mergTbl
+            dc.w    FMCMerge-.mergTbl
+            dc.w    VISAMerge-.mergTbl
+            dc.w    OrwellMerge-.mergTbl
+            dc.w    JAWSMerge-.mergTbl
+            dc.w    MSCMerge-.mergTbl
+noMerge:
+            moveq   #$14,D1
+            bra.w   writeChunkTable
+GlueMerge:
+            moveq   #$F,D1
+            and.b   D5,D1
+            bne.b   .sizeBits
+            addq.w  #8,A1
+            lsr.l   #4,D5
+.sizeBits:
+            move.b  .VIASizeTable(PC,D1.w),D0
+            movea.l ($2C,A0),A5
+            and.b   D0,($1E00,A5)
+            moveq   #$1C,D1
+            bra.w   writeChunkTable
+.VIASizeTable:
+            dc.b    $FF,$3F,$FF,$7F,$FF,$BF,$FF,$FF
+MDUMerge:
+            suba.l  A5,A5
+            lea     ($10,A1),A1
+.bankLoop:
+            tst.b   D5
+            beq.w   MergeDone
+            subq.w  #8,A1
+            lsl.l   #4,D5
+            move.w  D5,D1
+            lsr.w   #8,D1
+            andi.b  #$F,D1
+            beq.b   .bankLoop
+            BSR6    expandSize
+            move.l  A5,D1
+            bne.b   .writeChunk
+            movea.l (A1),A5
+            adda.l  D0,A5
+            clr.l   -(A5)
+            clr.l   -(A5)
+            move.l  #$FFFFFFFF,-(A5)
+.writeChunk:
+            move.l  D0,-(A5)
+            move.l  (A1),-(A5)
+            bra.b   .bankLoop
+FMCMerge:
+            move.w  #$F3EF,D1
+            btst    #$14,D0
+            beq.b   .cont
+            move.w  #$F3FF,D1
+.cont:
+            move.w  D1,D0
+            moveq   #$F,D1
+            and.b   D5,D1
+            bne.b   .sizeBits
+            addq.w  #8,A1
+            lsr.l   #4,D5
+.sizeBits:
+            and.b   .FMCSizeTable(PC,D1.w),D0
+            movea.l ($4C,A0),A5
+            moveq   #$F,D1
+.FMCload:
+            move.b  D0,(A5)
+            lsr.w   #1,D0
+            dbra    D1,.FMCload
+            st      ($10,A5)
+.writeTable:
+            moveq   #$1C,D1
+            bra.w   writeChunkTable
+.FMCSizeTable:
+            dc.b    $FF,$FF,$FF,$3F,$7F,$BF,$FF,$FF
+OrwellMerge:
+            move.w  D5,D1
+            swap    D5
+            move.w  D1,D5
+            move.l  A1,D6
+            suba.l  A3,A3
+            moveq   #0,D3
+            bra.b   .bankMapped
+.mergeLoop:
+            move.l  D3,D1
+            subq.l  #1,D1
+            mulu.l  #6,D1
+            movea.l ($54,A0),A5
+            lea     (0,A5,D1.w*4),A5
+            move.l  A3,D1
+            moveq   #$16,D4
+            lsr.l   D4,D1
+            move.w  #5,D4
+.loadCfgReg:
+            move.l  D1,(A5)+
+            lsr.l   #1,D1
+            dbra    D4,.loadCfgReg
+            movea.l ($54,A0),A5
+            lea     ($A0,A5),A5
+            move.b  #$FF,(A5)
+.bankMapped:
+            moveq   #$F,D1
+            and.b   D5,D1
+            lsr.l   #4,D5
+            BSR6    expandSize
+            adda.l  D0,A3
+.contLoop:
+            tst.l   (8,A1)
+            bmi.b   .mergeDone
+            addq.l  #8,A1
+            addq.l  #1,D3
+            bra.b   .mergeLoop
+.mergeDone:
+            moveq   #$2C,D1
+            move.l  A3,D3
+            movea.l D6,A1
+            bra.w   writeChunkTable
+VISAMerge:
+            move.b  D5,D1
+            lsr.b   #4,D1
+            BSR6    expandSize
+            move.l  D0,D1
+            moveq   #-$21,D0
+            cmpi.l  #$100000,D1
+            beq.b   .sizeBits
+            moveq   #-1,D0
+.sizeBits:
+            moveq   #$F,D1
+            and.b   D5,D1
+            and.b   .VISASizeTable(PC,D1.w),D0
+            movea.l ($34,A0),A5
+            and.b   D0,(1,A5)
+            moveq   #$1C,D1
+            bra.w   writeChunkTable
+.VISASizeTable:
+            dc.b    $3F,$FF,$7F,$BF,$FF
+            dc.b    $00
+JAWSMerge:
+            moveq   #0,D4
+            moveq   #3,D1
+            cmp.l   D1,D5
+            bne.b   .checkSpec2
+            moveq   #0,D4
+            bra.b   .getTable
+.checkSpec2:
+            swap    D1
+            cmp.l   D1,D5
+            bne.b   .notSpec
+            moveq   #$20,D4
+            bra.b   .getTable
+.notSpec:
+            BSR6    .calcSize
+            BSR6    .calcSize
+            moveq   #$D,D0
+            lsl.w   D0,D4
+            lsr.l   D0,D4
+.getTable:
+            move.b  .JAWSSizeTable(PC,D4.w),D0
+            movea.l ($58,A0),A5
+            adda.l  #$10000,A5
+            move.b  D0,(A5)
+            lsr.b   #2,D0
+            lea     ($2000,A5),A5
+            move.b  D0,(A5)
+            lsr.b   #2,D0
+            lea     ($2000,A5),A5
+            move.b  D0,(A5)
+            moveq   #$4C,D1
+            bra.w   writeChunkTable
+.calcSize:
+            movea.l A6,A5
+            moveq   #3,D1
+.nextNib:
+            swap    D1
+            move.w  #$F,D1
+            rol.l   #4,D5
+            and.b   D5,D1
+            BSR6    expandSize
+            add.l   D0,D4
+            swap    D1
+            dbra    D1,.nextNib
+            swap    D4
+            lsr.w   #4,D4
+            cmpi.b  #8,D4
+            bne.b   .done
+            subq.b  #1,D4
+.done:
+            jmp     (A5)
+.JAWSSizeTable:
+            dc.b    $00,$01,$01,$02,$00,$00,$00,$00
+            dc.b    $1F,$13,$03,$0A,$09,$00,$06,$08
+            dc.b    $1F,$07,$03,$12,$09,$00,$06,$08
+            dc.b    $1D,$04,$04,$19,$11,$00,$0E,$18
+            dc.b    $17,$09,$05,$0F,$1B,$00,$16,$00
+            dc.b    $00,$00,$00,$00,$00,$00,$00,$00
+            dc.b    $17,$0B,$0B,$0C,$14,$00,$1A,$00
+            dc.b    $17,$0D,$0D,$15,$17,$00,$17,$00
+MSCMerge:
+            move.l  D5,D1
+            andi.l  #$F0000,D1
+            bne.b   .done
+            moveq   #$15,D0
+            lsr.l   D0,D3
+            subq.w  #1,D3
+            lsl.b   #5,D3
+            ori.b   #$1F,D3
+            movea.l ($6C,A0),A5
+            and.b   D3,(1,A5)
+.done:
+            moveq   #$34,D1
+            bra.w   writeChunkTable
 expandSize:
             moveq   #0,D0
             tst.w   D1
@@ -250,6 +424,7 @@ writeChunkTable:
             clr.l   (SP)+
             move.w  SP,D0
             bne.b   .fill
+MergeDone:
             movea.l (A1),SP
             adda.l  #$8000,SP
             move.l  A5,-(SP)
