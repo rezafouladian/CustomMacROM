@@ -6361,11 +6361,11 @@ TFSDispatch:
             bra.w   CmdDone
 .L2:
             move.w  D0,D2
-            lea     .L3,A2
+            lea     TFSTrpTbl,A2
             add.w   D2,D2
             adda.w  (0,A2,D2.w),A2
             jmp     (A2)
-.L3:
+TFSTrpTbl:
             dc.w    $0024,$14D8,$1584,$1480,$14B4,$1FF0,$1B7E,$15BE
             dc.b    $2D,$8C,$24,$8E,$22,$C6,$13,$3C,$11,$66,$16,$D4,$16,$FE,$16
             dc.b    'l.D.Da'
