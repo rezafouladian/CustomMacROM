@@ -601,7 +601,7 @@ RtDvWS:
             sub.w   D7,D2
             addi.w  #$3FFE,D2
             move.w  D2,-(SP)
-            bsr.w   BgnDiv_PACK_4
+            bsr.w   BgnDiv
             moveq   #0,D6
             move.w  (A3),D0
             bra.b   .L13
@@ -745,16 +745,16 @@ sub_408EE5AA:
             move.w  (A0),D0
             ble.b   .L1
             bsr.w   sub_408EEA06
-            bsr.w   XbyA_PACK_4
+            bsr.w   XbyA
             bra.b   .L2
 .L1:
             bsr.w   SizeExtN
             bsr.w   sub_408EE890
-            bsr.w   DivX_PACK_4
+            bsr.w   DivX
             moveq   #0,D5
             bsr.w   Roundit
 .L2:
-            bsr.w   MakeStr_PACK_4
+            bsr.w   MakeStr
 .L3:
             unlk    A6
             movem.l (SP)+,D0-D7/A1-A4
@@ -785,7 +785,7 @@ DoneB2X:
             move.w  #$2004,-(SP)
             bsr.w   FP68K
             bra.b   sub_408EE5AA.L3
-MakeStr_PACK_4:
+MakeStr:
             movea.l (-$C,A6),A1
             clr.l   (A1)
             moveq   #0,D3
@@ -834,10 +834,10 @@ MakeStr_PACK_4:
             moveq   #0,D5
             move.b  (A0),D5
 .L7:
-            bsr.b   BD1OUT_PACK_4
-            bsr.b   BD1OUT_PACK_4
-            bsr.b   BD1OUT_PACK_4
-            bsr.b   BD1OUT_PACK_4
+            bsr.b   BD1OUT
+            bsr.b   BD1OUT
+            bsr.b   BD1OUT
+            bsr.b   BD1OUT
             dbra    D3,.L7
             move.w  A1,D0
             sub.w   A0,D0
@@ -850,13 +850,13 @@ MakeStr_PACK_4:
             addq.w  #4,A0
             move.w  #$130,(A0)
             rts
-BD1OUT_PACK_4:
+BD1OUT:
             moveq   #0,D1
             move.b  (A2)+,D1
             ror.w   #4,D1
-            bsr.b   BD1DIGOUT_PACK_4
+            bsr.b   BD1DIGOUT
             rol.w   #4,D1
-BD1DIGOUT_PACK_4:
+BD1DIGOUT:
             tst.w   D6
             bpl.b   .L1
             tst.b   D1
@@ -872,7 +872,7 @@ BD1DIGOUT_PACK_4:
             sub.b   D1,D1
 .L3:
             rts
-XbyA_PACK_4:
+XbyA:
             movea.l ($38,A6),A0
             addq.w  #2,A0
             move.w  (A0),D6
@@ -953,7 +953,7 @@ Roundit:
             addi.w  #$10,D6
             blt.b   .L1
 .L2:
-            bsr.w   RndStk_PACK_4
+            bsr.w   RndStk
             tst.w   D5
             beq.w   .L9
             move.w  D6,D2
@@ -1028,7 +1028,7 @@ Roundit:
             move.w  (A4),D2
             bpl.b   .L6
             bra.b   .L9
-RndStk_PACK_4:
+RndStk:
             clr.w   D5
             move.w  D6,D3
             addq.w  #1,D3
@@ -1095,9 +1095,9 @@ Nrmlz10:
             move.w  (A1),D0
 .L3:
             rts
-DivX_PACK_4:
+DivX:
             sub.w   D7,D6
-            ble.w   BgnDiv_PACK_4.L6
+            ble.w   BgnDiv.L6
             move.w  D6,D4
             asr.w   #4,D6
             andi.w  #$F,D4
@@ -1112,22 +1112,22 @@ DivX_PACK_4:
             roxl    (2,A3)
             roxl    (A3)
             dbra    D4,.L1
-            bra.b   BgnDiv_PACK_4
+            bra.b   BgnDiv
 .L2:
             cmp.w   (A3),D0
             bhi.b   .L3
             addq.w  #1,D3
             clr.w   -(A3)
-            bra.b   BgnDiv_PACK_4
+            bra.b   BgnDiv
 .L3:
             subq.w  #1,D6
-BgnDiv_PACK_4:
-            bsr.b   PadIt_PACK_4
+BgnDiv:
+            bsr.b   PadIt
             movea.l A3,A0
 .L1:
             move.l  (A0),D2
             divu.w  D0,D2
-            bvs.w   DecrIt_PACK_4.L2
+            bvs.w   DecrIt.L2
             swap    D2
             move.l  D2,(A0)
             swap    D2
@@ -1137,7 +1137,7 @@ BgnDiv_PACK_4:
             beq.b   .L2
             move.w  D5,D7
             bclr    #1,D7
-            bsr.b   MandS_PACK_4
+            bsr.b   MandS
             moveq   #0,D4
             move.w  -(A4),D1
             subx.w  D4,D1
@@ -1145,18 +1145,18 @@ BgnDiv_PACK_4:
             negx.w  D7
             tst.w   D7
             bne.b   .L2
-            bsr.b   DecrIt_PACK_4
+            bsr.b   DecrIt
 .L2:
             move.w  D5,D7
             btst    #1,D7
             bne.b   .L3
             subq.w  #2,D7
 .L3:
-            bsr.b   MandS_PACK_4
+            bsr.b   MandS
             negx.w  D7
             tst.w   D7
             bne.b   .L4
-            bsr.b   DecrIt_PACK_4
+            bsr.b   DecrIt
 .L4:
             dbra    D6,.L1
 .L5:
@@ -1170,7 +1170,7 @@ BgnDiv_PACK_4:
             movea.l A3,A0
             clr.w   -(A3)
             bra.b   .L5
-PadIt_PACK_4:
+PadIt:
             move.w  D1,D7
             add.w   D6,D7
             addq.w  #1,D7
@@ -1186,7 +1186,7 @@ PadIt_PACK_4:
             dbra    D7,.L1
 .L2:
             rts
-MandS_PACK_4:
+MandS:
             lea     (2,A1,D7.w),A2
             lea     (2,A0,D7.w),A4
             subq.w  #2,D7
@@ -1200,7 +1200,7 @@ MandS_PACK_4:
             move.l  D1,(A4)
             dbra    D7,.L1
             rts
-DecrIt_PACK_4:
+DecrIt:
             subq.w  #1,(-2,A0)
             move.l  D5,D1
             lea     (2,A1,D1.w),A2
@@ -1210,12 +1210,12 @@ DecrIt_PACK_4:
 .L1:
             addx.w  -(A2),-(A4)
             dbra    D1,.L1
-            bcc.b   DecrIt_PACK_4
+            bcc.b   DecrIt
             rts
 .L2:
             clr.w   (A0)+
             move.w  D5,D7
-            beq.b   DecrIt_PACK_4
+            beq.b   DecrIt
             lea     (2,A1,D7.w),A2
             lea     (0,A0,D7.w),A4
             asr.w   #1,D7
@@ -1224,8 +1224,8 @@ DecrIt_PACK_4:
 .L3:
             subx.w  -(A2),-(A4)
             dbra    D7,.L3
-            bsr.b   DecrIt_PACK_4
-            bra.w   BgnDiv_PACK_4.L4
+            bsr.b   DecrIt
+            bra.w   BgnDiv.L4
 SizeExtN:
             neg.w   D0
             cmpi.w  #$1458,D0
