@@ -3,9 +3,10 @@ Main/Part1
 OS/StartMgr/StartFail
 OS/StartMgr/StartErr
 OS/StartMgr/StartAlert
-Main/Part2
+OS/Universal
 OS/MMU/MMU
-Main/Part3
+Main/Part2
+OS/HwPriv
 OS/SlotMgr/SlotMgr
 OS/SlotMgr/SlotInterrupts
 OS/Beep
@@ -22,6 +23,10 @@ OS/InterruptHandlers
 OS/DeferredTaskMgr
 OS/VerticalRetraceMgr
 OS/ADBMgr
+Main/Part3
+OS/Clock
+OS/OSEventMgr
+OS/DeviceMgr
 Main/Part4
 OS/EgretMgr
 OS/EgretPatches
