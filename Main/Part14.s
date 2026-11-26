@@ -97,7 +97,7 @@ UNPACKXB:
             andi.w  #$E,D1
             subq.w  #2,D1
             movea.l ($E,A6),A1
-            bsr.w   sub_408E80D0
+            bsr.w   UNPBOP
             bra.b   RsrcPACK_4_2.L8
 .L1:
             bset    #8,D6
@@ -106,9 +106,9 @@ UNPACKXB:
             move.l  D0,D4
             moveq   #0,D5
             movea.w #$7FFF,A4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L2:
-            lea     sub_408E832E.L23,A0
+            lea     FINI2OPS,A0
             subq.w  #2,D0
             beq.b   .L4
             subq.w  #2,D0
@@ -133,10 +133,10 @@ UNPACKXB:
             bset    #8,D6
 .L5:
             moveq   #2,D7
-            bra.w   sub_408E832E.L24
+            bra.w   FINICMPS
 .L6:
             bsr.b   sub_408E8052
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 sub_408E8052:
             move.l  D4,D1
             bclr    #$1E,D1
@@ -160,19 +160,19 @@ UNPXOP:
             move.l  (A1)+,D4
             move.l  (A1),D5
             cmpi.w  #$7FFF,D1
-            beq.b   .L7
+            beq.b   UNP0.L7
             tst.l   D4
-            bpl.b   .L4
-.L3:
+            bpl.b   UNPNRM.L4
+UNPNRM:
             ext.l   D1
             movea.l D1,A4
             rts
 .L4:
             tst.l   D4
-            bne.b   .L6
+            bne.b   UNP0.L6
             tst.l   D5
-            bne.b   .L6
-.L5:
+            bne.b   UNP0.L6
+UNP0:
             suba.l  A4,A4
             addi.l  #$20000,D0
             rts
@@ -181,7 +181,7 @@ UNPXOP:
             add.l   D5,D5
             addx.l  D4,D4
             bpl.b   .L6
-            bra.b   .L3
+            bra.b   UNPNRM
 .L7:
             movea.w #$7FFF,A4
             bclr    #$1F,D4
@@ -198,49 +198,49 @@ UNPXOP:
 .L9:
             addq.w  #2,D0
             rts
-sub_408E80D0:
+UNPBOP:
             move.w  .L1(PC,D1.w),D1
-            jmp     sub_408E80D0(PC,D1.w)
+            jmp     UNPBOP(PC,D1.w)
 .L1:
-            dc.w    .L12-sub_408E80D0
-            dc.w    .L9-sub_408E80D0
-            dc.w    UNPXOP-sub_408E80D0
-            dc.w    .L2-sub_408E80D0
-            dc.w    .L3-sub_408E80D0
-            dc.w    .L6-sub_408E80D0
-.L2:
+            dc.w    UNPDBL-UNPBOP
+            dc.w    UNPSGL-UNPBOP
+            dc.w    UNPXOP-UNPBOP
+            dc.w    UNPI16-UNPBOP
+            dc.w    UNPI32-UNPBOP
+            dc.w    UNPC64-UNPBOP
+UNPI16:
             moveq   #0,D4
             move.w  #$400E,D1
             move.l  D4,D5
             move.w  (A1),D4
             swap    D4
-            bra.b   .L4
-.L3:
+            bra.b   UNPIGEN
+UNPI32:
             move.w  #$401E,D1
             moveq   #0,D5
             move.l  (A1),D4
-.L4:
-            beq.b   UNPXOP.L5
-            bpl.b   .L5
+UNPIGEN:
+            beq.b   UNP0
+            bpl.b   UNPIUNR
             bset    #7,D6
             neg.l   D4
-            bmi.b   UNPXOP.L3
-.L5:
+            bmi.b   UNPNRM
+UNPIUNR:
             bfffo   D4{0:0},D2
             sub.w   D2,D1
             lsl.l   D2,D4
-            bra.w   UNPXOP.L3
-.L6:
+            bra.w   UNPNRM
+UNPC64:
             move.w  #$403E,D1
             move.l  (A1)+,D4
             move.l  (A1),D5
             bne.b   .L7
             tst.l   D4
-            beq.w   UNPXOP.L5
-            bpl.b   .L5
+            beq.w   UNP0
+            bpl.b   UNPIUNR
             bset    #7,D6
             neg.l   D4
-            bpl.b   .L5
+            bpl.b   UNPIUNR
             movea.w #$7FFF,A4
             bclr    #7,D6
             moveq   #$14,D4
@@ -256,13 +256,13 @@ sub_408E80D0:
             negx.l  D4
             tst.l   D4
 .L8:
-            bne.w   UNPXOP.L6
+            bne.w   UNP0.L6
             subi.w  #$20,D1
             exg     D4,D5
             tst.l   D4
-            bpl.b   .L5
-            bra.w   UNPXOP.L3
-.L9:
+            bpl.b   UNPIUNR
+            bra.w   UNPNRM
+UNPSGL:
             moveq   #0,D5
             move.l  (A1),D4
             bpl.b   .L10
@@ -272,16 +272,16 @@ sub_408E80D0:
             beq.b   .L11
             lsl.l   #8,D4
             cmpi.b  #$FF,D1
-            beq.w   UNPXOP.L7
+            beq.w   UNP0.L7
             addi.w  #$3F80,D1
             bset    #$1F,D4
-            bra.w   UNPXOP.L3
+            bra.w   UNPNRM
 .L11:
             lsl.l   #8,D4
-            beq.w   UNPXOP.L5
+            beq.w   UNP0
             move.w  #$3F81,D1
-            bra.w   .L5
-.L12:
+            bra.w   UNPIUNR
+UNPDBL:
             move.l  (A1),D4
             bpl.b   .L13
             bset    #7,D6
@@ -298,20 +298,20 @@ sub_408E80D0:
             tst.l   D1
             bne.b   .L14
             move.w  #$3C01,D1
-            bra.w   UNPXOP.L4
+            bra.w   UNPNRM.L4
 .L14:
             cmpi.w  #$7FF,D1
-            beq.w   UNPXOP.L7
+            beq.w   UNP0.L7
             bset    #$1F,D4
             addi.w  #$3C00,D1
-            bra.w   UNPXOP.L3
+            bra.w   UNPNRM
 RTSHIFT:
             cmpi.w  #$42,D0
             bls.b   .L1
             move.w  #$42,D0
 .L1:
             cmpi.w  #$20,D0
-            blt.b   sub_408E81FA
+            blt.b   .L2
             tst.l   D7
             sne     D3
             move.l  D5,D7
@@ -321,7 +321,7 @@ RTSHIFT:
             subi.w  #$20,D0
             bne.b   .L1
             rts
-sub_408E81FA:
+.L2:
             bfins   D7,D3{0:D0}
             sne     D3
             lsr.l   D0,D7
@@ -331,40 +331,40 @@ sub_408E81FA:
             lsr.l   D0,D4
             or.b    D3,D7
             rts
-sub_408E8212:
+ZNORMCOERCEX:
             moveq   #0,D7
             tst.l   D4
-            bne.b   .L1
+            bne.b   NORMX
             tst.l   D5
-            bne.b   .L1
+            bne.b   NORMX
             suba.l  A4,A4
-            bra.w   sub_408E832E.L20
-.L1:
+            bra.w   PACKX
+NORMX:
             tst.l   D4
-            bmi.w   sub_408E832E.L11
-.L2:
+            bmi.w   COERCEX
+.L1:
             subq.l  #1,A4
             add.l   D5,D5
             addx.l  D4,D4
-            bpl.b   .L2
-            bra.w   sub_408E832E.L11
+            bpl.b   .L1
+            bra.w   COERCEX
 NORMCOERCE:
             tst.l   D4
-            bmi.b   .L2
+            bmi.b   COERCE
 .L1:
             subq.l  #1,A4
             add.l   D7,D7
             addx.l  D5,D5
             addx.l  D4,D4
             bpl.b   .L1
-.L2:
+COERCE:
             move.w  FPState,D1
             bftst   D1{25:2}
-            beq.w   sub_408E832E.L11
-            bpl.w   sub_408E8304
-.L3:
+            beq.w   COERCEX
+            bpl.w   COERCED
+COERCES:
             bsr.b   SCOERCE
-            bra.w   sub_408E8304.L1
+            bra.w   COERCESDONE
 SCOERCE:
             move.l  #$3F81,D0
             sub.l   A4,D0
@@ -384,38 +384,38 @@ SCOERCE:
             tst.l   D7
             bne.b   .L2
             bclr    #9,D6
-            bra.b   .L6
+            bra.b   RNDOVERS
 .L2:
             bset    #$C,D6
             bftst   D1{17:2}
             beq.b   .L4
             bmi.b   .L3
             tst.b   D6
-            bpl.b   .L5
-            bra.b   .L6
+            bpl.b   RNDUPS
+            bra.b   RNDOVERS
 .L3:
             btst    #$D,D1
-            bne.b   .L6
+            bne.b   RNDOVERS
             tst.b   D6
-            bpl.b   .L6
-            bra.b   .L5
+            bpl.b   RNDOVERS
+            bra.b   RNDUPS
 .L4:
             add.l   D7,D7
-            bcc.b   .L6
-            bne.b   .L5
+            bcc.b   RNDOVERS
+            bne.b   RNDUPS
             btst    #8,D4
-            beq.b   .L6
-.L5:
+            beq.b   RNDOVERS
+RNDUPS:
             addi.l  #$100,D4
-            bcc.b   .L6
+            bcc.b   RNDOVERS
             roxr.l  #1,D4
             addq.l  #1,A4
-.L6:
+RNDOVERS:
             movea.w #$407E,A3
             cmpa.l  A4,A3
-            blt.b   sub_408E82C8
+            blt.b   .L1
             rts
-sub_408E82C8:
+.L1:
             bset    #$A,D6
             bset    #$C,D6
             movea.w #$7FFF,A4
@@ -423,46 +423,46 @@ sub_408E82C8:
             sub.l   D5,D5
             lsr.w   #8,D1
             andi.b  #$60,D1
-            bne.b   .L1
-            rts
-.L1:
-            cmpi.b  #$60,D1
-            beq.b   .L3
-            tst.b   D6
-            bmi.b   .L2
-            cmpi.b  #$20,D1
-            bne.b   .L3
+            bne.b   .L2
             rts
 .L2:
-            cmpi.b  #$40,D1
-            bne.b   .L3
+            cmpi.b  #$60,D1
+            beq.b   HUGES
+            tst.b   D6
+            bmi.b   .L3
+            cmpi.b  #$20,D1
+            bne.b   HUGES
             rts
 .L3:
+            cmpi.b  #$40,D1
+            bne.b   HUGES
+            rts
+HUGES:
             moveq   #-1,D4
             movea.l A3,A4
             clr.b   D4
             rts
-sub_408E8304:
-            bsr.b   sub_408E832E
-.L1:
+COERCED:
+            bsr.b   DCOERCE
+COERCESDONE:
             btst    #9,D6
-            beq.w   sub_408E832E.L20
+            beq.w   PACKX
             move.w  A4,D3
-            beq.w   sub_408E832E.L20
+            beq.w   PACKX
             tst.l   D4
             bne.b   .L3
             tst.l   D5
             bne.b   .L2
             suba.l  A4,A4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L2:
             subq.w  #1,A4
             add.l   D5,D5
             addx.l  D4,D4
 .L3:
             bpl.b   .L2
-            bra.w   sub_408E832E.L20
-sub_408E832E:
+            bra.w   PACKX
+DCOERCE:
             move.l  #$3C01,D0
             sub.l   A4,D0
             ble.b   .L1
@@ -481,36 +481,36 @@ sub_408E832E:
             tst.l   D7
             bne.b   .L2
             bclr    #9,D6
-            bra.b   .L6
+            bra.b   RNDOVERD
 .L2:
             bset    #$C,D6
             bftst   D1{17:2}
             beq.b   .L4
             bmi.b   .L3
             tst.b   D6
-            bpl.b   .L5
-            bra.b   .L6
+            bpl.b   RNDUPD
+            bra.b   RNDOVERD
 .L3:
             btst    #$D,D1
-            bne.b   .L6
+            bne.b   RNDOVERD
             tst.b   D6
-            bpl.b   .L6
-            bra.b   .L5
+            bpl.b   RNDOVERD
+            bra.b   RNDUPD
 .L4:
             add.l   D7,D7
-            bcc.b   .L6
-            bne.b   .L5
+            bcc.b   RNDOVERD
+            bne.b   RNDUPD
             btst    #$B,D5
-            beq.b   .L6
-.L5:
+            beq.b   RNDOVERD
+RNDUPD:
             moveq   #0,D0
             move.l  #$800,D2
             add.l   D2,D5
             addx.l  D0,D4
-            bcc.b   .L6
+            bcc.b   RNDOVERD
             roxr.l  #1,D4
             addq.l  #1,A4
-.L6:
+RNDOVERD:
             movea.w #$43FE,A3
             cmpa.l  A4,A3
             blt.b   .L7
@@ -527,64 +527,64 @@ sub_408E832E:
             rts
 .L8:
             cmpi.b  #$60,D1
-            beq.b   .L10
+            beq.b   HUGED
             tst.b   D6
             bmi.b   .L9
             cmpi.b  #$20,D1
-            bne.b   .L10
+            bne.b   HUGED
             rts
 .L9:
             cmpi.b  #$40,D1
-            bne.b   .L10
+            bne.b   HUGED
             rts
-.L10:
+HUGED:
             moveq   #-1,D4
             movea.l A3,A4
             move.l  #$FFFFF800,D5
             rts
-.L11:
+COERCEX:
             move.l  A4,D0
-            bpl.b   .L12
+            bpl.b   ROUNDX
             neg.l   D0
             bset    #9,D6
             suba.l  A4,A4
             bsr.w   RTSHIFT
-.L12:
+ROUNDX:
             tst.l   D7
-            bne.b   .L13
+            bne.b   .L1
             bclr    #9,D6
-            bra.b   .L17
-.L13:
+            bra.b   RNDOVERX
+.L1:
             bset    #$C,D6
             bftst   D1{17:2}
             beq.b   .L15
-            bmi.b   .L14
+            bmi.b   .L2
             tst.b   D6
-            bpl.b   .L16
-            bra.b   .L17
-.L14:
-            btst    #$D,D1
-            bne.b   .L17
+            bpl.b   RNDUPX
+            bra.b   RNDOVERX
+.L2:
+            btst    #13,D1
+            bne.b   RNDOVERX
             tst.b   D6
-            bpl.b   .L17
-            bra.b   .L16
+            bpl.b   RNDOVERX
+            bra.b   RNDUPX
 .L15:
             add.l   D7,D7
-            bcc.b   .L17
-            bne.b   .L16
+            bcc.b   RNDOVERX
+            bne.b   RNDUPX
             btst    #0,D5
-            beq.b   .L17
-.L16:
+            beq.b   RNDOVERX
+RNDUPX:
             moveq   #0,D0
             addq.l  #1,D5
             addx.l  D0,D4
-            bcc.b   .L17
+            bcc.b   RNDOVERX
             roxr.l  #1,D4
             addq.l  #1,A4
-.L17:
+RNDOVERX:
             movea.w #$7FFF,A3
             cmpa.l  A3,A4
-            blt.b   .L20
+            blt.b   PACKX
             bset    #$A,D6
             bset    #$C,D6
             movea.w A3,A4
@@ -592,22 +592,22 @@ sub_408E832E:
             sub.l   D5,D5
             lsr.w   #8,D1
             andi.b  #$60,D1
-            beq.b   .L20
+            beq.b   PACKX
             cmpi.b  #$60,D1
-            beq.b   .L19
+            beq.b   HUGEOUT
             tst.b   D6
             bmi.b   .L18
             cmpi.b  #$20,D1
-            beq.b   .L20
-            bra.b   .L19
+            beq.b   PACKX
+            bra.b   HUGEOUT
 .L18:
             cmpi.b  #$40,D1
-            beq.b   .L20
-.L19:
+            beq.b   PACKX
+HUGEOUT:
             subq.w  #1,A4
             not.l   D4
             not.l   D5
-.L20:
+PACKX:
             move.w  A4,D3
             movea.l ($A,A6),A3
             tst.b   D6
@@ -622,9 +622,9 @@ sub_408E832E:
             move.l  D4,(A3)+
             move.l  D5,(A3)
             jmp     (A0)
-.L23:
+FINI2OPS:
             clr.w   D7
-.L24:
+FINICMPS:
             movea.w #$A4A,A1
             move.w  (A1),D0
             clr.b   D6
@@ -632,15 +632,15 @@ sub_408E832E:
             move.w  D0,(A1)+
             lsr.w   #8,D6
             and.w   D6,D0
-            bne.b   .L26
-.L25:
+            bne.b   HALT2OP
+FINISH2:
             move    D7,CCR
             movem.l (SP)+,D0-D7/A0-A4
             unlk    A6
             rtd     #$A
-.L26:
-            lea     .L25,A4
-.L27:
+HALT2OP:
+            lea     FINISH2,A4
+HALTCOMMON:
             move.w  D7,-(SP)
             move.w  D0,-(SP)
             pea     (SP)
@@ -660,60 +660,61 @@ FINI1OP:
             move.w  D0,(A1)+
             ror.w   #8,D6
             and.w   D6,D0
-            bne.b   .L2
-.L1:
+            bne.b   HALT1OP
+FINISH1:
             move    D7,CCR
             movem.l (SP)+,D0-D7/A0-A4
             unlk    A6
             rtd     #6
-.L2:
-            lea     .L1,A4
-            bra.b   sub_408E832E.L27
-sub_408E84F8:
+HALT1OP:
+            lea     FINISH1,A4
+            bra.b   HALTCOMMON
+RDSTSGN:
             add.b   D6,D6
-.L1:
+RDST:
             move.l  A2,D5
             move.l  D3,D4
             movea.l A3,A4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
+;
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544.L1,A0
+            lea     ADDTOP,A0
             bra.w   RsrcPACK_4_2.L7
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544.L1,A0
+            lea     ADDTOP,A0
             bra.w   UNPACKXB
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544,A0
+            lea     SUBTOP,A0
             bra.w   RsrcPACK_4_2.L7
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E8544,A0
+            lea     SUBTOP,A0
             bra.w   UNPACKXB
-sub_408E8544:
+SUBTOP:
             eori.b  #$A0,D6
-.L1:
-            lea     sub_408E832E.L23,A0
+ADDTOP:
+            lea     FINI2OPS,A0
             move.w  .L2(PC,D0.w),D0
-            jmp     .L1(PC,D0.w)
+            jmp     ADDTOP(PC,D0.w)
 .L2:
-            dc.w    .L3-.L1
-            dc.w    .L30-.L1
-            dc.w    sub_408E832E.L20-.L1
-            dc.w    .L31-.L1
-            dc.w    .L27-.L1
-            dc.w    sub_408E832E.L20-.L1
-            dc.w    sub_408E84F8-.L1
-            dc.w    sub_408E84F8-.L1
-            dc.w    .L32-.L1
-.L3:
+            dc.w    ADDNUM-ADDTOP
+            dc.w    ADDEM.L30-ADDTOP
+            dc.w    PACKX-ADDTOP
+            dc.w    ADDEM.L31-ADDTOP
+            dc.w    ADDEM.L27-ADDTOP
+            dc.w    PACKX-ADDTOP
+            dc.w    RDSTSGN-ADDTOP
+            dc.w    RDSTSGN-ADDTOP
+            dc.w    ADDEM.L32-ADDTOP
+ADDNUM:
             exg     D4,D3
             exg     D5,A2
             move.w  A4,D0
             sub.w   A3,D0
-            beq.w   .L25
+            beq.w   ADDEM
             bgt.b   .L4
             exg     D5,A2
             exg     D4,D3
@@ -724,104 +725,104 @@ sub_408E8544:
 .L4:
             move.l  D0,D2
             cmpi.w  #$42,D0
-            bhi.w   .L6
+            bhi.w   ADDSHLOTS
             add.w   D2,D2
-            move.w  .L5(PC,D2.w),D2
-            jmp     .L3(PC,D2.w)
-.L5:
-            dc.w    .L25-.L3
-            dc.w    .L24-.L3
-            dc.w    .L23-.L3
-            dc.w    .L22-.L3
-            dc.w    .L21-.L3
-            dc.w    .L20-.L3
-            dc.w    .L19-.L3
-            dc.w    .L18-.L3
-            dc.w    .L17-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L16-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L15-.L3
-            dc.w    .L14-.L3
-            dc.w    .L13-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L11-.L3
-            dc.w    .L9-.L3
-            dc.w    .L8-.L3
-            dc.w    .L7-.L3
-.L6:
+            move.w  ADDSHCASE(PC,D2.w),D2
+            jmp     ADDNUM(PC,D2.w)
+ADDSHCASE:
+            dc.w    ADDEM-ADDNUM
+            dc.w    ADDSH1-ADDNUM
+            dc.w    ADDSH2-ADDNUM
+            dc.w    ADDSH3-ADDNUM
+            dc.w    ADDSH4-ADDNUM
+            dc.w    ADDSH5-ADDNUM
+            dc.w    ADDSH6-ADDNUM
+            dc.w    ADDSH7-ADDNUM
+            dc.w    ADDSH8-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH16-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH2TO31-ADDNUM
+            dc.w    ADDSH32-ADDNUM
+            dc.w    ADDSH33-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH33TO63-ADDNUM
+            dc.w    ADDSH64-ADDNUM
+            dc.w    ADDSH65-ADDNUM
+            dc.w    ADDSH66-ADDNUM
+ADDSHLOTS:
             moveq   #0,D4
             moveq   #0,D5
             not.b   D7
-            bra.w   .L25
-.L7:
+            bra.w   ADDEM
+ADDSH66:
             or.w    D4,D5
             tst.l   D5
             sne     D7
             lsr.l   #2,D4
-            bra.b   .L10
-.L8:
+            bra.b   BIGSTICK
+ADDSH65:
             or.w    D4,D5
             tst.l   D5
             sne     D7
             lsr.l   #1,D4
-            bra.b   .L10
-.L9:
+            bra.b   BIGSTICK
+ADDSH64:
             tst.l   D5
             sne     D7
-.L10:
+BIGSTICK:
             or.l    D4,D7
             moveq   #0,D4
             moveq   #0,D5
-            bra.w   .L25
-.L11:
+            bra.w   ADDEM
+ADDSH33TO63:
             move.l  D5,D7
             subi.w  #$20,D0
             move.l  D4,D5
@@ -833,93 +834,93 @@ sub_408E8544:
 .L12:
             bfins   D4,D7{0:D0}
             moveq   #0,D4
-            bra.w   .L25
-.L13:
+            bra.w   ADDEM
+ADDSH33:
             move.l  D5,D7
             move.l  D4,D5
             moveq   #0,D4
             lsr.l   #1,D5
             roxr.l  #1,D7
             scs     D7
-            bra.w   .L25
-.L14:
+            bra.w   ADDEM
+ADDSH32:
             move.l  D5,D7
             move.l  D4,D5
             moveq   #0,D4
-            bra.w   .L25
-.L15:
+            bra.w   ADDEM
+ADDSH2TO31:
             bfins   D5,D7{0:D0}
             lsr.l   D0,D5
             bfins   D4,D5{0:D0}
             lsr.l   D0,D4
-            bra.b   .L25
-.L16:
+            bra.b   ADDEM
+ADDSH16:
             move.w  D5,D7
             move.w  D4,D5
             clr.w   D4
             swap    D5
             swap    D4
             swap    D7
-            bra.b   .L25
-.L17:
+            bra.b   ADDEM
+ADDSH8:
             bfins   D5,D7{0:8}
             move.b  D4,D5
             lsr.l   #8,D4
             ror.l   #8,D5
-            bra.b   .L25
-.L18:
+            bra.b   ADDEM
+ADDSH7:
             bfins   D5,D7{0:7}
             lsr.l   #7,D5
             bfins   D4,D5{0:7}
             lsr.l   #7,D4
-            bra.b   .L25
-.L19:
+            bra.b   ADDEM
+ADDSH6:
             bfins   D5,D7{0:6}
             lsr.l   #6,D5
             bfins   D4,D5{0:6}
             lsr.l   #6,D4
-            bra.b   .L25
-.L20:
+            bra.b   ADDEM
+ADDSH5:
             bfins   D5,D7{0:5}
             lsr.l   #5,D5
             bfins   D4,D5{0:5}
             lsr.l   #5,D4
-            bra.b   .L25
-.L21:
+            bra.b   ADDEM
+ADDSH4:
             bfins   D5,D7{0:4}
             lsr.l   #4,D5
             bfins   D4,D5{0:4}
             lsr.l   #4,D4
-            bra.b   .L25
-.L22:
+            bra.b   ADDEM
+ADDSH3:
             bfins   D5,D7{0:3}
             lsr.l   #3,D5
             bfins   D4,D5{0:3}
             lsr.l   #3,D4
-            bra.b   .L25
-.L23:
+            bra.b   ADDEM
+ADDSH2:
             bfins   D5,D7{0:2}
             lsr.l   #2,D5
             bfins   D4,D5{0:2}
             lsr.l   #2,D4
-            bra.b   .L25
-.L24:
+            bra.b   ADDEM
+ADDSH1:
             lsr.l   #1,D4
             roxr.l  #1,D5
             roxr.l  #1,D7
-.L25:
+ADDEM:
             btst    #5,D6
             bne.b   .L26
             add.l   A2,D5
             addx.l  D3,D4
-            bcc.w   NORMCOERCE.L2
+            bcc.w   COERCE
             roxr.l  #1,D4
             roxr.l  #1,D5
             roxr.l  #1,D7
             scs     D1
             or.b    D1,D7
             addq.l  #1,A4
-            bra.w   NORMCOERCE.L2
+            bra.w   COERCE
 .L26:
             not.b   D6
             sub.l   A2,D5
@@ -933,7 +934,7 @@ sub_408E8544:
             bra.w   NORMCOERCE
 .L27:
             btst    #5,D6
-            beq.w   sub_408E832E.L20
+            beq.w   PACKX
 .L28:
             suba.l  A4,A4
             movea.w #$A4A,A1
@@ -944,18 +945,18 @@ sub_408E8544:
             bne.b   .L29
             not.b   D6
 .L29:
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L30:
             move.l  A2,D5
             move.l  D3,D4
             movea.l A3,A4
             add.b   D6,D6
 .L31:
-            bra.w   NORMCOERCE.L2
+            bra.w   COERCE
 .L32:
             btst    #5,D6
             bne.b   .L33
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L33:
             moveq   #2,D0
             bra.w   UNPACKXB.L1
@@ -968,20 +969,20 @@ sub_408E8544:
             lea     sub_408E8796,A0
             bra.w   UNPACKXB
 sub_408E8796:
-            lea     sub_408E832E.L23,A0
+            lea     FINI2OPS,A0
             lsl.b   #2,D6
             move.w  .L1(PC,D0.w),D0
             jmp     sub_408E8796(PC,D0.w)
 .L1:
             dc.w    .L2-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
-            dc.w    sub_408E84F8.L1-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
+            dc.w    PACKX-sub_408E8796
+            dc.w    PACKX-sub_408E8796
+            dc.w    RDST-sub_408E8796
+            dc.w    PACKX-sub_408E8796
             dc.w    .L5-sub_408E8796
-            dc.w    sub_408E84F8.L1-sub_408E8796
+            dc.w    RDST-sub_408E8796
             dc.w    .L5-sub_408E8796
-            dc.w    sub_408E832E.L20-sub_408E8796
+            dc.w    PACKX-sub_408E8796
 .L2:
             adda.l  A3,A4
             suba.w  #$3FFE,A4
@@ -1031,7 +1032,7 @@ sub_408E8796:
             lea     sub_408E882C,A0
             bra.w   UNPACKXB
 sub_408E882C:
-            lea     sub_408E832E.L23,A0
+            lea     FINI2OPS,A0
             lsl.b   #2,D6
             move.w  .L1(PC,D0.w),D0
             jmp     sub_408E882C(PC,D0.w)
@@ -1042,20 +1043,20 @@ sub_408E882C:
             dc.w    .L3-sub_408E882C
             dc.w    .L4-sub_408E882C
             dc.w    .L3-sub_408E882C
-            dc.w    sub_408E84F8.L1-sub_408E882C
-            dc.w    sub_408E84F8.L1-sub_408E882C
+            dc.w    RDST-sub_408E882C
+            dc.w    RDST-sub_408E882C
             dc.w    .L4-sub_408E882C
 .L2:
             bset    #$B,D6
             movea.w #$7FFF,A4
             moveq   #0,D4
             moveq   #0,D5
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L3:
             suba.l  A4,A4
             move.l  A4,D4
             move.l  D4,D5
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L4:
             moveq   #4,D0
             bra.w   UNPACKXB.L1
@@ -1088,7 +1089,7 @@ sub_408E882C:
             roxr.l  #1,D7
             or.l    D2,D3
             sne     D7
-            bra.w   NORMCOERCE.L2
+            bra.w   COERCE
 DIV32:
             divu.l  D4,D2:D3
             bvs.b   sub_408E88C8
@@ -1115,54 +1116,54 @@ sub_408E88C8:
             bra.b   DIV32.L1
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E88F2,A0
+            lea     REMTOP,A0
             bra.w   RsrcPACK_4_2.L7
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E88F2,A0
+            lea     REMTOP,A0
             bra.w   UNPACKXB
-sub_408E88F2:
-            lea     sub_408E832E.L23,A0
+REMTOP:
+            lea     FINI2OPS,A0
             clr.w   (2,SP)
             add.b   D6,D6
-            move.w  .L1(PC,D0.w),D0
-            jmp     sub_408E88F2(PC,D0.w)
-.L1:
-            dc.w    .L3-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    .L4-sub_408E88F2
-            dc.w    sub_408E84F8.L1-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    sub_408E84F8.L1-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-            dc.w    .L2-sub_408E88F2
-.L2:
+            move.w  REMCASE(PC,D0.w),D0
+            jmp     REMTOP(PC,D0.w)
+REMCASE:
+            dc.w    REMNUM-REMTOP
+            dc.w    INVALIDOP-REMTOP
+            dc.w    REMDST-REMTOP
+            dc.w    RDST-REMTOP
+            dc.w    INVALIDOP-REMTOP
+            dc.w    RDST-REMTOP
+            dc.w    INVALIDOP-REMTOP
+            dc.w    INVALIDOP-REMTOP
+            dc.w    INVALIDOP-REMTOP
+INVALIDOP:
             moveq   #9,D0
             bra.w   UNPACKXB.L1
-.L3:
+REMNUM:
             move.l  A3,D0
             addq.l  #1,D0
             sub.l   A4,D0
-            bpl.b   .L5
-.L4:
+            bpl.b   REMDIV
+REMDST:
             move.l  D3,D4
             move.l  A2,D5
             movea.l A3,A4
-            bra.b   .L11
-.L5:
+            bra.b   REMFIN
+REMDIV:
             subq.l  #1,A4
             cmpi.l  #9,D0
-            bgt.b   sub_408E89A0
+            bgt.b   REMSHIFT
             move.l  D3,D1
             move.l  A2,D2
             move.l  D4,D3
             movea.l D5,A2
             addq.l  #1,D0
-            bsr.b   RESTORE_FPOPS
-.L6:
+            bsr.b   RESTORE
+REMPOSTRESTORING:
             btst    #0,D5
-            beq.b   .L9
+            beq.b   REMQUO
             tst.l   D1
             bne.b   .L7
             tst.l   D2
@@ -1177,7 +1178,7 @@ sub_408E88F2:
             exg     D1,D3
             sub.l   A2,D2
             subx.l  D3,D1
-.L9:
+REMQUO:
             lsr.b   #1,D5
             btst    #6,D6
             beq.b   .L10
@@ -1187,9 +1188,9 @@ sub_408E88F2:
             move.w  D5,(2,SP)
             move.l  D1,D4
             move.l  D2,D5
-.L11:
-            bra.w   sub_408E8212
-RESTORE_FPOPS:
+REMFIN:
+            bra.w   ZNORMCOERCEX
+RESTORE:
             moveq   #0,D4
             move.l  D4,D5
             bra.b   .L2
@@ -1213,7 +1214,7 @@ RESTORE_FPOPS:
             subq.w  #1,D0
             bne.b   .L1
             rts
-sub_408E89A0:
+REMSHIFT:
             movea.l D6,A3
             move.l  A2,D1
             moveq   #0,D2
@@ -1229,22 +1230,22 @@ sub_408E89A0:
             bsr.w   DIV32
             move.l  A2,D6
             bfextu  D6{16:11},D6
-            beq.b   .L3
+            beq.b   REMDIVDONE
             movea.l D6,A1
             moveq   #0,D1
-.L2:
+REMLP32:
             bsr.w   DIV32
             subq.l  #1,A1
             move.l  A1,D6
-            bne.b   .L2
-.L3:
+            bne.b   REMLP32
+REMDIVDONE:
             move.l  D2,D1
             move.l  D3,D2
             move.l  D4,D3
             movea.l D5,A2
             move.l  D0,D5
             move.l  A3,D6
-            bra.w   sub_408E88F2.L6
+            bra.w   REMPOSTRESTORING
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
             lea     sub_408E8A08,A0
@@ -1275,13 +1276,13 @@ sub_408E8A08:
             bmi.b   .L4
             moveq   #$19,D7
 .L4:
-            bra.w   sub_408E832E.L24
+            bra.w   FINICMPS
 .L5:
             btst    #5,D6
             bne.b   .L3
 .L6:
             moveq   #4,D7
-            bra.w   sub_408E832E.L24
+            bra.w   FINICMPS
 .L7:
             btst    #5,D6
             bne.b   .L3
@@ -1299,13 +1300,13 @@ sub_408E8A08:
 .L9:
             moveq   #$19,D7
             tst.b   D6
-            bpl.w   sub_408E832E.L24
+            bpl.w   FINICMPS
             moveq   #0,D7
-            bra.w   sub_408E832E.L24
+            bra.w   FINICMPS
 sub_408E8A66:
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
+            lea     FINI2OPS,A0
             move.w  (8,A6),D6
             moveq   #0,D0
             swap    D6
@@ -1317,11 +1318,11 @@ sub_408E8A66:
             tst.w   D0
             bne.w   UNPACKXB.L6
             tst.l   D0
-            beq.w   NORMCOERCE.L2
-            bra.w   sub_408E832E.L20
+            beq.w   COERCE
+            bra.w   PACKX
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
+            lea     FINI2OPS,A0
             move.w  (8,A6),D6
             moveq   #0,D0
             swap    D6
@@ -1332,7 +1333,7 @@ sub_408E8A66:
             andi.w  #$E,D1
             subq.w  #2,D1
             movea.l ($E,A6),A1
-            bsr.w   sub_408E80D0
+            bsr.w   UNPBOP
             bra.b   .L1
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
@@ -1348,9 +1349,9 @@ sub_408E8A66:
             tst.w   D0
             bne.w   UNPACKXB.L6
             btst    #$11,D0
-            bne.w   sub_408E832E.L20
+            bne.w   PACKX
             tst.b   D6
-            bpl.w   sub_408E832E.L20
+            bpl.w   PACKX
 .L2:
             moveq   #1,D0
             bra.w   UNPACKXB.L1
@@ -1459,7 +1460,7 @@ sub_408E8A66:
             addi.w  #$FF,D7
 .L17:
             move.l  A3,D6
-            bra.w   NORMCOERCE.L2
+            bra.w   COERCE
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
             lea     FINI1OP,A0
@@ -1473,19 +1474,19 @@ sub_408E8A66:
             beq.b   .L18
             tst.w   D0
             bne.w   UNPACKXB.L6
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L18:
             bsr.w   sub_408E8C86
             bgt.b   .L20
 .L19:
             bftst   D1{25:2}
-            beq.w   sub_408E832E.L11
-            bpl.w   sub_408E8304
-            bra.w   NORMCOERCE.L3
+            beq.w   COERCEX
+            bpl.w   COERCED
+            bra.w   COERCES
 .L20:
             bsr.w   RNDINT
             tst.l   D4
-            bmi.w   sub_408E832E.L20
+            bmi.w   PACKX
 .L21:
             bfffo   D4{0:0},D0
             beq.b   .L22
@@ -1494,19 +1495,19 @@ sub_408E8A66:
             bfextu  D5{0:D0},D2
             lsl.l   D0,D5
             or.l    D2,D4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L22:
             suba.w  #$20,A4
             exg     D4,D5
             bfffo   D4{0:0},D0
             beq.b   .L23
-            bmi.w   sub_408E832E.L20
+            bmi.w   PACKX
             suba.w  D0,A4
             lsl.l   D0,D4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L23:
             suba.l  A4,A4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
             lea     FINI1OP,A0
@@ -1520,7 +1521,7 @@ sub_408E8A66:
             beq.b   .L24
             tst.w   D0
             bne.w   UNPACKXB.L6
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L24:
             bsr.b   sub_408E8C86
             bgt.b   .L25
@@ -1592,7 +1593,7 @@ RNDINT:
 sub_408E8CF4:
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
+            lea     FINI2OPS,A0
             move.w  (8,A6),D6
             moveq   #0,D0
             swap    D6
@@ -1630,7 +1631,7 @@ sub_408E8CF4:
             bsr.w   SCOERCE
             bra.b   .L5
 .L4:
-            bsr.w   sub_408E832E
+            bsr.w   DCOERCE
 .L5:
             move.w  A4,D3
             cmpi.w  #$7FFF,D3
@@ -1801,12 +1802,12 @@ sub_408E8CF4:
             tst.w   D0
             bne.w   UNPACKXB.L6
             btst    #$11,D0
-            beq.w   sub_408E832E.L20
+            beq.w   PACKX
             ori.w   #$880,D6
             movea.w #$7FFF,A4
             moveq   #0,D4
             move.l  D4,D5
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L30:
             moveq   #0,D5
             suba.w  #$3FFF,A4
@@ -1815,7 +1816,7 @@ sub_408E8CF4:
             blt.b   .L31
             suba.l  A4,A4
             move.l  D5,D4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L31:
             ori.b   #$80,D6
             neg.l   D4
@@ -1824,10 +1825,10 @@ sub_408E8CF4:
             bfffo   D4{0:0},D0
             lsl.l   D0,D4
             suba.w  D0,A4
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
             link.w  A6,#0
             movem.l D0-D7/A0-A4,-(SP)
-            lea     sub_408E832E.L23,A0
+            lea     FINI2OPS,A0
             move.w  (8,A6),D6
             moveq   #0,D0
             swap    D6
@@ -1838,12 +1839,12 @@ sub_408E8CF4:
             beq.b   .L33
             tst.w   D0
             bne.w   UNPACKXB.L6
-            bra.w   sub_408E832E.L20
+            bra.w   PACKX
 .L33:
             movea.l ($E,A6),A2
             adda.w  (A2),A4
             moveq   #0,D7
-            bra.w   NORMCOERCE.L2
+            bra.w   COERCE
             movem.l D0-D1/A0,-(SP)
             movea.l ($16,SP),A0
             move.w  (A0)+,D0
@@ -2194,7 +2195,7 @@ sub_408E8CF4:
             move.w  FPState,D7
             move.w  D3,FPState
             or.w    D7,D6
-            bra.w   sub_408E832E.L23
+            bra.w   FINI2OPS
 .L75:
             btst    #$C,D5
             beq.b   .L77
@@ -2601,11 +2602,11 @@ sub_408E96D4:
             addq.w  #2,A0
             move.w  (A0),D0
             blt.w   StuffIt_PACK_4_2.L9
-            bsr.w   sub_408E9D38
-            bsr.w   sub_408E9EF8
+            bsr.w   SizeExt
+            bsr.w   a2b
             bsr.w   StoD_PACK_4_2
             move.l  (-$10,A6),(-$C,A6)
-            bsr.w   cXb2a_PACK_4_2
+            bsr.w   cXb2a
             movea.l A1,A3
             move.w  #$4F,D6
             move.w  D1,D2
@@ -2731,7 +2732,7 @@ StuffIt_PACK_4_2:
             bgt.b   .L6
             bra.b   .L10
 .L9:
-            bsr.w   sub_408E9D24
+            bsr.w   SizeExtN
             bsr.w   StoD_PACK_4_2
             bsr.w   Nrmlz10_PACK_4_2
             movea.l A4,A3
@@ -2884,11 +2885,11 @@ sub_408E9936:
             addq.w  #2,A0
             move.w  (A0),D0
             ble.b   .L1
-            bsr.w   sub_408E9D38
+            bsr.w   SizeExt
             bsr.w   XbyA_PACK_4_2
             bra.b   .L2
 .L1:
-            bsr.w   sub_408E9D24
+            bsr.w   SizeExtN
             bsr.w   sub_408E9BC2
             bsr.w   DivX_PACK_4_2
             moveq   #0,D5
@@ -2905,7 +2906,7 @@ sub_408E9936:
             move.w  FPState,D4
             andi.w  #$60,D4
             beq.b   .L3
-            pea     sub_408E9EF8.L2
+            pea     Tbl1
             move.l  ($3C,A6),-(SP)
             move.w  #$2004,-(SP)
             bsr.w   RsrcPACK_4_2
@@ -3202,12 +3203,12 @@ DivX_PACK_4_2:
 .L3:
             subq.w  #1,D6
 BgnDiv_PACK_4_2:
-            bsr.b   PadIt_PACK_4_2
+            bsr.b   PadIt
             movea.l A3,A0
 .L1:
             move.l  (A0),D2
             divu.w  D0,D2
-            bvs.w   DecrIt_PACK_4_2.L2
+            bvs.w   divOver
             swap    D2
             move.l  D2,(A0)
             swap    D2
@@ -3217,7 +3218,7 @@ BgnDiv_PACK_4_2:
             beq.b   .L2
             move.w  D5,D7
             bclr    #1,D7
-            bsr.b   MandS_PACK_4_2
+            bsr.b   MandS
             moveq   #0,D4
             move.w  -(A4),D1
             subx.w  D4,D1
@@ -3225,18 +3226,18 @@ BgnDiv_PACK_4_2:
             negx.w  D7
             tst.w   D7
             bne.b   .L2
-            bsr.b   DecrIt_PACK_4_2
+            bsr.b   DecrIt
 .L2:
             move.w  D5,D7
             btst    #1,D7
             bne.b   .L3
             subq.w  #2,D7
 .L3:
-            bsr.b   MandS_PACK_4_2
+            bsr.b   MandS
             negx.w  D7
             tst.w   D7
             bne.b   .L4
-            bsr.b   DecrIt_PACK_4_2
+            bsr.b   DecrIt
 .L4:
             dbra    D6,.L1
 .L5:
@@ -3250,7 +3251,7 @@ BgnDiv_PACK_4_2:
             movea.l A3,A0
             clr.w   -(A3)
             bra.b   .L5
-PadIt_PACK_4_2:
+PadIt:
             move.w  D1,D7
             add.w   D6,D7
             addq.w  #1,D7
@@ -3266,7 +3267,7 @@ PadIt_PACK_4_2:
             dbra    D7,.L1
 .L2:
             rts
-MandS_PACK_4_2:
+MandS:
             lea     (2,A1,D7.w),A2
             lea     (2,A0,D7.w),A4
             subq.w  #2,D7
@@ -3280,7 +3281,7 @@ MandS_PACK_4_2:
             move.l  D1,(A4)
             dbra    D7,.L1
             rts
-DecrIt_PACK_4_2:
+DecrIt:
             subq.w  #1,(-2,A0)
             move.l  D5,D1
             lea     (2,A1,D1.w),A2
@@ -3290,54 +3291,54 @@ DecrIt_PACK_4_2:
 .L1:
             addx.w  -(A2),-(A4)
             dbra    D1,.L1
-            bcc.b   DecrIt_PACK_4_2
+            bcc.b   DecrIt
             rts
-.L2:
+divOver:
             clr.w   (A0)+
             move.w  D5,D7
-            beq.b   DecrIt_PACK_4_2
+            beq.b   DecrIt
             lea     (2,A1,D7.w),A2
             lea     (0,A0,D7.w),A4
             asr.w   #1,D7
             subq.w  #1,D7
             move    #0,CCR
-.L3:
+.L1:
             subx.w  -(A2),-(A4)
-            dbra    D7,.L3
-            bsr.b   DecrIt_PACK_4_2
+            dbra    D7,.L1
+            bsr.b   DecrIt
             bra.w   BgnDiv_PACK_4_2.L4
-sub_408E9D24:
+SizeExtN:
             neg.w   D0
-            cmpi.w  #$1458,D0
-            bcs.b   sub_408E9D38.L1
+            cmpi.w  #5208,D0
+            bcs.b   allct
             move.w  #$1457,D0
             move.w  D0,D1
             neg.w   D1
             move.w  D1,(A0)
-            bra.b   sub_408E9D38.L1
-sub_408E9D38:
+            bra.b   allct
+SizeExt:
             cmpi.w  #$1390,D0
-            bcs.b   .L1
+            bcs.b   allct
             move.w  #$138F,D0
             move.w  D0,(A0)
-.L1:
+allct:
             moveq   #0,D4
             move.w  D0,D4
             addi.w  #$20F,D4
             andi.b  #$F8,D4
             cmpi.w  #$C40,D4
-            bcs.b   .L2
+            bcs.b   .L1
             move.w  #$C40,D4
-.L2:
+.L1:
             move.w  D4,D5
             asr.w   #2,D5
             move.l  D0,D1
             _StackSpace
             cmp.l   D4,D0
-            bpl.b   .L3
+            bpl.b   .L2
             moveq   #$1C,D0
             _SysError
-.L3:
+.L2:
             move.l  D1,D0
             movea.l (SP)+,A1
             suba.w  D4,SP
@@ -3357,52 +3358,52 @@ sub_408E9D38:
             move.w  D2,D0
             swap    D2
             cmpi.w  #7,D2
-            blt.b   .L5
+            blt.b   Frst7
             cmpi.w  #$E,D2
-            bge.b   .L4
+            bge.b   Third7
             moveq   #1,D1
-            lea     sub_408E9EF8.L3,A2
+            lea     Tbl2,A2
             subq.w  #7,D2
             asl.w   #2,D2
             move.l  (0,A2,D2.w),-(A1)
-            bra.b   .L7
-.L4:
+            bra.b   GotTen2
+Third7:
             moveq   #2,D1
-            lea     sub_408E9EF8.L4,A2
+            lea     Tbl3,A2
             subi.w  #$E,D2
             mulu.w  #6,D2
             move.l  (2,A2,D2.w),-(A1)
-            bra.b   .L6
-.L5:
+            bra.b   GotTen
+Frst7:
             moveq   #0,D1
-            lea     sub_408E9EF8.L2,A2
+            lea     Tbl1,A2
             asl.w   #1,D2
-.L6:
+GotTen:
             move.w  (0,A2,D2.w),-(A1)
-.L7:
+GotTen2:
             tst.w   D0
-            bne.b   .L8
+            bne.b   MakeTen
             rts
-.L8:
-            bsr.b   sub_408E9E5E
+MakeTen:
+            bsr.b   a2c
             moveq   #3,D2
             movea.l (-8,A6),A2
             subq.l  #4,A2
             move.l  #$4D6E2EF5,(A2)
             move.l  #$1B1AE,-(A2)
-            bra.b   .L11
-.L9:
-            bsr.b   sub_408E9E5E
-.L10:
-            bsr.b   sub_408E9E72
-.L11:
+            bra.b   BigLoop
+DoItAgn:
+            bsr.b   a2c
+notOdd:
+            bsr.b   bXb2b
+BigLoop:
             asr.w   #1,D0
-            bcc.b   .L10
-            bsr.b   cXb2a_PACK_4_2
+            bcc.b   notOdd
+            bsr.b   cXb2a
             tst.w   D0
-            bgt.b   .L9
+            bgt.b   DoItAgn
             rts
-cXb2a_PACK_4_2:
+cXb2a:
             move.w  D2,D1
             add.w   D3,D1
             addq.w  #1,D1
@@ -3446,7 +3447,7 @@ cXb2a_PACK_4_2:
             subq.w  #1,D1
 .L7:
             rts
-sub_408E9E5E:
+a2c:
             move.w  D1,D3
             movea.l (-4,A6),A1
             movea.l (-$C,A6),A3
@@ -3455,7 +3456,7 @@ sub_408E9E5E:
             move.l  -(A1),-(A3)
             dbra    D1,.L1
             rts
-sub_408E9E72:
+bXb2b:
             move.w  D2,D1
             move.w  D1,D7
             asl.w   #1,D1
@@ -3466,7 +3467,7 @@ sub_408E9E72:
             dbra    D7,.L1
             move.w  D2,D5
             subq.w  #1,D5
-            bmi.b   .L8
+            bmi.b   doSqrs
             movea.l (-4,A6),A4
             subq.l  #4,A4
             movea.l (-8,A6),A2
@@ -3499,7 +3500,7 @@ sub_408E9E72:
 .L7:
             roxl    -(A1)
             dbra    D7,.L7
-.L8:
+doSqrs:
             movea.l (-4,A6),A1
             movea.l (-8,A6),A2
 .L9:
@@ -3520,9 +3521,9 @@ sub_408E9E72:
             subq.w  #1,D1
 .L12:
             tst.w   D0
-            bne.b   sub_408E9EF8
+            bne.b   a2b
             rts
-sub_408E9EF8:
+a2b:
             move.w  D1,D2
             movea.l (-4,A6),A1
             movea.l (-8,A6),A2
@@ -3531,12 +3532,12 @@ sub_408E9EF8:
             move.l  -(A1),-(A2)
             dbra    D1,.L1
             rts
-.L2:
+Tbl1:
             dc.w    $0001,$0005,$0019,$007D,$0271,$0C35,$3D09
-.L3:
+Tbl2:
             dc.w    $0001,$312D,$0005,$F5E1,$001D,$CD65,$0095,$02F9
             dc.w    $02E9,$0EDD,$0E8D,$4A51,$48C2,$7395
-.L4:
+Tbl3:
             dc.w    $0001,$6BCC,$41E9,$0007,$1AFD,$498D,$0023,$86F2
             dc.w    $6FC1,$00B1,$A2BC,$2EC5,$0378,$2DAC,$E9D9,$1158
             dc.w    $E460,$913D,$56BC,$75E2,$D631
@@ -5314,7 +5315,7 @@ RsrcPACK_4:
             movem.l (SP)+,D0/A0-A1
             rts
 sub_408EB2A2:
-            cmpi.b  #4,CPUFlag
+            cmpi.b  #cpu68040,CPUFlag
             blt.b   .L2
             movem.l D0-D4/A1-A2,-(SP)
             move    SR,D0

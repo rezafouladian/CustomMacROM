@@ -1,15 +1,15 @@
             include "Include/ROMHeader.s"
 
             EXPORT  A24ACTUALSPATCH,A24MAXLIMITPATCH,A24SETSIZEPATCH,A32ACTUALSPATCH,A32MAXLIMITPATCH,A32SETSIZEPATCH
-            EXPORT  ALIGN24TRAILER,ALIGN32TRAILER,DEREFHANDLEPATCH,DSHOOKPATCH,FILEMGRPATCH,FlushCRange
+            EXPORT  ALIGN24TRAILER,ALIGN32TRAILER,DerefHandlePatch,DSHOOKPATCH,FILEMGRPATCH,FlushCRange
             EXPORT  FlushCRangeForBM,FLUSHDCACHEPATCH,FLUSHICACHEPATCH,getAddrModePatch,getFPUTypePatch,getPageSizePatch
             EXPORT  GETREALPROC,HWPrivPatch,INIT24ZONEALIGN,INIT32ZONEALIGN,InitMemoryDispatch,NEWLOCKMEMORY
             EXPORT  NEWLOCKMEMORYCONTIGUOUS,NEWUNLOCKMEMORY,OSEVENTAVAILPATCH,OSEVENTMGRPATCH,SETAPPLBASEPATCH,SWAPDCACHEPATCH
             EXPORT  UNWRITEPROTECTPROC,V24CMGUTSPATCH,v24HlockPatch,V24MAXAPPLPATCH,V24MAXMEMPATCH,V24PURGESPACEPATCH
             EXPORT  V32CMGUTSPATCH,v32HlockPatch,V32MAXAPPLPATCH,V32MAXMEMPATCH,V32PURGESPACEPATCH,WRITEPROTECTPROC
-            EXPORT  ZONECHECKPATCH
+            EXPORT  ZoneCheckPatch
 
-            IMPORT  A24BKCOMPACTS,a24CompactHp,A32BKCOMPACTS,A32COMPACTHP,DHBUSERRHANDLER,HeapGuts
+            IMPORT  A24BKCOMPACTS,a24CompactHp,A32BKCOMPACTS,A32COMPACTHP,DHBusErrHandler,HeapGuts
             IMPORT  SCSIBoots
 
             SECTION "Part9",CODE
@@ -1033,19 +1033,19 @@ HFail:
 .L4:
             move.l  vMMEpilogue,-(SP)
             rts
-ZONECHECKPATCH:
+ZoneCheckPatch:
             movea.l BusErrVct,A2
             BigLea  HeapGuts,A3
-            cmpi.b  #4,CPUFlag
+            cmpi.b  #cpu68040,CPUFlag
             bne.b   .L1
             lea     sub_4088787A,A3
 .L1:
             move.l  A3,BusErrVct
             rts
-DEREFHANDLEPATCH:
+DerefHandlePatch:
             movea.l BusErrVct,A2
-            BigLea  DHBUSERRHANDLER,A3
-            cmpi.b  #4,CPUFlag
+            BigLea  DHBusErrHandler,A3
+            cmpi.b  #cpu68040,CPUFlag
             bne.b   .L1
             lea     sub_40887870,A3
 .L1:

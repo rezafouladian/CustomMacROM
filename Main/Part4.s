@@ -3,7 +3,7 @@
             EXPORT  A24BKCOMPACTS,a24CompactHp,A32BKCOMPACTS,A32COMPACTHP,AddDrive,BlockMove68020
             EXPORT  BMMOVELONGS,BMOVERLAP,BMVERYSHORT,CallRoutines,Chain,ClkNoMem
             EXPORT  ClkRW,clock,Close,CmdDone,CmpString,CompactMem
-            EXPORT  Control,Delay,DHBUSERRHANDLER,DisposePtr,DoEject,DrvrInstall
+            EXPORT  Control,Delay,DHBusErrHandler,DisposePtr,DoEject,DrvrInstall
             EXPORT  DrvrRemove,DsposeHandle,Eject_2,EmptyHandle,Events,ExitToShell
             EXPORT  FileAlloc,FileCreate,FileDelete,FileWrite,FInitQueue,FlushEvents
             EXPORT  FlushFile,FlushVol,FreeMem,FSIODneTbl,FSQueueSync,GetAppParms
@@ -37,13 +37,13 @@
             EXPORT  XPRAMEXIT1
 
             IMPORT  A24ACTUALSPATCH,A24MAXLIMITPATCH,A24SETSIZEPATCH,A32ACTUALSPATCH,A32MAXLIMITPATCH,A32SETSIZEPATCH
-            IMPORT  ALIGN24TRAILER,ALIGN32TRAILER,AllocFakeRgns,CLKNOMEMPATCH,DequeueTrap,DEREFHANDLEPATCH
+            IMPORT  ALIGN24TRAILER,ALIGN32TRAILER,AllocFakeRgns,CLKNOMEMPATCH,DequeueTrap,DerefHandlePatch
             IMPORT  DSHOOKPATCH,FILEMGRPATCH,FlushApplNM,INIT24ZONEALIGN,INIT32ZONEALIGN,LoadSegPatch
             IMPORT  OPENPATCH,OSEVENTAVAILPATCH,OSEVENTMGRPATCH,PMSPSwOS,QStuff,ReadPRamPatch
             IMPORT  ReadTimePatch,READUPDATE,SETAPPLBASEPATCH,SHUTRESTARTANNEX,SMGRPOSTMUNGING,UnloadSegPatch
             IMPORT  V24CMGUTSPATCH,v24HlockPatch,V24MAXAPPLPATCH,V24MAXMEMPATCH,V24PURGESPACEPATCH,V32CMGUTSPATCH
             IMPORT  v32HlockPatch,V32MAXAPPLPATCH,V32MAXMEMPATCH,V32PURGESPACEPATCH,ValidatePRAMPatch,WDCBSwOS
-            IMPORT  WritePRamPatch,WRITETIMEPATCH,WRITEUPDATE,XPRAMPATCH,ZONECHECKPATCH
+            IMPORT  WritePRamPatch,WRITETIMEPATCH,WRITEUPDATE,XPRAMPATCH,ZoneCheckPatch
 
             SECTION "Part4",CODE
 
@@ -4113,13 +4113,13 @@ ZCBUSERRHANDLER:
             andi.w  #$FEFF,($A,SP)
             clr.l   ($2C,SP)
             rte
-DHBUSERRHANDLER:
+DHBusErrHandler:
             andi.w  #$FEFF,($A,SP)
             moveq   #-1,D0
             move.l  D0,($2C,SP)
             rte
 sub_4080DB6A:
-            bsr.l   DEREFHANDLEPATCH
+            bsr.l   DerefHandlePatch
             nop
             nop
             nop
@@ -4187,7 +4187,7 @@ sub_4080DB9C:
             moveq   #-$6F,D0
             bra.b   .L8
 sub_4080DBF8:
-            bsr.l   ZONECHECKPATCH
+            bsr.l   ZoneCheckPatch
             nop
             nop
             nop
