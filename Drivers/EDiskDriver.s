@@ -45,7 +45,7 @@ InitTable:
             dc.w    $0844,$081E,0,$0C11,$0208
 ; EDiskOpen
 EDiskOpen:
-            jsr     sub_408E7D5C
+            jsr     JumpTo32Bit
             move.l  A0,-(SP)
             move.l  ($18,A1),D7
             move.w  #5,D7
@@ -168,7 +168,7 @@ CheckForRomDisk:
             lea     .L2,A0
             move.l  A0,BusErrVct
             movea.l SP,A4
-            lea     sub_408E7D5C.L1,A3
+            lea     HeaderTemplate,A3
             lea     ($80,A2),A0
             moveq   #3,D0
 .L1:
@@ -206,7 +206,7 @@ EDiskClose:
             moveq   #closErr,D0
             rts
 EDiskPrime:
-            jsr     sub_408E7D5C
+            jsr     JumpTo32Bit
             move.w  (6,A0),-(SP)
             moveq   #0,D4
             movem.l D4/A0-A1,-(SP)
@@ -400,7 +400,7 @@ EDiskPrime:
             dc.w    .WriteOddXsum-.DispatchTable    ; 1 0 1 0 - write, odd, xsum enabled
             dc.w    .ReadWrite-.DispatchTable       ; 1 0 1 1 - write, odd, xsum disabled
 EDiskControl:
-            jsr     sub_408E7D5C
+            jsr     JumpTo32Bit
             lea     ControlDecode,A2
             bra.b   HandleControlStatus
 EDiskStatus:
@@ -554,19 +554,21 @@ statDrvSize:
             rts
 ctlDriveInfo:
             move.l  D1,D0
-            bne.b   .L19
+            bne.b   .Done
             move.l  (-$10,A3),(A4)
-.L19:
+.Done:
             rts
+ctlDriveIcon:
             movea.l (-$18,A3),A0
-            bra.b   .L20
+            bra.b   IconCommon
+ctlMediaIcon:
             movea.l (-$1C,A3),A0
-.L20:
+IconCommon:
             move.l  D1,D0
-            bne.b   .L22
+            bne.b   .Done
             moveq   #-$11,D0
             move.l  A0,D1
-            beq.b   .L22
+            beq.b   .Done
             lea     ($20,A2),A1
             move.l  A1,(A4)
             move.l  #$100,D0
@@ -574,17 +576,18 @@ ctlDriveInfo:
             lea     ($120,A2),A1
             clr.b   (A1)
             move.l  (-$14,A3),D1
-            beq.b   .L22
+            beq.b   .Done
             movea.l D1,A0
             moveq   #1,D0
             add.b   (A0),D0
             cmpi.w  #$20,D0
-            bls.b   .L21
+            bls.b   .CopyString
             moveq   #$20,D0
-.L21:
+.CopyString:
             _BlockMove
-.L22:
+.Done:
             rts
+; FindDQE
 FindDQE:
             movea.l ($14,A1),A2
             addq.b  #1,($10,A2)
@@ -642,7 +645,10 @@ RAMDiskHandler:
             move.b  .decode(PC,D0.w),D0
             jmp     .decode(PC,D0.w)
 .decode:
-            dc.w    $060A,$0C20,$3600,$70FF,$4E75
+            dc.w    $060A,$0C20,$3600
+.checkInserted:
+            moveq   #-1,D0
+            rts
 .checkReadOnly:
             moveq   #0,D0
 .enableWrites:
@@ -665,31 +671,37 @@ RAMDiskHandler:
             clr.b   (-3,A3)
 .done:
             rts
-            move.b  .L2(PC,D0.w),D0
-            jmp     .L2(PC,D0.w)
-.L2:
-            dc.w    $0606,$0808,$0A00,$70FF,$4E75
-            clr.b   (-3,A3)
+ROMDiskHandler:
+            move.b  .decode(PC,D0.w),D0
+            jmp     .decode(PC,D0.w)
+.decode:
+            dc.w    $0606,$0808,$0A00
+            moveq   #-1,D0
             rts
+.eject:
+            clr.b   (-3,A3)
+.done:
+            rts
+; EDiskPollTask
 EDiskPollTask:
             lea     (-$12,A0),A2
             lea     ($30A).w,A3
             movea.l ($C,A2),A1
             move.w  ($18,A1),D3
             tst.b   ($10,A2)
-            beq.b   .L2
+            beq.b   .next
             addq.w  #1,($1C,A2)
             rts
-.L1:
+.search:
             movea.l D2,A3
             cmp.w   (8,A3),D3
-            beq.b   .L3
-.L2:
+            beq.b   .CheckDrive
+.next:
             move.l  (A3),D2
-            bne.b   .L1
+            bne.b   .search
             move.w  #$11,($1C,A2)
             rts
-.L3:
+.CheckDrive:
             moveq   #0,D0
             bsr.w   HWDependent
             addq.w  #1,D0
@@ -700,39 +712,39 @@ EDiskPollTask:
             and.b   D0,D1
             bne.b   .L4
             tst.b   (-3,A3)
-            bpl.b   .L2
+            bpl.b   .next
             clr.b   (-3,A3)
-            bra.b   .L2
+            bra.b   .next
 .L4:
             cmp.b   D0,D1
-            bne.b   .L2
+            bne.b   .next
             tst.b   (-3,A3)
-            bmi.b   .L2
-            beq.b   .L6
-.L5:
+            bmi.b   .next
+            beq.b   .OnLine
+.mount:
             btst    #0,(-$C,A3)
-            bne.b   .L2
+            bne.b   .next
             moveq   #7,D0
             movea.l D0,A0
             move.w  (6,A3),D0
             _PostEvent
-            bne.b   .L2
+            bne.b   .next
             bset    #0,(-$C,A3)
-            bra.b   .L2
-.L6:
+            bra.b   .next
+.OnLine:
             move.b  (-$B,A3),(-3,A3)
             clr.b   (-4,A3)
             move.l  (-$34,A3),D0
-            beq.b   .L7
+            beq.b   .SetupRAMDisk
             movea.l D0,A0
             move.l  ($94,A0),(-$30,A3)
             move.l  ($98,A0),(-$2C,A3)
             moveq   #1,D0
             bsr.w   HWDependent
             move.b  D0,(-4,A3)
-            bne.b   .L12
+            bne.b   .SetupROMDisk
             tst.l   (-$3C,A3)
-            beq.b   .L7
+            beq.b   .SetupRAMDisk
             moveq   #2,D0
             bsr.w   HWDependent
             bsr.w   ComputeSLIMSize
@@ -742,15 +754,15 @@ EDiskPollTask:
             move.l  A0,(-$28,A3)
             moveq   #3,D0
             bsr.w   HWDependent
-.L7:
+.SetupRAMDisk:
             movem.l (-$28,A3),D0-D2
             tst.l   D0
-            beq.b   .L8
+            beq.b   .BaseFound
             move.l  D0,D1
             moveq   #0,D0
-.L8:
+.BaseFound:
             btst    #1,(-$C,A3)
-            beq.b   .L9
+            beq.b   .UpdateBasePtrs
             move.l  D1,D0
             sub.l   D2,D1
             neg.l   D1
@@ -758,84 +770,84 @@ EDiskPollTask:
             lsr.l   #7,D1
             andi.w  #$FE00,D1
             add.l   D0,D1
-.L9:
+.UpdateBasePtrs:
             movem.l D0-D1,(-$28,A3)
-.L10:
+.SetupDriveSize:
             sub.l   D1,D2
-            bcc.b   .L11
+            bcc.b   .DriveSizeOK
             move.l  D1,(-$20,A3)
             moveq   #0,D2
-.L11:
+.DriveSizeOK:
             rol.l   #7,D2
             move.l  D2,($C,A3)
-            bra.w   .L5
-.L12:
+            bra.w   .mount
+.SetupROMDisk:
             move.l  A0,D0
-            lea     sub_408E7D5C.L1,A1
+            lea     HeaderTemplate,A1
             lea     ($80,A0),A0
             moveq   #3,D2
-.L13:
+.cmpLoop:
             cmpm.l  (A0)+,(A1)+
-            dbne    D2,.L13
-            beq.b   .L14
+            dbne    D2,.cmpLoop
+            beq.b   .SigOK
             move.l  D0,D1
             move.l  D1,D2
-            bra.b   .L9
-.L14:
+            bra.b   .UpdateBasePtrs
+.SigOK:
             move.l  (A0)+,D0
             addq.w  #8,A0
             lea     (-$28,A3),A1
             moveq   #2,D2
             tst.l   (-$3C,A3)
-            bne.b   .L15
+            bne.b   .offsetLoop
             moveq   #5,D2
             move.l  ($18,A0),D1
-            beq.b   .L15
+            beq.b   .offsetLoop
             move.l  D1,(-$10,A3)
-.L15:
+.offsetLoop:
             addq.l  #4,A1
             move.l  (A0)+,D1
-            beq.b   .L16
+            beq.b   .nextOffset
             cmp.l   D0,D1
-            bhi.b   .L16
+            bhi.b   .nextOffset
             add.l   (-$34,A3),D1
             move.l  D1,(-4,A1)
-.L16:
-            dbra    D2,.L15
+.nextOffset:
+            dbra    D2,.offsetLoop
             movem.l (-$24,A3),D1-D2
-            bra.b   .L10
+            bra.b   .SetupDriveSize
 ComputeSLIMSize:
             adda.l  #$200000,A0
             movea.l A0,A1
             moveq   #0,D0
             move.l  #'Gary',D1
             moveq   #4-1,D2
-.L1:
+.FillLoop:
             suba.l  #$80000,A0
             move.l  (A0),-(SP)
             rol.l   #8,D1
             move.l  D1,(A0)
             cmp.l   (A0),D1
-            bne.b   .L3
+            bne.b   .NotRAM1
             not.l   D1
             move.l  D1,(A0)
             cmp.l   (A0),D1
-            bne.b   .L2
+            bne.b   .NotRAM2
             bset    D2,D0
-.L2:
+.NotRAM2:
             not.l   D1
-.L3:
-            dbra    D2,.L1
+.NotRAM1:
+            dbra    D2,.FillLoop
             not.l   D1
             moveq   #3,D2
-.L4:
+.CheckLoop:
             suba.l  #$80000,A1
             rol.l   #8,D1
             cmp.l   (A1),D1
-            beq.b   .L5
+            beq.b   .IsRAM
             bclr    D2,D0
-.L5:
-            dbra    D2,.L4
+.IsRAM:
+            dbra    D2,.CheckLoop
             moveq   #3,D2
 .RestoreLoop:
             move.l  (SP)+,(A1)
@@ -846,23 +858,28 @@ ComputeSLIMSize:
             lsl.l   D1,D0
             rts
 .SizesTable:
-            dc.w    $0001,$0002,0,$0003
+            dc.b    0
+            dc.b    1
+            dc.b    0
+            dc.b    2
+            dc.w    0,$0003
             ds.b    7
             dc.b    $04
+; CreateEDiskHeader
 CreateEDiskHeader:
             move.l  (-$34,A3),D0
-            beq.b   .L5
+            beq.b   .Done
             movea.l D0,A0
             moveq   #$7F,D3
-.L1:
+.clrLoop:
             clr.l   (A0)+
-            dbra    D3,.L1
-            lea     sub_408E7D5C.L1,A1
+            dbra    D3,.clrLoop
+            lea     HeaderTemplate,A1
             lea     (-$180,A0),A0
             moveq   #3,D3
-.L2:
+.cpyLoop:
             move.l  (A1)+,(A0)+
-            dbra    D3,.L2
+            dbra    D3,.cpyLoop
             move.l  (-$20,A3),D2
             sub.l   D0,D2
             move.l  D2,(A0)+
@@ -872,23 +889,24 @@ CreateEDiskHeader:
             move.l  Ticks,(A1)
             move.l  (A1)+,(A0)+
             moveq   #5,D3
-.L3:
+.offsetLoop:
             addq.l  #4,A0
             move.l  (A1)+,D1
             sub.l   D0,D1
             cmp.l   D1,D2
-            bcs.b   .L4
+            bcs.b   .nextOffset
             move.l  D1,(-4,A0)
-.L4:
-            dbra    D3,.L3
-.L5:
+.nextOffset:
+            dbra    D3,.offsetLoop
+.Done:
             rts
-sub_408E7D5C:
+; JumpTo32Bit
+JumpTo32Bit:
             move.l  (SP),D0
             _Translate24To32
             move.l  D0,(SP)
             rts
-.L1:
+HeaderTemplate:
             dc.w    $0200,$0001
             dc.b    'EDisk Gary D'
             dc.b    16,'Upper SLIM Drive'
