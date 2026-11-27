@@ -324,7 +324,7 @@ ASCSetVol:
             move.l  A0,-(SP)
             movea.l ASCBase,A0
             lsl.b   #5,D0
-            move.b  D0,($806,A0)
+            move.b  D0,(ascVolControl,A0)
             movea.l (SP)+,A0
             rts
 ByPassControl:

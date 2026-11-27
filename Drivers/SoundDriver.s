@@ -455,7 +455,7 @@ BufOpen:
             movea.l SoundDCE,A1
             move.l  A0,(dCtlStorage,A1)
 .L4:
-            cmpi.b  #$B0,D2
+            cmpi.b  #batmanSound,D2
             beq.w   InstallSndEnbWatch
             bra.w   SetSoundBase
 .BufKill:

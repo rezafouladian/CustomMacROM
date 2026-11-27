@@ -6247,7 +6247,7 @@ sub_4087112E:
             move.w  ($1A,A0),D2
             rts
 CheckIfSecure:
-            bsr.b   CheckForCabooseKeyswitch_DRVR_4
+            bsr.b   CheckForCabooseKeyswitch
             beq.b   .L1
             rts
 .L1:
@@ -6268,7 +6268,7 @@ sub_4087116A:
             moveq   #0,D0
 .L2:
             rts
-CheckForCabooseKeyswitch_DRVR_4:
+CheckForCabooseKeyswitch:
             move.l  D0,-(SP)
             move.l  #$C0000,D0
             and.l   UnivROMFlags,D0

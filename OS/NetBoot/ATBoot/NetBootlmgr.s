@@ -5,9 +5,9 @@
             SECTION "ATBoot_NetBootlmgr",CODE
 
 DoOpenLap:
-            bsr.w   InstallDRVRs_DRVR_50
+            bsr.w   InstallDRVRs
             bne.w   .L4
-            bsr.w   ReadPRAM_DRVR_50
+            bsr.w   ReadPRAM
             moveq   #1,D2
             moveq   #$10,D0
             addi.w  #$30A,D0
@@ -39,7 +39,7 @@ DoOpenLap:
             move.l  (SP)+,D1
             tst.b   D1
             bne.b   .L1
-            bsr.w   InstallPrintAtlk_DRVR_50
+            bsr.w   InstallPrintAtlk
             bra.b   .L2
 .L1:
             bsr.w   ATlkInit
@@ -84,9 +84,9 @@ InstallE:
             move.l  MinusOne,LAPMgrPtr
             move.l  D1,D0
             rts
-InstallPrintAtlk_DRVR_50:
+InstallPrintAtlk:
             move.w  #1,D0
-            bsr.b   GetRomAtlk_DRVR_50
+            bsr.b   GetRomAtlk
             move.l  A0,D0
             beq.b   .L1
             move.l  #$53432020,D1
@@ -95,7 +95,7 @@ InstallPrintAtlk_DRVR_50:
             bsr.b   InstallTheAtlk
 .L1:
             rts
-GetRomAtlk_DRVR_50:
+GetRomAtlk:
             move.l  D2,-(SP)
             move.w  #$FFFF,ROMMapInsert
             subq.w  #4,SP
@@ -122,7 +122,7 @@ InstallADEV:
             moveq   #0,D2
             clr.w   D0
             move.b  D1,D0
-            bsr.b   GetRomAtlk_DRVR_50
+            bsr.b   GetRomAtlk
             move.l  A0,D0
             beq.b   .L4
             move.l  D1,D3
@@ -132,18 +132,18 @@ InstallADEV:
             move.w  D0,D2
             bra.b   .L4
 .L2:
-            bsr.b   CheckPramVal_DRVR_50
+            bsr.b   CheckPramVal
             bne.b   .L1
             cmp.l   D1,D3
             beq.b   .L3
-            bsr.w   WritePRAM_DRVR_50
+            bsr.w   WritePRAM
 .L3:
             moveq   #0,D0
             nop
 .L4:
             tst.w   D0
             rts
-CheckPramVal_DRVR_50:
+CheckPramVal:
             moveq   #0,D0
             move.b  D3,D1
             tst.w   D4
@@ -162,19 +162,19 @@ DoAShutdown:
             jsr     (2,A0)
             movem.l (SP)+,D0-D3/A0-A3
             rts
-InstallDRVRs_DRVR_50:
+InstallDRVRs:
             moveq   #-$B,D3
-            bsr.b   sub_408562F2
-            bne.b   .L1
+            bsr.b   .LoadAndLock
+            bne.b   .IError
             moveq   #-$A,D3
-            bsr.b   sub_408562F2
-            bne.b   .L1
+            bsr.b   .LoadAndLock
+            bne.b   .IError
             moveq   #0,D0
             rts
-.L1:
+.IError:
             moveq   #-1,D0
             rts
-sub_408562F2:
+.LoadAndLock:
             move.w  #$FFFF,ROMMapInsert
             subq.w  #4,SP
             move.l  #'DRVR',-(SP)
@@ -184,7 +184,7 @@ sub_408562F2:
             movea.l (SP)+,A0
             move.l  A0,-(SP)
             move.l  A0,D0
-            beq.b   InstallDRVRs_DRVR_50.L1
+            beq.b   .IError
             move.w  D3,D0
             _DrvrInstall async
             movea.l UTableBase,A0
@@ -199,7 +199,7 @@ sub_408562F2:
             bclr    #6,(5,A0)
             moveq   #0,D0
             rts
-ReadPRAM_DRVR_50:
+ReadPRAM:
             clr.l   -(SP)
             btst    #$E,HWCfgFlags
             beq.b   .L1
@@ -209,7 +209,7 @@ ReadPRAM_DRVR_50:
 .L1:
             move.l  (SP)+,D1
             rts
-WritePRAM_DRVR_50:
+WritePRAM:
             move.l  A0,-(SP)
             move.l  D1,-(SP)
             movea.l SP,A0

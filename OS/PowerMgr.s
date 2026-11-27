@@ -1201,12 +1201,12 @@ didqueue:
             addq.w  #4,SP
             movea.l VIA,A0
             move.b  (vBufB,A0),D0
-            move.b  ($400,A0),D1
-            move.b  ($1E00,A0),D2
-            move.b  ($600,A0),D3
-            move.b  ($1C00,A0),D4
-            move.b  ($1600,A0),D5
-            move.b  ($1800,A0),D6
+            move.b  (vDIRB,A0),D1
+            move.b  (vBufA,A0),D2
+            move.b  (vDIRA,A0),D3
+            move.b  (vIER,A0),D4
+            move.b  (vACR,A0),D5
+            move.b  (vPCR,A0),D6
             movem.w D0-D6,-(SP)
             movea.l ASCBase,A1
             move.b  (ascMode,A1),-(SP)
@@ -1234,12 +1234,12 @@ didqueue:
 .L15:
             movea.l VIA2,A0
             move.b  (vBufB,A0),D0
-            move.b  ($400,A0),D1
-            move.b  ($1E00,A0),D2
-            move.b  ($600,A0),D3
-            move.b  ($1C00,A0),D4
-            move.b  ($1600,A0),D5
-            move.b  ($1800,A0),D6
+            move.b  (vDIRB,A0),D1
+            move.b  (vBufA,A0),D2
+            move.b  (vDIRA,A0),D3
+            move.b  (vIER,A0),D4
+            move.b  (vACR,A0),D5
+            move.b  (vPCR,A0),D6
             movem.w D0-D6,-(SP)
             bclr    #6,(A0)
             move.l  USP,A0
@@ -1331,21 +1331,21 @@ WakeUp:
             moveq   #0,D1
             bra.b   .L2
 .L5:
-            move.b  (SP)+,($80F,A1)
-            move.b  (SP)+,($80A,A1)
-            move.b  (SP)+,($806,A1)
-            move.b  (SP)+,($801,A1)
+            move.b  (SP)+,(ascTestReg,A1)
+            move.b  (SP)+,(ascPlayRecA,A1)
+            move.b  (SP)+,(ascVolControl,A1)
+            move.b  (SP)+,(ascMode,A1)
             movea.l VIA,A0
             movem.w (SP)+,D0-D6
-            move.b  D0,(A0)
-            move.b  D1,($400,A0)
+            move.b  D0,(vBufB,A0)
+            move.b  D1,(vDIRB,A0)
             move.b  D2,($1E00,A0)
             move.b  D3,($600,A0)
             move.b  D4,($1C00,A0)
             move.b  D5,($1600,A0)
             move.b  D6,($1800,A0)
-            move.b  ($1200,A0),($1200,A0)
-            move.b  ($A00,A0),($A00,A0)
+            move.b  (vT2CH,A0),(vT2CH,A0)
+            move.b  (vT1CH,A0),(vT1CH,A0)
             subq.w  #4,SP
             movea.l SP,A0
             move.b  #2,(A0)
@@ -1398,10 +1398,10 @@ SetSupervisorMode:
             movea.l (SP)+,A1
             moveq   #8,D0
             _DebugUtil
-            cmpi.w  #$FFCE,D0
-            bne.b   .L1
+            cmpi.w  #paramErr,D0
+            bne.b   .Cont
             move    SR,D0
-.L1:
+.Cont:
             andi    #$EFFF,SR
             jmp     (A1)
 CheckAppleTalk:
@@ -1412,66 +1412,66 @@ CheckAppleTalk:
             moveq   #$F,D1
             and.b   PortBUse,D1
             cmpi.b  #1,D1
-            bne.w   .L7
+            bne.w   .okexit
             move.w  D0,D1
             cmpi.b  #1,D0
-            bne.b   .L2
+            bne.b   .dmndcase
             btst    #6,ChooserBits
-            beq.w   .L8
+            beq.w   .done
             btst    #0,($F,A2)
-            bne.w   .L8
+            bne.w   .done
             btst    #5,PortBUse
-            bne.b   .L1
+            bne.b   .reqcase1
             move.b  #1,($6C,A2)
-            bra.w   .L7
-.L1:
+            bra.w   .okexit
+.reqcase1:
             bsr.w   XPPCheck
-            bne.w   .L8
+            bne.w   .done
             move.b  #2,($6C,A2)
-            bra.w   .L7
-.L2:
+            bra.w   .okexit
+.dmndcase:
             cmpi.b  #2,D0
-            bne.b   .L6
+            bne.b   .nowcase
             btst    #6,ChooserBits
-            bne.b   .L3
+            bne.b   .dmndcase1
             bsr.w   HarshWarn
-            bne.w   .L8
+            bne.w   .done
             move.b  #4,($6C,A2)
             bset    #6,ChooserBits
-            bra.w   .L7
-.L3:
+            bra.w   .okexit
+.dmndcase1:
             btst    #5,PortBUse
-            bne.b   .L4
-            bsr.w   sub_408895B0
-            bne.b   .L8
+            bne.b   .dmndcase2
+            bsr.w   WimpyWarn
+            bne.b   .done
             move.b  #1,($6C,A2)
-            bra.b   .L7
-.L4:
+            bra.b   .okexit
+.dmndcase2:
             bsr.w   XPPCheck
-            bne.b   .L5
-            bsr.w   sub_408895B0
-            bne.b   .L8
+            bne.b   .dmndcase3
+            bsr.w   WimpyWarn
+            bne.b   .done
             move.b  #2,($6C,A2)
-            bra.b   .L7
-.L5:
-            bsr.w   sub_408895AA
-            bne.b   .L8
+            bra.b   .okexit
+.dmndcase3:
+            bsr.w   StrongWarn
+            bne.b   .done
             move.b  #3,($6C,A2)
-            bra.b   .L7
-.L6:
+            bra.b   .okexit
+.nowcase:
             move.b  #4,($6C,A2)
             bset    #6,ChooserBits
-            beq.b   .L7
+            beq.b   .okexit
             move.b  #1,($6C,A2)
             btst    #5,PortBUse
-            bne.b   .L7
+            bne.b   .okexit
             move.b  #2,($6C,A2)
             bsr.w   XPPCheck
-            beq.b   .L7
+            beq.b   .okexit
             move.b  #3,($6C,A2)
-.L7:
+.okexit:
             moveq   #0,D0
-.L8:
+.done:
             lea     ($32,SP),SP
             movem.l (SP)+,D1-D2/A0-A3
             tst.w   D0
@@ -1491,10 +1491,10 @@ CloseAppleTalk:
             movem.l (SP)+,D1-D2/A0-A3
             tst.w   D0
             rts
-sub_408895AA:
+StrongWarn:
             move.w  #$BFFE,D0
             bra.b   HarshWarn.L1
-sub_408895B0:
+WimpyWarn:
             move.w  #$BFFD,D0
             bra.b   HarshWarn.L1
 HarshWarn:
@@ -1599,63 +1599,63 @@ XPPCheck:
             rts
 DoQueue:
             cmpi.w  #6,D0
-            beq.b   .L5
+            beq.b   .mustsleep
             cmpi.w  #2,D0
-            beq.b   .L5
+            beq.b   .mustsleep
             cmpi.w  #3,D0
-            beq.b   .L5
-.L1:
+            beq.b   .mustsleep
+.startreq:
             move.l  D0,D7
             movea.l PmgrBase,A1
             movea.l (4,A1),A0
             move.l  A0,D2
-            beq.w   .L8
-.L2:
+            beq.w   .noentries
+.getreq:
             movea.l (6,A0),A2
             move.l  A2,D2
-            beq.b   .L3
+            beq.b   .nextreq
             move.w  D7,D0
             movem.l A0-A1,-(SP)
             jsr     (A2)
             movem.l (SP)+,A0-A1
             tst.l   D0
-            beq.b   .L3
+            beq.b   .nextreq
             cmpi.w  #4,D7
-            beq.b   .L3
+            beq.b   .nextreq
             moveq   #4,D0
             move.l  D0,D7
-            bra.b   .L1
-.L3:
+            bra.b   .startreq
+.nextreq:
             cmpa.l  (8,A1),A0
-            beq.b   .L4
+            beq.b   .checkreq
             movea.l (A0),A0
-            bra.b   .L2
-.L4:
+            bra.b   .getreq
+.checkreq:
             moveq   #2,D0
             cmpi.w  #4,D7
-            bne.b   .L5
+            bne.b   .mustsleep
             moveq   #5,D0
             rts
-.L5:
+.mustsleep:
             move.w  D0,D7
             movea.l PmgrBase,A1
             movea.l (4,A1),A0
             move.l  A0,D2
-            beq.b   .L8
-.L6:
+            beq.b   .noentries
+.getdemand:
             movea.l (6,A0),A2
             move.l  A2,D2
-            beq.b   .L7
+            beq.b   .nextdemand
             move.w  D7,D0
             movem.l A0-A1,-(SP)
             jsr     (A2)
             movem.l (SP)+,A0-A1
-.L7:
+.nextdemand:
             cmpa.l  (8,A1),A0
-            beq.b   .L8
+            beq.b   .noentries
             movea.l (A0),A0
-            bra.b   .L6
-.L8:
+            bra.b   .getdemand
+.noentries:
             moveq   #0,D0
             rts
 KbdReset:
@@ -1663,7 +1663,7 @@ KbdReset:
             moveq   #$10,D1
             movea.l ADBBase,A1
             bra.b   .L2
-.L1:
+.loop:
             lea     ($C,A1),A1
 .L2:
             moveq   #2,D0
@@ -1677,7 +1677,7 @@ KbdReset:
             move.l  D0,(A0)+
             move.l  D0,(A0)+
 .L3:
-            dbra    D1,.L1
+            dbra    D1,.loop
             rts
 SlpQInstall:
             cmpi.w  #$10,(4,A0)
@@ -1783,7 +1783,6 @@ SlpQRemove:
             dc.b    'YEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAH'
             dc.b    'YEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAH'
             dc.b    'YEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAHYEAH'
-            ; MPW literal pool for LEA #'.MPP' / LEA #'.XPP' (unnamed in source)
 MPPName:
             dc.b    4,'.MPP'
             dc.b    $00
