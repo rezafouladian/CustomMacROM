@@ -10,27 +10,27 @@
             moveq   #-$50,D2
             moveq   #0,D1
             move.b  (A1)+,D1
-            beq.b   .L6
+            beq.b   ItsAPass
             btst    #$18,D4
-            beq.b   .L3
+            beq.b   signStuff
             move.b  #$2D,(A0)+
-            bra.b   .L4
-.L3:
-            btst    #$18,D5
-            bne.b   .L5
+            bra.b   d2inc
+signStuff:
+            btst    #24,D5
+            bne.b   HeyItsFxd
             move.b  #$20,(A0)+
-.L4:
+d2inc:
             addq.w  #1,D2
-.L5:
+HeyItsFxd:
             move.b  (A1),D0
             cmpi.b  #$3F,D0
-.L6:
-            beq.w   sub_4087A2BA.L1
+ItsAPass:
+            beq.w   ErrXit
             ori.b   #$20,D0
             cmpi.b  #$69,D0
-            beq.w   sub_4087A2BA.L8
+            beq.w   INFfound
             cmpi.b  #$6E,D0
-            bne.b   sub_4087A206.L2
+            bne.b   ItsANumber
             move.b  #$4E,(A0)+
             move.b  #$41,(A0)+
             move.b  #$4E,(A0)+
@@ -39,167 +39,167 @@
             addq.w  #5,D2
             moveq   #0,D3
             cmpi.b  #5,D1
-            ble.b   .L7
+            ble.b   lngthOK
             moveq   #5,D1
-.L7:
-            bsr.b   sub_4087A206
+lngthOK:
+            bsr.b   Hex2Bin
             move.l  D3,D0
-            bsr.b   sub_4087A206
+            bsr.b   Hex2Bin
             asl.b   #4,D3
             or.l    D0,D3
-.L8:
+FinNaN:
             moveq   #4,D0
-            bra.b   sub_4087A206.L9
-sub_4087A206:
+            bra.b   FromNaN
+Hex2Bin:
             subq.w  #1,D1
-            ble.b   sub_4087A15E.L8
+            ble.b   FinNaN
             move.b  (0,A1,D1.w),D3
             cmpi.b  #$39,D3
-            ble.b   .L1
+            ble.b   DecmlFnd
             subq.b  #7,D3
-.L1:
-            andi.b  #$F,D3
+DecmlFnd:
+            andi.b  #15,D3
             rts
-.L2:
+ItsANumber:
             cmpi.b  #$30,(A1)
-            bne.b   .L3
+            bne.b   NotAZero
             moveq   #1,D1
             moveq   #0,D4
-.L3:
+NotAZero:
             btst    #$18,D5
-            bne.w   sub_4087A2BA.L2
+            bne.w   ItsFixed
             tst.w   D5
-            bgt.b   .L4
+            bgt.b   DigitsOK
             moveq   #1,D5
-.L4:
+DigitsOK:
             moveq   #1,D0
-            bsr.b   sub_4087A29A
+            bsr.b   AddDigits
             move.w  D1,D3
             ext.l   D3
             subq.l  #1,D3
-            bgt.b   .L5
+            bgt.b   NeedPoint
             cmpi.w  #1,D5
-            ble.b   .L6
-.L5:
-            bsr.b   sub_4087A2A8
+            ble.b   NoPoint
+NeedPoint:
+            bsr.b   AddPoint
             move.w  D3,D0
-            bsr.b   sub_4087A29A
+            bsr.b   AddDigits
             move.w  D5,D0
             sub.w   D1,D0
-            bsr.b   sub_4087A2BA
-.L6:
+            bsr.b   AddZeros
+NoPoint:
             addq.w  #2,D2
-            bgt.b   sub_4087A2BA.L1
+            bgt.b   ErrXit
             move.b  #$65,(A0)+
             ext.l   D4
             add.l   D4,D3
-            blt.b   .L7
+            blt.b   NegExp
             move.b  #$2B,(A0)+
-            bra.b   .L8
-.L7:
+            bra.b   GetExpDigs
+NegExp:
             move.b  #$2D,(A0)+
             neg.l   D3
-.L8:
+GetExpDigs:
             moveq   #0,D0
-.L9:
-            lea     sub_4087A2BA.L9,A1
-.L10:
+FromNaN:
+            lea     tens,A1
+NextCmp:
             addq.w  #2,D0
             cmp.w   (-2,A1,D0.w),D3
-            bcs.b   .L13
+            bcs.b   GetInLoop
             cmpi.b  #8,D0
-            blt.b   .L10
-.L11:
+            blt.b   NextCmp
+NextDig:
             divu.w  (-2,A1,D0.w),D3
-.L12:
+LastDig:
             addq.w  #1,D2
-            bgt.b   sub_4087A2BA.L1
+            bgt.b   ErrXit
             addi.w  #$30,D3
             move.b  D3,(A0)+
             swap    D3
             ext.l   D3
-.L13:
+GetInLoop:
             subq.w  #2,D0
-            bgt.b   .L11
-            beq.b   .L12
-            bra.b   sub_4087A2BA.L6
-sub_4087A29A:
-            ble.b   .L2
+            bgt.b   NextDig
+            beq.b   LastDig
+            bra.b   SetLength
+AddDigits:
+            ble.b   EndDigits
             add.w   D0,D2
-            bgt.b   sub_4087A2BA.L1
-.L1:
+            bgt.b   ErrXit
+loopd:
             move.b  (A1)+,(A0)+
             subq.w  #1,D0
-            bgt.b   .L1
-.L2:
+            bgt.b   loopd
+EndDigits:
             rts
-sub_4087A2A8:
+AddPoint:
             addq.w  #1,D2
-            bgt.b   sub_4087A2BA.L1
+            bgt.b   ErrXit
             move.b  #$2E,(A0)+
             rts
-.L1:
+loopz:
             addq.w  #1,D2
-            bgt.b   sub_4087A2BA.L1
+            bgt.b   ErrXit
             move.b  #$30,(A0)+
-sub_4087A2BA:
+AddZeros:
             subq.w  #1,D0
-            bge.b   sub_4087A2A8.L1
+            bge.b   loopz
             rts
-.L1:
+ErrXit:
             movea.l ($18,A6),A0
             move.w  #$13F,(A0)
-            bra.b   .L7
-.L2:
+            bra.b   done
+ItsFixed:
             move.w  D1,D3
             add.w   D4,D3
-            ble.b   .L4
+            ble.b   AllAfter
             tst.w   D4
-            bge.b   .L3
+            bge.b   AllBefore
             move.w  D3,D0
-            bsr.b   sub_4087A29A
-            bsr.b   sub_4087A2A8
+            bsr.b   AddDigits
+            bsr.b   AddPoint
             moveq   #0,D0
             sub.w   D4,D0
-            bra.b   .L5
-.L3:
+            bra.b   FromMid
+AllBefore:
             move.w  D1,D0
-            bsr.b   sub_4087A29A
+            bsr.b   AddDigits
             move.w  D4,D0
-            bsr.b   sub_4087A2BA
+            bsr.b   AddZeros
             move.w  D5,D0
-            ble.b   .L6
-            bsr.b   sub_4087A2A8
-            bsr.b   sub_4087A2BA
-            bra.b   .L6
-.L4:
+            ble.b   SetLength
+            bsr.b   AddPoint
+            bsr.b   AddZeros
+            bra.b   SetLength
+AllAfter:
             moveq   #1,D0
-            bsr.b   sub_4087A2BA
-            bsr.b   sub_4087A2A8
+            bsr.b   AddZeros
+            bsr.b   AddPoint
             moveq   #0,D0
             sub.w   D3,D0
-            bsr.b   sub_4087A2BA
+            bsr.b   AddZeros
             move.w  D1,D0
-.L5:
-            bsr.b   sub_4087A29A
+FromMid:
+            bsr.b   AddDigits
             move.w  D4,D0
             add.w   D5,D0
-            bsr.b   sub_4087A2BA
-.L6:
+            bsr.b   AddZeros
+SetLength:
             movea.l ($18,A6),A0
             addi.w  #$50,D2
             move.b  D2,(A0)
-.L7:
+done:
             unlk    A6
             movem.l (SP)+,D2-D5/A0
             lea     ($C,SP),SP
             jmp     (A0)
-.L8:
+INFfound:
             move.b  #$49,(A0)+
             move.b  #$4E,(A0)+
             move.b  #$46,(A0)
             addq.w  #3,D2
-            bra.b   .L6
-.L9:
+            bra.b   SetLength
+tens:
             dc.w    $000A,$0064,$03E8,$2710
             ds.b    10

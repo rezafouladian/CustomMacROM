@@ -97,7 +97,7 @@
             IMPORT  ParamText,PATCONVERT,PATDITHER,PATEXPAND,PATEXTBL,PenMode
             IMPORT  PenNormal,PenPat,PenPixPat,PenSize,PicComment,PicItem1
             IMPORT  PINIT,PinRect,PlotCIcon,PlotIcon,PmBackColor,PmForeColor
-            IMPORT  PMgrDispatch,PmgrOp,PopUpMenuSelect,PortSize,PortToMap,POWERDISPATCH
+            IMPORT  PMgrDispatch,PmgrOp,PopUpMenuSelect,PortSize,PortToMap,PowerDispatch
             IMPORT  PowerOff,PrGlue,PrimeTime,ProtectEntry,Pt2Rect,PtInRect
             IMPORT  PtInRgn,PtrAndHand,PtrToHand,PtrToXHand,PtrZone,PtToAngle
             IMPORT  PurgeMem,PurgeSpace,PUSHVERB,PutIcon,PutLine,PutOval
@@ -1358,7 +1358,7 @@ DispTable:
             DispBad                                 ; $A09C
             DispBad                                 ; $A09D _MoveHLow
             DispBad                                 ; $A09E
-            DispAbs POWERDISPATCH                   ; $A09F _PowerDispatch
+            DispAbs PowerDispatch                   ; $A09F _PowerDispatch
             DispBad                                 ; $A0A0
             DispBad                                 ; $A0A1
             DispBad                                 ; $A0A2

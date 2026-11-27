@@ -1,6 +1,6 @@
             include "Include/ROMHeader.s"
 
-            EXPORT  GoToSleep,PmgrOp,POWERDISPATCH,PowerMngr
+            EXPORT  GoToSleep,PmgrOp,PowerDispatch,PowerMngr
 
             IMPORT  GETREALPROC,InitQueue,InitSCSI,RSetKMap
 
@@ -21,7 +21,11 @@ InitPmgrVars:
 .exit:
             rts
 .Traps:
-            dc.w    $A89F,$A085,$A09F,$A08A,0
+            _Unimplemented
+            _PMgrOp
+            _PowerDispatch
+            _Sleep
+            dc.w    0
 .DoPMgrInit:
             move.l  #$106,D0
             _NewPtrSysClear
@@ -192,7 +196,7 @@ BatInt:
             btst    #2,D2
             beq.b   .Done
             bsr.w   RemoveMsg
-.BatIntCont:                                ; re-entry point used by PowerMgrPatches.a NewBatInt
+.BatIntCont:
             bset    #3,($54,A2)
             lea     ($EE,A2),A1
             bset    #4,($54,A2)
@@ -421,7 +425,7 @@ PwrDispatchVects:
             dc.w    IdleDisable-PwrDispatchVects
             dc.w    IdleDisable.L31-PwrDispatchVects
             ds.b    20
-POWERDISPATCH:
+PowerDispatch:
             cmpi.w  #7,D0
             bhi.b   .L1
             move.w  PwrDispatchVects(PC,D0.w*2),D0

@@ -8,10 +8,11 @@
 
 TOP512KOFROM:
 MMUSTUFF:
+Contig24:
             dc.b    $80,$F8,$45
             ds.b    9
             dc.w    $02C8,0,$0638
-.L1:
+Contig32:
             dc.w    $80F0,$5750
             ds.b    8
             dc.w    $0156,$0466,$0626
@@ -37,7 +38,7 @@ MMUSTUFF:
             dc.b    $80,$F8,$45
             ds.b    9
             dc.w    $025C,$FF4C,$072A
-.L4:
+RBV32b:
             dc.w    $80F0,$5750
             ds.b    9
             dc.b    $CA,$03,$EA,$07,$18
@@ -45,7 +46,7 @@ MMUSTUFF:
             dc.b    $80,$F8,$45
             ds.b    9
             dc.w    $0288,$FF28,$0874
-.L6:
+RBV32e:
             dc.w    $80F0,$5750
             ds.b    9
             dc.b    $E6,$04,$16,$08,$62
@@ -64,11 +65,11 @@ MMUSTUFF:
             dc.w    $80F0,$5750
             ds.b    8
             dc.w    $011E,$046E,$0988
-.L11:
+MSC24:
             dc.b    $80,$F8,$45
             ds.b    9
             dc.w    $030C,$FEBC,$09CC
-.L12:
+MSC32:
             dc.w    $80F0,$5750
             ds.b    8
             dc.b    $01,$3A,$04,$9A,$09,$BA,$40
@@ -488,34 +489,34 @@ MMUSTUFF:
             dc.b    $00,$00,$00,$FE,$00,$00,$00,$01
             ds.b    4
             dc.b    $E0,$00,$00,$00,$10,$00,$00,$FF,$FF
-.L13:
+MMUError:
             move.w  #$66,D6
             moveq   #$F,D7
             BigJmp  Critical,A0
 InitMMU:
             link.w  A5,#-$BC
-            bsr.w   sub_40880E3C
+            bsr.w   SetupGlobals
             bsr.w   FindInfo
             cmpi.b  #1,(-$1A,A6)
-            bne.b   .L1
+            bne.b   .isPmmu
             movem.l (-$18,A5),D0-D2/D7/A0-A1
             movea.l A6,A4
             unlk    A5
             rts
-.L1:
+.isPmmu:
             movea.l A1,A4
             movea.l A0,A2
             bsr.w   MakePhysicalTable
             movea.l A2,A0
-            bsr.w   sub_40881482
+            bsr.w   MakeTable
             lea     (-$42,A6),A1
             bsr.w   SaveMMUInfo
             btst    #0,(-$19,A6)
-            bne.b   .L2
+            bne.b   .modesOK
             movea.l A4,A0
             movea.l A4,A2
-            bsr.w   sub_40881482
-.L2:
+            bsr.w   MakeTable
+.modesOK:
             lea     (-$2E,A6),A1
             bsr.w   SaveMMUInfo
             bsr.w   CleanupGlobals
@@ -528,15 +529,15 @@ InitMMU:
             pmove.l (4,A3),TT0
             pmove.l (8,A3),TT1
             lea     (-8,A3),A6
-            lea     .L3,A5
-            bra.b   .L4
-.L3:
+            lea     .return1,A5
+            bra.b   .inIcache
+.return1:
             lea     .L7,A5
             adda.l  D3,A5
             moveq   #0,D5
             movec   D5,VBR
             nop
-.L4:
+.inIcache:
             bne.b   .L5
             pmove.d (A6),CRP
 .L5:
@@ -580,7 +581,7 @@ InitMMU:
             mc68030
 .L9:
             RTS5
-sub_40880E3C:
+SetupGlobals:
             movem.l D0-D2/D7/A0-A1,(-$18,A5)
             move.l  (A0),D0
             move.l  D0,(-$B8,A5)
@@ -715,7 +716,7 @@ MMUTypes:
             dc.w    0,$0104,$0500
 GetMMUType:
             cmpi.w  #4,D7
-            bhi.w   MMUSTUFF.L13
+            bhi.w   MMUError
             moveq   #0,D0
             move.b  MMUTypes(PC,D7.w),D0
             cmpi.b  #1,D0
@@ -834,41 +835,41 @@ FindInfo:
             move.l  (-$18,A5),D6
             moveq   #0,D0
             move.b  (-$D,A5),D0
-            move.w  .L1(PC,D0.w*2),D0
-            jmp     .L1(PC,D0.w)
-.L1:
-            dc.w    .L2-.L1
-            dc.w    .L2-.L1
-            dc.w    .L2-.L1
-            dc.w    .L2-.L1
-            dc.w    .L3-.L1
-            dc.w    .L9-.L1
-            dc.w    .L8-.L1
-            dc.w    .L17-.L1
-            dc.w    .L5-.L1
-            dc.w    .L6-.L1
-            dc.w    .L7-.L1
-.L2:
-            bra.w   MMUSTUFF.L13
+            move.w  .casetbl(PC,D0.w*2),D0
+            jmp     .casetbl(PC,D0.w)
+.casetbl:
+            dc.w    .bad-.casetbl
+            dc.w    .bad-.casetbl
+            dc.w    .bad-.casetbl
+            dc.w    .bad-.casetbl                   ; Normandy
+            dc.w    .Glu-.casetbl
+            dc.w    .MDU-.casetbl
+            dc.w    .FMC-.casetbl
+            dc.w    .VISA-.casetbl
+            dc.w    .Orwell-.casetbl
+            dc.w    .Jaws-.casetbl
+            dc.w    .MSC-.casetbl
+.bad:
+            bra.w   MMUError
             moveq   #2,D0
             moveq   #2,D0
-            bra.w   .L19
-.L3:
-            lea     MMUSTUFF.L1,A0
-            lea     TOP512KOFROM,A1
+            bra.w   .endSwitch
+.Glu:
+            lea     Contig32,A0
+            lea     Contig24,A1
             tst.l   D2
             bne.b   .L4
             addq.l  #1,D4
-            beq.w   .L19
+            beq.w   .endSwitch
 .L4:
             cmpi.b  #1,(-$1A,A6)
-            bne.w   .L18
-            bra.w   MMUSTUFF.L13
-.L5:
-            lea     MMUSTUFF.L8,A0
-            lea     MMUSTUFF.L7,A1
-            bra.w   .L19
-.L6:
+            bne.w   .split
+            bra.w   MMUError
+.Orwell:
+            lea     RBV32e.L8,A0
+            lea     RBV32e.L7,A1
+            bra.w   .endSwitch
+.Jaws:
             movea.l (-4,A5),A0
             movea.l A0,A1
             adda.l  (8,A0),A1
@@ -876,10 +877,10 @@ FindInfo:
             move.l  (4,A1),(-$B4,A5)
             move.l  (8,A1),(-$B0,A5)
             move.l  #$8000,(-$A8,A5)
-            lea     MMUSTUFF.L10,A0
-            lea     MMUSTUFF.L9,A1
-            bra.w   .L19
-.L7:
+            lea     RBV32e.L10,A0
+            lea     RBV32e.L9,A1
+            bra.w   .endSwitch
+.MSC:
             movea.l (-4,A5),A0
             movea.l A0,A1
             adda.l  (8,A0),A1
@@ -887,18 +888,18 @@ FindInfo:
             move.l  (4,A1),(-$B4,A5)
             move.l  (8,A1),(-$B0,A5)
             move.l  #$8000,(-$A8,A5)
-            lea     MMUSTUFF.L12,A0
-            lea     MMUSTUFF.L11,A1
-            bra.w   .L19
-.L8:
-            lea     MMUSTUFF.L1,A0
-            lea     TOP512KOFROM,A1
+            lea     MSC32,A0
+            lea     MSC24,A1
+            bra.w   .endSwitch
+.FMC:
+            lea     Contig32,A0
+            lea     Contig24,A1
             tst.l   D2
-            bne.w   .L18
-            bra.w   .L19
-.L9:
+            bne.w   .split
+            bra.w   .endSwitch
+.MDU:
             btst    #$D,D6
-            beq.w   .L18
+            beq.w   .split
             movea.l (-4,A5),A0
             movea.l A0,A1
             adda.l  (8,A0),A1
@@ -907,12 +908,12 @@ FindInfo:
             move.l  (8,A1),(-$B0,A5)
             cmpi.l  #$FBB08000,(-$B4,A5)
             adda.l  (A0),A0
-            bne.b   .L10
-            lea     MMUSTUFF.L4,A3
-            bra.b   .L11
-.L10:
-            lea     MMUSTUFF.L6,A3
-.L11:
+            bne.b   .slotE
+            lea     RBV32b,A3
+            bra.b   .gotSlot
+.slotE:
+            lea     RBV32e,A3
+.gotSlot:
             bfextu  (A3){8:4},D0
             moveq   #0,D6
             bset    D0,D6
@@ -920,15 +921,15 @@ FindInfo:
             moveq   #0,D1
             movea.l ($34,A0),A0
             movea.l (-4,A5),A2
-            bsr.w   sub_40881988
+            bsr.w   GetRBVSize
             move.l  D0,(-$A8,A5)
             move.l  (-$14,A6),D0
             move.l  D6,D1
-            BigJsr  sub_40881988,A4
+            BigJsr  GetRBVSize,A4
             move.l  D0,(-$AC,A5)
-            beq.w   .L18
+            beq.w   .split
             tst.l   D2
-            bne.w   .L18
+            bne.w   .split
             sub.l   D0,D3
             move.l  D3,(-$54,A5)
             add.l   D0,D2
@@ -966,29 +967,29 @@ FindInfo:
             andi.l  #$FFFFFF,D3
             cmp.l   D3,D2
             bne.b   .L15
-            lea     MMUSTUFF.L3,A1
+            lea     Contig32.L3,A1
             bra.b   .L16
 .L15:
-            lea     MMUSTUFF.L5,A1
+            lea     RBV32b.L5,A1
 .L16:
-            bra.b   .L19
-.L17:
+            bra.b   .endSwitch
+.VISA:
             movea.l (-4,A5),A2
             movea.l ($34,A1),A3
             bsr.w   GetVISASize
             tst.l   D2
-            bne.w   MMUSTUFF.L13
+            bne.w   MMUError
             addq.l  #1,D4
-            beq.w   .L19
-            bra.w   MMUSTUFF.L13
-.L18:
+            beq.w   .endSwitch
+            bra.w   MMUError
+.split:
             move.l  (-$A0,A5),D0
             bfffo   D0{0:0},D0
             subq.w  #5,D0
             muls.w  #$FFEE,D0
             lea     ($408800A2.w,PC,D0.w),A0
-            lea     MMUSTUFF.L2,A1
-.L19:
+            lea     Contig32.L2,A1
+.endSwitch:
             movem.l (SP)+,D2-D6/A2
             rts
 MakePhysicalTable:
@@ -1009,7 +1010,7 @@ MakePhysicalTable:
 .L2:
             cmpi.w  #2,D0
             bne.b   .L3
-            bsr.w   sub_4088144E
+            bsr.w   doPhysRom
             lea     ($1C,A0),A0
             bra.b   .L1
 .L3:
@@ -1043,44 +1044,44 @@ MakePhysicalTable:
 doPhysRam:
             movem.l D2-D4/A3-A4,-(SP)
             move.l  (-$A8,A5),D0
-            beq.b   .L1
+            beq.b   .doneVideo
             move.l  (-$A4,A5),D4
             moveq   #8,D1
             move.l  (-$B4,A5),D2
             move.l  (-$B0,A5),D3
-            bsr.w   sub_40881436
+            bsr.w   .writeOne
             add.l   D0,D2
             add.l   D0,D3
             move.l  #$8000,D0
             moveq   #9,D1
-            bsr.b   sub_40881436
+            bsr.b   .writeOne
             move.l  (-$B4,A5),D2
             sub.l   D0,D2
             move.l  (-$B0,A5),D3
             sub.l   D0,D3
-            bsr.b   sub_40881436
-.L1:
+            bsr.b   .writeOne
+.doneVideo:
             tst.l   (-$46,A6)
-            beq.b   .L3
+            beq.b   .doneEDisk
             moveq   #$A,D1
             move.l  (-$4A,A6),D2
             moveq   #0,D3
             lea     (-$98,A5),A3
-.L2:
+.eDiskLoop:
             move.l  (A3)+,D4
             move.l  (A3)+,D0
             cmpi.l  #$FFFFFFFF,D4
-            beq.b   .L3
-            bsr.w   sub_40881436
+            beq.b   .doneEDisk
+            bsr.w   .writeOne
             add.l   D0,D2
-            bra.b   .L2
-.L3:
+            bra.b   .eDiskLoop
+.doneEDisk:
             moveq   #6,D0
             lea     (-$58,A5),A3
-.L4:
+.ramLoop:
             movem.l (A3)+,D1-D2
             cmpi.l  #$FFFFFFFF,D1
-            beq.b   .L5
+            beq.b   .doneRam
             movea.l A1,A4
             move.w  D0,(A1)+
             move.w  #1,(A1)+
@@ -1091,19 +1092,19 @@ doPhysRam:
             clr.l   (A1)+
             clr.l   (A1)+
             moveq   #1,D0
-            bra.b   .L4
-.L5:
+            bra.b   .ramLoop
+.doneRam:
             move.l  A4,D0
             sub.l   A2,D0
             addq.l  #4,D0
             move.l  D0,(-$9C,A5)
             moveq   #$1B,D0
-.L6:
+.copy:
             move.b  (A4)+,(A1)+
-            dbra    D0,.L6
+            dbra    D0,.copy
             movem.l (SP)+,D2-D4/A3-A4
             rts
-sub_40881436:
+.writeOne:
             move.w  D1,(A1)+
             clr.w   (A1)+
             move.l  D4,(A1)+
@@ -1114,7 +1115,7 @@ sub_40881436:
             andi.l  #$FFFFFF,(A1)+
             move.l  D0,(A1)+
             rts
-sub_4088144E:
+doPhysRom:
             exg     D1,A3
             move.w  #2,(A1)+
             move.w  #1,(A1)+
@@ -1131,15 +1132,15 @@ sub_4088144E:
             move.l  D0,(A1)+
             exg     D1,A3
             rts
-sub_40881482:
+MakeTable:
             link.l  A4,#-$3009E
             movem.l D2/A1,-(SP)
             move.l  A0,(-4,A4)
             move.w  ($C,A0),D0
             btst    #4,(-$19,A6)
-            beq.b   .L1
+            beq.b   .haveTempl
             move.w  ($E,A0),D0
-.L1:
+.haveTempl:
             adda.w  D0,A0
             move.l  A0,(-8,A4)
             lea     (-$58,A5),A0
@@ -1162,69 +1163,144 @@ IntermediateTable:
             clr.l   (-$C,A4)
             clr.w   (-$9A,A4)
             moveq   #1,D0
-            bsr.b   sub_408814F8
+            bsr.b   DoLevel
             moveq   #0,D2
             bsr.w   WriteTableNode
             move.l  (SP)+,D2
             rts
-sub_408814F8:
+DoLevel:
             movem.l D2-D4,-(SP)
             move.w  D0,D2
-            bsr.w   sub_40881792
+            bsr.w   SpanAndCount
             move.l  D0,D3
             move.l  D1,D4
             bra.b   .L2
 .L1:
-            bsr.b   sub_40881514
+            bsr.b   DoNode
 .L2:
             dbra    D4,.L1
             movem.l (SP)+,D2-D4
             rts
-sub_40881514:
-            bsr.b   sub_40881546
-            move.b  .L1(PC,D0.w),D0
-            jmp     .L1(PC,D0.w)
-.L1:
-            dc.w    $040A,$1026,$6100,$01AE,$601C,$6100,$01C4,$6016
-            dc.w    $6100,$017A,$670C,$3002,$5240,$61BE,$6100,$01BA
-            dc.w    $6004,$6100,$01AC,$4E75
-sub_40881546:
+DoNode:
+            bsr.b   PageAddr
+            move.b  .casetbl(PC,D0.w),D0
+            jmp     .casetbl(PC,D0.w)
+.casetbl:
+            dc.b    .valid-.casetbl
+            dc.b    .invalid-.casetbl
+            dc.b    .noFit-.casetbl
+            dc.b    .endCase-.casetbl
+.valid:
+            bsr.w   WritePageNode
+            bra.b   .endCase
+.invalid:
+            bsr.w   WriteInvalidNode
+            bra.b   .endCase
+.noFit:
+            bsr.w   CanGoDeeper
+            beq.b   .noDeeper
+            move.w  D2,D0
+            addq.w  #$1,D0
+            bsr.b   DoLevel
+            bsr.w   WriteTableNode
+            bra.b   .endCase
+.noDeeper:
+            bsr.w   WriteInvalidNode
+.endCase:
+            rts
+PageAddr:
             movem.l D3-D5,-(SP)
             movea.l (-8,A4),A0
             moveq   #0,D5
             move.l  (-$C,A4),D0
-.L1:
+.loop:
             move.l  (A0),D1
             move.l  D0,D4
             sub.l   D5,D4
             cmp.l   D4,D1
-            bhi.b   .L2
+            bhi.b   .exitLoop
             add.l   D1,D5
             addq.l  #8,A0
-            bra.b   .L1
-.L2:
+            bra.b   .loop
+.exitLoop:
             move.l  D3,D0
             add.l   D4,D3
             cmp.l   D3,D1
-            bcc.b   .L3
+            bcc.b   .fits
             moveq   #2,D0
             bra.w   .L5
-.L3:
+.fits:
             move.l  (4,A0),D3
             move.l  D3,D5
             andi.l  #$F,D5
-            move.b  .L4(PC,D5.w),D5
-            jmp     .L4(PC,D5.w)
-.L4:
-            dc.w    $0C12,$2026,$2E34,$461C,$163A,$4000,$206C,$FFF4
-            dc.b    '`@al`>9|'
-            dc.w    $0001,$FF66,$7001,$6034,$206D,$FF44,$6004,$206D
-            dc.w    $FF48,$D1C4,$6024,$206D,$FF5C,$601E,$6100,$0084
-            dc.w    $601A,$206D,$FF5C,$6012,$6100,$00A8,$600E,$2003
-            dc.w    $0280,$FFFF,0,$2040,$D1C4,$7000,$0C47,$0004
-            dc.w    $6708,$0283,0,$0020,$6014,$0283,0,$0030
-            dc.w    $0C42,$0003,$6708,$0C40,0,$6602,$7002,$E38B
-            dc.w    $3203
+            move.b  .casetbl(PC,D5.w),D5
+            jmp     .casetbl(PC,D5.w)
+.casetbl:
+            dc.b    .thru-.casetbl
+            dc.b    .ram-.casetbl
+            dc.b    .rom32-.casetbl
+            dc.b    .rom24-.casetbl
+            dc.b    .vidWrap-.casetbl
+            dc.b    .video-.casetbl
+            dc.b    .mapped-.casetbl
+            dc.b    .Void-.casetbl
+            dc.b    .wrap24-.casetbl
+            dc.b    .vram-.casetbl
+            dc.b    .eDisk-.casetbl
+            dc.b    0                               ; ALIGN 2
+.thru:
+            movea.l (-$C,A4),A0
+            bra.b   .valid
+.ram:
+            bsr.b   GrabRAM
+            bra.b   .endSwitch
+.wrap24:
+            move.w  #$1,(-$9A,A4)
+.Void:
+            moveq   #1,D0
+            bra.b   .endSwitch
+.rom32:
+            movea.l (-$BC,A5),A0
+            bra.b   .gotROM
+.rom24:
+            movea.l (-$B8,A5),A0
+.gotROM:
+            adda.l  D4,A0
+            bra.b   .valid
+.vidWrap:
+            movea.l (-$A4,A5),A0
+            bra.b   .valid
+.video:
+            bsr.w   GrabVideo
+            bra.b   .endSwitch
+.vram:
+            movea.l (-$A4,A5),A0
+            bra.b   .valid
+.eDisk:
+            bsr.w   GrabEdisk
+            bra.b   .endSwitch
+.mapped:
+            move.l  D3,D0
+            andi.l  #$FFFF0000,D0
+            movea.l D0,A0
+            adda.l  D4,A0
+.valid:
+            moveq   #0,D0
+.endSwitch:
+            cmpi.w  #$4,D7
+            beq.b   .on040
+            andi.l  #$20,D3
+            bra.b   .setCache
+.on040:
+            andi.l  #$30,D3
+            cmpi.w  #$3,D2
+            beq.b   .setCache
+            cmpi.w  #$0,D0
+            bne.b   .setCache
+            moveq   #2,D0
+.setCache:
+            lsl.l   #$1,D3
+            move.w  D3,D1
 .L5:
             movem.l (SP)+,D3-D5
             rts
@@ -1253,22 +1329,23 @@ GrabRAM:
             moveq   #0,D0
 .done:
             rts
+GrabVideo:
             move.l  D0,D1
             movea.l (-$A4,A5),A0
             tst.l   (-$98,A4)
-            beq.b   .L4
+            beq.b   .valid
             moveq   #2,D0
             cmp.l   (-$98,A4),D1
             bhi.b   .L5
             cmpi.w  #4,D7
             bne.b   .L3
             cmpi.w  #3,D2
-            bne.b   .L4
+            bne.b   .valid
 .L3:
             movea.l (-$94,A4),A0
             add.l   D1,(-$94,A4)
             sub.l   D1,(-$98,A4)
-.L4:
+.valid:
             moveq   #0,D0
 .L5:
             rts
@@ -1276,11 +1353,11 @@ GrabEdisk:
             lea     (-$90,A4),A0
             move.l  D0,D1
             moveq   #1,D0
-.L1:
+.loop:
             cmpi.l  #$FFFFFFFF,(A0)+
             beq.b   .L4
             tst.l   (A0)+
-            beq.b   .L1
+            beq.b   .loop
             moveq   #2,D0
             cmp.l   (-4,A0),D1
             bhi.b   .L4
@@ -1297,6 +1374,7 @@ GrabEdisk:
             moveq   #0,D0
 .L4:
             rts
+CanGoDeeper:
             cmpi.w  #4,D7
             bne.b   .L5
             cmpi.w  #3,D2
@@ -1313,6 +1391,7 @@ GrabEdisk:
             bfextu  (A0){D0:4},D0
 .L6:
             rts
+WritePageNode:
             moveq   #0,D0
             move.w  D2,D0
             lsl.w   #3,D0
@@ -1326,10 +1405,11 @@ GrabEdisk:
             move.l  D0,-(A0)
             move.l  A0,(-$10,A4)
             rts
+WriteInvalidNode:
             moveq   #0,D0
             move.w  D2,D0
             lsl.w   #3,D0
-            bra.b   .L7
+            bra.b   WritePageNode.L7
 WriteTableNode:
             cmpi.w  #4,D7
             bne.b   .L1
@@ -1347,10 +1427,10 @@ WriteTableNode:
             add.l   A0,D0
             ori.w   #$FC00,D0
 .L3:
-            bra.b   GrabEdisk.L8
+            bra.b   WritePageNode.L8
 Limit:
             move.l  D3,-(SP)
-            bsr.b   sub_40881742
+            bsr.b   CountLeading
             move.w  D0,D3
             bsr.b   CountTrailing
             move.w  D0,D1
@@ -1366,14 +1446,14 @@ Limit:
             bra.b   .L3
 .L2:
             move.w  D3,D0
-            bsr.b   sub_40881746
+            bsr.b   HandleLeading
 .L3:
             move.l  (SP)+,D3
             rts
-sub_40881742:
+CountLeading:
             moveq   #0,D0
             rts
-sub_40881746:
+HandleLeading:
             movea.l #$7FFF0000,A0
             rts
 CountTrailing:
@@ -1392,7 +1472,7 @@ HandleTrailing:
             move.l  D2,-(SP)
             exg     D2,D0
             addq.w  #1,D0
-            bsr.b   sub_40881792
+            bsr.b   SpanAndCount
             cmp.w   D2,D1
             blt.b   .L1
             sub.w   D2,D1
@@ -1411,7 +1491,7 @@ HandleTrailing:
             add.l   D0,(-$10,A4)
             move.l  (SP)+,D2
             rts
-sub_40881792:
+SpanAndCount:
             movem.l D2-D3,-(SP)
             movea.l (-4,A4),A0
             cmpi.w  #4,D7
@@ -1453,10 +1533,10 @@ FinalTable:
             lea     (-$9E,A4),A0
             move.l  A0,(-$10,A4)
             moveq   #1,D0
-            bsr.b   sub_4088181E
+            bsr.b   Generate
             tst.w   (-$9A,A4)
             beq.b   .L1
-            bsr.w   sub_4088192C
+            bsr.w   Wrap24BitTable
 .L1:
             move.l  ([-$10.w,A4],-4.w),D1
             add.w   D0,D1
@@ -1467,10 +1547,10 @@ FinalTable:
 .L2:
             move.l  D1,D0
             rts
-sub_4088181E:
+Generate:
             movem.l D2-D4/A1-A2,-(SP)
             move.l  D0,D4
-            bsr.b   sub_40881864
+            bsr.b   CountAndSize
             move.w  D0,D3
             move.w  D1,D2
             bsr.b   AllocTbl
@@ -1484,12 +1564,12 @@ sub_4088181E:
             bcc.b   .L2
             move.w  D4,D0
             addq.w  #1,D0
-            bsr.b   sub_4088181E
+            bsr.b   Generate
             bsr.w   MakeTableEntry
             bra.b   .L3
 .L2:
             bne.b   .L4
-            bsr.w   sub_40881902
+            bsr.w   MakePageEntry
 .L3:
             dbra    D3,.L1
             movea.l A2,A0
@@ -1498,7 +1578,7 @@ sub_4088181E:
             rts
 .L4:
             _Debugger
-sub_40881864:
+CountAndSize:
             movem.l D2-D4,-(SP)
             move.w  D0,D2
             movea.l (-$10,A4),A0
@@ -1562,7 +1642,7 @@ MakeTableEntry:
             move.l  A0,(A1)+
 .L2:
             rts
-sub_40881902:
+MakePageEntry:
             subq.l  #4,(-$10,A4)
             move.l  ([-$10.w,A4]),D0
             bfextu  D0{25:7},D1
@@ -1579,11 +1659,11 @@ sub_40881902:
             move.l  D0,(A1)+
 .L2:
             rts
-sub_4088192C:
+Wrap24BitTable:
             movem.l D2/A1-A2,-(SP)
             movea.l A0,A2
             move.w  #2,D0
-            bsr.w   sub_40881792
+            bsr.w   SpanAndCount
             mulu.l  D1,D0
             moveq   #$18,D2
             lsr.l   D2,D0
@@ -1595,17 +1675,17 @@ sub_4088192C:
             subq.l  #2,D0
             movea.l A1,A0
             lsl.l   #2,D1
-.L1:
+.chunkLoop:
             adda.l  D1,A0
             moveq   #0,D2
-.L2:
+.copyLoop:
             move.l  (0,A1,D2.w),(0,A0,D2.w)
             addq.l  #4,D2
             cmp.l   D2,D1
-            bne.b   .L2
-            dbra    D0,.L1
+            bne.b   .copyLoop
+            dbra    D0,.chunkLoop
             moveq   #1,D0
-            bsr.w   sub_40881792
+            bsr.w   SpanAndCount
             movea.l A2,A1
             addq.l  #4,A1
             subq.w  #2,D1
@@ -1615,9 +1695,9 @@ sub_4088192C:
             movea.l A2,A0
             movem.l (SP)+,D2/A1-A2
             rts
-sub_40881988:
-            bra.b   TRANS.L1
-TRANS:
+GetRBVSize:
+            bra.b   DoRBVSize
+Trans:
             dc.w    0,$0040,$0020
             ds.b    5
             dc.b    $40,$00,$30,$00,$00,$00,$02,$AC,$00,$00,$00,$55,$80,$00,$01,$56
@@ -1626,7 +1706,7 @@ TRANS:
             dc.w    $6000,$0001,$8000,0,$C000,$0004,$B000,0
             dc.w    $9600,$0002,$5800,$0001,$2C00,$0004,$3F80,$0001
             dc.w    $0FE0,$0002,$1FC0
-.L1:
+DoRBVSize:
             movem.l D1-D4/A0,-(SP)
             move.l  D1,-(SP)
             moveq   #$38,D4
@@ -1654,7 +1734,7 @@ TRANS:
             move.w  D0,D3
             andi.l  #7,D0
             moveq   #0,D1
-            move.w  (TRANS.w,PC,D4.w*2),D1
+            move.w  (Trans.w,PC,D4.w*2),D1
             beq.b   .L6
             cmp.b   D0,D4
             beq.b   .L5
@@ -1665,9 +1745,9 @@ TRANS:
 .L4:
             or.b    D4,D3
 .L5:
-            lea     TRANS,A0
+            lea     Trans,A0
             moveq   #0,D1
-            move.w  (TRANS.w,PC,D4.w*2),D1
+            move.w  (Trans.w,PC,D4.w*2),D1
             beq.b   .L6
             adda.l  D1,A0
             lsr.w   #3,D3

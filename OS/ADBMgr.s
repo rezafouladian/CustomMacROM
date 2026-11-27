@@ -179,8 +179,8 @@ IOPStartReq:
             move.b  D0,(irMessageLen,A0)
             bra.b   .fillInReq
 .useRcv:
-            lea     ($188,A3),A0
-            lea     ($1AC,A3),A1
+            lea     (RcvRequest,A3),A0
+            lea     (RcvMsg,A3),A1
             move.b  D0,($A,A0)
 .fillInReq:
             move.w  #$6002,(A1)
@@ -201,10 +201,8 @@ IOPStartReq:
             movea.l ($61C).w,A2
             jmp     (A2)
 .implicit:
-            move.w  ($14E,A3),(3,A1)
+            move.w  (devMap,A3),(3,A1)
             bra.b   .SendToIOP
-            ; Hardware-type dispatch from InitADB (name not from source). Overpatched to
-            ; InitADBPatchPwrMgr (PwrControlsPatches), which falls back to EgretCheck.
 PMgrCheck:
             bra.l   InitADBPatchPwrMgr
 EgretCheck:
@@ -213,8 +211,8 @@ EgretCheck:
             subq.l  #6,D0
             bne.b   .L1
             BigLea  EgretPatches,A0
-            move.l  A0,($130,A3)
-            move.w  #$FF01,($184,A3)
+            move.l  A0,(StartReqProc,A3)
+            move.w  #$FF01,(ImplicitEPB,A3)
             bra.w   ReInit
 .L1:
             btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
@@ -223,12 +221,12 @@ EgretCheck:
             nop
 IOPReqDone:
             movea.l ADBBase,A3
-            move.b  ($1AC,A3),D0
+            move.b  (RcvMsg,A3),D0
             moveq   #4,D3
             and.b   D0,D3
             neg.l   D3
             move.b  ($1AE,A3),D3
-            move.b  D3,($15C,A3)
+            move.b  D3,(fDBCmd,A3)
             move.b  D3,($16E,A3)
             move.b  D2,D2
             lsr.b   #4,D2
@@ -265,12 +263,12 @@ VIAStartReq:
             btst    #0,(A1)
             dbra    D0,.Delay
 .Idle:
-            bclr    #4,($15E,A3)
+            bclr    #4,(fDBAuFlag,A3)
             rts
 .StartAutoPoll:
             moveq   #$30,D1
             bsr.w   .waitForInput
-            ori.b   #$90,($15E,A3)
+            ori.b   #$90,(fDBAuFlag,A3)
             moveq   #$20,D1
             bra.b   .getReply
 .explicit:
@@ -281,45 +279,45 @@ VIAStartReq:
             bsr.b   .sendCmd
             bne.b   .explicitReply
 .autoReply:
-            bset    #7,($15E,A3)
+            bset    #7,(fDBAuFlag,A3)
             move.b  ($16E,A3),($15C,A3)
 .explicitReply:
             moveq   #$10,D1
 .getReply:
             bsr.b   .waitForInput
             bne.b   .noTimeout
-            bset    #5,($15E,A3)
+            bset    #5,(fDBAuFlag,A3)
 .noTimeout:
             clr.b   ($163,A3)
             bsr.b   .getNextByte
             bne.b   .fetchLoop
-            bset    #6,($15E,A3)
+            bset    #6,(fDBAuFlag,A3)
 .fetchLoop:
             bsr.b   .getNextByte
             beq.b   .fetchDone
             cmpi.b  #8,($163,A3)
             bcs.b   .fetchLoop
 .fetchDone:
-            btst    #5,($15E,A3)
+            btst    #5,(fDBAuFlag,A3)
             seq     D0
             and.b   D0,($163,A3)
             bra.w   VIAReqDone
 .sendCmd:
-            andi.b  #$1F,($15E,A3)
+            andi.b  #$1F,(fDBAuFlag,A3)
             move    SR,D0
             ori     #$700,SR
             ori.b   #$1C,($1600,A1)
             move.b  D3,($1400,A1)
-            move.b  D3,($15C,A3)
+            move.b  D3,(fDBCmd,A3)
             andi.b  #$CF,(A1)
-            move.l  (SP)+,($138,A3)
+            move.l  (SP)+,(ShiftIntResume,A3)
             move    D0,SR
             rts
 .waitForInput:
             bclr    #4,($1600,A1)
             tst.b   ($1400,A1)
             eor.b   D1,(A1)
-            move.l  (SP)+,($138,A3)
+            move.l  (SP)+,(ShiftIntResume,A3)
             rts
 .getNextByte:
             lea     ($163,A3),A0
@@ -362,21 +360,21 @@ VIAStartReq:
 .sendNextByte:
             moveq   #$30,D1
 .sendByte:
-            movea.l ($134,A3),A0
+            movea.l (ListenBuffPtr,A3),A0
             move.b  (A0)+,($1400,A1)
-            move.l  A0,($134,A3)
+            move.l  A0,(ListenBuffPtr,A3)
             subq.b  #1,($163,A3)
             eor.b   D1,(A1)
-            move.l  (SP)+,($138,A3)
+            move.l  (SP)+,(ShiftIntResume,A3)
             rts
 FDBShiftInt:
             movea.l ADBBase,A3
-            movea.l ($138,A3),A0
+            movea.l (ShiftIntResume,A3),A0
             btst    #3,(A1)
             jmp     (A0)
 VIAReqDone:
-            move.b  ($15E,A3),D0
-            move.b  ($15C,A3),D1
+            move.b  (fDBAuFlag,A3),D0
+            move.b  (fDBCmd,A3),D1
             moveq   #$40,D3
             and.b   D0,D3
             neg.l   D3
@@ -384,7 +382,7 @@ VIAReqDone:
             lsr.b   #4,D1
             tst.l   D3
             bpl.b   .NoSRQ
-            move.w  ($14E,A3),D2
+            move.w  (devMap,A3),D2
             bset    D1,D2
 .SRQloop:
             addq.b  #1,D1
@@ -609,10 +607,10 @@ InitDevT:
             move.b  ($165,A3),(0,A3,D1.w)
             bra.b   .ChgNext
 .L8:
-            move.b  ($16F,A3),D1
-            move.b  ($16D,A3),D0
+            move.b  (InitAddr,A3),D1
+            move.b  (newAddr,A3),D0
             bsr.b   ListenR3
-            move.b  ($16D,A3),D0
+            move.b  (newAddr,A3),D0
             bsr.b   TalkR3
             tst.b   (A0)
             beq.b   .L9
@@ -623,7 +621,7 @@ InitDevT:
 CopyEntry:
             moveq   #0,D0
             moveq   #0,D1
-            move.b  ($16D,A3),D0
+            move.b  (newAddr,A3),D0
             move.w  ($14E,A3),D1
             bset    D0,D1
             move.w  D1,($14E,A3)
