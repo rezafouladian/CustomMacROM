@@ -17,13 +17,9 @@ RsrcEntrycctb_0:
             ds.b    12
             dc.l    $C0A00000,$00000040,$0000016C   ; Block header
 Rsrccctb_0:
-            ds.b    7
-            dc.b    $03
-            ds.b    9
-            dc.b    $01,$FF,$FF,$FF,$FF,$FF,$FF,$00,$02
-            ds.b    7
-            dc.b    $03,$FF,$FF,$FF,$FF,$FF,$FF
-            ds.b    8
+            dc.w    $0000,$0000,$0000,$0003,$0000,$0000,$0000,$0000
+            dc.w    $0001,$FFFF,$FFFF,$FFFF,$0002,$0000,$0000,$0000
+            dc.w    $0003,$FFFF,$FFFF,$FFFF,$0000,$0000,$0000,$0000
 RsrcEntrywctb_0:
             dc.b    $78,$00,$00,$00,$00,$00,$00,$00 ; Resource 'wctb' 0 (52 bytes) - Combo mask
             dc.l    RsrcEntrycctb_0-BaseOfROM       ; Next entry
@@ -35,13 +31,8 @@ RsrcEntrywctb_0:
             ds.b    12
             dc.l    $C0A00000,$00000040,$00000164   ; Block header
 Rsrcwctb_0:
-            ds.b    7
-            dc.b    $04,$00,$00,$FF,$FF,$FF,$FF,$FF,$FF,$00,$01
-            ds.b    7
-            dc.b    $02
-            ds.b    7
-            dc.b    $03
-            ds.b    7
-            dc.b    $04,$FF,$FF,$FF,$FF,$FF,$FF
+            dc.w    $0000,$0000,$0000,$0004,$0000,$FFFF,$FFFF,$FFFF
+            dc.w    $0001,$0000,$0000,$0000,$0002,$0000,$0000,$0000
+            dc.w    $0003,$0000,$0000,$0000,$0004,$FFFF,$FFFF,$FFFF
 
             EVEN

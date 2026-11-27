@@ -30,24 +30,24 @@ RsrcDRVR_4:
 SonyOpen:
             btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
             beq.w   sub_4086CA2A.L1
-            bra.w   SonyClose.L1
+            bra.w   IopDiskOpen
 SonyPrime:
             move.l  ($226).w,-(SP)
             rts
             ds.b    8
 SonyCtl:
-            move.l  ($242).w,-(SP)
+            move.l  ($242).w,-(SP)                  ; JControl
             rts
             ds.b    8
 SonyStatus:
             btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
-            beq.w   TCdispose.L14
-            bra.w   sub_4086C6D4.L1
+            beq.w   DiskStatus
+            bra.w   IopDiskStatus
 SonyClose:
             btst    #0,($DD1).w                     ; TestFor SWIMIOPExists
-            beq.w   sub_4086C986.L4
+            beq.w   ReceivedCallFromIop.L4
             bra.w   sub_4086C59A.L1
-.L1:
+IopDiskOpen:
             move.l  #$302,D0
             _NewPtrSysClear
             lea     ($276,A0),A0
@@ -81,7 +81,7 @@ sub_4086C47C:
             lea     (-$84,A1),A2
             move.l  A2,(A0)+
             move.l  A2,(A0)+
-            lea     sub_4086C986,A2
+            lea     ReceivedCallFromIop,A2
             move.l  A2,(A0)+
             lea     (-$64,A1),A0
             _IOPMsgRequest
@@ -92,7 +92,7 @@ sub_4086C47C:
             lea     (-$48,A1),A2
             move.l  A2,(A0)+
             move.l  A2,(A0)+
-            lea     sub_4086C970,A2
+            lea     IOPCallReturned,A2
             move.l  A2,(A0)+
             move.b  #1,(-$48,A1)
             bsr.w   sub_4086C590
@@ -163,7 +163,7 @@ sub_4086C578:
             rts
 sub_4086C590:
             pea     sub_4086C59A
-            bsr.w   sub_4086C964
+            bsr.w   CallIOPRoutine
             rts
 sub_4086C59A:
             tst.l   (-$4C,A1)
@@ -211,7 +211,7 @@ sub_4086C5AC:
             move.l  (A2)+,(A3)+
             move.l  (A2)+,(A3)+
             move.l  (A2)+,(A3)+
-            bsr.w   sub_4086C964
+            bsr.w   CallIOPRoutine
             lea     (-$38,A1),A0
             lea     BufTgFNum,A2
             move.l  (A0)+,(A2)+
@@ -226,8 +226,8 @@ sub_4086C5AC:
             beq.b   .L2
             move.w  (-$46,A1),(-$276,A1)
             move.b  #6,(-$48,A1)
-            bsr.w   sub_4086C964
-            bsr.w   sub_4086C8E6
+            bsr.w   CallIOPRoutine
+            bsr.w   UpdateXmtDriveStatus
             move.w  (-$276,A1),(-$46,A1)
 .L2:
             move.w  (-$46,A1),D0
@@ -238,7 +238,7 @@ sub_4086C5AC:
             move.l  D1,($28,A0)
             add.l   D1,($10,A2)
 .L3:
-            bra.w   sub_4086C6D4.L7
+            bra.w   DiskIODone
 .L4:
             dc.w    $0006,$06E0,$0480,$0008,$06A0,$04D6,$000A,$06A0
             dc.w    $04EA,$4456,$1020,$04F2,$5343,$1020,$04FC
@@ -247,125 +247,135 @@ sub_4086C5AC:
             dc.w    $036E,$0007,$07E0,$037C,$0008,$0E20,$0380,$0009
             dc.w    $0D20,$0380,$0015,$06E0,$0386,$0016,$06E0,$03A8
             dc.w    $0017,$06E0,$03DC,$5343,$08C0,$03E8,$4744,$11C0
-            dc.w    $0458,$2F38,$0242,$4E75
+            dc.w    $0458
+IopDiskControl:
+            move.l  ($242).w,-(SP)                  ; JControl
+            rts
 sub_4086C6D4:
             movea.w #$FEFC,A2
-            bra.b   .L2
-.L1:
+            bra.b   IopDiskStatus.L2
+IopDiskStatus:
             movea.w #$FEAC,A2
 .L2:
             bsr.w   sub_4087112E
-            bra.b   .L3
+            bra.b   .SearchLoop
             ds.b    12
-.L3:
+.SearchLoop:
             cmp.w   (A2),D2
             addq.l  #8,A2
-            dbeq    D1,.L3
-            bne.b   .L7
+            dbeq    D1,.SearchLoop
+            bne.b   DiskIODone
             moveq   #0,D0
             movea.l -(A2),A3
             move.w  ($16,A0),D1
             move.b  -(A2),D2
-            bpl.b   .L4
+            bpl.b   .DriveNumInRange
             cmpi.w  #4,D1
-            bls.b   .L4
+            bls.b   .DriveNumInRange
             moveq   #-$38,D0
-            bra.b   .L7
-.L4:
+            bra.b   DiskIODone
+.DriveNumInRange:
             add.b   D2,D2
-            bpl.b   .L5
+            bpl.b   .DriveExists
             tst.l   (0,A1,D1.w*4)
-            bne.b   .L5
+            bne.b   .DriveExists
             moveq   #-$40,D0
-            bra.b   .L7
-.L5:
+            bra.b   DiskIODone
+.DriveExists:
             move.b  D1,(-$47,A1)
             move.b  -(A2),(-$48,A1)
             move.l  ($1C,A0),(-$44,A1)
             add.b   D2,D2
-            bpl.b   .L6
+            bpl.b   .DontCallIOP
             move.l  A3,-(SP)
-            bra.w   sub_4086C964
-.L6:
+            bra.w   CallIOPRoutine
+.DontCallIOP:
             jmp     (A3)
-.L7:
+DiskIODone:
             move.l  JIODone,-(SP)
             movea.l (-4,A1),A1
             ext.l   D0
-            beq.b   .L8
+            beq.b   .noError
             move.w  D0,DskErr
-.L8:
+.noError:
             rts
-            moveq   #-$11,D0
-            bra.b   .L7
+IopCtlKillIO:
+            moveq   #ControlErr,D0
+            bra.b   DiskIODone
+IopCtlFormat:
             lea     (-$42,A1),A2
             clr.w   (A2)+
             clr.l   (A2)+
             clr.l   (A2)+
-            bsr.w   sub_4086C964
-            bsr.w   sub_4086C8E6
-.L9:
+            bsr.w   CallIOPRoutine
+            bsr.w   UpdateXmtDriveStatus
+IopCtlDone:
             move.w  (-$46,A1),D0
-            bra.b   .L7
-            bsr.w   sub_4086C8E6
+            bra.b   DiskIODone
+IopCtlPhysIcon:
+            bsr.w   UpdateXmtDriveStatus
             movea.l (-$C,A1),A3
             btst    #3,(-$38,A1)
-            beq.b   .L10
+            beq.b   .gotDefault
             movea.l (-$10,A1),A3
-.L10:
+.gotDefault:
             move.w  #1,(-$40,A1)
             btst    #1,(-$2A,A1)
-            bra.b   .L11
-            bsr.w   sub_4086C8E6
+            bra.b   IconCommon
+IopCtlLogIcon:
+            bsr.w   UpdateXmtDriveStatus
             movea.l (-8,A1),A3
             clr.w   (-$40,A1)
             btst    #0,(-$2A,A1)
-.L11:
-            bne.b   .L12
+IconCommon:
+            bne.b   .callForIcon
             move.l  A3,(A0)
-            bra.b   .L7
-.L12:
+            bra.b   DiskIODone
+.callForIcon:
             lea     (-$274,A1),A3
             move.l  A3,(A0)
             move.l  A3,(-$44,A1)
             move.w  #$120,(-$3C,A1)
             move.b  #$F,(-$48,A1)
-            bsr.w   sub_4086C964
-            bra.b   .L9
-            bsr.w   sub_4086C8E6
+            bsr.w   CallIOPRoutine
+            bra.b   IopCtlDone
+IopCtlDrvInfo:
+            bsr.w   UpdateXmtDriveStatus
             move.l  ($E,A2),(A0)
-            bra.w   .L7
+            bra.w   DiskIODone
+IopCtlFmtCopy:
             lea     (-$42,A1),A2
             move.b  ($26,A0),(A2)+
             clr.b   (A2)+
             move.l  ($1E,A0),(A2)+
             move.l  ($22,A0),(A2)+
-            bsr.w   sub_4086C964
-            bsr.w   sub_4086C8E6
+            bsr.w   CallIOPRoutine
+            bsr.w   UpdateXmtDriveStatus
             move.w  (-$46,A1),D0
-            bne.b   .L13
+            bne.b   .done
             tst.b   ($B,A0)
-            beq.b   .L13
+            beq.b   .done
             move.l  (-$2E,A1),(-$3C,A1)
             move.b  #$C,(-$48,A1)
             move.l  (2,A0),(-$44,A1)
             clr.l   (-$40,A1)
-            bsr.w   sub_4086C964
+            bsr.w   CallIOPRoutine
             move.w  (-$46,A1),(-$276,A1)
             move.b  #6,(-$48,A1)
-            bsr.w   sub_4086C964
+            bsr.w   CallIOPRoutine
             move.w  (-$276,A1),D0
-            bne.b   .L13
+            bne.b   .done
             moveq   #0,D1
             move.b  (-$47,A1),D1
             movea.l (0,A1,D1.w*4),A2
             moveq   #-$44,D0
             move.w  ($12,A2),D1
             cmp.w   (-$3C,A1),D1
-            bne.b   .L13
+            bne.b   .done
             moveq   #0,D0
-.L13:
-            bra.b   .L14
+.done:
+            bra.b   ToDiskIODone
+IopCtlGetRawData:
             lea     (-$44,A1),A2
             lea     ($1C,A0),A0
             move.l  (A0)+,(A2)+
@@ -374,48 +384,50 @@ sub_4086C6D4:
             clr.l   (A0)+
             move.l  (A0)+,(A2)+
             move.w  (A0)+,(A2)+
-            bsr.w   sub_4086C964
+            bsr.w   CallIOPRoutine
             move.w  (-$46,A1),D0
-            bne.b   .L14
+            bne.b   ToDiskIODone
             move.l  (-$3C,A1),($28,A0)
-.L14:
-            bra.w   .L7
-            bsr.w   sub_4086C8E6
+ToDiskIODone:
+            bra.w   DiskIODone
+IopGetFormatList:
+            bsr.w   UpdateXmtDriveStatus
             moveq   #-$41,D0
             cmpi.b  #2,(7,A2)
-            blt.b   .L14
+            blt.b   ToDiskIODone
             moveq   #-$32,D0
             move.w  (A0)+,D2
-            ble.b   .L14
+            ble.b   ToDiskIODone
             move.w  ($18,A2),D0
             move.w  ($16,A2),D1
             movea.l (A0),A2
-            lea     sub_4086C8EA.L2,A3
+            lea     IopDiskFmtTbl,A3
             clr.w   -(A0)
             moveq   #0,D3
-.L15:
+.loop:
             bclr    D3,D0
             beq.b   .L17
             move.l  (0,A3,D3.w*8),(A2)+
             move.l  (4,A3,D3.w*8),(A2)+
             bclr    D3,D1
-            beq.b   .L16
+            beq.b   .currentDone
             bset    #6,(-4,A2)
             tst.w   D3
-            bne.b   .L16
+            bne.b   .currentDone
             move.l  (-$2E,A1),(-8,A2)
-.L16:
+.currentDone:
             addq.w  #1,(A0)
             subq.w  #1,D2
             ble.b   .L18
 .L17:
             addq.w  #1,D3
             tst.w   D0
-            bne.b   .L15
+            bne.b   .loop
 .L18:
             moveq   #0,D0
-            bra.b   .L14
-            bsr.b   sub_4086C8E6
+            bra.b   ToDiskIODone
+IopDriveStatus:
+            bsr.b   UpdateXmtDriveStatus
             addq.l  #4,A2
             addq.l  #4,A3
             move.w  (A2)+,(A0)+
@@ -424,76 +436,79 @@ sub_4086C6D4:
             move.l  (A3)+,(A0)+
             move.l  (A3)+,(A0)+
             move.l  (A2)+,(A0)+
-            bra.b   .L14
-            bsr.b   sub_4086C8E6
+            bra.b   ToDiskIODone
+IopMFMStatus:
+            bsr.b   UpdateXmtDriveStatus
             move.l  ($12,A2),(A0)
-            bra.b   .L14
+            bra.b   ToDiskIODone
+IopDupVersion:
             move.w  (-$44,A1),($1C,A0)
-            bra.w   .L9
+            bra.w   IopCtlDone
+IopGetFmtByte:
             move.b  (-$42,A1),($1C,A0)
-            bra.w   .L9
-sub_4086C8E6:
+            bra.w   IopCtlDone
+UpdateXmtDriveStatus:
             lea     (-$48,A1),A2
-sub_4086C8EA:
+UpdateDriveStatus:
             moveq   #0,D1
             move.b  (1,A2),D1
-            lea     .L3,A3
+            lea     nullPerDriveInfo,A3
             move.l  (0,A1,D1.w*4),D2
-            beq.b   .L1
+            beq.b   .done
             movea.l D2,A3
             move.l  (6,A2),(A3)
             move.l  ($A,A2),($10,A3)
             cmpi.w  #1,(8,A3)
-            bne.b   .L1
+            bne.b   .done
             move.l  ($1A,A2),D3
             swap    D3
             move.l  D3,($10,A3)
-.L1:
+.done:
             movea.l (-4,A1),A0
             movea.l (8,A0),A0
             lea     ($1C,A0),A0
             moveq   #0,D0
             rts
-.L2:
+IopDiskFmtTbl:
             dc.b    $00,$00,$98,$35,$40
             ds.b    5
             dc.w    $0320,$810A,$0050,0,$0640,$820A,$0050,0
             dc.w    $05A0,$8209,$0050,0,$0B40,$9212,$0050
-.L3:
+nullPerDriveInfo:
             ds.b    20
-sub_4086C964:
+CallIOPRoutine:
             move.l  (SP)+,(-$4C,A1)
             lea     (-$28,A1),A0
             _IOPMsgRequest
             rts
-sub_4086C970:
+IOPCallReturned:
             lea     ($28,A0),A1
             move.l  (-$4C,A1),-(SP)
             clr.l   (-$4C,A1)
             movea.l (-4,A1),A2
             movea.l (8,A2),A0
             rts
-sub_4086C986:
+ReceivedCallFromIop:
             lea     ($64,A0),A1
             lea     (-$84,A1),A2
             clr.w   (2,A2)
             move.b  (A2),D2
             bsr.w   sub_4087116A
-            beq.b   .L1
+            beq.b   .postEvent
             nop
             moveq   #-1,D0
             cmpi.b  #2,D2
-            bne.b   .L2
-.L1:
+            bne.b   .updateStatus
+.postEvent:
             movea.w #7,A0
             clr.w   D0
             move.b  (1,A2),D0
             _PostEvent
             move.w  D0,(2,A2)
-            bne.b   .L3
-.L2:
-            bsr.w   sub_4086C8EA
-.L3:
+            bne.b   .sendReply
+.updateStatus:
+            bsr.w   UpdateDriveStatus
+.sendReply:
             lea     (-$64,A1),A0
             move.b  #1,(7,A0)
             _IOPMsgRequest
@@ -528,7 +543,7 @@ sub_4086CA2A:
             bsr.w   sub_4086E0AA
             move.l  A2,($134,A0)
             movea.l A0,A2
-            lea     sub_4086C986.L5,A0
+            lea     ReceivedCallFromIop.L5,A0
             lea     DiskVars,A1
             moveq   #$E,D1
             move.l  A0,D0
@@ -541,7 +556,7 @@ sub_4086CA2A:
             bsr.b   sub_4086CA2A
             st      ($18,A2)
             lea     ($2A,A2),A1
-            lea     sub_4086C986.L6,A0
+            lea     ReceivedCallFromIop.L6,A0
             moveq   #$20,D0
             _BlockMove
             lea     (4,A2),A0
@@ -626,7 +641,9 @@ sub_4086CA2A:
             dc.w    $01CE,$0007,$0112,$01DE,$0008,$0098,$0098,$0009
             dc.w    $00A4,$00A4,$0015,$14E2,$38E6,$0016,$14CA,$38E6
             dc.w    $0017,$14FC,$14FC,$5343,$280E,$0082,$4744,$39B0
-            dc.w    $0082,0,$2F38,$0242,$4E75
+            dc.w    $0082,0
+            move.l  ($242).w,-(SP)                  ; DiskControl: JControl
+            rts
             bsr.w   CkDrvNum
             bne.b   .L12
             tst.b   (4,A1,D1.w)
@@ -781,12 +798,12 @@ TCdispose:
             clr.b   (3,A1,D1.w)
             moveq   #0,D0
             bra.w   sub_4086CA2A.L9
-.L13:
+StatusTbl:
             dc.w    $0006,$0050,$0008,$0044,$000A,$00FA,$4456,$260E
             dc.w    $5343,$2618,0
-.L14:
-            moveq   #-$12,D0
-            lea     .L13,A3
+DiskStatus:
+            moveq   #StatusErr,D0
+            lea     StatusTbl,A3
             movea.l A3,A4
             bra.b   .L16
 .L15:
@@ -805,6 +822,7 @@ TCdispose:
             jsr     (A4)
 .L17:
             bra.w   sub_4086CA2A.L9
+DriveStatus:
             moveq   #$B,D0
             adda.w  D1,A1
 .L18:
@@ -812,6 +830,7 @@ TCdispose:
             subq.w  #1,D0
             bgt.b   .L18
             rts
+PassportSts:
             ble.b   .L19
             moveq   #-$41,D0
             cmpi.b  #2,(3,A1,D1.w)
@@ -830,7 +849,7 @@ TCdispose:
             move.l  #$40000000,(A0)+
             bra.b   .L25
 .L20:
-            lea     .L27,A2
+            lea     diskFmtTbl,A2
             moveq   #1,D3
             moveq   #0,D0
             tst.b   (5,A1,D1.w)
@@ -846,7 +865,7 @@ TCdispose:
             moveq   #2,D0
             tst.b   ($18,A1,D1.w)
             bpl.b   .L21
-            lea     .L28,A2
+            lea     diskFmtTbl.L28,A2
             moveq   #0,D0
             moveq   #1,D3
 .L21:
@@ -872,7 +891,7 @@ TCdispose:
             moveq   #0,D0
 .L26:
             rts
-.L27:
+diskFmtTbl:
             dc.w    0,$0320,$810A,$0050,0,$0640,$820A,$0050
             dc.w    0,$05A0,$8209,$0050
 .L28:
@@ -2052,7 +2071,7 @@ sub_4086E0AA:
             dc.b    $28,$C0,$00,$10,$00,$00,$28,$D2,$FF
             ds.b    23
 .L5:
-            dc.w    $D5AA,$96DE,$AAFF
+            dc.b    $D5,$AA,$96,$DE,$AA,$FF         ; address marks
 SetUpPoll:
             move.l  ($23A).w,-(SP)
             rts
@@ -2104,7 +2123,7 @@ sub_4086E174:
             beq.b   .L4
             move.w  #$5BC,D0
 .L4:
-            lea     sub_4086E27A.L20,A3
+            lea     sub_4086E27A.DNib-$96,A3
 .L5:
             movea.l A2,A0
             moveq   #3,D1
@@ -2186,14 +2205,13 @@ sub_4086E174:
 .L18:
             moveq   #-$46,D0
             bra.b   .L16
-sub_4086E25E:
-            add.l   D2,(-$5222,A2)
-            dc.w    $AAFF                           ; A-trap $AAFF
+DtaMks:
+            dc.b    $D5,$AA,$AD,$DE,$AA,$FF         ; data marks
 RdData:
             bsr.w   GetDrv1
             tst.b   ($17,A1,D1.w)
             bmi.w   sub_4086EEDC
-            lea     sub_4086E25E,A1
+            lea     DtaMks,A1
             move.l  ($22E).w,-(SP)
             rts
 sub_4086E27A:
@@ -2444,18 +2462,26 @@ sub_4086E27A:
 .L34:
             moveq   #-$49,D0
             bra.b   .L33
-            dc.w    $0001,$FFFF,$0203,$FF04,$0506,$FFFF,$FFFF,$FFFF
-            dc.w    $0708,$FFFF,$FF09,$0A0B,$0C0D,$FFFF,$0E0F,$1011
-            dc.w    $1213,$FF14,$1516,$1718,$191A,$FFFF,$FFFF,$FFFF
-            dc.w    $FFFF,$FFFF,$FF1B,$FF1C,$1D1E,$FFFF,$FF1F,$FFFF
-            dc.w    $2021,$FF22
-            dc.b    '#$%&',$27,$28
-            dc.b    $FF,$FF,$FF,$FF,$FF,$29,$2A,$2B,$FF
-            dc.b    ',-./012'
-            dc.w    $FFFF
-            dc.b    '345678'
-            dc.w    $FF39
-            dc.b    ':;<=>?'
+; Denibblizing table (nibbles $96 thru $FF converted to $00 thru $3F)
+.DNib:
+            dc.b    $00,$01,$FF,$FF,$02,$03         ; $96,$97,   ,   ,$9A,$9B
+            dc.b    $FF,$04,$05,$06,$FF,$FF         ; ,$9D,$9E,$9F,   ,
+            dc.b    $FF,$FF,$FF,$FF,$07,$08         ; ,   ,   ,   ,$A6,$A7
+            dc.b    $FF,$FF,$FF,$09,$0A,$0B         ; ,   ,   ,$AB,$AC,$AD
+            dc.b    $0C,$0D,$FF,$FF,$0E,$0F         ; $AE,$AF,   ,   ,$B2,$B3
+            dc.b    $10,$11,$12,$13,$FF,$14         ; $B4,$B5,$B6,$B7,   ,$B9
+            dc.b    $15,$16,$17,$18,$19,$1A         ; $BA,$BB,$BC,$BD,$BE,$BF
+            dc.b    $FF,$FF,$FF,$FF,$FF,$FF         ; ,   ,   ,   ,   ,
+            dc.b    $FF,$FF,$FF,$FF,$FF,$1B         ; ,   ,   ,   ,   ,$CB
+            dc.b    $FF,$1C,$1D,$1E,$FF,$FF         ; ,$CD,$CE,$CF,
+            dc.b    $FF,$1F,$FF,$FF,$20,$21         ; ,$D3,   ,   ,$D6,$D7
+            dc.b    $FF,$22,$23,$24,$25,$26         ; ,$D9,$DA,$DB,$DC,$DD
+            dc.b    $27,$28,$FF,$FF,$FF,$FF         ; $DE,$DF,
+            dc.b    $FF,$29,$2A,$2B,$FF,$2C         ; ,$E5,$E6,$E7,   ,$E9
+            dc.b    $2D,$2E,$2F,$30,$31,$32         ; $EA,$EB,$EC,$ED,$EE,$EF
+            dc.b    $FF,$FF,$33,$34,$35,$36         ; ,   ,$F2,$F3,$F4,$F5
+            dc.b    $37,$38,$FF,$39,$3A,$3B         ; $F6,$F7,   ,$F9,$FA,$FB
+            dc.b    $3C,$3D,$3E,$3F                 ; $FC,$FD,$FE,$FF
 .L35:
             dc.w    $FF3F,$CFF3,$FCFF,$D5AA
 WrData:
@@ -6228,7 +6254,7 @@ sub_40871114:
             bne.b   .L1
             moveq   #-$24,D0
             addq.w  #4,SP
-            bra.w   sub_4086C6D4.L7
+            bra.w   DiskIODone
 .L1:
             rts
 sub_4087112E:
@@ -6239,7 +6265,7 @@ sub_4087112E:
             bne.b   .L1
             moveq   #-$24,D0
             addq.w  #4,SP
-            bra.w   sub_4086C6D4.L7
+            bra.w   DiskIODone
 .L1:
             movea.l (0,A1,A2.l),A2
             move.w  (A2)+,D1
@@ -6261,7 +6287,7 @@ sub_4087116A:
             bne.b   .L2
             bsr.b   CheckIfSecure
             bne.b   .L1
-            bsr.w   sub_4086C8EA
+            bsr.w   UpdateDriveStatus
             move.b  #2,D2
             bra.b   .L2
 .L1:
