@@ -1,11 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  RCos,RSin
-
-            IMPORT  COSP,COSQ,FPKPI2,PolyEval,SINP,SINQ
-
-            SECTION "HWElemsSinCos",CODE
-
 RSin:
             fmove.l FPSR,D0
             move.l  #$F000000,D1
@@ -158,5 +150,3 @@ UseSin:
             fsub.x  FP2,FP3
             fmove.x FP3,FP0
             rts
-
-            EVEN

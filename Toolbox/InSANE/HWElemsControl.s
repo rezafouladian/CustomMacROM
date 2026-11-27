@@ -2,11 +2,11 @@
 
             EXPORT  RsrcEntryPACK_5
 
-            IMPORT  BaseOfROM,RAnnuity,RAtan,RCompound,RCos,RExp1x
-            IMPORT  RExp21x,RExp2x,RExpx,RLn1x,RLnx,RLog21x
-            IMPORT  RLog2x,RSin,RsrcEntryPACK_4,RTan,RXpwri,RXpwry
+            IMPORT  BaseOfROM,RsrcEntryPACK_4
 
-            SECTION "HWElemsControl",CODE
+            SECTION "InSANE_HWElems",CODE
+
+; HWElemsControl.a: PACK 5 SANE elementary functions (FPU)
 
 RsrcEntryPACK_5:
             dc.b    $70,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 5 (5028 bytes) - Combo mask
@@ -140,5 +140,14 @@ RRandom:
             fadd.x  FP1,FP0
 .L6:
             jmp     (A4)
+
+            include "Toolbox/InSANE/HWElemsExp.s"
+            include "Toolbox/InSANE/HWElemsFinancial.s"
+            include "Toolbox/InSANE/HWElemsCommon.s"
+            include "Toolbox/InSANE/HWElemsLogs.s"
+            include "Toolbox/InSANE/HWElemsTg.s"
+            include "Toolbox/InSANE/HWElemsArcTg.s"
+            include "Toolbox/InSANE/HWElemsSinCos.s"
+            include "Toolbox/InSANE/HWElemsCoeffs.s"
 
             EVEN

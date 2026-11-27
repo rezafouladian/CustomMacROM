@@ -1,30 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  COERCE,COERCED,COERCES,COERCEX,DCOERCE,FINI1OP
-            EXPORT  FINI2OPS,FINICMPS,FP020,FPNANIN,FPNANOUT,INVALIDOP
-            EXPORT  NORMCOERCE,PACKX,RDST,RDSTSGN,RsrcEntryPACK_4_2,RTSHIFT
-            EXPORT  SCOERCE,UNPACKXB,UNPACKXX,UNPBOP,UNPXOP,ZNORMCOERCEX
-
-            IMPORT  BaseOfROM,QABS_PACK_4_2,QADDB,QADDX_PACK_4_2,QB2D,QB2X
-            IMPORT  QCLASSB,QCLASSX_PACK_4_2,QCMPB,QCMPX_PACK_4_2,QCPYSGN_PACK_4_2,QD2B
-            IMPORT  QDIVB,QDIVX_PACK_4_2,QGETENV_PACK_4_2,QGETHV_PACK_4_2,QLOGBX_PACK_4_2,QMULB
-            IMPORT  QMULX_PACK_4_2,QNEG_PACK_4_2,QNEXTB,QPROCENTRY_PACK_4_2,QPROCEXIT_PACK_4_2,QREMB
-            IMPORT  QREMX_PACK_4_2,QRINTX_PACK_4_2,QSCALBX_PACK_4_2,QSETENV_PACK_4_2,QSETHV_PACK_4_2,QSETXCP_PACK_4_2
-            IMPORT  QSQRTX_PACK_4_2,QSUBB,QSUBX_PACK_4_2,QTESTXCP_PACK_4_2,QTINTX_PACK_4_2,QX2B
-            IMPORT  QX2X_PACK_4_2,RsrcEntryDRVR_51
-
-            SECTION "FPCTRL",CODE
-
-RsrcEntryPACK_4_2:
-            dc.b    $08,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 4 (8308 bytes) - Combo mask
-            dc.l    RsrcEntryDRVR_51-BaseOfROM      ; Next entry
-            dc.l    FP020-BaseOfROM                 ; Data
-            dc.b    'PACK'                          ; Type
-            dc.w    4                               ; ID
-            dc.b    $58                             ; Attributes
-            dc.b    0                               ; Name
-            dc.b    'le Computer,'
-            dc.l    $C0A00000,$00002080,$000001FC   ; Block header
 FP020:
             subq.l  #4,SP
             movem.l D0/A0,-(SP)
@@ -724,5 +697,3 @@ RDST:
             movea.l A3,A4
             bra.w   PACKX
 ;
-
-            EVEN

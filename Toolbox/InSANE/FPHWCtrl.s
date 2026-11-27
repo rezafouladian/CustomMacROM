@@ -1,46 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  FP68K,RsrcEntryPACK_4
-
-            IMPORT  BaseOfROM,OPERRHANDLER,OPERRHANDLER040,QABS,QADDC,QADDC96
-            IMPORT  QADDD,QADDD96,QADDI,QADDI96,QADDL,QADDL96
-            IMPORT  QADDS,QADDS96,QADDX,QADDX96,QC2DEC,QC2X
-            IMPORT  QC2X96,QCLASSC,QCLASSD,QCLASSS,QCLASSX,QCLASSX96
-            IMPORT  QCMPC,QCMPC96,QCMPD,QCMPD96,QCMPI,QCMPI96
-            IMPORT  QCMPL,QCMPL96,QCMPS,QCMPS96,QCMPX,QCMPX96
-            IMPORT  QCPXC,QCPXC96,QCPXD,QCPXD96,QCPXI,QCPXI96
-            IMPORT  QCPXL,QCPXL96,QCPXS,QCPXS96,QCPXX,QCPXX96
-            IMPORT  QCPYSGN,QD2DEC,QD2X,QD2X96,QDEC2C,QDEC2D
-            IMPORT  QDEC2I,QDEC2L,QDEC2S,QDEC2X,QDEC2X96,QDIVC
-            IMPORT  QDIVC96,QDIVD,QDIVD96,QDIVI,QDIVI96,QDIVL
-            IMPORT  QDIVL96,QDIVS,QDIVS96,QDIVX,QDIVX96,QGETENV
-            IMPORT  QGETHV,QI2DEC,QI2X,QI2X96,QL2DEC,QL2X
-            IMPORT  QL2X96,QLOGBX,QLOGBX96,QMULC,QMULC96,QMULD
-            IMPORT  QMULD96,QMULI,QMULI96,QMULL,QMULL96,QMULS
-            IMPORT  QMULS96,QMULX,QMULX96,QNEG,QNEXTD,QNEXTS
-            IMPORT  QNEXTX,QNEXTX96,QPROCENTRY,QPROCEXIT,QREMC,QREMC96
-            IMPORT  QREMD,QREMD96,QREMI,QREMI96,QREML,QREML96
-            IMPORT  QREMS,QREMS96,QREMX,QREMX96,QRINTX,QRINTX96
-            IMPORT  QS2DEC,QS2X,QS2X96,QSCALBX,QSCALBX96,QSETENV
-            IMPORT  QSETHV,QSETXCP,QSQRTX,QSQRTX96,QSUBC,QSUBC96
-            IMPORT  QSUBD,QSUBD96,QSUBI,QSUBI96,QSUBL,QSUBL96
-            IMPORT  QSUBS,QSUBS96,QSUBX,QSUBX96,QTESTXCP,QTINTX
-            IMPORT  QTINTX96,QX2C,QX2C96,QX2D,QX2D96,QX2DEC
-            IMPORT  QX2DEC96,QX2I,QX2I96,QX2L,QX2L96,QX2S
-            IMPORT  QX2S96,QX2X,QX2X96,RsrcEntryPACK_5_2
-
-            SECTION "FPHWCtrl",CODE
-
-RsrcEntryPACK_4:
-            dc.b    $70,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 4 (14916 bytes) - Combo mask
-            dc.l    RsrcEntryPACK_5_2-BaseOfROM     ; Next entry
-            dc.l    FP68K-BaseOfROM                 ; Data
-            dc.b    'PACK'                          ; Type
-            dc.w    4                               ; ID
-            dc.b    $58                             ; Attributes
-            dc.b    0                               ; Name
-            dc.b    'SRCSMBPKEBAL'
-            dc.l    $C0A00000,$00003A50,$000001EC   ; Block header
 FP68K:
             bra.b   OMEGA881BASE
             dc.w    0
@@ -731,5 +688,3 @@ FP881CASE:
 UnknownOp:
             moveq   #81,D0                          ; Error exit for unknown opcode
             _SysError
-
-            EVEN

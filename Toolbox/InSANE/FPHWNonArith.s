@@ -1,11 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  OPERRHANDLER,OPERRHANDLER040,QABS,QCPYSGN,QGETENV,QGETHV
-            EXPORT  QNEG,QNEXTD,QNEXTS,QNEXTX,QNEXTX96,QPROCENTRY
-            EXPORT  QPROCEXIT,QSETENV,QSETHV,QSETXCP,QTESTXCP
-
-            SECTION "FPHWNonArith",CODE
-
 QGETENV:
             movem.l D0-D2/A0,-(SP)
             fmove.l FPSR,D0
@@ -996,5 +988,3 @@ HALTEMULATOR:
 PrivTrap:   ; PrivTrap% in source
             dc.w    $A097                           ; _FPPriv
             rts
-
-            EVEN

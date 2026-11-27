@@ -1,11 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  ATANP,ATANQ,COSP,COSQ,EXP21P,EXP21Q
-            EXPORT  FPKATNCONS,FPKPI2,FPKSQRT2,FPKSQRTHALF,FPKX2,FPKX2FX2
-            EXPORT  LOG21P,LOG21Q,SINP,SINQ,TANP,TANQ
-
-            SECTION "HWElemsCoeffs",CODE
-
 LOG21P:
             dc.w    4                                       ; ( degree - 1 ) of LOG21P
             dc.b    $3F,$F6,$00,$00,$B9,$46,$46,$AF,$F6,$CE,$3B,$FF
@@ -110,5 +102,3 @@ ATANP:
             dc.b    $40,$03,$00,$00,$C3,$C8,$59,$3D,$FA,$3A,$48,$6F
             dc.b    $40,$03,$00,$00,$82,$AE,$68,$38,$DD,$F5,$D9,$45
             dc.b    $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-
-            EVEN

@@ -1,11 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  RExp1x,RExp21x,RExp2x,RExpx
-
-            IMPORT  EXP21P,EXP21Q,PolyEval
-
-            SECTION "HWElemsExp",CODE
-
 RExp21x:
             fmove.l FPSR,D0
             move.l  #$F000000,D1
@@ -179,5 +171,3 @@ RExpx:
             move.l  #$280040,D0
             fmovecr.x #$F,FP0
             jmp     (A4)
-
-            EVEN

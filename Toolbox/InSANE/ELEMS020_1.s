@@ -1,30 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  DIVM0STUFF,DIVP0STUFF,ELCLASSX,ERRORNAN,M0STUFF,M1STUFF
-            EXPORT  MINFSTUFF,P0STUFF,P1STUFF,PINFSTUFF,RESULTDELIVERED,RsrcEntryPACK_5_2
-            EXPORT  ELEMS020,CLASSIFY,A0TOA1,POLYEVAL,CLEARUFLOW,CLEAROFLOW
-            EXPORT  CLEARINVALID,CLEARINEXACT,FORCEOFLOW,FORCEUFLOW,FORCEDIVZER,FORCEINEXACT
-            EXPORT  TESTDIVZER,TESTUFLOW,TESTOFLOW,TESTINVALID,TESTINEXACT,SCALBXX
-            EXPORT  ELI2X
-
-            IMPORT  ANNUITYTOP,ATANTOP,BaseOfROM,COMPOUNDTOP,COSTOP,EXP1TOP
-            IMPORT  EXPTOP,FPK0,FPK1,FPK2,FPKINF,FPKLOGE2
-            IMPORT  FPKM0,FPKM1,FPKMAXINT,FPKMINF,FPKSQRT2_PACK_5_2,FPKSQRTHALF_PACK_5_2
-            IMPORT  LOG21P_PACK_5_2,LOG21Q_PACK_5_2,RANDTOP,RsrcEntryPACK_4_2,SINTOP,TANTOP
-            IMPORT  XPWRITOP,XPWRYTOP
-
-            SECTION "ELEMS020_1",CODE
-
-RsrcEntryPACK_5_2:
-            dc.b    $08,$00,$00,$00,$00,$00,$00,$00 ; Resource 'PACK' 5 (4660 bytes) - Combo mask
-            dc.l    RsrcEntryPACK_4_2-BaseOfROM     ; Next entry
-            dc.l    ELEMS020-BaseOfROM          ; Data
-            dc.b    'PACK'                          ; Type
-            dc.w    5                               ; ID
-            dc.b    $58                             ; Attributes
-            dc.b    0                               ; Name
-            dc.b    'ter, Inc. 19'
-            dc.l    $C0A00000,$00001240,$000001F4   ; Block header
 ELEMS020:
             link.w  A6,#-$44
             movem.l D0-D7/A0-A4,-(SP)
@@ -616,5 +589,3 @@ RESULTDELIVERED:
             unlk    A6
             adda.w  (SP),SP
             rts
-
-            EVEN

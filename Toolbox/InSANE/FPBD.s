@@ -1,11 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  QB2D,QD2B
-
-            IMPORT  FP020
-
-            SECTION "FPBD",CODE
-
 QB2D:
             movem.l D0-D7/A0-A4,-(SP)
             link.w  A6,#-$10
@@ -1339,5 +1331,3 @@ Tbl3:
             dc.w    $0001,$6BCC,$41E9,$0007,$1AFD,$498D,$0023,$86F2
             dc.w    $6FC1,$00B1,$A2BC,$2EC5,$0378,$2DAC,$E9D9,$1158
             dc.w    $E460,$913D,$56BC,$75E2,$D631
-
-            EVEN

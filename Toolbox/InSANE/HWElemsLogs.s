@@ -1,11 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  RLn1x,RLnx,RLog21x,RLog2x
-
-            IMPORT  FPKSQRT2,FPKSQRTHALF,LOG21P,LOG21Q,PolyEval
-
-            SECTION "HWElemsLogs",CODE
-
 RLog2x:
             fmove.l FPSR,D0
             bsr.w   Classify
@@ -150,5 +142,3 @@ LogNeg:
             move.l  #$800008,D0
 .L4:
             jmp     (A4)
-
-            EVEN

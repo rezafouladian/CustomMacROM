@@ -1,13 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  QC2DEC,QD2DEC,QDEC2C,QDEC2D,QDEC2I,QDEC2L
-            EXPORT  QDEC2S,QDEC2X,QDEC2X96,QI2DEC,QL2DEC,QS2DEC
-            EXPORT  QX2DEC,QX2DEC96
-
-            IMPORT  FP68K,QGETENV,QGETHV,QPROCENTRY,QSETENV,QSETXCP
-
-            SECTION "FPHWB2DC",CODE
-
 QL2DEC:
             movem.l D0-D7/A0-A4,-(SP)
             link.w  A6,#-$10
@@ -1461,5 +1451,3 @@ a2b:
             dc.w    $0001,$6BCC,$41E9,$0007,$1AFD,$498D,$0023,$86F2
             dc.w    $6FC1,$00B1,$A2BC,$2EC5,$0378,$2DAC,$E9D9,$1158
             dc.w    $E460,$913D,$56BC,$75E2,$D631,0
-
-            EVEN

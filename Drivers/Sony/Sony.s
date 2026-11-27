@@ -1,6 +1,3 @@
-; Sony.s - Open, Control, Status calls
-; Included by Drivers/Sony/SonyHdr.s
-
 .L4:
             moveq   #-$18,D0
             rts

@@ -1,12 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  RAtan
-
-            IMPORT  ATANP,ATANQ,FPKATNCONS,FPKPI2,FPKX2,FPKX2FX2
-            IMPORT  PolyEval
-
-            SECTION "HWElemsArcTg",CODE
-
 RAtan:
             movem.l A1-A3,-(SP)
             movea.l A0,A3
@@ -112,5 +103,3 @@ RAtan:
             movem.l (SP)+,A1-A3
             moveq   #0,D0
             jmp     (A4)
-
-            EVEN

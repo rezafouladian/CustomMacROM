@@ -1,13 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  ATANQ_PACK_5_2,COSQ_PACK_5_2,EXP21P_PACK_5_2,EXP21Q_PACK_5_2,FPK0,FPK1
-            EXPORT  FPK2,FPK3,FPK34,FPK78,FPKARAND,FPKATNCONS_PACK_5_2
-            EXPORT  FPKFOURTH,FPKHALF,FPKINF,FPKLOGE2,FPKM0,FPKM1
-            EXPORT  FPKMAXINT,FPKMINF,FPKPI2_PACK_5_2,FPKPRAND,FPKSQRT2_PACK_5_2,FPKSQRTHALF_PACK_5_2
-            EXPORT  FPKX2_PACK_5_2,FPKX2FX2_PACK_5_2,LOG21P_PACK_5_2,LOG21Q_PACK_5_2,SINQ_PACK_5_2,TANQ_PACK_5_2
-
-            SECTION "ELEMS020_C",CODE
-
 LOG21P_PACK_5_2:
             dc.w    5                                       ; degree of LOG21P_PACK_5_2
             dc.b    $3F,$F6,$B9,$46,$46,$AF,$F6,$CE,$3B,$FF
@@ -131,5 +121,3 @@ ATANP:
             dc.b    $40,$03,$82,$AE,$68,$38,$DD,$F5,$D9,$45
             dc.b    $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
             ds.b    10
-
-            EVEN

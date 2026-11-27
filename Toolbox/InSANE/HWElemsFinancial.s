@@ -1,11 +1,3 @@
-            include "Include/ROMHeader.s"
-
-            EXPORT  RAnnuity,RCompound,RXpwri,RXpwry
-
-            IMPORT  RExp1x,RExp21x,RExp2x,RExpx,RLog21x,RLog2x
-
-            SECTION "HWElemsFinancial",CODE
-
 RCompound:
             bsr.w   FinInit
             fbne.w  CpdRateBig
@@ -606,5 +598,3 @@ XPWRYCOM:
 .L9:
             addq.l  #4,SP
             bra.w   XPWRYOK
-
-            EVEN
