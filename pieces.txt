@@ -114,7 +114,7 @@ Drivers/Serial/SerialIOP
 Drivers/IOP/SCCIOP
 Resources/Padding/apad_1
 Drivers/Serial/Serial
-Drivers/Sony/Sony
+Drivers/Sony/SonyHdr
 Toolbox/WindowMgr/WindowMgrRsrc
 QuickDraw/CQDRsrc
 Resources/Padding/RSRC_4
